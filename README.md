@@ -36,6 +36,8 @@ True honesty requires looking into the mirror of your own actions and admitting 
 
 **Math, however, cannot lie to itself.**
 
+$$\lim_{\Delta t \to 0} \int_{t}^{t+\Delta t} \nabla \cdot {J}_{\mathcal{I}}(\mathbf{x}, \tau) \, d\tau \ge \mathcal{T}_{\text{critical}}$$
+
 If you want to compare the glass being half full, the optimist, then the ideal bit for human rights would be at bit-16. Because at that moment it would protect the human rights for 100%. When you think the glass is being half empty, the pessimist, the bit would be at 18, which is already a grey zone for bad actors to cease the fight against the essentials of human rights. When you put it at 20, it is being as a realist, to not offer any gut-feeling to be overthrowing a human civilization as it is, because of stepping out of the bed on the wrong leg, destroying civilization by the turn of a page. This oversteps the choice of the people wanting to live in the grey zone of corruption. They got their own spectrum which can be filled till the brim, till the collapse of that spectrum, without hitting human existence.
 
 The real tragic side of the story is that Athens had enough of it of their stupidity exposed, so they used a bullying by proxy (the smear campaign) to be framed as a threat to society. A web or words can be torn but geometry is eternal. They could burn down Pythagoras school, but they can't burn down this mathematical structure for existing forever and ever.
