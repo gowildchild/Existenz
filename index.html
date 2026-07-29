@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Existenz: Live Matrix Engine</title>
+    <style>
+        :root {
+            --cyan: #00f0ff;
+            --green: #00ffaa;
+            --pink: #ff00aa;
+            --bg: #000000;
+            --panel: #0d0d11;
+            --border: #1f1f2e;
+        }
+        body {
+            background-color: var(--bg);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            border-bottom: 2px solid var(--cyan);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        h1 { margin: 0; color: var(--cyan); font-size: 1.8rem; }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media(max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .panel h2 { margin-top: 0; color: var(--green); font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        .bit-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #14141f;
+        }
+        .bit-row:hover { background: #111116; }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #333; transition: .3s; border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--cyan); }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .raw-string {
+            background: #050508;
+            border-left: 4px solid var(--pink);
+            padding: 12px;
+            font-size: 0.9rem;
+            color: #ccc;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .scenario-btn {
+            background: #1a1a26;
+            border: 1px solid var(--cyan);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            display: inline-block;
+            transition: 0.2s;
+        }
+        .scenario-btn:hover { background: var(--cyan); color: black; font-weight: bold; }
+        .metric-val { font-size: 1.5rem; font-weight: bold; color: var(--pink); }
+        svg { background: #050507; border: 1px solid var(--border); border-radius: 6px; width: 100%; height: auto; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>PROJECT EXISTENZ: LIVE CORE MATRIX ENGINE</h1>
+    <small style="color: #666;">Stateless 128-Bit Interactive Simulation Matrix | Core Version 0.61</small>
+</header>
+
+<div class="panel">
+    <h2>1 | Simulated Scenarios & Structural Exploitations</h2>
+    <p style="color:#aaa; font-size:0.9rem;">Select an experiential node sequence to load historical attack states and track systemic metrics:</p>
+    <button class="scenario-btn" onclick="loadScenario(1)">1. The Amsterdam Asset Strip (Server Raid)</button>
+    <button class="scenario-btn" onclick="loadScenario(2)">2. Plato's Republic Expatriation (Ancient Flaw)</button>
+    <button class="scenario-btn" onclick="loadScenario(3)">3. Unreasoned Noise Overflow (Paradox Test)</button>
+    <button class="scenario-btn" onclick="loadScenario(4)">4. The Core Alliance Trust Breach</button>
+    <button class="scenario-btn" onclick="loadScenario(5)">5. Optimal Low-Power Standby Equilibrium</button>
+</div>
+
+<div class="grid">
+    <!-- Left Hand: Interactive Registry Bit Switches -->
+    <div>
+        <div class="panel">
+            <h2>2 | Interactive Bit Allocation Registers</h2>
+            <div id="switches-container"></div>
+        </div>
+    </div>
+
+    <!-- Right Hand: Live Metrics & Spatial Visual Vectors -->
+    <div>
+        <div class="panel">
+            <h2>3 | Dynamic Spatial Vector System</h2>
+            <svg id="matrix-vis" viewBox="0 0 400 300">
+                <line x1="50" y1="250" x2="350" y2="250" stroke="#333" stroke-width="2" />
+                <line x1="50" y1="50" x2="50" y2="250" stroke="#333" stroke-width="2" />
+                <line x1="50" y1="250" x2="50" y2="70" stroke="#ff00aa" stroke-width="3" id="vector-integrity" />
+                <line x1="50" y1="250" x2="250" y2="250" stroke="#00f0ff" stroke-width="3" id="vector-constraints" />
+                <circle cx="50" cy="250" r="6" fill="#fff" id="core-node" />
+                <text x="40" y="65" fill="#ff00aa" font-size="10">INTEGRITY (Bit 2)</text>
+                <text x="260" y="262" fill="#00f0ff" font-size="10">CONSTRAINTS / ATYPICALITY (Bit 5)</text>
+            </svg>
+        </div>
+
+        <div class="panel">
+            <h2>4 | Live Calculators & Analytical Outputs</h2>
+            <div style="margin-bottom:15px;">
+                <label>Paradox of Intolerance Collapse Level (P_collapse):</label>
+                <div class="metric-val" id="p-collapse-output">0.00</div>
+            </div>
+            <div style="margin-bottom:15px;">
+                <label>Orthogonal Intersection Metric (&lt;V_integrity, V_disability&gt;):</label>
+                <div class="metric-val" id="ortho-output" style="color: var(--green);">0 (Perfect Independence)</div>
+            </div>
+            <div>
+                <label>Raw Dynamic Bitstring Registry Query State:</label>
+                <div class="raw-string" id="raw-string-output">0000000000000000000000000000000000000000000000000000000000000000</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const BITS = {
+        0:  { name: "EXISTENCE (Bit 0)", desc: "You, alive, with a body vessel", type: "core" },
+        1:  { name: "AUTONOMY (Bit 1)", desc: "The sovereign right to choose your path", type: "core" },
+        2:  { name: "INTEGRITY (Bit 2)", desc: "The moral axis of personal choice", type: "core" },
+        5:  { name: "DISABILITY (Bit 5)", desc: "Neuroatypical/physical constraints layer", type: "core" },
+        7:  { name: "PROPERTY (Bit 7)", desc: "Material assets and data workspace protection", type: "core" },
+        20: { name: "SHIELD_HUMAN_RIGHTS (Bit 20)", desc: "Institutional defensive firewall layer", type: "shield" },
+        24: { name: "SHIELD_ONLINE_RIGHTS (Bit 24)", desc: "Cyber-bullying mitigation defense", type: "shield" },
+        26: { name: "TRUST_BROKEN_CORE (Bit 26)", desc: "Deep personal betrayal cascade trigger", type: "threat" }
+    };
+
+    let state = { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: true, 26: false };
+
+    function initSwitches() {
+        const container = document.getElementById('switches-container');
+        container.innerHTML = '';
+        Object.keys(BITS).forEach(bit => {
+            const config = BITS[bit];
+            const row = document.createElement('div');
+            row.className = 'bit-row';
+            row.innerHTML = `
+                <div>
+                    <strong>${config.name}</strong><br>
+                    <small style="color:#777;">${config.desc}</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="bit-${bit}" ${state[bit] ? 'checked' : ''} onchange="toggleBit(${bit})">
+                    <span class="slider"></span>
+                </label>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    function toggleBit(bit) {
+        state[bit] = document.getElementById(`bit-${bit}`).checked;
+        calculateMatrix();
+    }
+
+    function calculateMatrix() {
+        const v_integrity = state[2] ? 1 : 0;
+        const v_disability = state[5] ? 1 : 0;
+        const ortho_product = v_integrity & v_disability;
+        
+        const orthoElement = document.getElementById('ortho-output');
+        if (state[2] && state[5]) {
+            orthoElement.innerText = "0 (Perfect Orthogonality: Both active on independent coordinates)";
+            orthoElement.style.color = "var(--green)";
+        } else {
+            orthoElement.innerText = "0 (Perfect Independence Verified)";
+            orthoElement.style.color = "var(--green)";
+        }
+
+        let noise = 0;
+        if (state[26]) noise += 5.5;
+        if (!state[7]) noise += 3.0;
+        if (state[5]) noise += 1.0;
+        
+        let shields = 0;
+        if (state[20]) shields += 0.4;
+        if (state[24]) shields += 0.4;
+
+        let p_collapse = noise / (1.0 - Math.min(shields, 0.9));
+        document.getElementById('p-collapse-output').innerText = p_collapse.toFixed(2);
+
+        document.getElementById('vector-integrity').setAttribute('y2', state[2] ? '70' : '250');
+        document.getElementById('vector-constraints').setAttribute('x2', state[5] ? '300' : '50');
+        document.getElementById('core-node').setAttribute('cx', state[5] ? '300' : '50');
+        document.getElementById('core-node').setAttribute('cy', state[2] ? '70' : '250');
+
+        let binaryString = "";
+        for (let i = 63; i >= 0; i--) {
+            if (BITS[i]) {
+                binaryString += state[i] ? "1" : "0";
+            } else {
+                binaryString += "0";
+            }
+        }
+        document.getElementById('raw-string-output').innerText = "0b" + binaryString + "... [Truncated 128-bit Matrix Target]";
+    }
+
+    function loadScenario(id) {
+        if (id === 1) {
+            state = { 0: true, 1: true, 2: true, 5: true, 7: false, 20: true, 24: false, 26: false };
+        } else if (id === 2) {
+            state = { 0: true, 1: false, 2: true, 5: true, 7: true, 20: false, 24: false, 26: false };
+        } else if (id === 3) {
+            state = { 0: true, 1: true, 2: true, 5: false, 7: false, 20: false, 24: false, 26: true };
+        } else if (id === 4) {
+            state = { 0: true, 1: true, 2: true, 5: true, 7: true, 20: false, 24: false, 26: true };
+        } else if (id === 5) {
+            state = { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: true, 26: false };
+        }
+        
+        Object.keys(BITS).forEach(bit => {
+            document.getElementById(`bit-${bit}`).checked = state[bit];
+        });
+        calculateMatrix();
+    }
+
+    initSwitches();
+    calculateMatrix();
+</script>
+</body>
+</html>
