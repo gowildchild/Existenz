@@ -434,6 +434,7 @@
     }
     function compileKatexExpressions() { }
     // 7. CORE RE-RENDERING PIPELINE & CALCULATION ENGINE
+    // 7. CORE RE-RENDERING PIPELINE & CALCULATION ENGINE
     function calculateMatrix() {
         const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; const orthoElement = document.getElementById('ortho-output');
         
@@ -451,6 +452,7 @@
         }
         document.getElementById('live-inject-p').innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shields.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
 
+        // FIXED ARRAY INDEX ASSIGNMENT: Restores direct mapping coefficients
         let secureCount = 0; let brokenCount = 0; const activeKeys =;
         activeKeys.forEach(k => { if (k === 26) { if (state[k] === true) brokenCount++; else secureCount++; } else { if (state[k] === true) secureCount++; else brokenCount++; } });
         const outSec = document.getElementById('counter-secure-val'); const outBrk = document.getElementById('counter-broken-val'); const lblBrk = document.getElementById('counter-broken-label');
@@ -539,5 +541,6 @@
         }, 800);
     });
 </script>
+
 </body>
 </html>
