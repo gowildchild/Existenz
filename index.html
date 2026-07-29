@@ -74,71 +74,54 @@
 
 <!-- Live Universe Loader Overlay Shield -->
 <div id="loading-universe">
-    <div class="loading-text">ExistenZ | Loading universe | please hold</div>
+    <div class="loading-text">ExistenZ | Loading Universe | Please Hold</div>
     <div class="loading-bar"></div>
 </div>
 
+<header>
+    <div><h1>Existenz Platform Matrix Simulator / Crude Edition</h1></div>
+    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[SYSTEM: V0.76 THREAT-MATRIX]</div>
+</header>
+
 <div class="grid">
-    <!-- LEFT PANEL LAYOUTS -->
+    <!-- LEFT PANEL: ADAPTIVE WORKSPACE -->
     <div class="column">
-        <div class="panel" style="flex-shrink: 0;">
+        <!-- ADAPTIVE VEIL CONTAINER PROCLAMATION -->
+        <div class="panel" id="panel-proclamation" style="flex-shrink: 0; transition: max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease, opacity 0.3s ease; overflow: hidden; max-height: 200px;">
             <h2>0 | Architectural Proclamation to the Channels</h2>
             <div class="intro-box">
                 <strong>The Rights of Nature vs. The Flaw of Ancient Athens:</strong><br>
-                Plato's <em>Republic</em> excluded the <strong>Adunatos</strong> (atypical processing styles) to protect state efficiency. Project Existenz resolves this systemic ableism by establishing <strong>DISABILITY</strong> at an independent, orthogonal coordinate axis at <strong>Bit 5</strong>. Wholeness of character is mathematically detached from typicality of mind. Harmony is achieved through geometric inclusivity.
+                Plato's <em>Republic</em> excluded the <strong>Adunatos</strong> (atypical processing styles) to protect state efficiency. Project Existenz resolves this systemic ableism by establishing <strong>INCLUSION</strong> as an independent, universal baseline state of belonging for all human variance. Wholeness of character is mathematically detached from typicality of mind.
             </div>
         </div>
 
-        <div class="panel" style="flex-shrink: 0;">
-            <h2>1 | Parameter Control & Vault Recovery Engine</h2>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.7rem;">
-                <div>
-                    <label>Poppertime ($\mathcal{T}$):</label><br>
-                    <input type="number" id="poppertime-input" value="3.0" step="0.1" class="input-text" style="width: 45px;" onchange="calculateMatrix()">
-                </div>
-                <div>
-                    <label>Hex Inject:</label><br>
-                    <input type="text" id="hex-input" value="0x00F0FF" class="input-text" style="width: 70px;" onchange="injectHexMarker()">
-                </div>
-                <div style="flex-grow: 1;">
-                    <label>Vault Sync Key:</label><br>
-                    <div style="display: flex; gap: 4px;">
-                        <input type="text" id="vault-string" class="input-text" style="flex-grow: 1;" placeholder="EX-DF">
-                        <button class="btn" onclick="restoreFromVault()">Restore</button>
-                        <button class="btn" onclick="copyVaultString()">Copy</button>
-                    </div>
+        <!-- LIVE SWITCHES CONTROL MONITOR CONTAINER -->
+        <div class="panel" style="flex-grow: 1; display: flex; flex-direction: column; min-height: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 6px; flex-shrink: 0;">
+                <h2 style="margin: 0; border: none; padding: 0;">2 | System Topologies & Human Rights Questionnaire</h2>
+                <div style="display: flex; gap: 2px;">
+                    <button class="btn btn-active" id="btn-view-topology" onclick="setViewMode('topology')">Topology View</button>
+                    <button class="btn" id="btn-view-rights" onclick="setViewMode('rights')">Human Rights Check</button>
                 </div>
             </div>
-        </div>
-
-        <div class="panel" style="flex-grow: 1;">
-            <!-- DUAL-MODE VIEW TOGGLE DASHBOARD PANELS WITH LIVE STATS COUNTER -->
-            <div style="border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 6px; flex-shrink: 0;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <h2 style="margin: 0; border: none; padding: 0;">2 | Dynamic 128-Bit Register Switches</h2>
-                    <div style="display: flex; gap: 2px;">
-                        <button class="btn btn-active" id="btn-view-topology" onclick="setViewMode('topology')">Topology View</button>
-                        <button class="btn" id="btn-view-rights" onclick="setViewMode('rights')">Human Rights Check</button>
-                    </div>
+            
+            <!-- LIVE PILLARS & FIREWALLS STATUS STATS MONITOR BAR -->
+            <div style="display: flex; gap: 6px; font-family: monospace; font-size: 0.7rem; background: #020204; padding: 5px; border-radius: 4px; border: 1px solid #101020; margin-bottom: 8px; flex-shrink: 0;">
+                <div style="flex: 1; text-align: center; border-right: 1px solid #101020;">
+                    <span style="color: var(--green); font-weight: bold;">✓ SECURE VECTORS:</span> 
+                    <span id="counter-secure-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 13
                 </div>
-                
-                <!-- THE LIVE RIGHTS VULNERABILITY METRICS COUNTER BAR -->
-                <div style="display: flex; gap: 6px; font-family: monospace; font-size: 0.7rem; background: #020204; padding: 5px; border-radius: 4px; border: 1px solid #101020;">
-                    <div style="flex: 1; text-align: center; border-right: 1px solid #101020;">
-                        <span style="color: var(--green); font-weight: bold;">✓ SECURE PILLARS:</span> 
-                        <span id="counter-secure-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 11
-                    </div>
-                    <div style="flex: 1; text-align: center;">
-                        <span id="counter-broken-label" style="color: #668; font-weight: bold;">⚠️ VIOLATED RIGHTS:</span> 
-                        <span id="counter-broken-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 11
-                    </div>
+                <div style="flex: 1; text-align: center;">
+                    <span id="counter-broken-label" style="color: #668; font-weight: bold;">⚠️ DETECTED VIOLATIONS:</span> 
+                    <span id="counter-broken-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 13
                 </div>
             </div>
-            <div class="scrollable-content" id="switches-container"></div>
+
+            <!-- SCROLLABLE LIST OF REGISTERS & QUESTIONS -->
+            <div class="scrollable-content" id="switches-container" style="flex-grow: 1;"></div>
         </div>
 
-
-
+        <!-- BOTTOM EMPIRICAL Presets SCENARIOS -->
         <div class="panel" style="flex-shrink: 0;">
             <h2>3 | Empirical Scenarios Panel (25-Module Matrix View)</h2>
             <div class="scenarios-grid">
@@ -171,8 +154,31 @@
         </div>
     </div>
 
-    <!-- RIGHT QUADRANT SYSTEM VECTOR LAYERS -->
+    <!-- RIGHT QUADRANT COLLOCATED LAYOUTS -->
     <div class="column">
+        <!-- REPOSITIONS PARAMETER CONTROLS DIRECTLY ABOVE SVG GRID -->
+        <div class="panel" style="flex-shrink: 0;">
+            <h2>1 | Parameter Control & Vault Recovery Engine</h2>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.7rem;">
+                <div>
+                    <label>Poppertime Threshold:</label><br>
+                    <input type="number" id="poppertime-input" value="3.0" step="0.1" class="input-text" style="width: 45px;" onchange="triggerStateChange(); calculateMatrix()">
+                </div>
+                <div>
+                    <label>Hex Inject:</label><br>
+                    <input type="text" id="hex-input" value="0x00F0FF" class="input-text" style="width: 70px;" onchange="injectHexMarker()">
+                </div>
+                <div style="flex-grow: 1;">
+                    <label>Vault Sync Key:</label><br>
+                    <div style="display: flex; gap: 4px;">
+                        <input type="text" id="vault-string" class="input-text" style="flex-grow: 1;" placeholder="EX-DF">
+                        <button class="btn" onclick="triggerStateChange(); restoreFromVault()">Restore</button>
+                        <button class="btn" onclick="copyVaultString()">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="panel" style="flex-grow: 1.2; justify-content: center; align-items: center; position: relative; overflow: hidden;">
             <div style="position: absolute; top: 6px; left: 6px; z-index: 10; display: flex; gap: 4px;">
                 <button class="btn" id="btn-zoom" onclick="toggleZoom()" style="border-color: var(--pink); color: var(--pink);">Zoom: 1x</button>
@@ -277,95 +283,105 @@
 
 
 <script>
-    // 1. GLOBAL PLATFORM DICTIONARY & REGISTER CONFIGURATION SPACE
     const BITS = {
         0:  { name: "EXISTENCE (B0)", desc: "Biological bodily presence blueprint", type: "core" },
         1:  { name: "AUTONOMY (B1)", desc: "Sovereign execution control parameters", type: "core" },
         2:  { name: "INTEGRITY (B2)", desc: "Internal ethical alignment and moral axis", type: "core" },
         3:  { name: "PSYCHOLOGY (B3)", desc: "Cognitive internal state and mental peace parameters", type: "core" },
         4:  { name: "PHYSICAL (B4)", desc: "Physical body vessel boundaries and biosensors tracking", type: "core" },
-        5:  { name: "INCLUSION (B5)", desc: "Systemic space ensuring absolute belonging for all human variance", type: "core" },
-        7:  { name: "PROPERTY (B7)", desc: "Owned property, data vaults, hard disks, server safety bounds", type: "core" },
+        5:  { name: "INCLUSION (B5)", desc: "Systemic state of absolute belonging for all human variance", type: "core" },
+        7:  { name: "PROPERTY (B7)", desc: "Data vaults, hard disks, server safety bounds", type: "core" },
         8:  { name: "PRESENCE (B8)", desc: "Real-time spatiotemporal hardware network footprint", type: "core" },
-        19: { name: "SHIELD_BASIC_RIGHTS (B19)", desc: "The primitive firewall defending physical and biological life survival", type: "shield" },
-        20: { name: "SHIELD_HUMAN_RIGHTS (B20)", desc: "Institutional boundary level firewalls guarding legal and civil status", type: "shield" },
-        21: { name: "SHIELD_DIVERSITY_RIGHTS (B21)", desc: "Macro-level framework enforcing systemic diversity protections", type: "shield" },
-        22: { name: "SHIELD_ABLEISTIC_PEOPLE (B22)", desc: "The non-negotiable right for atypical individuals to flag and legally hold ableism accountable", type: "shield" },
+        19: { name: "SHIELD_BASIC_RIGHTS (B19)", desc: "The primitive firewall defending physical and biological survival", type: "shield" },
+        20: { name: "SHIELD_HUMAN_RIGHTS (B20)", desc: "Institutional firewalls guarding civil and legal status", type: "shield" },
+        21: { name: "SHIELD_DIVERSITY_RIGHTS (B21)", desc: "Macro-framework enforcing diversity protections", type: "shield" },
         24: { name: "SHIELD_ONLINE_RIGHTS (B24)", desc: "Cyber-harassment mitigation perimeters", type: "shield" },
-        26: { name: "TRUST_BROKEN_CORE (B26)", desc: "Shatters core alliance and drops shields", type: "threat" }
+        26: { name: "THREAT_ABLEISM_ACT (B26)", desc: "Active systemic exclusion strike committed against a citizen", type: "threat" }
     };
 
-    // System state registers initialized with all protection and core pillars active (True)
-    let state = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 22: true, 24: true, 26: false };
+    let state = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true, 26: false };
     let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null; let currentViewMode = 'topology';
+    let hasChangedYet = false; // System state flag for the adaptive proclamation veil
 
+    // COLLAPSES TEXT BLOCKS IMMEDIATELY ON INTERACTION
+    function triggerStateChange() {
+        if (!hasChangedYet) {
+            hasChangedYet = true;
+            const proc = document.getElementById('panel-proclamation');
+            if (proc) {
+                proc.style.maxHeight = '0px'; proc.style.padding = '0px';
+                proc.style.margin = '0px'; proc.style.opacity = '0';
+                setTimeout(() => { proc.style.display = 'none'; }, 400);
+            }
+        }
+    }
 
-
-    // 2. DASHBOARD VIEW STATE SWITCHER
     function setViewMode(mode) {
         currentViewMode = mode;
-        const btnTop = document.getElementById('btn-view-topology');
-        const btnRgt = document.getElementById('btn-view-rights');
+        const btnTop = document.getElementById('btn-view-topology'); const btnRgt = document.getElementById('btn-view-rights');
         if (btnTop && btnRgt) {
             btnTop.className = mode === 'topology' ? 'btn btn-active' : 'btn';
             btnRgt.className = mode === 'rights' ? 'btn btn-active' : 'btn';
         }
-        initSwitches();
-        calculateMatrix();
+        initSwitches(); calculateMatrix();
     }
+
     // 3. SWITCHBOARD LAYOUT GENERATOR AND RE-SKINNER
     function initSwitches() {
         const container = document.getElementById('switches-container'); if (!container) return;
         container.innerHTML = '';
         
+        let coresHTML = `<div style="color:var(--cyan); font-family:monospace; font-size:0.7rem; margin-top:4px; margin-bottom:2px; font-weight:bold;">[CORE TOPOLOGY & LEGAL SHIELDS]</div>`;
+        let threatsHTML = `<div style="color:var(--pink); font-family:monospace; font-size:0.7rem; margin-top:8px; margin-bottom:2px; font-weight:bold;">[ACTIVE HOSTILE THREAT ENVIRONMENT]</div>`;
+        
         Object.keys(BITS).forEach(bit => {
             const config = BITS[bit];
             let bitStr = bit.toString(); let bitNum = parseInt(bit);
+            let isThreatType = config.type === 'threat';
             
+            let rowHTML = "";
             if (currentViewMode === 'topology') {
-                container.innerHTML += `
+                rowHTML = `
                     <div class="bit-row">
                         <div><strong>${config.name}</strong> - <span style="color:#5c5c7c; font-size:0.65rem;">${config.desc}</span></div>
                         <label class="switch">
-                            <input type="checkbox" id="bit-${bitStr}" ${state[bitNum] ? 'checked' : ''} onchange="toggleBit(${bitNum})">
-                            <span class="slider"></span>
+                            <input type="checkbox" id="bit-${bitStr}" ${state[bitNum] ? 'checked' : ''} onchange="triggerStateChange(); toggleBit(${bitNum})">
+                            <span class="slider" style="${isThreatType ? 'background-color:#401020;' : ''}"></span>
                         </label>
                     </div>`;
             } else {
                 let questionText = ""; let isViolated = false;
                 switch(bitNum) {
-                    case 0: questionText = "Is your fundamental right to a safe biological life or bodily presence currently threatened?"; isViolated = !state[bitNum]; break;
-                    case 1: questionText = "Has your personal sovereign autonomy or freedom to make your own choices been coerced?"; isViolated = !state[bitNum]; break;
-                    case 2: questionText = "Is your internal ethical alignment, moral axis, or personal code being compromised?"; isViolated = !state[bitNum]; break;
-                    case 3: questionText = "Are you experiencing cognitive distress, targeting pressure, or personal cyber-harassment?"; isViolated = !state[bitNum]; break;
-                    case 4: questionText = "Have your physical vessel boundaries or private biosensor track metrics been violated?"; isViolated = !state[bitNum]; break;
-                    case 5: questionText = "Are you facing active exclusion, erasure, or systemic isolation from your community?"; isViolated = !state[bitNum]; break;
-                    case 7: questionText = "Are your personal data vaults, private servers, local drives, or local assets unsafe?"; isViolated = !state[bitNum]; break;
-                    case 8: questionText = "Are you subjected to unauthorized spatio-temporal tracking, stalking, or geolocation mapping?"; isViolated = !state[bitNum]; break;
-                    case 19: questionText = "Have your primitive constitutional or fundamental rights to base survival been violated?"; isViolated = !state[bitNum]; break;
-                    case 20: questionText = "Have your institutional human rights or systemic civil protection firewalls failed you?"; isViolated = !state[bitNum]; break;
-                    case 21: questionText = "Are the macro diversity rights and anti-exclusion legislative bounds stripped away?"; isViolated = !state[bitNum]; break;
-                    case 22: questionText = "Is your non-negotiable right to flag, trace and legally hold ableistic people accountable suppressed?"; isViolated = !state[bitNum]; break;
-                    case 24: questionText = "Are your active cyber-harassment defense perimeters broken or unable to absorb online attacks?"; isViolated = !state[bitNum]; break;
-                    case 26: questionText = "Has the core trust within your direct supportive alliance been shattered or broken?"; isViolated = state[bitNum]; break;
+                    case 0: questionText = "Is your right to a safe biological life or bodily presence threatened?"; isViolated = !state[bitNum]; break;
+                    case 1: questionText = "Has your personal sovereign autonomy or freedom to choose been coerced?"; isViolated = !state[bitNum]; break;
+                    case 2: questionText = "Is your internal ethical alignment or moral axis compromised?"; isViolated = !state[bitNum]; break;
+                    case 3: questionText = "Are you experiencing cognitive distress or targeted cyber-harassment?"; isViolated = !state[bitNum]; break;
+                    case 4: questionText = "Have your physical vessel boundaries or biosensor tracks been crossed?"; isViolated = !state[bitNum]; break;
+                    case 5: questionText = "Are you facing active exclusion or isolation from community belonging?"; isViolated = !state[bitNum]; break;
+                    case 7: questionText = "Are your personal data vaults, private drives, or assets unsafe?"; isViolated = !state[bitNum]; break;
+                    case 8: questionText = "Are you subjected to unauthorized location tracking or digital stalking?"; isViolated = !state[bitNum]; break;
+                    case 19: questionText = "Have your primitive protections for base survival been stripped away?"; isViolated = !state[bitNum]; break;
+                    case 20: questionText = "Have your institutional human rights firewalls failed to protect you?"; isViolated = !state[bitNum]; break;
+                    case 21: questionText = "Are macro-level legislative diversity protections broken or missing?"; isViolated = !state[bitNum]; break;
+                    case 24: questionText = "Are active harassment defense filters unable to absorb online attacks?"; isViolated = !state[bitNum]; break;
+                    case 26: questionText = "Is an active ableistic attack being committed against your person right now?"; isViolated = state[bitNum]; break; // Evaluates True for active threat presence
                 }
-
-
-                container.innerHTML += `
-                    <div class="bit-row" style="padding: 6px 4px; background: ${isViolated ? 'rgba(255,0,170,0.03)' : 'transparent'}; border-left: 2px solid ${isViolated ? 'var(--pink)' : 'transparent'}; font-size: 0.75rem;">
-                        <div style="flex-grow: 1; padding-right: 10px;"><span style="color: ${isViolated ? 'var(--pink)' : '#ffffff'}; font-weight: ${isViolated ? 'bold' : 'normal'};">${questionText}</span></div>
-                        <div style="display: flex; align-items: center; gap: 4px; font-size: 0.65rem; font-family: monospace; flex-shrink: 0;">
-                            <span style="color: ${isViolated ? 'var(--pink)' : '#668'}; font-weight: bold; width: 24px; text-align: right;">${isViolated ? 'YES' : 'NO'}</span>
+                rowHTML = `
+                    <div class="bit-row" style="padding:6px 4px; background:${isViolated?'rgba(255,0,170,0.03)':'transparent'}; border-left:2px solid ${isViolated?'var(--pink)':'transparent'};">
+                        <div style="flex-grow:1; padding-right:10px;"><span style="color:${isViolated?'var(--pink)':'#ffffff'}; font-weight:${isViolated?'bold':'normal'};">${questionText}</span></div>
+                        <div style="display:flex; align-items:center; gap:4px; font-size:0.65rem; font-family:monospace; flex-shrink:0;">
+                            <span style="color:${isViolated?'var(--pink)':'#668'}; font-weight:bold; width:24px; text-align:right;">${isViolated?'YES':'NO'}</span>
                             <label class="switch">
-                                <input type="checkbox" id="bit-${bitStr}" ${isViolated ? 'checked' : ''} onchange="toggleViolationQuestion(${bitNum})">
-                                <span class="slider" style="background-color: ${isViolated ? 'var(--pink)' : '#202030'};"></span>
+                                <input type="checkbox" id="bit-${bitStr}" ${isViolated ? 'checked' : ''} onchange="triggerStateChange(); toggleViolationQuestion(${bitNum})">
+                                <span class="slider" style="background-color:${isViolated ? 'var(--pink)' : '#202030'};"></span>
                             </label>
                         </div>
                     </div>`;
             }
+            if (isThreatType) threatsHTML += rowHTML; else coresHTML += rowHTML;
         });
+        container.innerHTML = coresHTML + threatsHTML;
     }
-
     function toggleBit(bit) { const el = document.getElementById(`bit-${bit}`); if (el) state[bit] = el.checked; calculateMatrix(); }
     function toggleViolationQuestion(bit) { const el = document.getElementById(`bit-${bit}`); if (!el) return; if (bit === 26) { state[bit] = el.checked; } else { state[bit] = !el.checked; } initSwitches(); calculateMatrix(); }
     // 4. VIEWPORT MAGNIFIER & ASYMMETRIC OVERLAP LAYER TRACE ENGINE
@@ -449,111 +465,52 @@
         const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; const orthoElement = document.getElementById('ortho-output');
         
         let noise = 0.5; 
-        if (!state[0]) noise += 5.0; 
-        if (!state[1]) noise += 4.0; 
-        if (!state[2]) noise += 6.0; 
-        if (!state[3]) noise += 3.5; 
-        if (!state[4]) noise += 4.5; 
-        if (!state[7]) noise += 3.5; 
-        if (!state[8]) noise += 2.5; 
-        if (state[26]) noise += 5.5;
+        if (!state[0]) noise += 5.0; if (!state[1]) noise += 4.0; if (!state[2]) noise += 6.0; 
+        if (!state[3]) noise += 3.5; if (!state[4]) noise += 4.5; if (!state[5]) noise += 4.0; 
+        if (!state[7]) noise += 3.5; if (!state[8]) noise += 2.5; 
         
-        // INTERDEPENDENT STATEMENT FAULT GATE: Noise spikes if inclusion drops while macro diversity OR individual ableism shields are broken
-        if (state[5] === false && (state[21] === false || state[22] === false)) {
-            noise += 6.0; 
+        // DYNAMIC THREAT-SHIELD ROUTINE CALCULATOR
+        if (state[26] === true) {
+            if (state[21] === false) { noise += 6.0; } // Severe penalty under unshielded exclusion strike
+            else { noise += 1.0; } // Attenuated systemic stress when Diversity Rights hold the firewall
         }
         
         let shields = 0.0; 
-        if (state[19]) shields += 0.20; 
-        if (state[20]) shields += 0.20; 
-        if (state[21]) shields += 0.20; 
-        if (state[22]) shields += 0.20; // Explicitly factors SHIELD_ABLEISTIC_PEOPLE into system safety margins
-        if (state[24]) shields += 0.20; 
-        if (state[26]) shields *= 0.5; 
+        if (state[19]) shields += 0.25; if (state[20]) shields += 0.25; 
+        if (state[21]) shields += 0.25; if (state[24]) shields += 0.25; 
         
-        let p_collapse = noise / (1.0 - Math.min(shields, 0.95)); 
-        const outP = document.getElementById('p-collapse-output'); 
-        if (outP) outP.innerText = p_collapse.toFixed(2);
+        let p_collapse = noise / (1.0 - Math.min(shields, 0.95)); const outP = document.getElementById('p-collapse-output'); if (outP) outP.innerText = p_collapse.toFixed(2);
         
-        // 2. Direct plain-text value injection into the HTML metric container rows
-        const injP = document.getElementById('live-inject-p');
-        if (injP) {
-            injP.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shields.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
-        }
+        const injP = document.getElementById('live-inject-p'); if (injP) injP.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shields.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
+        const injOrtho = document.getElementById('live-inject-ortho'); if (injOrtho) injOrtho.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>${(state[2]&&!state[5])?1:0}</strong>`;
         
-        // REPAIRED LINE: Accesses the ortho template directly without re-declaration crashes
-        const injOrthoNode = document.getElementById('live-inject-ortho');
-        if (injOrthoNode) {
-            injOrthoNode.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>${(state[2]&&state[5])?1:0}</strong>`;
-        }
-        
-        // 3. Update evaluation state readouts for orthogonality constraints
         if (orthoElement) {
-            if (state[2] === true && state[5] === false && state[21] === false) { 
-                orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic exclusion event detected. The inclusion axis has been compromised without firewall protection.`; orthoElement.style.color = "var(--pink)"; 
-            } else { 
-                orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; orthoElement.style.color = "var(--green)"; 
-            }
+            if (state[26] === true && state[21] === false) { orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; orthoElement.style.color = "var(--pink)"; }
+            else { orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; orthoElement.style.color = "var(--green)"; }
         }
+
 
         // 4. Scoreboard Tally Engine: Aggregates active protected vs violated system nodes
         let secureCount = 0; 
         let brokenCount = 0; 
         const activeKeys = [0, 1, 2, 3, 4, 5, 7, 8, 19, 20, 21, 22, 24, 26];
         
-        activeKeys.forEach(k => { 
-            if (k === 26) { 
-                if (state[k] === true) brokenCount++; 
-                else secureCount++; 
-            } else { 
-                if (state[k] === true) secureCount++; 
-                else brokenCount++; 
-            } 
-        });
+        activeKeys.forEach(k => { if (k === 26) { if (state[k] === true) brokenCount++; else secureCount++; } else { if (state[k] === true) secureCount++; else brokenCount++; } });
+        const outSec = document.getElementById('counter-secure-val'); const outBrk = document.getElementById('counter-broken-val'); const lblBrk = document.getElementById('counter-broken-label');
+        if (outSec) outSec.innerText = secureCount; if (outBrk) { outBrk.innerText = brokenCount; if (brokenCount > 0) { outBrk.style.color = 'var(--pink)'; if (lblBrk) lblBrk.style.color = 'var(--pink)'; } else { outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; } }
 
-        const outSec = document.getElementById('counter-secure-val'); 
-        const outBrk = document.getElementById('counter-broken-val'); 
-        const lblBrk = document.getElementById('counter-broken-label');
-        
-        if (outSec) outSec.innerText = secureCount; 
-        if (outBrk) { 
-            outBrk.innerText = brokenCount; 
-            if (brokenCount > 0) { outBrk.style.color = 'var(--pink)'; if (lblBrk) lblBrk.style.color = 'var(--pink)'; } 
-            else { outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; } 
-        }
-
-        // 5. Update system alarm notifications based on poppertime lines
-        const injectCanaryNode = document.getElementById('live-inject-canary'); 
-        const canaryBox = document.getElementById('canary-output');
-        
-        if (injectCanaryNode && canaryBox) {
+        const injectCanary = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
+        if (injectCanary && canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
-                canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`;
-                canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
-                injectCanaryNode.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ ALARM ACTIVATED</strong>`;
-                injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
-                
-                if (timelineMode === 'fib') {
-                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
-                    const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5);
-                    const crosshair = document.getElementById('collision-crosshair');
-                    if (crosshair) { 
-                        document.getElementById('collision-point').setAttribute('cx', ptCol.x); document.getElementById('collision-point').setAttribute('cy', ptCol.y); 
-                        document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); 
-                        document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); 
-                        crosshair.style.display = 'block'; 
-                    }
-                }
+                canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems capacity!`; canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
+                injectCanary.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ ALARM ACTIVATED</strong>`; injectCanary.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+                if (timelineMode === 'fib') { const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5); const crosshair = document.getElementById('collision-crosshair'); if (crosshair) { document.getElementById('collision-point').setAttribute('cx', ptCol.x); document.getElementById('collision-point').setAttribute('cy', ptCol.y); document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); crosshair.style.display = 'block'; } }
             } else {
-                canaryBox.innerText = `🟢 STANDBY: Network operating within normal thermodynamic bounds.`;
-                canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
-                injectCanaryNode.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ SYSTEM SILENT</strong>`;
-                injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
+                canaryBox.innerText = `🟢 STANDBY: Network operating within normal thermodynamic bounds.`; canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
+                injectCanary.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ SYSTEM SILENT</strong>`; injectCanary.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
                 const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none';
             }
         }
-        
-        // 6. Project morphing polygon map tracking nodes directly across the viewport plane
         const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
         const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
         const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
@@ -563,62 +520,53 @@
                 let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
                 let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
                 gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
-                nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y);
-                nodeAu.setAttribute('cx', pt_au.x); nodeAu.setAttribute('cy', pt_au.y);
-                nodeIn.setAttribute('cx', pt_in.x); nodeIn.setAttribute('cy', pt_in.y);
-                gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
+                nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y); nodeAu.setAttribute('cx', pt_au.x); nodeAu.setAttribute('cy', pt_au.y); nodeIn.setAttribute('cx', pt_in.x); nodeIn.setAttribute('cy', pt_in.y); gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
                 if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
             } else {
                 let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160; let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
                 gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
-                nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y);
-                nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y);
-                nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y);
-                let sh_size = (state[20] && state[24]) ? 100 : ((state[20] || state[24]) ? 55 : 0);
-                gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
+                nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y); nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y); nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y);
+                let sh_size = (state[19] && state[20]) ? 100 : ((state[19] || state[20]) ? 55 : 0); gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
                 if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
             }
         }
-        
-        let binStr = ""; 
-        Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; });
-        let intVal = parseInt(binStr, 2);
-        const outRaw = document.getElementById('raw-string-output'); 
-        if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | OCT: 0o${intVal.toString(8)} | DEC: ${intVal} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
-        
-        const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
+        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; }); let intVal = parseInt(binStr, 2);
+        const outRaw = document.getElementById('raw-string-output'); if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | OCT: 0o${intVal.toString(8)} | DEC: ${intVal} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
+        const vaultIn = document.getElementById('vault-string'); 
+        if (vaultIn) vaultIn.value = generateVaultString();
         compileKatexExpressions();
     }
 
 
     // 8. DATASETS & EVENT PRESETS LOOKUP MAP
     function loadScenario(id) {
+        triggerStateChange();
         const scenarios = {
-            1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: false, 21: true, 22: true, 24: false, 26: false },
-            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: false, 22: false, 24: false, 26: false }, // Ableism Attack: Inclusion drop (5:false) + Statement protection missing (22:false) -> Alarm trips
-            3:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 19: true, 20: true, 21: true, 22: true, 24: false, 26: false },
-            4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 22: true, 24: false, 26: true },
-            5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 19: false, 20: false, 21: false, 22: false, 24: false, 26: true }, // Core Breach: Aggravated strike on both basic and statement shields
-            6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 22: true, 24: true, 26: false },
-            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 22: true, 24: false, 26: false }, // Diversity & statement shields active -> Absorbs exclusion event
-            8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 22: true, 24: false, 26: false },
-            9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: true, 8: true, 19: true, 20: true, 21: true, 22: true, 24: false, 26: false },
-            10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 19: false, 20: false, 21: false, 22: false, 24: false, 26: true }, // Total Devastation
-            11: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: true, 8: true, 19: true, 20: true, 21: true, 22: true, 24: false, 26: false },
-            12: { 0: true, 1: true, 2: true, 3: true, 4: false, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 22: true, 24: false, 26: false },
-            13: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: true, 21: true, 22: true, 24: false, 26: false },
-            14: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 22: true, 24: false, 26: false },
-            15: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: false, 21: false, 22: false, 24: false, 26: true },
-            16: { 0: true, 1: true, 2: false, 3: false, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: true, 22: true, 24: false, 26: false },
-            17: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 22: true, 24: true, 26: false },
-            18: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 22: true, 24: false, 26: false },
-            19: { 0: true, 1: true, 2: false, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: false, 21: false, 22: false, 24: false, 26: true },
-            20: { 0: true, 1: true, 2: true, 3: false, 4: false, 5: true, 7: true, 8: true, 19: true, 20: false, 21: true, 22: true, 24: false, 26: false },
-            21: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: false, 21: true, 22: true, 24: true, 26: false },
-            22: { 0: true, 1: false, 2: false, 3: true, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: false, 22: false, 24: false, 26: false },
-            23: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 22: true, 24: false, 26: false },
-            24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: false, 7: true, 8: true, 19: false, 20: false, 21: false, 22: false, 24: false, 26: false },
-            25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 22: true, 24: true, 26: false } // Harmonic Optimum
+            1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
+            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: false, 24: false, 26: true }, // Ableism Attack: Exclusion active (5:false) + Attack registered (26:true) + Shield dropped (21:false)
+            3:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false },
+            4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 24: false, 26: true },
+            5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 19: false, 20: false, 21: false, 24: false, 26: true },
+            6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true, 26: false },
+            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 24: false, 26: true }, // Shield holding
+            8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false },
+            9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: true, 8: true, 19: true, 20: true, 21: true, 24: false, 26: true },
+            10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 19: false, 20: false, 21: false, 24: false, 26: true },
+            11: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: true, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false },
+            12: { 0: true, 1: true, 2: true, 3: true, 4: false, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
+            13: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: true, 21: true, 24: false, 26: false },
+            14: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 24: false, 26: false },
+            15: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: false, 21: false, 24: false, 26: true },
+            16: { 0: true, 1: true, 2: false, 3: false, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
+            17: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 24: true, 26: false },
+            18: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
+            19: { 0: true, 1: true, 2: false, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: false, 21: false, 24: false, 26: true },
+            20: { 0: true, 1: true, 2: true, 3: false, 4: false, 5: true, 7: true, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
+            21: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: false, 21: true, 24: true, 26: false },
+            22: { 0: true, 1: false, 2: false, 3: true, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: false, 24: false, 26: false },
+            23: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 24: false, 26: false },
+            24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: false, 7: true, 8: true, 19: false, 20: false, 21: false, 24: false, 26: false },
+            25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true, 26: false }
         };
         const selected = scenarios[id];
         if (selected) {
@@ -627,7 +575,6 @@
         }
     }
 
-    // 9. RE-SYNCHRONIZED APP HARDWARE BOOTSTRAPPER
     window.addEventListener('load', () => {
         initSwitches();
         setTimeout(() => {
@@ -639,7 +586,7 @@
         }, 800);
     });
 </script>
-
 </body>
 </html>
+
 
