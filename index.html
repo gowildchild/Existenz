@@ -112,9 +112,17 @@
         </div>
 
         <div class="panel" style="flex-grow: 1;">
-            <h2>2 | Dynamic 128-Bit Register Switches</h2>
+            <!-- DUAL-MODE VIEW TOGGLE DASHBOARD PANELS -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 6px; flex-shrink: 0;">
+                <h2 style="margin: 0; border: none; padding: 0;">2 | Dynamic 128-Bit Register Switches</h2>
+                <div style="display: flex; gap: 2px;">
+                    <button class="btn btn-active" id="btn-view-topology" onclick="setViewMode('topology')">Topology View</button>
+                    <button class="btn" id="btn-view-rights" onclick="setViewMode('rights')">Human Rights Check</button>
+                </div>
+            </div>
             <div class="scrollable-content" id="switches-container"></div>
         </div>
+
 
         <div class="panel" style="flex-shrink: 0;">
             <h2>3 | Empirical Scenarios Panel (25-Module Matrix View)</h2>
@@ -268,15 +276,57 @@
 
     let state = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false };
     let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null;
+    let currentViewMode = 'topology'; // Controls the interface layer abstraction toggle
+
+    function setViewMode(mode) {
+        currentViewMode = mode;
+        const btnTop = document.getElementById('btn-view-topology');
+        const btnRgt = document.getElementById('btn-view-rights');
+        if (btnTop && btnRgt) {
+            btnTop.className = mode === 'topology' ? 'btn btn-active' : 'btn';
+            btnRgt.className = mode === 'rights' ? 'btn btn-active' : 'btn';
+        }
+        initSwitches(); // Re-skins the switches panel instantly
+    }
 
     function initSwitches() {
         const container = document.getElementById('switches-container'); if (!container) return;
         container.innerHTML = '';
+        
         Object.keys(BITS).forEach(bit => {
             const config = BITS[bit];
-            container.innerHTML += `<div class="bit-row"><div><strong>${config.name}</strong> - <span style="color:#5c5c7c; font-size:0.65rem;">${config.desc}</span></div><label class="switch"><input type="checkbox" id="bit-${bit}" ${state[bit] ? 'checked' : ''} onchange="toggleBit(${bit})"><span class="slider"></span></label></div>`;
+            let displayName = `<strong>${config.name}</strong>`;
+            let displayDesc = config.desc;
+            
+            // Re-skin text assets into explicit real-world Human Rights diagnostic labels
+            if (currentViewMode === 'rights') {
+                switch(parseInt(bit)) {
+                    case 0: displayName = "❤️ Existence Framework Status"; displayDesc = "Check if your fundamental right to a safe biological life is secure."; break;
+                    case 1: displayName = "🦅 Personal Sovereign Autonomy"; displayDesc = "Check if you have absolute control over your choices without coercion."; break;
+                    case 2: displayName = "⚖️ Moral Alignment & Integrity"; displayDesc = "Check if your ethical axis and personal code are uncompromised."; break;
+                    case 3: displayName = "🧠 Cognitive & Mental Peace"; displayDesc = "Check if your psychology is free from cyber-harassment and target pressure."; break;
+                    case 4: displayName = "🦾 Physical Vessel Boundaries"; displayDesc = "Check if your body and physical safety metrics are completely unviolated."; break;
+                    case 5: displayName = "🧩 Neurodivergent Coordinate Axis"; displayDesc = "Check if your unique neurotype (AuDHD) space is free from erasure."; break;
+                    case 7: displayName = "💾 Personal Data Vault Security"; displayDesc = "Check if your private servers, local drives, and assets are safe."; break;
+                    case 8: displayName = "📍 Spatiotemporal Footprint Safety"; displayDesc = "Check if you are free from unauthorized geolocation or digital tracking."; break;
+                    case 20: displayName = "🛡️ Institutional Rights Firewalls"; displayDesc = "Check if legal protections are shielding you from structural overreach."; break;
+                    case 24: displayName = "🌐 Cyber-Harassment Defenses"; displayDesc = "Check if online safety protocols are active and absorbing attack vectors."; break;
+                    case 26: displayName = "⚠️ Structural Alliance Trust Core"; displayDesc = "Check if alliances are holding or if systemic trust has been shattered."; break;
+                }
+            }
+
+            // Note: In rights checklist mode, checked means "Secure/Unbroken" and unchecked means "Broken"
+            container.innerHTML += `
+                <div class="bit-row">
+                    <div>${displayName} - <span style="color:#5c5c7c; font-size:0.65rem;">${displayDesc}</span></div>
+                    <label class="switch">
+                        <input type="checkbox" id="bit-${bit}" ${state[bit] ? 'checked' : ''} onchange="toggleBit(${bit})">
+                        <span class="slider"></span>
+                    </label>
+                </div>`;
         });
     }
+
     function toggleBit(bit) { const el = document.getElementById(`bit-${bit}`); if (el) state[bit] = el.checked; calculateMatrix(); }
     function toggleZoom() {
         isZoomed = !isZoomed; const vis = document.getElementById('matrix-vis'); const btn = document.getElementById('btn-zoom');
@@ -377,23 +427,48 @@
             injectOrtho.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>${(state[2]&&state[5])?1:0}</strong>`;
         }
 
-        const injectCanary = document.getElementById('live-inject-canary');
-        if (injectCanary) {
-            let statusString = p_collapse >= poppertimeThreshold ? "⚠️ ALARM ACTIVATED" : "✓ SYSTEM SILENT";
-            injectCanary.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>${statusString}</strong>`;
-        }
+         const injectCanary = document.getElementById('live-inject-canary');
         const canaryBox = document.getElementById('canary-output');
-        if (canaryBox) {
+        
+        if (injectCanary && canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
-                canaryBox.innerText = `💥 CRITICAL BREAK`; canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+                // Critical alert status mapping configurations
+                canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`;
+                canaryBox.style.color = 'var(--pink)';
+                canaryBox.style.borderColor = 'var(--pink)';
+                
+                injectCanary.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ ALARM ACTIVATED</strong>`;
+                injectCanary.style.color = 'var(--pink)';
+                
+                document.body.classList.add('alarm-active');
+                
                 if (timelineMode === 'fib') {
-                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
+                    const targetTheta = Math.min(p_collapse * 1.5, 26); 
+                    const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
                     const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5);
                     const crosshair = document.getElementById('collision-crosshair');
-                    if (crosshair) { document.getElementById('collision-point').setAttribute('cx', ptCol.x); document.getElementById('collision-point').setAttribute('cy', ptCol.y); document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); crosshair.style.display = 'block'; }
+                    if (crosshair) { 
+                        document.getElementById('collision-point').setAttribute('cx', ptCol.x); document.getElementById('collision-point').setAttribute('cy', ptCol.y); 
+                        document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); 
+                        document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); 
+                        crosshair.style.display = 'block'; 
+                    }
                 }
-            } else { canaryBox.innerText = `🟢 SAFE`; canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none'; }
+            } else {
+                // Secure, non-alarm baseline configuration mapping loops
+                canaryBox.innerText = `🟢 STANDBY: Network operating within normal thermodynamic bounds.`;
+                canaryBox.style.color = 'var(--green)';
+                canaryBox.style.borderColor = 'var(--border)';
+                
+                injectCanary.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ SYSTEM SILENT</strong>`;
+                injectCanary.style.color = 'var(--green)';
+                
+                document.body.classList.remove('alarm-active');
+                const crosshair = document.getElementById('collision-crosshair'); 
+                if (crosshair) crosshair.style.display = 'none';
+            }
         }
+
         
         const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
         const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
@@ -461,24 +536,27 @@
         if (selected) {
             Object.keys(BITS).forEach(b => {
                 state[b] = selected[b];
-                const el = document.getElementById(`bit-${b}`);
-                if (el) el.checked = state[b];
             });
+            // Re-render the interface switches to pull current language layouts safely
+            initSwitches();
             calculateMatrix();
         }
     }
+
+
     window.addEventListener('load', () => {
-        initSwitches();
+        setViewMode('topology'); // Defaults to the technical register workspace first
         setTimeout(() => {
             try {
                 setTimelineMode('fib');
+                calculateMatrix();
                 const loader = document.getElementById('loading-universe');
                 if (loader) {
                     loader.style.opacity = '0';
                     setTimeout(() => { loader.style.visibility = 'hidden'; }, 500);
                 }
             } catch(bootErr) {
-                console.error("Boot loop protection bypass active: ", bootErr);
+                console.error("Delayed compilation error bypassed: ", bootErr);
                 setTimelineMode('spiral');
             }
         }, 800);
