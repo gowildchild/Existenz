@@ -134,7 +134,11 @@ So, better not tell a neuro-typical to be a burden for the world, because neuro-
 
 ## 7 | Architectural Blueprint (prototype core specifications)
 
-This equation formalizes the model with the exact cascading drop into an absolute and irreversible execution collapse. When deep personal betrayal occurs, your trust infrastructure doesn't just decay, it acts as a digital dead-bolt.
+This equation shows the canary in the system:
+
+$$\mathcal{C}_{\text{canary}} = \Theta \left( \frac{d}{dt} \sum_{i \in \mathcal{T}_{\text{upper}}} \mathcal{I}_i - \mathcal{R}_{\text{lattice}} \right) \implies \mathcal{S}_{\text{alert}}$$
+
+This equation shows the exact cascading drop into an absolute and irreversible execution collapse. When deep personal betrayal occurs, your trust infrastructure doesn't just decay, it acts as a digital dead-bolt:
 
 $$\mathcal{S}_{\text{state}} = \left( \mathcal{M}_{\text{exist}} \land \neg\left(\mathcal{T}_{\text{core}} \lor \mathcal{T}_{\text{digital}}\right) \right) \implies \lim_{\mathcal{T}_{\text{core}} \to 1} \mathcal{D}_{\text{shield}} = 0$$
 
