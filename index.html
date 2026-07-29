@@ -455,13 +455,33 @@ function calculateMatrix() {
     const canaryBox = document.getElementById('canary-output');
     if (p_collapse >= poppertimeThreshold) {
         canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`;
-        canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
-        if (timelineMode === 'fib') { document.getElementById('collision-crosshair').style.display = 'block'; }
+        canaryBox.style.color = 'var(--pink)';
+        document.body.classList.add('alarm-active');
+            
+        if (timelineMode === 'fib') {
+            // Compute the exact collision target coordinate matching the current P_collapse intensity scale
+            const targetTheta = Math.min(p_collapse * 2.2, 20);
+            const targetR = 5.0 * Math.exp(0.14 * targetTheta);
+            const colX = 200 + targetR * Math.cos(targetTheta);
+            const colY = 160 + targetR * Math.sin(targetTheta);
+                
+            const crosshair = document.getElementById('collision-crosshair');
+            document.getElementById('collision-point').setAttribute('cx', colX);
+            document.getElementById('collision-point').setAttribute('cy', colY);
+            document.getElementById('collision-line-h').setAttribute('y1', colY);
+            document.getElementById('collision-line-h').setAttribute('y2', colY);
+            document.getElementById('collision-line-v').setAttribute('x1', colX);
+            document.getElementById('collision-line-v').setAttribute('x2', colX);
+                
+            crosshair.style.display = 'block';
+        }
     } else {
         canaryBox.innerText = `🟢 SAFE: Standby network operating within thermodynamic bounds.`;
-        canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
+        canaryBox.style.color = 'var(--green)';
+        document.body.classList.remove('alarm-active');
         document.getElementById('collision-crosshair').style.display = 'none';
     }
+
 
     // GEOMETRIC TRANSFORM MULTI-MODE ASSIGNMENTS ENGINE
     const lblEx = document.getElementById('lbl-existence');
