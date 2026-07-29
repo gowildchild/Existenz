@@ -61,7 +61,7 @@
 
 <header>
     <div><h1>Existenz Platform Matrix Simulator (by Gunther V)</h1></div>
-    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[SYSTEM: V0.76b TRACE-COMPILER]</div>
+    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[<a href="https://github.com/gowildchild/Existenz">EXISTENZ</a>: V0.76beta TRACE-COMPILER]</div>
 </header>
 
 <div class="grid">
@@ -398,10 +398,6 @@
         state = scenarios[id]; Object.keys(BITS).forEach(b => { const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; }); calculateMatrix();
     }
     window.addEventListener('load', () => { initSwitches(); setTimeout(() => { setTimelineMode('fib'); const loader = document.getElementById('loading-universe'); if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); } }, 800); });
-</script>
-
-
-    
 <script>
     const BITS = {
         0:  { name: "EXISTENCE (B0)", desc: "Biological bodily presence blueprint", type: "core" },
@@ -418,11 +414,11 @@
     };
 
     let state = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false };
-    let timelineMode = '3d'; let isZoomed = false;
-    let tracePoints = null; // Memory container to lock the overlapping trace baseline coordinates
+    let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null;
 
     function initSwitches() {
-        const container = document.getElementById('switches-container'); container.innerHTML = '';
+        const container = document.getElementById('switches-container'); if (!container) return;
+        container.innerHTML = '';
         Object.keys(BITS).forEach(bit => {
             const config = BITS[bit];
             container.innerHTML += `<div class="bit-row"><div><strong>${config.name}</strong> - <span style="color:#5c5c7c; font-size:0.65rem;">${config.desc}</span></div><label class="switch"><input type="checkbox" id="bit-${bit}" ${state[bit] ? 'checked' : ''} onchange="toggleBit(${bit})"><span class="slider"></span></label></div>`;
@@ -435,27 +431,15 @@
         else { vis.style.transform = "scale(1)"; btn.className = "btn"; btn.innerText = "Zoom: 1x"; }
     }
 
-    // LAYER TRACE CONFIGURATOR ENGINE HOOKS
     function activateCompareTraceMode() {
         const currentPoints = document.getElementById('geo-core').getAttribute('points');
-        const traceShape = document.getElementById('trace-geo-core');
-        const btn = document.getElementById('btn-compare');
-        
+        const traceShape = document.getElementById('trace-geo-core'); const btn = document.getElementById('btn-compare');
         if (!tracePoints) {
-            tracePoints = currentPoints;
-            traceShape.setAttribute('points', tracePoints);
-            traceShape.style.display = 'block';
-            btn.className = "btn btn-active";
-            btn.innerText = "Lock Trace Active";
-            alert("Base model geometry coordinates locked in memory layer. Select a second scenario or flip registers to visually project the tracking trace overlap!");
-        } else {
-            tracePoints = null;
-            traceShape.style.display = 'none';
-            btn.className = "btn";
-            btn.innerText = "Compare Trace";
-        }
+            tracePoints = currentPoints; if (traceShape) { traceShape.setAttribute('points', tracePoints); traceShape.style.display = 'block'; }
+            if (btn) { btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active"; }
+            alert("Base model geometry locked. Select a second scenario or flip registers to visually project the tracking trace overlap!");
+        } else { tracePoints = null; if (traceShape) traceShape.style.display = 'none'; if (btn) { btn.className = "btn"; btn.innerText = "Compare Trace"; } }
     }
-
     function generateVaultString() { let binaryCode = Object.keys(BITS).map(b => state[b] ? "1" : "0").join(""); return "EX-" + parseInt(binaryCode, 2).toString(16).toUpperCase(); }
     function copyVaultString() { navigator.clipboard.writeText(document.getElementById('vault-string').value); alert("Sync Key Captured."); }
     function restoreFromVault() {
@@ -499,88 +483,96 @@
             label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
         }
     }
+
     function compileKatexExpressions() {
         if (typeof katex !== 'undefined') {
-            // 1. Calculate active real-time variables directly from system state
-            let liveNoise = 0.5;
-            if (!state[0]) liveNoise += 5.0;
-            if (!state[1]) liveNoise += 4.0;
-            if (!state[2]) liveNoise += 6.0;
-            if (!state[3]) liveNoise += 3.5;
-            if (!state[4]) liveNoise += 4.5;
-            if (!state[7]) liveNoise += 3.5;
-            if (!state[8]) liveNoise += 2.5;
+            // Explicit array index resolution hooks preventing compilation crashing
+            let liveNoise = 0.5; 
+            if (!state[0]) liveNoise += 5.0; 
+            if (!state[1]) liveNoise += 4.0; 
+            if (!state[2]) liveNoise += 6.0; 
+            if (!state[3]) liveNoise += 3.5; 
+            if (!state[4]) liveNoise += 4.5; 
+            if (!state[7]) liveNoise += 3.5; 
+            if (!state[8]) liveNoise += 2.5; 
             if (state[26]) liveNoise += 5.5;
 
-            let liveShields = 0.0;
-            if (state[20]) liveShields += 0.40;
-            if (state[24]) liveShields += 0.40;
+            let liveShields = 0.0; 
+            if (state[20]) liveShields += 0.40; 
+            if (state[24]) liveShields += 0.40; 
             if (!state[3] || !state[4]) liveShields *= 0.5;
-
+            
             const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
             const p_collapse = liveNoise / (1.0 - Math.min(liveShields, 0.95));
 
-            // 2. Direct Value Injection into KaTeX Equations (Bypassing browser race conditions)
             try {
-                katex.render("P_{\\text{collapse}}", document.getElementById('katex-p-label'));
-                katex.render("\\mathcal{C}_{\\text{canary}}", document.getElementById('katex-c-label'));
+                const pLabel = document.getElementById('katex-p-label');
+                const cLabel = document.getElementById('katex-c-label');
+                if (pLabel) katex.render("P_{\\text{collapse}}", pLabel);
+                if (cLabel) katex.render("\\mathcal{C}_{\\text{canary}}", cLabel);
                 
-                // Injects numbers directly inside the fraction bar strings
-                katex.render(`\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum (${liveNoise.toFixed(2)})}{1 - (${liveShields.toFixed(2)})} = \\mathbf{${p_collapse.toFixed(2)}}`, document.getElementById('equation-p-collapse'));
+                // Directly interpolates current parameters inside fraction blocks
+                const eqP = document.getElementById('equation-p-collapse');
+                if (eqP) katex.render(`\\mathcal{P}_{\\text{collapse}} = \\frac{${liveNoise.toFixed(2)}}{1 - ${liveShields.toFixed(2)}} = \\mathbf{${p_collapse.toFixed(2)}}`, eqP, { displayMode: true });
                 
-                let b2 = state[2] ? "1" : "0";
-                let b5 = state[5] ? "1" : "0";
-                let res = (state[2] && state[5]) ? "1 \\implies \\text{Collision}" : "0 \\implies \\text{Orthogonal}";
-                katex.render(`\\langle \\mathbf{V}_{2}\\,(${b2}), \\mathbf{V}_{5}\\,(${b5}) \\rangle = \\mathbf{${res}}`, document.getElementById('equation-ortho'));
+                let b2 = state[2] ? "1" : "0"; let b5 = state[5] ? "1" : "0";
+                let res = (state[2] && state[5]) ? "1 \\implies \\text{Conflict}" : "0 \\implies \\text{Orthogonal}";
+                const eqOrtho = document.getElementById('equation-ortho');
+                if (eqOrtho) katex.render(`\\langle \\mathbf{V}_{2}\\,(${b2}), \\mathbf{V}_{5}\\,(${b5}) \\rangle = \\mathbf{${res}}`, eqOrtho, { displayMode: true });
                 
                 let alertTrigger = p_collapse >= poppertimeThreshold ? "1 \\implies \\mathbf{ALARM}" : "0 \\implies \\mathbf{SILENT}";
-                katex.render(`\\mathcal{C}_{\\text{canary}} = \\Theta \\left( ${p_collapse.toFixed(2)} - ${poppertimeThreshold.toFixed(1)} \\right) = \\mathbf{${alertTrigger}}`, document.getElementById('equation-canary'));
-            } catch(e) { 
-                console.warn("KaTeX dynamic calculation pipeline reset: ", e); 
-            }
+                const eqCanary = document.getElementById('equation-canary');
+                if (eqCanary) katex.render(`\\mathcal{C}_{\\text{canary}} = \\Theta \\left( ${p_collapse.toFixed(2)} - ${poppertimeThreshold.toFixed(1)} \\right) = \\mathbf{${alertTrigger}}`, eqCanary, { displayMode: true });
+            } catch (err) { console.warn("Buffered compiler framework pass safely."); }
         }
     }
+
     function calculateMatrix() {
         const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0; const orthoElement = document.getElementById('ortho-output');
-        let noise = 0.5; if (!state) noise += 5.0; if (!state) noise += 4.0; if (!state) noise += 6.0; if (!state) noise += 3.5; if (!state) noise += 4.5; if (!state) noise += 3.5; if (!state) noise += 2.5; if (state) noise += 5.5;
-        let shields = 0.0; if (state) shields += 0.40; if (state) shields += 0.40; if (!state || !state) shields *= 0.5;
+        
+        let noise = 0.5; 
+        if (!state[0]) noise += 5.0; if (!state[1]) noise += 4.0; if (!state[2]) noise += 6.0; 
+        if (!state[3]) noise += 3.5; if (!state[4]) noise += 4.5; if (!state[7]) noise += 3.5; 
+        if (!state[8]) noise += 2.5; if (state[26]) noise += 5.5;
+        
+        let shields = 0.0; if (state[20]) shields += 0.40; if (state[24]) shields += 0.40; if (!state[3] || !state[4]) shields *= 0.5;
         let p_collapse = noise / (1.0 - Math.min(shields, 0.95)); const outP = document.getElementById('p-collapse-output'); if (outP) outP.innerText = p_collapse.toFixed(2);
         
         if (orthoElement) {
-            if (state && state) { orthoElement.innerHTML = `[COLLISION]: Warning. Register conflict under ancientState variables.`; orthoElement.style.color = "var(--pink)"; }
-            else { orthoElement.innerHTML = `[SECURE]: Inner Product equals ZERO. Disability is perfectly independent.`; orthoElement.style.color = "var(--green)"; }
+            if (state[2] && state[5]) { orthoElement.innerHTML = `[COLLISION TRIPPED]: Warning. Integrity and disability profiles collided under ancient state rule logic variables.`; orthoElement.style.color = "var(--pink)"; }
+            else { orthoElement.innerHTML = `[AFTER FIX - SECURE]: Dot product equals exactly ZERO. Processing constraints are orthogonal. Exploitation is blocked.`; orthoElement.style.color = "var(--green)"; }
         }
 
         const canaryBox = document.getElementById('canary-output');
         if (canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
-                canaryBox.innerText = `💥 ALARM ACTIVE`; canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+                canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`; canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
                 if (timelineMode === 'fib') {
                     const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); const colX = 200 + targetR * Math.cos(targetTheta); const colY = 160 + targetR * Math.sin(targetTheta); const crosshair = document.getElementById('collision-crosshair');
                     if (crosshair) { document.getElementById('collision-point').setAttribute('cx', colX); document.getElementById('collision-point').setAttribute('cy', colY); document.getElementById('collision-line-h').setAttribute('y1', colY); document.getElementById('collision-line-h').setAttribute('y2', colY); document.getElementById('collision-line-v').setAttribute('x1', colX); document.getElementById('collision-line-v').setAttribute('x2', colX); crosshair.style.display = 'block'; }
                 }
-            } else { canaryBox.innerText = `🟢 SAFE`; canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none'; }
+            } else { canaryBox.innerText = `🟢 SAFE: Standby network operating within thermodynamic bounds.`; canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none'; }
         }
         const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
         const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
         const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
 
         if (timelineMode === '3d') {
-            let ex_val = state ? 75 : 0; let au_val = state ? 75 : 0; let in_val = state ? 75 : 0;
+            let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
             let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
             if (gCore) gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
-            if (nodeEx) nodeEx.setAttribute('cx', pt_ex.x); if (nodeEx) nodeEx.setAttribute('cy', pt_ex.y);
-            if (nodeAu) nodeAu.setAttribute('cx', pt_au.x); if (nodeAu) nodeAu.setAttribute('cy', pt_au.y);
-            if (nodeIn) nodeIn.setAttribute('cx', pt_in.x); if (nodeIn) nodeIn.setAttribute('cy', pt_in.y);
+            if (nodeEx) { nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y); }
+            if (nodeAu) { nodeAu.setAttribute('cx', pt_au.x); nodeAu.setAttribute('cy', pt_au.y); }
+            if (nodeIn) { nodeIn.setAttribute('cx', pt_in.x); nodeIn.setAttribute('cy', pt_in.y); }
             if (gShields) gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
             if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
         } else {
-            let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let au_y = state ? 230 : 160; let in_x = state ? 120 : 200; let in_y = state ? 230 : 160;
+            let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160; let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
             if (gCore) gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
             if (nodeEx) { nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y); }
             if (nodeAu) { nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y); }
             if (nodeIn) { nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y); }
-            let sh_size = (state && state) ? 100 : ((state || state) ? 55 : 0);
+            let sh_size = (state[20] && state[24]) ? 100 : ((state[20] || state[24]) ? 55 : 0);
             if (gShields) gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
             if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
         }
@@ -620,28 +612,8 @@
         state = scenarios[id]; Object.keys(BITS).forEach(b => { const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; }); calculateMatrix();
     }
     window.addEventListener('load', () => { initSwitches(); setTimeout(() => { setTimelineMode('fib'); const loader = document.getElementById('loading-universe'); if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); } }, 800); });
-    window.addEventListener('load', () => {
-        // Stage 1: Build structural switch elements inside the DOM tree layout
-        initSwitches();
-        
-        // Stage 2: Asynchronous choke delay allowing hardware viewport synchronization
-        setTimeout(() => {
-            try {
-                // Force the platform map to deploy 3D Isometric view natively
-                setTimelineMode('3d');
-                
-                // Fire the calculation loop to inject live numeric data states
-                calculateMatrix();
-                
-                console.log("PROJECT EXISTENZ - Live 3D Matrix Engine successfully initialized - guntherv/v0.76beta");
-            } catch (bootError) {
-                console.error("Boot loop bypassed safely: ", bootError);
-                // Fail-safe fallback to standard spiral track if rendering bounds fail
-                setTimelineMode('spiral');
-            }
-        }, 300); // 300ms buffer ensures unassailable cross-platform layout binding
-    });    
 </script>
+
 </body>
 </html>
 
