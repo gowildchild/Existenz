@@ -456,7 +456,9 @@
         if (!state[3]) noise += 3.5; if (!state[4]) noise += 4.5; if (!state[7]) noise += 3.5;
         if (!state[8]) noise += 2.5; if (state[26]) noise += 5.5;
 
-        let shields = 0.0; if (state[20]) shields += 0.40; if (state[24]) shields += 0.40;
+        let shields = 0.0; 
+        if (state[20]) shields += 0.40; 
+        if (state[24]) shields += 0.40;
         if (!state[3] || !state[4]) shields *= 0.5;
 
         let p_collapse = noise / (1.0 - Math.min(shields, 0.95));
@@ -474,9 +476,12 @@
                     const colX = 200 + targetR * Math.cos(targetTheta); const colY = 160 + targetR * Math.sin(targetTheta);
                     const crosshair = document.getElementById('collision-crosshair');
                     if (crosshair) {
-                        document.getElementById('collision-point').setAttribute('cx', colX); document.getElementById('collision-point').setAttribute('cy', colY);
-                        document.getElementById('collision-line-h').setAttribute('y1', colY); document.getElementById('collision-line-h').setAttribute('y2', colY);
-                        document.getElementById('collision-line-v').setAttribute('x1', colX); document.getElementById('collision-line-v').setAttribute('x2', colX);
+                        const cPt = document.getElementById('collision-point');
+                        const cLh = document.getElementById('collision-line-h');
+                        const cLv = document.getElementById('collision-line-v');
+                        if (cPt) { cPt.setAttribute('cx', colX); cPt.setAttribute('cy', colY); }
+                        if (cLh) { cLh.setAttribute('y1', colY); cLh.setAttribute('y2', colY); }
+                        if (cLv) { cLv.setAttribute('x1', colX); cLv.setAttribute('x2', colX); }
                         crosshair.style.display = 'block';
                     }
                 }
@@ -489,18 +494,17 @@
         }
 
         const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
+        const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
+        const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
 
         if (timelineMode === '3d') {
             let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
             let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
             
-            const gCore = document.getElementById('geo-core');
             if (gCore) gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
-            
-            document.getElementById('node-existence').setAttribute('cx', pt_ex.x); document.getElementById('node-existence').setAttribute('cy', pt_ex.y);
-            document.getElementById('node-autonomy').setAttribute('cx', pt_au.x);   document.getElementById('node-autonomy').setAttribute('cy', pt_au.y);
-            document.getElementById('node-integrity').setAttribute('cx', pt_in.x);  document.getElementById('node-integrity').setAttribute('cy', pt_in.y);
-            const gShields = document.getElementById('geo-shields');
+            if (nodeEx) { nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y); }
+            if (nodeAu) { nodeAu.setAttribute('cx', pt_au.x); nodeAu.setAttribute('cy', pt_au.y); }
+            if (nodeIn) { nodeIn.setAttribute('cx', pt_in.x); nodeIn.setAttribute('cy', pt_in.y); }
             if (gShields) gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
             
             if (lblEx && lblAu && lblIn) {
@@ -511,15 +515,12 @@
         } else {
             let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160; let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
             
-            const gCore = document.getElementById('geo-core');
             if (gCore) gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
-            
-            document.getElementById('node-existence').setAttribute('cx', 200); document.getElementById('node-existence').setAttribute('cy', ex_y);
-            document.getElementById('node-autonomy').setAttribute('cx', au_x); document.getElementById('node-autonomy').setAttribute('cy', au_y);
-            document.getElementById('node-integrity').setAttribute('cx', in_x); document.getElementById('node-integrity').setAttribute('cy', in_y);
+            if (nodeEx) { nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y); }
+            if (nodeAu) { nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y); }
+            if (nodeIn) { nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y); }
             
             let sh_size = state[20] && state[24] ? 100 : (state[20] || state[24] ? 55 : 0);
-            const gShields = document.getElementById('geo-shields');
             if (gShields) gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
             
             if (lblEx && lblAu && lblIn) {
@@ -537,6 +538,7 @@
         if (vaultIn) vaultIn.value = generateVaultString();
         compileKatexExpressions();
     }
+
 
     function loadScenario(id) {
         const scenarios = {
@@ -566,12 +568,24 @@
             24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
             25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: true, 24: true, 26: false }
         };
+        
         state = scenarios[id];
-        Object.keys(BITS).forEach(b => { const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; });
+        Object.keys(BITS).forEach(b => { 
+            const el = document.getElementById(`bit-${b}`); 
+            if (el) el.checked = state[b]; 
+        });
         calculateMatrix();
     }
 
-    window.addEventListener('DOMContentLoaded', () => { initSwitches(); setTimelineMode('3d'); });
+    // SAFE BOOT INITIALIZER SYSTEM
+    window.addEventListener('DOMContentLoaded', () => { 
+        initSwitches(); 
+        // Generates a deliberate asynchronous pause allowing elements to bind before parsing math
+        setTimeout(() => {
+            setTimelineMode('3d'); 
+        }, 150);
+    });
 </script>
+
 </body>
 </html>    
