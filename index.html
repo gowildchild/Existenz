@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Existenz Platform Matrix Simulator / Crude Edition</title>
     
-    <!-- HIGH-VELOCITY RE-COMPILING KATEX MATH ENGINE -->
+    <!-- HIGH-VELOCITY PRODUCTION RE-COMPILING KATEX MATH ENGINE -->
     <link rel="stylesheet" href="https://jsdelivr.net">
     <script defer src="https://jsdelivr.net"></script>
     <script defer src="https://jsdelivr.net" onload="renderMathInElement(document.body);"></script>
@@ -29,7 +29,7 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Strict Single-Page Compliance */
+            overflow: hidden; /* Strict Single-Page App Compliance Bounds */
         }
         body.alarm-active {
             animation: redAlertFlash 1.5s infinite alternate;
@@ -120,18 +120,25 @@
             gap: 4px;
             flex-shrink: 0;
         }
+        
+        /* Interactive SVG Viewport Scaling Container Matrix Properties */
+        #matrix-vis {
+            transform-origin: center center;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
     </style>
 </head>
+
 <body>
 <header>
     <div>
         <h1>Existenz Platform Matrix Simulator / Crude Edition</h1>
     </div>
-    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[<a href="https://https://github.com/gowildchild/Existenz">CORE</a>: V0.72-KATEX-ENGINE]</div>
+    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[<a href="https://github.com/gowildchild/Existenz/">CORE</a>: V0.76-KATEX-ENGINE]</div>
 </header>
 
 <div class="grid">
-    <!-- LEFT PANEL SETS -->
+    <!-- LEFT QUADRANT PANEL LAYOUTS -->
     <div class="column">
         <div class="panel" style="flex-shrink: 0;">
             <h2>1 | Parameter Control & Vault Recovery Engine</h2>
@@ -160,55 +167,88 @@
             <div class="scrollable-content" id="switches-container"></div>
         </div>
 
-        <div class="panel" style="flex-shrink: 0;">
-            <h2>3 | Empirical Scenarios Panel (Zero-Scrollbar Matrix View)</h2>
-            <div class="scenarios-grid">
-                <button class="btn" onclick="loadScenario(1)">1. Plato Flaw State Reduction</button>
-                <button class="btn" onclick="loadScenario(2)">2. Systemic Ableism Attack</button>
-                <button class="btn" onclick="loadScenario(3)">3. Amsterdam Asset Strip</button>
-                <button class="btn" onclick="loadScenario(4)">4. Unreasoned Noise Burst</button>
-                <button class="btn" onclick="loadScenario(5)">5. Core Alliance Breach</button>
-                <button class="btn" onclick="loadScenario(6)">6. Low-Power Standby Equilibrium</button>
-                <button class="btn" onclick="loadScenario(7)">7. Capital Exploitation Protected</button>
-                <button class="btn" onclick="loadScenario(8)">8. Realist Balanced Gray Zone</button>
-                <button class="btn" onclick="loadScenario(9)">9. Cyber-Bullying Proxy Swarm</button>
-                <button class="btn" onclick="loadScenario(10)">10. Total Structural Collapse</button>
+        <div class="panel" style="flex-shrink: 0; min-height: 220px;">
+            <h2>3 | Empirical Scenarios Panel (25-Module Matrix View)</h2>
+            <div class="scenarios-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; font-size: 0.65rem;">
+                <button class="btn" onclick="loadScenario(1)">1. Plato Flaw</button>
+                <button class="btn" onclick="loadScenario(2)">2. Ableism Attack</button>
+                <button class="btn" onclick="loadScenario(3)">3. Amsterdam Strip</button>
+                <button class="btn" onclick="loadScenario(4)">4. Noise Burst</button>
+                <button class="btn" onclick="loadScenario(5)">5. Core Breach</button>
+                <button class="btn" onclick="loadScenario(6)">6. Standby Opt</button>
+                <button class="btn" onclick="loadScenario(7)">7. Exploitation Blk</button>
+                <button class="btn" onclick="loadScenario(8)">8. Realist Balanced</button>
+                <button class="btn" onclick="loadScenario(9)">9. Cyber Swarm</button>
+                <button class="btn" onclick="loadScenario(10)">10. Total Collapse</button>
+                <button class="btn" onclick="loadScenario(11)">11. Psychological Lock</button>
+                <button class="btn" onclick="loadScenario(12)">12. Vessel Sabotage</button>
+                <button class="btn" onclick="loadScenario(13)">13. Spatiotemporal Hunt</button>
+                <button class="btn" onclick="loadScenario(14)">14. Corporate Data Mine</button>
+                <button class="btn" onclick="loadScenario(15)">15. Sovereign Breach</button>
+                <button class="btn" onclick="loadScenario(16)">16. Algorithmic Bias</button>
+                <button class="btn" onclick="loadScenario(17)">17. Proxy Extortion</button>
+                <button class="btn" onclick="loadScenario(18)">18. Network Deletion</button>
+                <button class="btn" onclick="loadScenario(19)">19. Forensic Erasure</button>
+                <button class="btn" onclick="loadScenario(20)">20. Asymmetric Strain</button>
+                <button class="btn" onclick="loadScenario(21)">21. Privacy Leak</button>
+                <button class="btn" onclick="loadScenario(22)">22. Identity Forge</button>
+                <button class="btn" onclick="loadScenario(23)">23. Resource Blockade</button>
+                <button class="btn" onclick="loadScenario(24)">24. Kinetic Threat</button>
+                <button class="btn" onclick="loadScenario(25)">25. Harmonic Optimum</button>
             </div>
         </div>
-    </div>
 
-    <!-- RIGHT PANEL SETS -->
+    </div>
+    <!-- RIGHT QUADRANT SYSTEM VECTOR LAYERS -->
     <div class="column">
-        <div class="panel" style="flex-grow: 1.2; justify-content: center; align-items: center; position: relative;">
+        <div class="panel" style="flex-grow: 1.2; justify-content: center; align-items: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 6px; left: 6px; z-index: 10;">
+                <button class="btn" id="btn-zoom" onclick="toggleZoom()" style="border-color: var(--pink); color: var(--pink);">Zoom: 1x</button>
+            </div>
             <div style="position: absolute; top: 6px; right: 6px; z-index: 10; display: flex; gap: 2px;">
-                <button class="btn btn-active" id="btn-timeline-spiral" onclick="setTimelineMode('spiral')">Spiral</button>
+                <button class="btn" id="btn-timeline-spiral" onclick="setTimelineMode('spiral')">Spiral</button>
                 <button class="btn" id="btn-timeline-linear" onclick="setTimelineMode('linear')">Linear</button>
-                <button class="btn" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>
+                <button class="btn btn-active" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>
                 <button class="btn" id="btn-timeline-fib" onclick="setTimelineMode('fib')">Fibonacci Collision</button>
             </div>
-            <svg id="matrix-vis" viewBox="0 0 400 340" style="background:#020204; border:1px solid #121222; border-radius:6px; height: 100%; max-height: 340px; width: 100%;">
-                <g id="grid-bg"></g>
-                <path id="timeline-path" fill="none" stroke="#121222" stroke-width="1.5" />
-                <g id="timeline-ticks"></g>
-                <polygon id="geo-shields" points="200,40 340,170 200,300 60,170" fill="rgba(0, 255, 170, 0.02)" stroke="#00ffaa" stroke-width="1.2" stroke-dasharray="3" />
-                <polygon id="geo-core" points="200,100 270,220 130,220" fill="rgba(0, 240, 255, 0.08)" stroke="#00f0ff" stroke-width="1.8" />
-                <circle id="node-existence" cx="200" cy="100" r="4" fill="#fff" stroke="#ff00aa" stroke-width="1.5" />
-                <circle id="node-autonomy" cx="270" cy="220" r="4" fill="#fff" stroke="#00f0ff" stroke-width="1.5" />
-                <circle id="node-integrity" cx="130" cy="220" r="4" fill="#fff" stroke="#00ffaa" stroke-width="1.5" />
-                
-                <g id="collision-crosshair" style="display: none;">
-                    <circle id="collision-point" cx="200" cy="160" r="12" fill="none" stroke="#ff00aa" stroke-width="1.5" stroke-dasharray="2" />
-                    <line id="collision-line-h" x1="50" y1="160" x2="350" y2="160" stroke="rgba(255, 0, 170, 0.3)" stroke-width="1" />
-                    <line id="collision-line-v" x1="200" y1="300" x2="200" y2="20" stroke="rgba(255, 0, 170, 0.3)" stroke-width="1" />
-                    <text x="215" y="155" fill="#ff00aa" font-size="8" font-family="monospace">COLLISION STRUCK</text>
-                </g>
-                <circle id="hex-marker" cx="200" cy="160" r="5" fill="none" stroke="#fff" stroke-width="1.5" style="display:none;" />
-                <text id="hex-marker-label" x="210" y="165" fill="#fff" font-size="7" style="display:none; font-family:monospace;"></text>
-            </svg>
-        </div>
+            
+            <div style="width: 100%; height: 100%; max-height: 340px; display: flex; justify-content: center; align-items: center;">
+                <svg id="matrix-vis" viewBox="0 0 400 340" style="background:#020204; border:1px solid #121222; border-radius:6px; width: 100%; height: 100%;">
+                    <g id="grid-bg"></g>
+                    <path id="timeline-path" fill="none" stroke="#121222" stroke-width="1.5" />
+                    <g id="timeline-ticks"></g>
+                    
+                    <!-- DYNAMIC GEOMETRIC MORPHING VECTOR OVERLAYS -->
+                    <polygon id="geo-shields" points="200,40 340,170 200,300 60,170" fill="rgba(0, 255, 170, 0.02)" stroke="#00ffaa" stroke-width="1.2" stroke-dasharray="3" />
+                    <polygon id="geo-core" points="200,100 270,220 130,220" fill="rgba(0, 240, 255, 0.08)" stroke="#00f0ff" stroke-width="1.8" />
+                    
+                    <!-- ACTIVE SYSTEM VERTICES GRAPH NODES -->
+                    <circle id="node-existence" cx="200" cy="100" r="4" fill="#fff" stroke="#ff00aa" stroke-width="1.5" />
+                    <circle id="node-autonomy" cx="270" cy="220" r="4" fill="#fff" stroke="#00f0ff" stroke-width="1.5" />
+                    <circle id="node-integrity" cx="130" cy="220" r="4" fill="#fff" stroke="#00ffaa" stroke-width="1.5" />
+                    
+                    <!-- CRITICAL COORDINATES TEXT ANCHORS INDICATORS -->
+                    <g id="spatial-labels" style="font-family: monospace; font-size: 8px; font-weight: bold; pointer-events: none;">
+                        <text id="lbl-existence" x="210" y="98" fill="#ff00aa">EXISTENCE (B0)</text>
+                        <text id="lbl-autonomy" x="280" y="224" fill="#00f0ff">AUTONOMY (B1)</text>
+                        <text id="lbl-integrity" x="70" y="224" fill="#00ffaa">INTEGRITY (B2)</text>
+                    </g>
+                    
+                    <!-- GLOWING INTERACTIVE FIBONACCI CROSSHAIR BOUNDS -->
+                    <g id="collision-crosshair" style="display: none;">
+                        <circle id="collision-point" cx="200" cy="160" r="12" fill="none" stroke="#ff00aa" stroke-width="1.5" stroke-dasharray="2" />
+                        <line id="collision-line-h" x1="40" y1="160" x2="360" y2="160" stroke="rgba(255, 0, 170, 0.35)" stroke-width="1" />
+                        <line id="collision-line-v" x1="200" y1="320" x2="200" y2="20" stroke="rgba(255, 0, 170, 0.35)" stroke-width="1" />
+                        <text x="215" y="155" fill="#ff00aa" font-size="8" font-family="monospace">COLLISION VECTOR TRIPPED</text>
+                    </g>
 
+                    <circle id="hex-marker" cx="200" cy="160" r="5" fill="none" stroke="#fff" stroke-width="1.5" style="display:none;" />
+                    <text id="hex-marker-label" x="210" y="165" fill="#fff" font-size="7" style="display:none; font-family:monospace;"></text>
+                </svg>
+            </div>
+        </div>
         <div class="panel" style="flex-grow: 1;">
-            <h2>4 | Live Mathematical Analytics & Pipelines</h2>
+            <h2>4 | Live Mathematical Analytics & Pipelines (KaTeX Engine Status: Active)</h2>
             <div class="scrollable-content" style="font-size: 0.75rem;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
                     <div>
@@ -217,36 +257,42 @@
                     </div>
                     <div id="equation-p-collapse" class="formula-box" style="margin: 0; width: 65%; font-size: 0.85rem;"></div>
                 </div>
+
                 <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 2px;">
-                    <label>Orthogonal Intersection Space:</label>
+                    <label>Orthogonal Intersection Space Vector Capacity:</label>
                     <div id="ortho-output" style="font-weight:bold; color:var(--green); margin:1px 0; font-size:0.75rem;">0</div>
                     <div id="equation-ortho" class="formula-box" style="font-size: 0.85rem;"></div>
                 </div>
+
                 <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 2px;">
-                    <label>Canary Circuit Event Trigger (<span id="katex-c-label"></span>):</label>
+                    <label>Canary Circuit Event Trigger Metric (<span id="katex-c-label"></span>):</label>
                     <div id="canary-output" style="font-weight:bold; margin:1px 0; font-size:0.75rem;">SILENT</div>
                     <div id="equation-canary" class="formula-box" style="font-size: 0.85rem;"></div>
                 </div>
+
                 <div class="raw-string" id="raw-string-output">0b0000...</div>
             </div>
         </div>
     </div>
 </div>
-
 <script>
     const BITS = {
         0:  { name: "EXISTENCE (B0)", desc: "Biological bodily presence blueprint", type: "core" },
         1:  { name: "AUTONOMY (B1)", desc: "Sovereign execution control parameters", type: "core" },
         2:  { name: "INTEGRITY (B2)", desc: "Internal ethical alignment and moral axis", type: "core" },
-        5:  { name: "DISABILITY (B5)", desc: "Neuroatypical (AuDHD) coordinate axis", type: "core" },
-        7:  { name: "PROPERTY (B7)", desc: "Data vaults, hard disks, server safety", type: "core" },
+        3:  { name: "PSYCHOLOGY (B3)", desc: "Cognitive internal state and mental peace parameters", type: "core" },
+        4:  { name: "PHYSICAL (B4)", desc: "Physical body vessel boundaries and biosensors tracking", type: "core" },
+        5:  { name: "DISABILITY (B5)", desc: "Neuroatypical (AuDHD) coordinate axis space", type: "core" },
+        7:  { name: "PROPERTY (B7)", desc: "Data vaults, hard disks, server safety bounds", type: "core" },
+        8:  { name: "PRESENCE (B8)", desc: "Real-time spatiotemporal hardware network footprint", type: "core" },
         20: { name: "SHIELD_HUMAN_RIGHTS (B20)", desc: "Institutional boundary level firewalls", type: "shield" },
         24: { name: "SHIELD_ONLINE_RIGHTS (B24)", desc: "Cyber-harassment mitigation perimeters", type: "shield" },
         26: { name: "TRUST_BROKEN_CORE (B26)", desc: "Shatters core alliance and drops shields", type: "threat" }
     };
 
-    let state = { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: true, 26: false };
-    let timelineMode = 'spiral';
+    let state = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false };
+    let timelineMode = '3d';
+    let isZoomed = false;
 
     function initSwitches() {
         const container = document.getElementById('switches-container');
@@ -269,6 +315,21 @@
         calculateMatrix();
     }
 
+    function toggleZoom() {
+        isZoomed = !isZoomed;
+        const vis = document.getElementById('matrix-vis');
+        const btn = document.getElementById('btn-zoom');
+        if (isZoomed) {
+            vis.style.transform = "scale(2)";
+            btn.className = "btn btn-active";
+            btn.innerText = "Zoom: 2x";
+        } else {
+            vis.style.transform = "scale(1)";
+            btn.className = "btn";
+            btn.innerText = "Zoom: 1x";
+        }
+    }
+
     function generateVaultString() {
         let binaryCode = Object.keys(BITS).map(b => state[b] ? "1" : "0").join("");
         return "EX-" + parseInt(binaryCode, 2).toString(16).toUpperCase();
@@ -277,13 +338,13 @@
     function copyVaultString() {
         const inputStr = document.getElementById('vault-string');
         navigator.clipboard.writeText(inputStr.value);
-        alert(`Configuration Sync Key Copied: ${inputStr.value}`);
+        alert(`Configuration captured to database workspace clipboard: ${inputStr.value}`);
     }
 
     function restoreFromVault() {
         const val = document.getElementById('vault-string').value.trim();
         if (val.startsWith("EX-")) {
-            let hex = val.split("-");
+            let hex = val.split("-")[1];
             let bin = parseInt(hex, 16).toString(2).padStart(Object.keys(BITS).length, '0');
             Object.keys(BITS).forEach((b, idx) => {
                 state[b] = bin[idx] === "1";
@@ -294,7 +355,7 @@
     }
 
     function project3D(x, y, z) {
-        const cx = 200, cy = 160;
+        const cx = 200, cy = 160; // Absolute Geometric Origin Center Points
         return { x: cx + (x * 0.8) - (y * 0.8), y: cy + (x * 0.4) + (y * 0.4) - z };
     }
 
@@ -327,12 +388,9 @@
             path.setAttribute('d', 'M0,0');
             const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
             ticks.innerHTML += `
-                <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.5"/>
-                <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.5"/>
-                <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.5"/>
-                <text x="${xAxis.x + 4}" y="${xAxis.y + 4}" fill="#ff00aa" font-size="7">EXISTENCE [X]</text>
-                <text x="${yAxis.x - 55}" y="${yAxis.y + 4}" fill="#00f0ff" font-size="7">AUTONOMY [Y]</text>
-                <text x="${zAxis.x - 15}" y="${zAxis.y - 6}" fill="#00ffaa" font-size="7">INTEGRITY [Z]</text>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>
             `;
         }
     }
@@ -350,92 +408,139 @@
             label.innerText = hex; label.style.display = 'block';
         }
     }
+
     function compileKatexExpressions() {
         if (typeof katex !== 'undefined') {
-            katex.render("P_{\\text{collapse}}", document.getElementById('katex-p-label'));
-            katex.render("\\mathcal{C}_{\\text{canary}}", document.getElementById('katex-c-label'));
-            katex.render("\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum ( \\mathcal{I}_i \\cdot \\mathcal{A}_i )}{1 - \\mathcal{D}_{\\text{shield}}}", document.getElementById('equation-p-collapse'));
-            katex.render("\\langle \\mathbf{V}_{\\text{integrity}}, \\mathbf{V}_{\\text{disability}} \\rangle = \\sum_{b=0}^{127} (\\text{bit}_2 \\cdot \\text{bit}_5) = 0", document.getElementById('equation-ortho'));
-            katex.render("\\mathcal{C}_{\\text{canary}} = \\Theta \\left( \\frac{d}{\\partial t} \\sum \\mathcal{I}_i - \\mathcal{R}_{\\text{lattice}} \\right) \\implies \\mathcal{S}_{\\text{alert}}", document.getElementById('equation-canary'));
+            try {
+                katex.render("P_{\\text{collapse}}", document.getElementById('katex-p-label'));
+                katex.render("\\mathcal{C}_{\\text{canary}}", document.getElementById('katex-c-label'));
+                katex.render("\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum ( \\mathcal{I}_i \\cdot \\mathcal{A}_i )}{1 - \\mathcal{D}_{\\text{shield}}}", document.getElementById('equation-p-collapse'));
+                katex.render("\\langle \\mathbf{V}_{\\text{integrity}}, \\mathbf{V}_{\\text{disability}} \\rangle = \\sum_{b=0}^{127} (\\text{bit}_2 \\cdot \\text{bit}_5) = 0", document.getElementById('equation-ortho'));
+                katex.render("\\mathcal{C}_{\\text{canary}} = \\Theta \\left( \\frac{d}{\\partial t} \\sum \\mathcal{I}_i - \\mathcal{R}_{\\text{lattice}} \\right) \\implies \\mathcal{S}_{\\text{alert}}", document.getElementById('equation-canary'));
+            } catch(e) { console.warn("Pipeline buffer tracking reset."); }
         }
     }
 
-    function calculateMatrix() {
-        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
-        const orthoElement = document.getElementById('ortho-output');
+function calculateMatrix() {
+    const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
+    const orthoElement = document.getElementById('ortho-output');
+    
+    if (state[2] && state[5]) {
+        orthoElement.innerHTML = `<span style="color:var(--green);">[AFTER FIX - SECURE]:</span> Dot product equals exactly ZERO. Processing constraints are orthogonal. Exploitation is blocked.`;
+    } else {
+        orthoElement.innerHTML = `<span style="color:#e08400;">[BEFORE FIX - VULNERABLE]:</span> Bit 5 inactive. Relies on ancient reductions. Vulnerable creator spaces are exposed to resource plundering.`;
+    }
+
+    // ADVANCED COEFFICIENT TRACKING PIPELINE (INTEGRATING NEW CORE PRIMITIVES)
+    let noise = 0.5;
+    if (!state[0]) noise += 5.0; // Threat against Existence (B0)
+    if (!state[1]) noise += 4.0; // Coercion / Autonomy Loss (B1)
+    if (!state[2]) noise += 6.0; // Character Assassination / Integrity Void (B2)
+    if (!state[3]) noise += 3.5; // Psychological Trauma / Cyber-harassment (B3)
+    if (!state[4]) noise += 4.5; // Physical Vessel Degradation / Asset Locks (B4)
+    if (!state[7]) noise += 3.5; // Hard Drive Server Plundering / Property Strip (B7)
+    if (!state[8]) noise += 2.5; // Spatiotemporal Tracking / Presence Exposure (B8)
+    if (state[26]) noise += 5.5; // Core Alliance Trust Smash (B26)
+
+    let shields = 0.0; 
+    if (state[20]) shields += 0.40; 
+    if (state[24]) shields += 0.40;
+    
+    // Scale protection bounds if the physical or psychological baseline fails
+    if (!state[3] || !state[4]) shields *= 0.5;
+
+    let p_collapse = noise / (1.0 - Math.min(shields, 0.95));
+    document.getElementById('p-collapse-output').innerText = p_collapse.toFixed(2);
+
+    const canaryBox = document.getElementById('canary-output');
+    if (p_collapse >= poppertimeThreshold) {
+        canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`;
+        canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+        if (timelineMode === 'fib') { document.getElementById('collision-crosshair').style.display = 'block'; }
+    } else {
+        canaryBox.innerText = `🟢 SAFE: Standby network operating within thermodynamic bounds.`;
+        canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
+        document.getElementById('collision-crosshair').style.display = 'none';
+    }
+
+    // GEOMETRIC TRANSFORM MULTI-MODE ASSIGNMENTS ENGINE
+    const lblEx = document.getElementById('lbl-existence');
+    const lblAu = document.getElementById('lbl-autonomy');
+    const lblIn = document.getElementById('lbl-integrity');
+
+    if (timelineMode === '3d') {
+        let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
+        let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
         
-        if (state[2] === true && state[5] === true) {
-            orthoElement.innerHTML = `<span style="color:var(--green);">[AFTER FIX - SECURE]:</span> Dot product equals exactly ZERO. Processing constraints are orthogonal. Exploitation is blocked.`;
-        } else {
-            orthoElement.innerHTML = `<span style="color:#e08400;">[BEFORE FIX - VULNERABLE]:</span> Bit 5 inactive. Relies on ancient state reductions. Vulnerable neuroatypical creator spaces are exposed to resource plundering.`;
-        }
-
-        let noise = 0.5;
-        if (!state[1]) noise += 4.0; // Plato flaw state constraint
-        if (!state[5]) noise += 5.0; // Ableism vector impact
-        if (!state[7]) noise += 3.5; // Asset strip plundering
-        if (state[26]) noise += 4.5; // Core alliance trust smash
-
-        let shields = 0.0; if (state[20]) shields += 0.40; if (state[24]) shields += 0.40;
-        let p_collapse = noise / (1.0 - Math.min(shields, 0.95));
-        document.getElementById('p-collapse-output').innerText = p_collapse.toFixed(2);
-
-        const canaryBox = document.getElementById('canary-output');
-        if (p_collapse >= poppertimeThreshold) {
-            canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`;
-            canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
-            if (timelineMode === 'fib') { document.getElementById('collision-crosshair').style.display = 'block'; }
-        } else {
-            canaryBox.innerText = `🟢 SAFE: Standby network operating within thermodynamic bounds.`;
-            canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
-            document.getElementById('collision-crosshair').style.display = 'none';
-        }
-
-        if (timelineMode === '3d') {
-            let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
-            let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
-            document.getElementById('geo-core').setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
-            document.getElementById('node-existence').setAttribute('cx', pt_ex.x); document.getElementById('node-existence').setAttribute('cy', pt_ex.y);
-            document.getElementById('node-autonomy').setAttribute('cx', pt_au.x);   document.getElementById('node-autonomy').setAttribute('cy', pt_au.y);
-            document.getElementById('node-integrity').setAttribute('cx', pt_in.x);  document.getElementById('node-integrity').setAttribute('cy', pt_in.y);
-            document.getElementById('geo-shields').setAttribute('points', '0,0 0,0 0,0 0,0');
-        } else {
-            let ex_y = state[0] ? 80 : 160;
-            let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160;
-            let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
-            document.getElementById('geo-core').setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
-            document.getElementById('node-existence').setAttribute('cx', 200); document.getElementById('node-existence').setAttribute('cy', ex_y);
-            document.getElementById('node-autonomy').setAttribute('cx', au_x); document.getElementById('node-autonomy').setAttribute('cy', au_y);
-            document.getElementById('node-integrity').setAttribute('cx', in_x); document.getElementById('node-integrity').setAttribute('cy', in_y);
-            let sh_size = state[20] && state[24] ? 100 : (state[20] || state[24] ? 55 : 0);
-            document.getElementById('geo-shields').setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
-        }
-
-        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
-        document.getElementById('raw-string-output').innerText = "0b" + binStr + " [Live Registry Track]";
-        document.getElementById('vault-string').value = generateVaultString();
-        compileKatexExpressions();
+        document.getElementById('geo-core').setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+        document.getElementById('node-existence').setAttribute('cx', pt_ex.x); document.getElementById('node-existence').setAttribute('cy', pt_ex.y);
+        document.getElementById('node-autonomy').setAttribute('cx', pt_au.x);   document.getElementById('node-autonomy').setAttribute('cy', pt_au.y);
+        document.getElementById('node-integrity').setAttribute('cx', pt_in.x);  document.getElementById('node-integrity').setAttribute('cy', pt_in.y);
+        document.getElementById('geo-shields').setAttribute('points', '0,0 0,0 0,0 0,0');
+        
+        lblEx.setAttribute('x', pt_ex.x + 8);  lblEx.setAttribute('y', pt_ex.y + 2);
+        lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8);
+        lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6);
+    } else {
+        let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160; let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
+        
+        document.getElementById('geo-core').setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+        document.getElementById('node-existence').setAttribute('cx', 200); document.getElementById('node-existence').setAttribute('cy', ex_y);
+        document.getElementById('node-autonomy').setAttribute('cx', au_x); document.getElementById('node-autonomy').setAttribute('cy', au_y);
+        document.getElementById('node-integrity').setAttribute('cx', in_x); document.getElementById('node-integrity').setAttribute('cy', in_y);
+        let sh_size = state[20] && state[24] ? 100 : (state[20] || state[24] ? 55 : 0);
+        document.getElementById('geo-shields').setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
+        
+        lblEx.setAttribute('x', 210);  lblEx.setAttribute('y', ex_y - 2);
+        lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2);
+        lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2);
     }
+
+    let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
+    document.getElementById('raw-string-output').innerText = "0b" + binStr + " [Live Registry Track]";
+    document.getElementById('vault-string').value = generateVaultString();
+    compileKatexExpressions();
+}
 
     function loadScenario(id) {
         const scenarios = {
-            1:  { 0: true, 1: false, 2: true, 5: true, 7: true, 20: false, 24: false, 26: false },  // Plato Flaw
-            2:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: false, 24: false, 26: false },  // Ableism Attack
-            3:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: true, 24: false, 26: false },  // Amsterdam Strip
-            4:  { 0: true, 1: true, 2: true, 5: false, 7: false, 20: false, 24: false, 26: true },  // Noise Burst
-            5:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: false, 24: false, 26: true },   // Core Breach
-            6:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: true, 26: false },   // Equilibrium
-            7:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: false, 24: false, 26: false },  // Exploitation Secure
-            8:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: false, 26: false },  // Balanced Realist
-            9:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: true, 24: false, 26: false },   // Cyber Swarm
-            10: { 0: false, 1: false, 2: false, 5: false, 7: false, 20: false, 24: false, 26: true } // TOTAL COLLAPSE
+            1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },  // Plato Flaw
+            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: false, 24: false, 26: false }, // Ableism Attack
+            3:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: true, 24: false, 26: false },  // Amsterdam Strip
+            4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 20: false, 24: false, 26: true }, // Noise Burst
+            5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: true },  // Core Breach
+            6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false },   // Standby Opt
+            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },  // Exploitation Blk
+            8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: false, 26: false },  // Realist Balanced
+            9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },   // Cyber Swarm
+            10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 20: false, 24: false, 26: true }, // TOTAL COLLAPSE
+            11: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },  // Psychological Lock
+            12: { 0: true, 1: true, 2: true, 3: true, 4: false, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false }, // Vessel Sabotage
+            13: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: true, 24: false, 26: false },  // Spatiotemporal Hunt
+            14: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false }, // Corporate Data Mine
+            15: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true }, // Sovereign Breach
+            16: { 0: true, 1: true, 2: false, 3: false, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false }, // Algorithmic Bias
+            17: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: true, 20: false, 24: true, 26: false },  // Proxy Extortion
+            18: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false }, // Network Deletion
+            19: { 0: true, 1: true, 2: false, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true },  // Forensic Erasure
+            20: { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 20: false, 24: false, 26: false }, // Asymmetric Strain
+            21: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: true, 26: false },  // Privacy Leak
+            22: { 0: true, 1: false, 2: false, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false }, // Identity Forge
+            23: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false }, // Resource Blockade
+            24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false }, // Kinetic Threat
+            25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: true, 24: true, 26: false }     // Harmonic Optimum
         };
+
         state = scenarios[id];
-        Object.keys(BITS).forEach(b => { document.getElementById(`bit-${b}`).checked = state[b]; });
+        Object.keys(BITS).forEach(b => {
+            const el = document.getElementById(`bit-${b}`);
+            if (el) el.checked = state[b];
+        });
         calculateMatrix();
     }
 
-    window.addEventListener('DOMContentLoaded', () => { initSwitches(); setTimelineMode('spiral'); });
+
+    window.addEventListener('DOMContentLoaded', () => { initSwitches(); setTimelineMode('3d'); });
 </script>
 </body>
 </html>
