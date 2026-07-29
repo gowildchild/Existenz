@@ -74,7 +74,7 @@
 
 <!-- Live Universe Loader Overlay Shield -->
 <div id="loading-universe">
-    <div class="loading-text">ExistenZ | Loading universe - please hold</div>
+    <div class="loading-text">ExistenZ | Loading universe | please hold</div>
     <div class="loading-bar"></div>
 </div>
 
@@ -304,31 +304,100 @@
             calculateMatrix();
         }
     }
-    function project3D(x, y, z) { return { x: 200 + (x * 0.8) - (y * 0.8), y: 160 + (x * 0.4) + (y * 0.4) - z }; }
-    function setTimelineMode(mode) { timelineMode = mode; ['spiral', 'linear', '3d', 'fib'].forEach(m => { const b = document.getElementById(`btn-timeline-${m}`); if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; }); renderTimelineBackground(); calculateMatrix(); }
+    function project3D(x, y, z) { 
+        // Maps absolute multi-axis coordinate depth directly onto the canvas center viewport origin
+        return { x: 200 + (x * 0.8) - (y * 0.8), y: 160 + (x * 0.4) + (y * 0.4) - z }; 
+    }
+    
+    function setTimelineMode(mode) { 
+        timelineMode = mode; 
+        ['spiral', 'linear', '3d', 'fib'].forEach(m => { 
+            const b = document.getElementById(`btn-timeline-${m}`); 
+            if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; 
+        }); 
+        renderTimelineBackground(); 
+        calculateMatrix(); 
+    }
     function renderTimelineBackground() {
-        const path = document.getElementById('timeline-path'); const spiralTrack = document.getElementById('fibonacci-spiral-track'); const ticks = document.getElementById('timeline-ticks'); if (!path || !ticks) return;
-        ticks.innerHTML = ''; if (spiralTrack) spiralTrack.style.display = 'none'; document.getElementById('collision-crosshair').style.display = 'none';
+        const path = document.getElementById('timeline-path'); 
+        const spiralTrack = document.getElementById('fibonacci-spiral-track'); 
+        const ticks = document.getElementById('timeline-ticks'); 
+        if (!path || !ticks) return;
+        
+        ticks.innerHTML = ''; 
+        if (spiralTrack) spiralTrack.style.display = 'none'; 
+        document.getElementById('collision-crosshair').style.display = 'none';
         
         if (timelineMode === 'spiral') {
-            let points = []; for (let theta = 0; theta < 25; theta += 0.15) { let r = 6 + (theta * 4.5); points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); }
-            path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
-        } else if (timelineMode === 'fib') {
-            let points = []; const a = 4.0; const b = 0.1406;
-            for (let theta = 0; theta < 32; theta += 0.03) {
-                let r = a * Math.exp(b * theta); let x = 200 + r * Math.cos(theta); let y = 160 + r * Math.sin(theta);
-                if (r < 185) { points.push(`${x},${y}`); if (Math.floor(theta * 10) % 25 === 0) ticks.innerHTML += `<circle cx="${x}" cy="${y}" r="2" fill="#ff00aa" opacity="0.8"/>`; }
+            let points = []; 
+            for (let theta = 0; theta < 25; theta += 0.15) { 
+                let r = 6 + (theta * 4.5); 
+                points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); 
             }
-            if (spiralTrack) { spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); spiralTrack.setAttribute('stroke', '#ff00aa'); spiralTrack.setAttribute('stroke-width', '1.5'); spiralTrack.setAttribute('opacity', '0.85'); spiralTrack.style.display = 'block'; }
+            path.setAttribute('d', 'M ' + points.join(' L ')); 
+            path.setAttribute('stroke', '#121222');
+        } else if (timelineMode === 'fib') {
+            // UNIFIED 3D PROJECTED FIBONACCI GOLDEN SPIRAL LAYER
+            let points = []; 
+            const a = 3.5; 
+            const b = 0.1406; // Derived from the golden ratio limit
+            
+            // Render the baseline 3D structural coordinate axes underneath the spiral track
+            const origin = project3D(0, 0, 0); 
+            const xAxis = project3D(80, 0, 0); 
+            const yAxis = project3D(0, 80, 0); 
+            const zAxis = project3D(0, 0, 80);
+            ticks.innerHTML += `
+                <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2" opacity="0.4"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2" opacity="0.4"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2" opacity="0.4"/>
+            `;
+            
+            // Calculate and wrap the golden spiral smoothly along the 3D dimensional grid vector
+            for (let theta = 0; theta < 32; theta += 0.04) {
+                let r = a * Math.exp(b * theta);
+                let rawX = r * Math.cos(theta);
+                let rawY = r * Math.sin(theta);
+                let rawZ = theta * 1.5; // Gradually scales height along the Z-axis profile loop
+                
+                // Project the raw coordinate through the 3D calculation loop
+                let pt3D = project3D(rawX, rawY, rawZ);
+                
+                if (r < 185) { 
+                    points.push(`${pt3D.x},${pt3D.y}`); 
+                    if (Math.floor(theta * 10) % 25 === 0) {
+                        ticks.innerHTML += `<circle cx="${pt3D.x}" cy="${pt3D.y}" r="2" fill="#ff00aa" opacity="0.8"/>`; 
+                    }
+                }
+            }
+            if (spiralTrack) { 
+                spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); 
+                spiralTrack.setAttribute('stroke', '#ff00aa'); 
+                spiralTrack.setAttribute('stroke-width', '1.5'); 
+                spiralTrack.setAttribute('opacity', '0.85'); 
+                spiralTrack.style.display = 'block'; 
+            }
             path.setAttribute('d', 'M0,0');
         } else if (timelineMode === 'linear') {
-            path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
-            for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
+            path.setAttribute('d', 'M 40,240 L 360,240'); 
+            path.setAttribute('stroke', '#121222');
+            for (let x = 40; x <= 360; x += 40) { 
+                ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; 
+            }
         } else if (timelineMode === '3d') {
-            path.setAttribute('d', 'M0,0'); const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
-            ticks.innerHTML += `<line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>`;
+            path.setAttribute('d', 'M0,0'); 
+            const origin = project3D(0, 0, 0); 
+            const xAxis = project3D(80, 0, 0); 
+            const yAxis = project3D(0, 80, 0); 
+            const zAxis = project3D(0, 0, 80);
+            ticks.innerHTML += `
+                <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>
+            `;
         }
     }
+
     
     function injectHexMarker() {
         const hexBox = document.getElementById('hex-input'); if (!hexBox) return;
@@ -339,101 +408,74 @@
             label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
         }
     }
-    function compileKatexExpressions() {
-        if (typeof katex === 'undefined') return;
-        
-        let liveNoise = 0.5;
-        if (!state[0]) liveNoise += 5.0; if (!state[1]) liveNoise += 4.0; if (!state[2]) liveNoise += 6.0;
-        if (!state[3]) liveNoise += 3.5; if (!state[4]) liveNoise += 4.5; if (!state[7]) liveNoise += 3.5;
-        if (!state[8]) liveNoise += 2.5; if (state[26]) liveNoise += 5.5;
-
-        let liveShields = 0.0;
-        if (state[20]) liveShields += 0.40; if (state[24]) liveShields += 0.40;
-        if (!state[3] || !state[4]) liveShields *= 0.5;
-
-        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0;
-        const p_collapse = liveNoise / (1.0 - Math.min(liveShields, 0.95));
-
-        try {
-            const pLabel = document.getElementById('katex-p-label'); if (pLabel) katex.render("P_{\\text{collapse}}", pLabel);
-            const cLabel = document.getElementById('katex-c-label'); if (cLabel) katex.render("\\mathcal{C}_{\\text{canary}}", cLabel);
-            
-            // Injects changing numeric coefficients inside fraction brackets smoothly
-            const eqP = document.getElementById('equation-p-collapse');
-            if (eqP) katex.render(`\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum (${liveNoise.toFixed(2)})}{1 - (${liveShields.toFixed(2)})} = \\mathbf{${p_collapse.toFixed(2)}}`, eqP, { displayMode: true });
-            
-            let b2 = state[2] ? "1" : "0"; let b5 = state[5] ? "1" : "0";
-            let res = (state[2] && state[5]) ? "1 \\implies \\text{Collision}" : "0 \\implies \\text{Orthogonal}";
-            const eqOrtho = document.getElementById('equation-ortho');
-            if (eqOrtho) katex.render(`\\langle \\mathbf{V}_{2}\\,(${b2}), \\mathbf{V}_{5}\\,(${b5}) \\rangle = \\mathbf{${res}}`, eqOrtho, { displayMode: true });
-            
-            let alertTrigger = p_collapse >= poppertimeThreshold ? "1 \\implies \\mathbf{ALARM}" : "0 \\implies \\mathbf{SILENT}";
-            const eqCanary = document.getElementById('equation-canary');
-            if (eqCanary) katex.render(`\\mathcal{C}_{\\text{canary}} = \\Theta \\left( ${p_collapse.toFixed(2)} - ${poppertimeThreshold.toFixed(1)} \\right) = \\mathbf{${alertTrigger}}`, eqCanary, { displayMode: true });
-        } catch (katexErr) { 
-            console.warn("KaTeX equation formatting skip caught: ", katexErr); 
-        }
-    }
+    
     function calculateMatrix() {
-        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
-        const orthoElement = document.getElementById('ortho-output');
-        
-        let noise = 0.5;
-        if (!state[0]) noise += 5.0; if (!state[1]) noise += 4.0; if (!state[2]) noise += 6.0;
-        if (!state[3]) noise += 3.5; if (!state[4]) noise += 4.5; if (!state[7]) noise += 3.5;
-        if (!state[8]) noise += 2.5; if (state[26]) noise += 5.5;
-        
-        let shields = 0.0; if (state[20]) shields += 0.40; if (state[24]) shields += 0.40;
-        if (!state[3] || !state[4]) shields *= 0.5;
-        let p_collapse = noise / (1.0 - Math.min(shields, 0.95));
-        
-        const outP = document.getElementById('p-collapse-output'); if (outP) outP.innerText = p_collapse.toFixed(2);
+        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; const orthoElement = document.getElementById('ortho-output');
+        let noise = 0.5; if (!state) noise += 5.0; if (!state) noise += 4.0; if (!state) noise += 6.0; if (!state) noise += 3.5; if (!state) noise += 4.5; if (!state) noise += 3.5; if (!state) noise += 2.5; if (state) noise += 5.5;
+        let shields = 0.0; if (state) shields += 0.40; if (state) shields += 0.40; if (!state || !state) shields *= 0.5;
+        let p_collapse = noise / (1.0 - Math.min(shields, 0.95)); const outP = document.getElementById('p-collapse-output'); if (outP) outP.innerText = p_collapse.toFixed(2);
         
         if (orthoElement) {
-            if (state[2] && state[5]) { orthoElement.innerHTML = `[COLLISION]: Warning. Profile conflict caught under ancient state reductions.`; orthoElement.style.color = "var(--pink)"; }
-            else { orthoElement.innerHTML = `[AFTER FIX - SECURE]: Dot product equals ZERO. Disability axis is perfectly independent.`; orthoElement.style.color = "var(--green)"; }
+            if (state && state) { 
+                orthoElement.innerHTML = `[COLLISION TRIPPED]: Warning. Integrity and disability profiles collided under ancient rule configurations.`; orthoElement.style.color = "var(--pink)";
+                document.getElementById('live-inject-ortho').innerHTML = `= 1 ➔ Collision`; document.getElementById('live-inject-ortho').style.color = "var(--pink)";
+            } else { 
+                orthoElement.innerHTML = `[AFTER FIX - SECURE]: Dot product equals exactly ZERO. Processing constraints are orthogonal. Exploitation is blocked.`; orthoElement.style.color = "var(--green)";
+                document.getElementById('live-inject-ortho').innerHTML = `= 0 ➔ Secure`; document.getElementById('live-inject-ortho').style.color = "var(--green)";
+            }
         }
+        document.getElementById('live-inject-p').innerHTML = `= \\frac{${noise.toFixed(2)}}{1 - ${shields.toFixed(2)}} = \\mathbf{${p_collapse.toFixed(2)}}$`;
+        document.getElementById('live-inject-canary').innerHTML = `➔ \\mathbf{${p_collapse>=poppertimeThreshold?'ALARM':'SILENT'}(${p_collapse.toFixed(1)})}`;
 
         const canaryBox = document.getElementById('canary-output');
         if (canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
                 canaryBox.innerText = `💥 CRITICAL BREAK`; canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
                 if (timelineMode === 'fib') {
-                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); const colX = 200 + targetR * Math.cos(targetTheta); const colY = 160 + targetR * Math.sin(targetTheta); const crosshair = document.getElementById('collision-crosshair');
-                    if (crosshair) { document.getElementById('collision-point').setAttribute('cx', colX); document.getElementById('collision-point').setAttribute('cy', colY); document.getElementById('collision-line-h').setAttribute('y1', colY); document.getElementById('collision-line-h').setAttribute('y2', colY); document.getElementById('collision-line-v').setAttribute('x1', colX); document.getElementById('collision-line-v').setAttribute('x2', colX); crosshair.style.display = 'block'; }
+                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
+                    const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5);
+                    const crosshair = document.getElementById('collision-crosshair');
+                    if (crosshair) { 
+                        document.getElementById('collision-point').setAttribute('cx', ptCol.x); document.getElementById('collision-point').setAttribute('cy', ptCol.y); 
+                        document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); 
+                        document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); 
+                        crosshair.style.display = 'block'; 
+                    }
                 }
             } else { canaryBox.innerText = `🟢 SAFE`; canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none'; }
         }
-
+        
         const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
         const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
         const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
-        if (!gCore) return;
 
-        if (timelineMode === '3d') {
-            let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
-            let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
-            gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
-            if (nodeEx) { nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y); }
-            if (nodeAu) { nodeAu.setAttribute('cx', pt_au.x); nodeAu.setAttribute('cy', pt_au.y); }
-            if (nodeIn) { nodeIn.setAttribute('cx', pt_in.x); nodeIn.setAttribute('cy', pt_in.y); }
-            if (gShields) gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
-            if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
-        } else {
-            let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160; let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
-            gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
-            if (nodeEx) { nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y); }
-            if (nodeAu) { nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y); }
-            if (nodeIn) { nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y); }
-            let sh_size = (state[20] && state[24]) ? 100 : ((state[20] || state[24]) ? 55 : 0);
-            if (gShields) gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
-            if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
+        if (gCore && nodeEx && nodeAu && nodeIn && gShields) {
+            if (timelineMode === '3d' || timelineMode === 'fib') {
+                let ex_val = state ? 75 : 0; let au_val = state ? 75 : 0; let in_val = state ? 75 : 0;
+                let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
+                gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+                nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y);
+                nodeAu.setAttribute('cx', pt_au.x); nodeAu.setAttribute('cy', pt_au.y);
+                nodeIn.setAttribute('cx', pt_in.x); nodeIn.setAttribute('cy', pt_in.y);
+                gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
+                if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
+            } else {
+                let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let au_y = state ? 230 : 160; let in_x = state ? 120 : 200; let in_y = state ? 230 : 160;
+                gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+                nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y);
+                nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y);
+                nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y);
+                let sh_size = (state && state) ? 100 : ((state || state) ? 55 : 0);
+                gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
+                if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
+            }
         }
         let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
         const outRaw = document.getElementById('raw-string-output'); if (outRaw) outRaw.innerText = "0b" + binStr + " [Live Registry Track]";
         const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
-        compileKatexExpressions();
     }
+        
+        
     function loadScenario(id) {
         const scenarios = {
             1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
