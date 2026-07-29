@@ -308,13 +308,13 @@
         19: { name: "SHIELD_BASIC_RIGHTS (B19)", desc: "The primitive firewall defending physical and biological survival", type: "shield" },
         20: { name: "SHIELD_HUMAN_RIGHTS (B20)", desc: "Institutional firewalls guarding civil and legal status", type: "shield" },
         21: { name: "SHIELD_DIVERSITY_RIGHTS (B21)", desc: "Macro-framework enforcing diversity protections", type: "shield" },
-        24: { name: "SHIELD_ONLINE_RIGHTS (B24)", desc: "Cyber-harassment mitigation perimeters", type: "shield" },
+        24: { name: "THREAT_INTERNET_ACT (B24)", desc: "Active digital targeting, cyber-harassment, or online smear campaign", type: "threat" },
         26: { name: "THREAT_ABLEISM_ACT (B26)", desc: "Active systemic exclusion strike committed against a citizen", type: "threat" }
     };
 
-    let state = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true, 26: false };
+    let state = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false };
     let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null; let currentViewMode = 'topology';
-    let hasChangedYet = false; // System state flag for the adaptive proclamation veil
+    let hasChangedYet = false;
 
     // COLLAPSES TEXT BLOCKS IMMEDIATELY ON INTERACTION
     function triggerStateChange() {
@@ -347,91 +347,65 @@
         coresContainer.innerHTML = '';
         threatsContainer.innerHTML = '';
         
-        // Loop explicitly across our core human attributes and institutional protection shields
+        let coresHTML = ''; let threatsHTML = '';
+        
         Object.keys(BITS).forEach(bit => {
             const config = BITS[bit];
             let bitStr = bit.toString(); let bitNum = parseInt(bit);
+            let isThreatType = config.type === 'threat';
             
-            // Render the human state primitives and passive firewalls on the left column side
-            if (config.type === 'core' || config.type === 'shield') {
-                if (currentViewMode === 'topology') {
-                    coresContainer.innerHTML += `
-                        <div class="bit-row" style="padding: 4px 2px;">
-                            <div><strong>${config.name}</strong></div>
-                            <label class="switch">
-                                <input type="checkbox" id="bit-${bitStr}" ${state[bitNum] ? 'checked' : ''} onchange="triggerStateChange(); toggleBit(${bitNum})">
-                                <span class="slider"></span>
-                            </label>
-                        </div>`;
-                } else {
-                    let questionText = ""; let isViolated = !state[bitNum];
-                    switch(bitNum) {
-                        case 0: questionText = "Is your biological presence threatened?"; break;
-                        case 1: questionText = "Has your sovereign autonomy been coerced?"; break;
-                        case 2: questionText = "Is your internal moral axis compromised?"; break;
-                        case 3: questionText = "Are you facing personal cyber-harassment?"; break;
-                        case 4: questionText = "Have your physical vessel profiles been crossed?"; break;
-                        case 5: questionText = "Are you systemically excluded from community bounds?"; break;
-                        case 7: questionText = "Are your local asset data vaults unsafe?"; break;
-                        case 8: questionText = "Are you subjected to spatiotemporal tracking?"; break;
-                        case 19: questionText = "Are survival fundamental rights stripped?"; break;
-                        case 20: questionText = "Have civil human rights shields failed you?"; break;
-                        case 21: questionText = "Are diversity protective frames missing?"; break;
-                        case 24: questionText = "Are active online safety filters broken?"; break;
-                    }
-                    coresContainer.innerHTML += `
-                        <div class="bit-row" style="padding: 4px 2px; border-left: 2px solid ${isViolated?'var(--pink)':'transparent'}; background:${isViolated?'rgba(255,0,170,0.02)':'transparent'}">
-                            <div style="font-size:0.7rem; color:${isViolated?'var(--pink)':'#fff'};">${questionText}</div>
-                            <label class="switch">
-                                <input type="checkbox" id="bit-${bitStr}" ${!isViolated ? 'checked' : ''} onchange="triggerStateChange(); toggleViolationQuestion(${bitNum})">
-                                <span class="slider" style="background-color:${isViolated?'var(--pink)':'#202030'};"></span>
-                            </label>
-                        </div>`;
+            let rowHTML = "";
+            if (currentViewMode === 'topology') {
+                rowHTML = `
+                    <div class="bit-row" style="padding: 4px 2px;">
+                        <div><strong>${config.name}</strong></div>
+                        <label class="switch">
+                            <input type="checkbox" id="bit-${bitStr}" ${state[bitNum] ? 'checked' : ''} onchange="triggerStateChange(); toggleBit(${bitNum})">
+                            <span class="slider" style="${isThreatType ? 'background-color:#401020;' : ''}"></span>
+                        </label>
+                    </div>`;
+            } else {
+                let questionText = ""; let isViolated = false;
+                switch(bitNum) {
+                    case 0: questionText = "Is your right to a safe biological life threatened?"; isViolated = !state[bitNum]; break;
+                    case 1: questionText = "Has your sovereign autonomy been coerced?"; isViolated = !state[bitNum]; break;
+                    case 2: questionText = "Is your internal moral axis compromised?"; isViolated = !state[bitNum]; break;
+                    case 3: questionText = "Are you experiencing cognitive distress?"; isViolated = !state[bitNum]; break;
+                    case 4: questionText = "Have your physical vessel boundaries been crossed?"; isViolated = !state[bitNum]; break;
+                    case 5: questionText = "Are you facing community exclusion or isolation?"; isViolated = !state[bitNum]; break;
+                    case 7: questionText = "Are your personal data vaults unsafe?"; isViolated = !state[bitNum]; break;
+                    case 8: questionText = "Are you subjected to digital tracking/stalking?"; isViolated = !state[bitNum]; break;
+                    case 19: questionText = "Are basic protections for survival stripped away?"; isViolated = !state[bitNum]; break;
+                    case 20: questionText = "Have civil human rights shields failed you?"; isViolated = !state[bitNum]; break;
+                    case 21: questionText = "Are diversity protections broken or missing?"; isViolated = !state[bitNum]; break;
+                    case 24: questionText = "Is an active cyber-harassment attack targeting your accounts right now?"; isViolated = state[bitNum]; break;
+                    case 26: questionText = "Is an active ableistic attack being committed against your person right now?"; isViolated = state[bitNum]; break;
                 }
-
-                // NATIVE 1:1 INTERDEPENDENT ATTACK INJECTION CHANNELS RENDERER ON THE RIGHT SIDE
-                if (config.type === 'core') {
-                    // Generates a mirror threat channel mapping index directly back to its active core row
-                    let isThreatActive = (bitNum === 5) ? (state[26] === true) : false; // Placeholder assignment loop for Bit 5 target mappings
-                    if (bitNum === 5) {
-                        threatsContainer.innerHTML += `
-                            <div class="bit-row" style="padding: 4px 2px; justify-content: space-between; background:${isThreatActive?'rgba(255,0,170,0.04)':'transparent'}">
-                                <div style="font-size:0.65rem; color:${isThreatActive?'var(--pink)':'#8e8eaf'}; font-family:monospace;">➔ STRIKE_B5_ABLEISM</div>
-                                <label class="switch">
-                                    <input type="checkbox" id="bit-26" ${state[26] ? 'checked' : ''} onchange="triggerStateChange(); toggleThreatChannel(26)">
-                                    <span class="slider" style="background-color:#401020;"></span>
-                                </label>
-                            </div>`;
-                    } else {
-                        // Dynamically scales background non-switchable logs for secondary core nodes
-                        threatsContainer.innerHTML += `
-                            <div class="bit-row" style="padding: 4px 2px; justify-content: space-between; border-bottom:1px dashed #0a0a14;">
-                                <div style="font-size:0.65rem; color:#444b60; font-family:monospace;">➔ INJECT_B${bitNum}_STRESS</div>
-                                <span style="font-size:0.6rem; color:#303545; font-family:monospace;">[STANDBY]</span>
-                            </div>`;
-                    }
-                }
+                rowHTML = `
+                    <div class="bit-row" style="padding:4px 2px; background:${isViolated?'rgba(255,0,170,0.02)':'transparent'}; border-left:2px solid ${isViolated?'var(--pink)':'transparent'}">
+                        <div style="font-size:0.7rem; color:${isViolated?'var(--pink)':'#fff'};">${questionText}</div>
+                        <label class="switch">
+                            <input type="checkbox" id="bit-${bitStr}" ${isViolated ? 'checked' : ''} onchange="triggerStateChange(); toggleViolationQuestion(${bitNum})">
+                            <span class="slider" style="background-color:${isViolated?'var(--pink)':'#202030'};"></span>
+                        </label>
+                    </div>`;
             }
+            if (isThreatType) threatsHTML += rowHTML; else coresHTML += rowHTML;
         });
+        coresContainer.innerHTML = coresHTML;
+        threatsContainer.innerHTML = threatsHTML;
     }
-
-    function toggleThreatChannel(threatBit) {
-        const el = document.getElementById(`bit-${threatBit}`);
-        if (el) state[threatBit] = el.checked;
-        initSwitches();
-        calculateMatrix();
-    }
-
     function toggleBit(bit) { 
-        const el = document.getElementById(`bit-${bit}`); 
+        const el = document.getElementById(`bit-${bit.toString()}`); 
         if (el) state[bit] = el.checked; 
         calculateMatrix(); 
     }
 
     function toggleViolationQuestion(bit) { 
-        const el = document.getElementById(`bit-${bit}`); 
+        const el = document.getElementById(`bit-${bit.toString()}`); 
         if (!el) return; 
-        if (bit === 26) { 
+        // Handles the structural inversion safely for threats vs protective states
+        if (bit === 24 || bit === 26) { 
             state[bit] = el.checked; 
         } else { 
             state[bit] = !el.checked; 
@@ -455,6 +429,7 @@
             btn.innerText = "Zoom: 1x"; 
         }
     }
+
 
     function activateCompareTraceMode() {
         const geoCore = document.getElementById('geo-core'); 
@@ -489,11 +464,11 @@
         const valBox = document.getElementById('vault-string'); if (!valBox) return; const val = valBox.value.trim(); if (!val.startsWith("EX-")) return;
         let segments = val.split("-");
         if (segments.length >= 2) {
-            let bin = parseInt(segments[1], 16).toString(2).padStart(Object.keys(BITS).length, '0');
+            let bin = parseInt(segments, 16).toString(2).padStart(Object.keys(BITS).length, '0');
             Object.keys(BITS).forEach((b, idx) => { state[parseInt(b)] = bin[idx] === "1"; });
             const traceShape = document.getElementById('trace-geo-core'); const btn = document.getElementById('btn-compare');
-            if (segments[2] && segments[2] !== "0" && traceShape && btn) {
-                try { tracePoints = atob(segments[2]).replace(/_/g, ' '); traceShape.setAttribute('points', tracePoints); traceShape.style.display = 'block'; btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active"; } catch(e) {}
+            if (segments && segments !== "0" && traceShape && btn) {
+                try { tracePoints = atob(segments).replace(/_/g, ' '); traceShape.setAttribute('points', tracePoints); traceShape.style.display = 'block'; btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active"; } catch(e) {}
             } else if (traceShape && btn) { tracePoints = null; traceShape.style.display = 'none'; btn.className = "btn"; btn.innerText = "Compare Trace"; }
             initSwitches(); calculateMatrix();
         }
@@ -502,238 +477,106 @@
     // 6. GEOMETRIC PERSPECTIVE SPACE PROJECTORS
     function project3D(x, y, z) { return { x: 200 + (x * 0.8) - (y * 0.8), y: 160 + (x * 0.4) + (y * 0.4) - z }; }
     function setTimelineMode(mode) { timelineMode = mode; ['spiral', 'linear', '3d', 'fib'].forEach(m => { const b = document.getElementById(`btn-timeline-${m}`); if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; }); renderTimelineBackground(); calculateMatrix(); }
-    
     function renderTimelineBackground() {
-        const path = document.getElementById('timeline-path'); 
-        const spiralTrack = document.getElementById('fibonacci-spiral-track'); 
-        const ticks = document.getElementById('timeline-ticks'); 
-        if (!path || !ticks) return;
-        
-        ticks.innerHTML = ''; 
-        if (spiralTrack) spiralTrack.style.display = 'none'; 
-        document.getElementById('collision-crosshair').style.display = 'none';
-        
+        const path = document.getElementById('timeline-path'); const spiralTrack = document.getElementById('fibonacci-spiral-track'); const ticks = document.getElementById('timeline-ticks'); if (!path || !ticks) return;
+        ticks.innerHTML = ''; if (spiralTrack) spiralTrack.style.display = 'none'; document.getElementById('collision-crosshair').style.display = 'none';
         if (timelineMode === 'spiral') {
-            let points = []; 
-            for (let theta = 0; theta < 25; theta += 0.15) { 
-                let r = 6 + (theta * 4.5); 
-                points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); 
-            }
-            path.setAttribute('d', 'M ' + points.join(' L ')); 
-            path.setAttribute('stroke', '#121222');
+            let points = []; for (let theta = 0; theta < 25; theta += 0.15) { let r = 6 + (theta * 4.5); points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); }
+            path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
         } else if (timelineMode === 'fib') {
-            let points = []; 
-            const a = 3.5; 
-            const b = 0.1406;
-            const origin = project3D(0, 0, 0); 
-            const xAxis = project3D(80, 0, 0); 
-            const yAxis = project3D(0, 80, 0); 
-            const zAxis = project3D(0, 0, 80);
-            
+            let points = []; const a = 3.5; const b = 0.1406;
+            const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
             ticks.innerHTML += `
                 <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2" opacity="0.4"/>
                 <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2" opacity="0.4"/>
                 <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2" opacity="0.4"/>
             `;
             for (let theta = 0; theta < 32; theta += 0.04) {
-                let r = a * Math.exp(b * theta); 
-                let pt3D = project3D(r * Math.cos(theta), r * Math.sin(theta), theta * 1.5);
-                if (r < 185) { 
-                    points.push(`${pt3D.x},${pt3D.y}`); 
-                    if (Math.floor(theta * 10) % 25 === 0) {
-                        ticks.innerHTML += `<circle cx="${pt3D.x}" cy="${pt3D.y}" r="2" fill="#ff00aa" opacity="0.8"/>`; 
-                    }
-                }
+                let r = a * Math.exp(b * theta); let pt3D = project3D(r * Math.cos(theta), r * Math.sin(theta), theta * 1.5);
+                if (r < 185) { points.push(`${pt3D.x},${pt3D.y}`); if (Math.floor(theta * 10) % 25 === 0) ticks.innerHTML += `<circle cx="${pt3D.x}" cy="${pt3D.y}" r="2" fill="#ff00aa" opacity="0.8"/>`; }
             }
-            if (spiralTrack) { 
-                spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); 
-                spiralTrack.setAttribute('stroke', '#ff00aa'); 
-                spiralTrack.setAttribute('stroke-width', '1.5'); 
-                spiralTrack.setAttribute('opacity', '0.85'); 
-                spiralTrack.style.display = 'block'; 
-            }
+            if (spiralTrack) { spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); spiralTrack.setAttribute('stroke', '#ff00aa'); spiralTrack.setAttribute('stroke-width', '1.5'); spiralTrack.setAttribute('opacity', '0.85'); spiralTrack.style.display = 'block'; }
             path.setAttribute('d', 'M0,0');
         } else if (timelineMode === 'linear') {
-            path.setAttribute('d', 'M 40,240 L 360,240'); 
-            path.setAttribute('stroke', '#121222');
-            for (let x = 40; x <= 360; x += 40) { 
-                ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; 
-            }
+            path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
+            for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
         } else if (timelineMode === '3d') {
-            path.setAttribute('d', 'M0,0'); 
-            const origin = project3D(0, 0, 0); 
-            const xAxis = project3D(80, 0, 0); 
-            const yAxis = project3D(0, 80, 0); 
-            const zAxis = project3D(0, 0, 80);
-            ticks.innerHTML += `
-                <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/>
-                <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/>
-                <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>
-            `;
+            path.setAttribute('d', 'M0,0'); const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
+            ticks.innerHTML += `<line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>`;
         }
     }
-
     function injectHexMarker() {
-        const hexBox = document.getElementById('hex-input'); if (!hexBox) return; 
-        const hex = hexBox.value; 
-        const marker = document.getElementById('hex-marker'); 
-        const label = document.getElementById('hex-marker-label'); 
-        if (!marker || !label) return;
-        
+        const hexBox = document.getElementById('hex-input'); if (!hexBox) return; const hex = hexBox.value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
         if (hex.startsWith('0x') && hex.length >= 6) {
-            let val = parseInt(hex, 16); 
-            let cx = 140 + ((val % 60) * 2); 
-            let cy = 110 + (((val >> 4) % 40) * 2);
-            marker.setAttribute('cx', cx); 
-            marker.setAttribute('cy', cy); 
-            marker.setAttribute('stroke', '#' + hex.substring(2,8)); 
-            marker.style.display = 'block';
-            label.setAttribute('x', cx + 8); 
-            label.setAttribute('y', cy + 2); 
-            label.innerText = hex; 
-            label.style.display = 'block';
+            let val = parseInt(hex, 16); let cx = 140 + ((val % 60) * 2); let cy = 110 + (((val >> 4) % 40) * 2);
+            marker.setAttribute('cx', cx); marker.setAttribute('cy', cy); marker.setAttribute('stroke', '#' + hex.substring(2,8)); marker.style.display = 'block';
+            label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
         }
     }
+    function compileKatexExpressions() { }
 
-    // const activeKeys = [0, 1, 2, 3, 4, 5, 7, 8, 19, 20, 21, 24, 26];
-    
     // ==========================================================================
     // 7. REAL-TIME CALCULATION MATRIX ENGINE & VALUE INJECTION CHANNELS
     // ==========================================================================
     function calculateMatrix() {
-        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
-        const orthoElement = document.getElementById('ortho-output');
-        
-        // A. Scan core human status primitives to evaluate baseline environmental noise
-        let noise = 0.5;
+        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; const orthoElement = document.getElementById('ortho-output');
+
         const coreKeys = [0, 1, 2, 3, 4, 7, 8];
-        coreKeys.forEach(k => {
-            if (state[k] === false) {
-                noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5));
-            }
-        });
+        const shieldKeys = [19, 20, 21, 24];        
+        let noise = 0.5;
+        coreKeys.forEach(k => { if (state[k] === false) noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5)); });
         
-        // B. NATIVE TOPOLOGY FAULT GATE: Cross-product validates itself natively
-        // Ableism Threat (B26) multiplies with Inclusion Failure (1 - B5) completely natively
-        let inclusionFailureFactor = state[5] === false ? 1.0 : 0.0;
-        let activeAbleismStrike = state[26] === true ? 1.0 : 0.0;
-        noise += 6.0 * inclusionFailureFactor * activeAbleismStrike;
+        // ABLEISM FAULT GATE
+        if (state === true && state === false && state === false) { noise += 6.0; }
         
-        // C. Scan firewalls to compute defensive damping limits
+        // INTERNET THREAT FAULT GATE
+        if (state === true) { if (state === false) { noise += 5.0; } else { noise += 1.5; } }
+        
         let shieldStrength = 0.0;
-        const shieldKeys = [19, 20, 21, 24];
-        shieldKeys.forEach(s => { 
-            if (state[s] === true) shieldStrength += 0.25; 
-        });
+        shieldKeys.forEach(s => { if (state[s] === true) shieldStrength += 0.25; });
         
         let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95));
-        // D. Update plain-text layout metrics values on screen
-        // 2. Direct plain-text value injection into the HTML metric container rows
-        const outPNode = document.getElementById('p-collapse-output'); 
-        if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
         
-        const injPNode = document.getElementById('live-inject-p'); 
-        if (injPNode) injPNode.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
+        const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
+        const injPNode = document.getElementById('live-inject-p'); if (injPNode) injPNode.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
+        const injOrthoNode = document.getElementById('live-inject-ortho'); if (injOrthoNode) { injOrthoNode.innerHTML = `➔ [ B2(${state?1:0}) • B5(${state?1:0}) ] = <strong>${(state&&!state)?1:0}</strong>`; }
         
-        const injOrthoNode = document.getElementById('live-inject-ortho'); 
-        if (injOrthoNode) {
-            injOrthoNode.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>${(state[2]&&!state[5])?1:0}</strong>`;
-        }
-        
-        // 3. Update evaluation state readouts for orthogonality constraints
         if (orthoElement) {
-            if (state[26] === true && state[5] === false) { 
-                orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; 
-                orthoElement.style.color = "var(--pink)"; 
-            } else { 
-                orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; 
-                orthoElement.style.color = "var(--green)"; 
-            }
+            if (state === true && state === false) { orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; orthoElement.style.color = "var(--pink)"; }
+            else { orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; orthoElement.style.color = "var(--green)"; }
         }
 
-
-        // F. Scoreboard Tally Engine: Counts secure vs broken channels matching our 13 nodes
-        let secureCount = 0; 
-        let brokenCount = 0; 
-        
-        // STITCHES THE ARRAYS AUTOMATICALLY TO MONITOR ALL 13 VALIDATED NODES
-        const activeKeys = [...coreKeys, ...shieldKeys, 5, 26];
+        let secureCount = 0; let brokenCount = 0;
+        const activeKeys = [...coreKeys, ...shieldKeys, 5, 24, 26];
         
         activeKeys.forEach(k => { 
-            if (k === 26) { 
-                // For active events: true means a violation is ongoing
-                if (state[k] === true) brokenCount++; 
-                else secureCount++; 
-            } else { 
-                // For core states and shields: true means a secure pillar asset
-                if (state[k] === true) secureCount++; 
-                else brokenCount++; 
-            } 
+            if (k === 24 || k === 26) { if (state[k] === true) brokenCount++; else secureCount++; } 
+            else { if (state[k] === true) secureCount++; else brokenCount++; } 
         });
-
-        const outSec = document.getElementById('counter-secure-val'); 
-        const outBrk = document.getElementById('counter-broken-val'); 
-        const lblBrk = document.getElementById('counter-broken-label');
-        
-        if (outSec) outSec.innerText = secureCount; 
-        if (outBrk) { 
-            outBrk.innerText = brokenCount; 
-            if (brokenCount > 0) { 
-                outBrk.style.color = 'var(--pink)'; if (lblBrk) lblBrk.style.color = 'var(--pink)'; 
-            } else { 
-                outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; 
-            } 
-        }
-
-        // 5. Watchdog Canary Circuit: Monitors threshold bounds safely using synchronized variables
-        const injectCanaryNode = document.getElementById('live-inject-canary'); 
-        const canaryBox = document.getElementById('canary-output');
-        
+        const outSec = document.getElementById('counter-secure-val'); const outBrk = document.getElementById('counter-broken-val'); const lblBrk = document.getElementById('counter-broken-label');
+        if (outSec) outSec.innerText = secureCount; if (outBrk) { outBrk.innerText = brokenCount; if (brokenCount > 0) { outBrk.style.color = 'var(--pink)'; if (lblBrk) lblBrk.style.color = 'var(--pink)'; } else { outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; } }
+        const injectCanaryNode = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
         if (injectCanaryNode && canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
-                canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; 
-                canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
-                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; 
-                injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
-                
+                canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
+                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
                 if (timelineMode === 'fib') { 
-                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
-                    const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5); 
-                    const crosshair = document.getElementById('collision-crosshair'); 
-                    if (crosshair) { 
-                        const colPointNode = document.getElementById('collision-point');
-                        if (colPointNode) {
-                            colPointNode.setAttribute('cx', ptCol.x); colPointNode.setAttribute('cy', ptCol.y);
-                            colPointNode.setAttribute('r', (poppertimeThreshold * 4).toString()); 
-                        }
-                        document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); 
-                        document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); 
-                        crosshair.style.display = 'block'; 
-                    } 
+                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5); const crosshair = document.getElementById('collision-crosshair'); 
+                    if (crosshair) { const colPointNode = document.getElementById('collision-point'); if (colPointNode) { colPointNode.setAttribute('cx', ptCol.x); colPointNode.setAttribute('cy', ptCol.y); colPointNode.setAttribute('r', (poppertimeThreshold * 4).toString()); } document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); crosshair.style.display = 'block'; } 
                 }
             } else {
-                canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; 
-                canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
-                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; 
-                injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
+                canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
+                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
                 const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none';
             }
         }
-        
-        const gCore = document.getElementById('geo-core');
-        if (gCore) {
-            let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let in_x = state[2] ? 120 : 200;
-            gCore.setAttribute('points', `200,${ex_y} ${au_x},230 ${in_x},230`);
-        }
-        
+        const gCore = document.getElementById('geo-core'); if (gCore) { let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let in_x = state ? 120 : 200; gCore.setAttribute('points', `200,${ex_y} ${au_x},230 ${in_x},230`); }
         let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; }); let intVal = parseInt(binStr, 2);
         const outRaw = document.getElementById('raw-string-output'); if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
         const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
     }
 
-    // ==========================================================================
     // 8. DATASETS & EVENT PRESETS LOOKUP MAP
-    // ==========================================================================
     function loadScenario(id) {
         triggerStateChange();
         const scenarios = {
@@ -764,15 +607,9 @@
             25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true, 26: false }
         };
         const selected = scenarios[id];
-        if (selected) {
-            Object.keys(BITS).forEach(b => { 
-                let bNum = parseInt(b); state[bNum] = !!selected[bNum]; 
-            });
-            initSwitches(); calculateMatrix();
-        }
+        if (selected) { Object.keys(BITS).forEach(b => { let bNum = parseInt(b); state[bNum] = !!selected[bNum]; }); initSwitches(); calculateMatrix(); }
     }
 
-    // 9. RE-SYNCHRONIZED APP HARDWARE BOOTSTRAPPER
     window.addEventListener('load', () => {
         initSwitches();
         setTimeout(() => {
@@ -786,3 +623,19 @@
 </script>
 </body>
 </html>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
