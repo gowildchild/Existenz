@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Existenz: Live Matrix Engine</title>
+    <title>Existenz Platform Matrix Simulator / Crude Edition</title>
     <style>
         :root {
             --cyan: #00f0ff;
             --green: #00ffaa;
             --pink: #ff00aa;
             --bg: #000000;
-            --panel: #0d0d11;
-            --border: #1f1f2e;
+            --panel: #0d0d14;
+            --border: #1f1f33;
+            --alarm-glow: rgba(255, 0, 170, 0);
         }
         body {
             background-color: var(--bg);
@@ -19,19 +20,30 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
             margin: 0;
             padding: 20px;
+            transition: border 0.3s ease;
+        }
+        body.alarm-active {
+            animation: redAlertFlash 2s infinite alternate;
+        }
+        @keyframes redAlertFlash {
+            0% { box-shadow: inset 0 0 20px rgba(255, 0, 85, 0.2); border: 2px solid #550022; }
+            100% { box-shadow: inset 0 0 60px rgba(255, 0, 85, 0.6); border: 2px solid var(--pink); }
         }
         header {
             border-bottom: 2px solid var(--cyan);
             padding-bottom: 15px;
             margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
         }
-        h1 { margin: 0; color: var(--cyan); font-size: 1.8rem; }
+        h1 { margin: 0; color: var(--cyan); font-size: 1.6rem; letter-spacing: 1px; }
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 25px;
         }
-        @media(max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        @media(max-width: 1024px) { .grid { grid-template-columns: 1fr; } }
         .panel {
             background: var(--panel);
             border: 1px solid var(--border);
@@ -39,113 +51,163 @@
             padding: 20px;
             margin-bottom: 20px;
         }
-        .panel h2 { margin-top: 0; color: var(--green); font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        .panel h2 { margin-top: 0; color: var(--green); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
         .bit-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px;
-            border-bottom: 1px solid #14141f;
+            padding: 10px;
+            border-bottom: 1px solid #141424;
         }
-        .bit-row:hover { background: #111116; }
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
-        }
+        .bit-row:hover { background: #12121f; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #333; transition: .3s; border-radius: 20px;
+            background-color: #2b2b3d; transition: .2s; border-radius: 22px;
         }
         .slider:before {
-            position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
-            background-color: white; transition: .3s; border-radius: 50%;
+            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+            background-color: white; transition: .2s; border-radius: 50%;
         }
         input:checked + .slider { background-color: var(--cyan); }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider:before { transform: translateX(22px); }
         .raw-string {
-            background: #050508;
-            border-left: 4px solid var(--pink);
-            padding: 12px;
-            font-size: 0.9rem;
-            color: #ccc;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            background: #040408; border-left: 4px solid var(--pink);
+            padding: 12px; font-size: 0.85rem; color: #a5a5b5; font-family: monospace;
         }
-        .scenario-btn {
-            background: #1a1a26;
-            border: 1px solid var(--cyan);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-            display: inline-block;
-            transition: 0.2s;
+        .btn {
+            background: #151522; border: 1px solid var(--cyan); color: white;
+            padding: 8px 12px; border-radius: 4px; cursor: pointer; margin: 4px;
+            font-size: 0.85rem; font-family: monospace; transition: 0.2s;
         }
-        .scenario-btn:hover { background: var(--cyan); color: black; font-weight: bold; }
-        .metric-val { font-size: 1.5rem; font-weight: bold; color: var(--pink); }
-        svg { background: #050507; border: 1px solid var(--border); border-radius: 6px; width: 100%; height: auto; }
+        .btn:hover { background: var(--cyan); color: black; font-weight: bold; }
+        .btn-active { background: var(--pink) !important; border-color: #fff !important; }
+        .formula-box {
+            background: rgba(0, 240, 255, 0.03); border: 1px dashed rgba(0, 240, 255, 0.2);
+            border-radius: 4px; padding: 10px; margin: 10px 0; font-size: 0.85rem; color: var(--cyan);
+        }
+        .metric-val { font-size: 1.6rem; font-weight: bold; color: var(--pink); font-family: monospace; }
+        .input-text { background: #05050a; border: 1px solid var(--border); color: #fff; padding: 6px; border-radius: 4px; font-family: monospace; }
     </style>
 </head>
 
 <body>
-
 <header>
-    <h1>PROJECT EXISTENZ: LIVE CORE MATRIX ENGINE</h1>
-    <small style="color: #666;">Stateless 128-Bit Interactive Simulation Matrix | Core Version 0.61</small>
+    <div>
+        <h1>Existenz Platform Matrix Simulator / Crude Edition</h1>
+        <small style="color: #668;">Universal Multi-Layer 128-Bit Mathematical Rigor Engine</small>
+    </div>
+    <div style="font-family: monospace; color: var(--pink);">[SYSTEM: V0.61-CRUDE]</div>
 </header>
 
 <div class="panel">
-    <h2>1 | Simulated Scenarios & Structural Exploitations</h2>
-    <p style="color:#aaa; font-size:0.9rem;">Select an experiential node sequence to load historical attack states and track systemic metrics:</p>
-    <button class="scenario-btn" onclick="loadScenario(1)">1. The Amsterdam Asset Strip (Server Raid)</button>
-    <button class="scenario-btn" onclick="loadScenario(2)">2. Plato's Republic Expatriation (Ancient Flaw)</button>
-    <button class="scenario-btn" onclick="loadScenario(3)">3. Unreasoned Noise Overflow (Paradox Test)</button>
-    <button class="scenario-btn" onclick="loadScenario(4)">4. The Core Alliance Trust Breach</button>
-    <button class="scenario-btn" onclick="loadScenario(5)">5. Optimal Low-Power Standby Equilibrium</button>
+    <h2>1 | Scenario Selection Subsystem (10 Empirical Modules)</h2>
+    <p style="color:#889; font-size:0.85rem; margin-bottom:12px;">Trigger a sequence block to auto-configure registers, isolate constraints, and evaluate defensive formulas:</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 8px;">
+        <button class="btn" onclick="loadScenario(1)">1. Amsterdam Asset Strip (Drive Theft)</button>
+        <button class="btn" onclick="loadScenario(2)">2. Plato's Republic Blueprint (Flawed Reduction)</button>
+        <button class="btn" onclick="loadScenario(3)">3. Unreasoned Noise Burst (Paradox Test)</button>
+        <button class="btn" onclick="loadScenario(4)">4. Core Alliance Breach (Personal Betrayal)</button>
+        <button class="btn" onclick="loadScenario(5)">5. Optimal Low-Power Standby Equilibrium</button>
+        <button class="btn" onclick="loadScenario(6)">6. Systemic Ableism Attack (Targeted Move)</button>
+        <button class="btn" onclick="loadScenario(7)">7. Capitalistic Exploitation Block (Asset Strip)</button>
+        <button class="btn" onclick="loadScenario(8)">8. Balanced Realist Gray Zone State</button>
+        <button class="btn" onclick="loadScenario(9)">9. Cyber-Bullying Proxy Swarm Incident</button>
+        <button class="btn" onclick="loadScenario(10)">10. Total Structural Collapse Configuration</button>
+    </div>
 </div>
 
 <div class="grid">
-    <!-- Left Hand: Interactive Registry Bit Switches -->
+    <!-- LEFT QUADRANT: CONTROL PANEL REGISTERS -->
     <div>
         <div class="panel">
-            <h2>2 | Interactive Bit Allocation Registers</h2>
+            <h2>2 | Dynamic Parameter Configuration</h2>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; font-size: 0.85rem;">
+                <div>
+                    <label>Poppertime Threshold ($\mathcal{T}_{\text{critical}}$):</label><br>
+                    <input type="number" id="poppertime-input" value="3.0" step="0.1" class="input-text" style="width: 60px;" onchange="calculateMatrix()">
+                </div>
+                <div>
+                    <label>Inject Hex Coordinate Map Point (e.g. 0xFF00AA):</label><br>
+                    <input type="text" id="hex-input" value="0x00F0FF" class="input-text" style="width: 100px;" onchange="injectHexMarker()">
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>3 | Interactive Registry Bit-Shifts</h2>
             <div id="switches-container"></div>
         </div>
     </div>
 
-    <!-- Right Hand: Live Metrics & Spatial Visual Vectors -->
+    <!-- RIGHT QUADRANT: VISUAL MATHEMATICAL OUTPUTS -->
     <div>
         <div class="panel">
-            <h2>3 | Dynamic Spatial Vector System</h2>
-            <svg id="matrix-vis" viewBox="0 0 400 300">
-                <line x1="50" y1="250" x2="350" y2="250" stroke="#333" stroke-width="2" />
-                <line x1="50" y1="50" x2="50" y2="250" stroke="#333" stroke-width="2" />
-                <line x1="50" y1="250" x2="50" y2="70" stroke="#ff00aa" stroke-width="3" id="vector-integrity" />
-                <line x1="50" y1="250" x2="250" y2="250" stroke="#00f0ff" stroke-width="3" id="vector-constraints" />
-                <circle cx="50" cy="250" r="6" fill="#fff" id="core-node" />
-                <text x="40" y="65" fill="#ff00aa" font-size="10">INTEGRITY (Bit 2)</text>
-                <text x="260" y="262" fill="#00f0ff" font-size="10">CONSTRAINTS / ATYPICALITY (Bit 5)</text>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px;">
+                <h2 style="margin: 0; border: none;">4 | Dynamic Geometry Workspace Map</h2>
+                <div>
+                    <button class="btn btn-active" id="btn-timeline-spiral" onclick="setTimelineMode('spiral')">Spiral View</button>
+                    <button class="btn" id="btn-timeline-linear" onclick="setTimelineMode('linear')">Linear View</button>
+                </div>
+            </div>
+            
+            <svg id="matrix-vis" viewBox="0 0 400 400" style="background:#030306; border:1px solid #1a1a2e; border-radius:6px; width:100%;">
+                <!-- Static Grid Coordinate Foundations -->
+                <g id="grid-bg"></g>
+                
+                <!-- TIMELINE RENDERING TRACK LAYER -->
+                <path id="timeline-path" fill="none" stroke="#161626" stroke-width="2" />
+                <g id="timeline-ticks"></g>
+
+                <!-- DYNAMIC GEOMETRIC MORPHING POLYGONS -->
+                <polygon id="geo-shields" points="200,50 350,200 200,350 50,200" fill="rgba(0, 255, 170, 0.04)" stroke="#00ffaa" stroke-width="1.5" stroke-dasharray="3" />
+                <polygon id="geo-core" points="200,120 280,240 120,240" fill="rgba(0, 240, 255, 0.12)" stroke="#00f0ff" stroke-width="2" />
+
+                <!-- TARGET VERTICES NODES -->
+                <circle id="node-existence" cx="200" cy="120" r="5" fill="#fff" stroke="#ff00aa" stroke-width="2" />
+                <circle id="node-autonomy" cx="280" cy="240" r="5" fill="#fff" stroke="#00f0ff" stroke-width="2" />
+                <circle id="node-integrity" cx="120" cy="240" r="5" fill="#fff" stroke="#00ffaa" stroke-width="2" />
+                
+                <!-- CUSTOM USER INJECTED HEXADECIMAL MARKER COORDINATE -->
+                <circle id="hex-marker" cx="200" cy="200" r="8" fill="none" stroke="#fff" stroke-width="2" style="display:none;" />
+                <text id="hex-marker-label" x="210" y="195" fill="#fff" font-size="9" style="display:none; font-family:monospace;"></text>
             </svg>
         </div>
 
         <div class="panel">
-            <h2>4 | Live Calculators & Analytical Outputs</h2>
-            <div style="margin-bottom:15px;">
-                <label>Paradox of Intolerance Collapse Level (P_collapse):</label>
+            <h2>5 | Live Analytic Pipeline Calculators & Active Formulas</h2>
+            
+            <div style="margin-bottom:12px;">
+                <label>Paradox of Intolerance Tracker ($P_{\text{collapse}}$):</label>
                 <div class="metric-val" id="p-collapse-output">0.00</div>
+                <div class="formula-box" id="formula-p-collapse">
+                    Formula In Use:<br>
+                    <strong>P_{collapse} = \frac{\sum (I_i \cdot A_i)}{1 - D_{shield}}</strong>
+                </div>
             </div>
-            <div style="margin-bottom:15px;">
-                <label>Orthogonal Intersection Metric (&lt;V_integrity, V_disability&gt;):</label>
-                <div class="metric-val" id="ortho-output" style="color: var(--green);">0 (Perfect Independence)</div>
+
+            <div style="margin-bottom:12px;">
+                <label>Orthogonal Intersection State Matrix ($\langle \mathbf{V}_{\text{integrity}}, \mathbf{V}_{\text{disability}} \rangle$):</label>
+                <div id="ortho-output" style="font-weight:bold; color:var(--green); margin:5px 0; font-size:0.9rem;">0</div>
+                <div class="formula-box">
+                    Formula In Use (Protects Against Exploitation):<br>
+                    <strong>\langle \mathbf{V}_{\text{integrity}}, \mathbf{V}_{\text{disability}} \rangle = \sum_{b=0}^{127} (\text{bit}_2 \cdot \text{bit}_5) = 0</strong>
+                </div>
             </div>
+
+            <div style="margin-bottom:12px;">
+                <label>Canary Circuit Event Trigger State ($\mathcal{C}_{\text{canary}}$):</label>
+                <div id="canary-output" style="font-weight:bold; margin:5px 0; font-size:0.9rem;">SILENT (Clear Skies)</div>
+                <div class="formula-box">
+                    Formula In Use:<br>
+                    <strong>\mathcal{C}_{\text{canary}} = \Theta \left( \frac{d}{dt} \sum \mathcal{I}_i - \mathcal{R}_{\text{lattice}} \right) \implies \mathcal{S}_{\text{alert}}</strong>
+                </div>
+            </div>
+
             <div>
-                <label>Raw Dynamic Bitstring Registry Query State:</label>
-                <div class="raw-string" id="raw-string-output">0000000000000000000000000000000000000000000000000000000000000000</div>
+                <label>Raw Dynamic 128-Bitstring Registry Query Query:</label>
+                <div class="raw-string" id="raw-string-output">0b00000000...</div>
             </div>
         </div>
     </div>
@@ -153,36 +215,32 @@
 
 <script>
     const BITS = {
-        0:  { name: "EXISTENCE (Bit 0)", desc: "You, alive, with a body vessel", type: "core" },
-        1:  { name: "AUTONOMY (Bit 1)", desc: "The sovereign right to choose your path", type: "core" },
-        2:  { name: "INTEGRITY (Bit 2)", desc: "The moral axis of personal choice", type: "core" },
-        5:  { name: "DISABILITY (Bit 5)", desc: "Neuroatypical/physical constraints layer", type: "core" },
-        7:  { name: "PROPERTY (Bit 7)", desc: "Material assets and data workspace protection", type: "core" },
-        20: { name: "SHIELD_HUMAN_RIGHTS (Bit 20)", desc: "Institutional defensive firewall layer", type: "shield" },
-        24: { name: "SHIELD_ONLINE_RIGHTS (Bit 24)", desc: "Cyber-bullying mitigation defense", type: "shield" },
-        26: { name: "TRUST_BROKEN_CORE (Bit 26)", desc: "Deep personal betrayal cascade trigger", type: "threat" }
+        0:  { name: "EXISTENCE (Bit 0)", desc: "Biological bodily presence blueprint", type: "core" },
+        1:  { name: "AUTONOMY (Bit 1)", desc: "Sovereign execution control parameters", type: "core" },
+        2:  { name: "INTEGRITY (Bit 2)", desc: "Internal ethical alignment and moral axis", type: "core" },
+        5:  { name: "DISABILITY (Bit 5)", desc: "Neuroatypical (AuDHD) processing matrix coordinate", type: "core" },
+        7:  { name: "PROPERTY (Bit 7)", desc: "Data vaults, hard disks, server storage safety", type: "core" },
+        20: { name: "SHIELD_HUMAN_RIGHTS (Bit 20)", desc: "Institutional boundary level protections", type: "shield" },
+        24: { name: "SHIELD_ONLINE_RIGHTS (Bit 24)", desc: "Cyber-harassment mitigation boundary", type: "shield" },
+        26: { name: "TRUST_BROKEN_CORE (Bit 26)", desc: "Shatters core alliance and drops defenses", type: "threat" }
     };
 
     let state = { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: true, 26: false };
+    let timelineMode = 'spiral';
 
     function initSwitches() {
         const container = document.getElementById('switches-container');
         container.innerHTML = '';
         Object.keys(BITS).forEach(bit => {
             const config = BITS[bit];
-            const row = document.createElement('div');
-            row.className = 'bit-row';
-            row.innerHTML = `
-                <div>
-                    <strong>${config.name}</strong><br>
-                    <small style="color:#777;">${config.desc}</small>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="bit-${bit}" ${state[bit] ? 'checked' : ''} onchange="toggleBit(${bit})">
-                    <span class="slider"></span>
-                </label>
-            `;
-            container.appendChild(row);
+            container.innerHTML += `
+                <div class="bit-row">
+                    <div><strong>${config.name}</strong><br><small style="color:#7c7c9c;">${config.desc}</small></div>
+                    <label class="switch">
+                        <input type="checkbox" id="bit-${bit}" ${state[bit] ? 'checked' : ''} onchange="toggleBit(${bit})">
+                        <span class="slider"></span>
+                    </label>
+                </div>`;
         });
     }
 
@@ -191,69 +249,158 @@
         calculateMatrix();
     }
 
-    function calculateMatrix() {
-        const v_integrity = state[2] ? 1 : 0;
-        const v_disability = state[5] ? 1 : 0;
-        const ortho_product = v_integrity & v_disability;
+    function setTimelineMode(mode) {
+        timelineMode = mode;
+        document.getElementById('btn-timeline-spiral').className = mode === 'spiral' ? 'btn btn-active' : 'btn';
+        document.getElementById('btn-timeline-linear').className = mode === 'linear' ? 'btn btn-active' : 'btn';
+        renderTimelineBackground();
+    }
+
+    function renderTimelineBackground() {
+        const path = document.getElementById('timeline-path');
+        const ticks = document.getElementById('timeline-ticks');
+        ticks.innerHTML = '';
         
-        const orthoElement = document.getElementById('ortho-output');
-        if (state[2] && state[5]) {
-            orthoElement.innerText = "0 (Perfect Orthogonality: Both active on independent coordinates)";
-            orthoElement.style.color = "var(--green)";
+        if (timelineMode === 'spiral') {
+            let points = [];
+            // Generate clean geometric Fibonacci expansion spiral curve coordinates
+            for (let theta = 0; theta < 25; theta += 0.2) {
+                let r = 10 + (theta * 5.5);
+                let x = 200 + r * Math.cos(theta);
+                let y = 200 + r * Math.sin(theta);
+                points.push(`${x},${y}`);
+                if (Math.floor(theta * 5) % 15 === 0 && r < 140) {
+                    ticks.innerHTML += `<circle cx="${x}" cy="${y}" r="2" fill="#222536"/>`;
+                }
+            }
+            path.setAttribute('d', 'M ' + points.join(' L '));
         } else {
-            orthoElement.innerText = "0 (Perfect Independence Verified)";
-            orthoElement.style.color = "var(--green)";
-        }
-
-        let noise = 0;
-        if (state[26]) noise += 5.5;
-        if (!state[7]) noise += 3.0;
-        if (state[5]) noise += 1.0;
-        
-        let shields = 0;
-        if (state[20]) shields += 0.4;
-        if (state[24]) shields += 0.4;
-
-        let p_collapse = noise / (1.0 - Math.min(shields, 0.9));
-        document.getElementById('p-collapse-output').innerText = p_collapse.toFixed(2);
-
-        document.getElementById('vector-integrity').setAttribute('y2', state[2] ? '70' : '250');
-        document.getElementById('vector-constraints').setAttribute('x2', state[5] ? '300' : '50');
-        document.getElementById('core-node').setAttribute('cx', state[5] ? '300' : '50');
-        document.getElementById('core-node').setAttribute('cy', state[2] ? '70' : '250');
-
-        let binaryString = "";
-        for (let i = 63; i >= 0; i--) {
-            if (BITS[i]) {
-                binaryString += state[i] ? "1" : "0";
-            } else {
-                binaryString += "0";
+            // Linear Track Presentation Grid line maps
+            path.setAttribute('d', 'M 40,320 L 360,320');
+            for (let x = 40; x <= 360; x += 32) {
+                ticks.innerHTML += `
+                    <line x1="${x}" y1="315" x2="${x}" y2="325" stroke="#222536" stroke-width="1.5"/>
+                    <text x="${x-4}" y="340" fill="#222536" font-size="7">B${(x-40)/2.5}</text>
+                `;
             }
         }
-        document.getElementById('raw-string-output').innerText = "0b" + binaryString + "... [Truncated 128-bit Matrix Target]";
+    }
+
+    function injectHexMarker() {
+        const hex = document.getElementById('hex-input').value;
+        const marker = document.getElementById('hex-marker');
+        const label = document.getElementById('hex-marker-label');
+        
+        if (hex.startsWith('0x') && hex.length >= 6) {
+            let val = parseInt(hex, 16);
+            let cx = 100 + ((val % 100) * 2);
+            let cy = 100 + (((val >> 8) % 100) * 2);
+            
+            marker.setAttribute('cx', cx);
+            marker.setAttribute('cy', cy);
+            marker.setAttribute('stroke', '#' + hex.substring(2,8));
+            marker.style.display = 'block';
+            
+            label.setAttribute('x', cx + 12);
+            label.setAttribute('y', cy + 4);
+            label.innerText = hex;
+            label.style.display = 'block';
+        }
+    }
+
+    function calculateMatrix() {
+        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
+        
+        // 1. EVALUATE GEOMETRIC ABLEISM PROTECTION AXIS (BEFORE vs AFTER INDEPENDENCE)
+        const orthoElement = document.getElementById('ortho-output');
+        if (state[5] === true) {
+            orthoElement.innerHTML = `
+                <span style="color:var(--green);">[AFTER FIX - SECURE]:</span> 
+                Disability bit 5 is ACTIVE. Because Inner Product equals exactly ZERO, 
+                character and capability exist on fully separate orthogonal coordinates. Systemic exploitation is blocked!`;
+        } else {
+            orthoElement.innerHTML = `
+                <span style="color:#d18200;">[BEFORE FIX - VULNERABLE]:</span> 
+                Disability bit 5 is INACTIVE. The system defaults back to ancient linguistic definitions. 
+                Vulnerable processing spaces can be targeted and exploited by malicious majorities.`;
+        }
+
+        // 2. PARADOX OF INTOLERANCE EQUATION COMPUTATION
+        let noiseMagnitude = 0.5; 
+        if (!state[0]) noiseMagnitude += 5.0; // Threat against life
+        if (!state[1]) noiseMagnitude += 2.0; // Coercion
+        if (!state[7]) noiseMagnitude += 3.0; // Hard drive server plundering
+        if (state[26]) noiseMagnitude += 4.5; // Core betrayal track
+
+        let shieldEfficiency = 0.0;
+        if (state[20]) shieldEfficiency += 0.40;
+        if (state[24]) shieldEfficiency += 0.40;
+
+        let p_collapse = noiseMagnitude / (1.0 - Math.min(shieldEfficiency, 0.95));
+        document.getElementById('p-collapse-output').innerText = p_collapse.toFixed(2);
+
+        // 3. CANARY CIRCUIT EVALUATION STATE ENGINE
+        const canaryBox = document.getElementById('canary-output');
+        if (p_collapse >= poppertimeThreshold) {
+            canaryBox.innerText = `💥 ALARM FIRE TRIPPED: Rate of incoming noise has over-stemmed spatial lattice capacity!`;
+            canaryBox.style.color = 'var(--pink)';
+            document.body.classList.add('alarm-active');
+        } else if (p_collapse > poppertimeThreshold * 0.6) {
+            canaryBox.innerText = `⚠️ WARNING: Canary is fluttering. Systemic noise approaching critical threshold vector.`;
+            canaryBox.style.color = '#ffaa00';
+            document.body.classList.remove('alarm-active');
+        } else {
+            canaryBox.innerText = `🟢 CALM STABLE LAYER: Standby network operating within safe thermodynamic boundaries.`;
+            canaryBox.style.color = 'var(--green)';
+            document.body.classList.remove('alarm-active');
+        }
+
+        // 4. TRANSFORM SHAPES MATRIX GEOMETRY VISUALLY
+        let ex_y = state[0] ? 120 : 200;
+        let au_x = state[1] ? 280 : 200;
+        let au_y = state[1] ? 240 : 200;
+        let in_x = state[2] ? 120 : 200;
+        let in_y = state[2] ? 240 : 200;
+
+        document.getElementById('geo-core').setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+        document.getElementById('node-existence').setAttribute('cy', ex_y);
+        document.getElementById('node-autonomy').setAttribute('cx', au_x);
+        document.getElementById('node-autonomy').setAttribute('cy', au_y);
+        document.getElementById('node-integrity').setAttribute('cx', in_x);
+        document.getElementById('node-integrity').setAttribute('cy', in_y);
+
+        let sh_size = state[20] && state[24] ? 150 : (state[20] || state[24] ? 80 : 15);
+        document.getElementById('geo-shields').setAttribute('points', `200,${200-sh_size} ${200+sh_size},200 200,${200+sh_size} ${200-sh_size},200`);
+
+        // 5. UPDATE BINARY CODE STRINGS 
+        let binStr = "";
+        Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
+        document.getElementById('raw-string-output').innerText = "0b" + binStr + " [Live Register Frame]";
     }
 
     function loadScenario(id) {
-        if (id === 1) {
-            state = { 0: true, 1: true, 2: true, 5: true, 7: false, 20: true, 24: false, 26: false };
-        } else if (id === 2) {
-            state = { 0: true, 1: false, 2: true, 5: true, 7: true, 20: false, 24: false, 26: false };
-        } else if (id === 3) {
-            state = { 0: true, 1: true, 2: true, 5: false, 7: false, 20: false, 24: false, 26: true };
-        } else if (id === 4) {
-            state = { 0: true, 1: true, 2: true, 5: true, 7: true, 20: false, 24: false, 26: true };
-        } else if (id === 5) {
-            state = { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: true, 26: false };
-        }
-        
-        Object.keys(BITS).forEach(bit => {
-            document.getElementById(`bit-${bit}`).checked = state[bit];
+        const scenarios = {
+            1:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: true, 24: false, 26: false }, // Amsterdam Raid
+            2:  { 0: true, 1: false, 2: true, 5: false, 7: true, 20: false, 24: false, 26: false }, // Plato's Flawed State Blueprint
+            3:  { 0: true, 1: true, 2: true, 5: false, 7: false, 20: false, 24: false, 26: true }, // Unreasoned Noise Burst
+            4:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: false, 24: false, 26: true }, // Core Betrayal
+            5:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: true, 26: false }, // Standby Equilibrium
+            6:  { 0: true, 1: false, 2: true, 5: false, 7: true, 20: false, 24: false, 26: false }, // Ableism Attack (Vulnerable Before Fix)
+            7:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: false, 24: false, 26: false }, // Exploitation Block Protected After Fix
+            8:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: false, 26: false }, // Realist Balanced Zone
+            9:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: true, 24: false, 26: false }, // Cyber-Bullying Proxy Swarm
+            10: { 0: false, 1: false, 2: false, 5: false, 7: false, 20: false, 24: false, 26: true } // Total Matrix Collapse
+        };
+        state = scenarios[id];
+        Object.keys(BITS).forEach(b => {
+            const input = document.getElementById(`bit-${b}`);
+            if (input) input.checked = state[b];
         });
         calculateMatrix();
     }
 
+    // RUN ARCHITECTURE RUNTIME ENGINE
     initSwitches();
-    calculateMatrix();
-</script>
-</body>
-</html>
+    setTimelineMode('spiral');
+    injectHexCoordinateMapPoint = injectHexMarker;
+</script>    
