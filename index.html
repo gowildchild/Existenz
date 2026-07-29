@@ -96,30 +96,43 @@
         </div>
 
         <!-- LIVE SWITCHES CONTROL MONITOR CONTAINER -->
+        <!-- SECTION 2: DUAL-COLUMN SYSTEM MATRICES -->
         <div class="panel" style="flex-grow: 1; display: flex; flex-direction: column; min-height: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 6px; flex-shrink: 0;">
-                <h2 style="margin: 0; border: none; padding: 0;">2 | System Topologies & Human Rights Questionnaire</h2>
+                <h2 style="margin: 0; border: none; padding: 0;">2 | System Topologies Matrix & Targeted Threat Environment</h2>
                 <div style="display: flex; gap: 2px;">
                     <button class="btn btn-active" id="btn-view-topology" onclick="setViewMode('topology')">Topology View</button>
                     <button class="btn" id="btn-view-rights" onclick="setViewMode('rights')">Human Rights Check</button>
                 </div>
             </div>
             
-            <!-- LIVE PILLARS & FIREWALLS STATUS STATS MONITOR BAR -->
+            <!-- CORES AND THREATS SCOREBOARD TALLY TRACKER BANNER -->
             <div style="display: flex; gap: 6px; font-family: monospace; font-size: 0.7rem; background: #020204; padding: 5px; border-radius: 4px; border: 1px solid #101020; margin-bottom: 8px; flex-shrink: 0;">
                 <div style="flex: 1; text-align: center; border-right: 1px solid #101020;">
                     <span style="color: var(--green); font-weight: bold;">✓ SECURE VECTORS:</span> 
-                    <span id="counter-secure-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 13
+                    <span id="counter-secure-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 12
                 </div>
                 <div style="flex: 1; text-align: center;">
-                    <span id="counter-broken-label" style="color: #668; font-weight: bold;">⚠️ DETECTED VIOLATIONS:</span> 
-                    <span id="counter-broken-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 13
+                    <span id="counter-broken-label" style="color: #668; font-weight: bold;">⚠️ DETECTED BREACHES:</span> 
+                    <span id="counter-broken-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 12
                 </div>
             </div>
 
-            <!-- SCROLLABLE LIST OF REGISTERS & QUESTIONS -->
-            <div class="scrollable-content" id="switches-container" style="flex-grow: 1;"></div>
+            <!-- PARALLEL SPLIT GRID COLUMNS -->
+            <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 10px; flex-grow: 1; min-height: 0;">
+                <!-- LEFT BLOCK: EXISTENZ META PILLARS & SHIELDS -->
+                <div style="display: flex; flex-direction: column; min-height: 0;">
+                    <div style="color: var(--cyan); font-family: monospace; font-size: 0.65rem; font-weight: bold; margin-bottom: 4px; border-bottom: 1px solid #0f0f1c;">[EXISTENZ METADATA & SHIELDS]</div>
+                    <div class="scrollable-content" id="cores-switches-container" style="flex-grow: 1;"></div>
+                </div>
+                <!-- RIGHT BLOCK: MATCHING COMPACT THREAT INDUCTION CHANNELS -->
+                <div style="display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--border); padding-left: 8px;">
+                    <div style="color: var(--pink); font-family: monospace; font-size: 0.65rem; font-weight: bold; margin-bottom: 4px; border-bottom: 1px solid #0f0f1c;">[1:1 ACTING ATTACK CHANNEL]</div>
+                    <div class="scrollable-content" id="threats-switches-container" style="flex-grow: 1;"></div>
+                </div>
+            </div>
         </div>
+
 
         <!-- BOTTOM EMPIRICAL Presets SCENARIOS -->
         <div class="panel" style="flex-shrink: 0;">
@@ -326,75 +339,142 @@
         initSwitches(); calculateMatrix();
     }
 
-    // 3. SWITCHBOARD LAYOUT GENERATOR AND RE-SKINNER
     function initSwitches() {
-        const container = document.getElementById('switches-container'); if (!container) return;
-        container.innerHTML = '';
+        const coresContainer = document.getElementById('cores-switches-container');
+        const threatsContainer = document.getElementById('threats-switches-container');
+        if (!coresContainer || !threatsContainer) return;
         
-        let coresHTML = `<div style="color:var(--cyan); font-family:monospace; font-size:0.7rem; margin-top:4px; margin-bottom:2px; font-weight:bold;">[CORE TOPOLOGY & LEGAL SHIELDS]</div>`;
-        let threatsHTML = `<div style="color:var(--pink); font-family:monospace; font-size:0.7rem; margin-top:8px; margin-bottom:2px; font-weight:bold;">[ACTIVE HOSTILE THREAT ENVIRONMENT]</div>`;
+        coresContainer.innerHTML = '';
+        threatsContainer.innerHTML = '';
         
+        // Loop explicitly across our core human attributes and institutional protection shields
         Object.keys(BITS).forEach(bit => {
             const config = BITS[bit];
             let bitStr = bit.toString(); let bitNum = parseInt(bit);
-            let isThreatType = config.type === 'threat';
             
-            let rowHTML = "";
-            if (currentViewMode === 'topology') {
-                rowHTML = `
-                    <div class="bit-row">
-                        <div><strong>${config.name}</strong> - <span style="color:#5c5c7c; font-size:0.65rem;">${config.desc}</span></div>
-                        <label class="switch">
-                            <input type="checkbox" id="bit-${bitStr}" ${state[bitNum] ? 'checked' : ''} onchange="triggerStateChange(); toggleBit(${bitNum})">
-                            <span class="slider" style="${isThreatType ? 'background-color:#401020;' : ''}"></span>
-                        </label>
-                    </div>`;
-            } else {
-                let questionText = ""; let isViolated = false;
-                switch(bitNum) {
-                    case 0: questionText = "Is your right to a safe biological life or bodily presence threatened?"; isViolated = !state[bitNum]; break;
-                    case 1: questionText = "Has your personal sovereign autonomy or freedom to choose been coerced?"; isViolated = !state[bitNum]; break;
-                    case 2: questionText = "Is your internal ethical alignment or moral axis compromised?"; isViolated = !state[bitNum]; break;
-                    case 3: questionText = "Are you experiencing cognitive distress or targeted cyber-harassment?"; isViolated = !state[bitNum]; break;
-                    case 4: questionText = "Have your physical vessel boundaries or biosensor tracks been crossed?"; isViolated = !state[bitNum]; break;
-                    case 5: questionText = "Are you facing active exclusion or isolation from community belonging?"; isViolated = !state[bitNum]; break;
-                    case 7: questionText = "Are your personal data vaults, private drives, or assets unsafe?"; isViolated = !state[bitNum]; break;
-                    case 8: questionText = "Are you subjected to unauthorized location tracking or digital stalking?"; isViolated = !state[bitNum]; break;
-                    case 19: questionText = "Have your primitive protections for base survival been stripped away?"; isViolated = !state[bitNum]; break;
-                    case 20: questionText = "Have your institutional human rights firewalls failed to protect you?"; isViolated = !state[bitNum]; break;
-                    case 21: questionText = "Are macro-level legislative diversity protections broken or missing?"; isViolated = !state[bitNum]; break;
-                    case 24: questionText = "Are active harassment defense filters unable to absorb online attacks?"; isViolated = !state[bitNum]; break;
-                    case 26: questionText = "Is an active ableistic attack being committed against your person right now?"; isViolated = state[bitNum]; break; // Evaluates True for active threat presence
-                }
-                rowHTML = `
-                    <div class="bit-row" style="padding:6px 4px; background:${isViolated?'rgba(255,0,170,0.03)':'transparent'}; border-left:2px solid ${isViolated?'var(--pink)':'transparent'};">
-                        <div style="flex-grow:1; padding-right:10px;"><span style="color:${isViolated?'var(--pink)':'#ffffff'}; font-weight:${isViolated?'bold':'normal'};">${questionText}</span></div>
-                        <div style="display:flex; align-items:center; gap:4px; font-size:0.65rem; font-family:monospace; flex-shrink:0;">
-                            <span style="color:${isViolated?'var(--pink)':'#668'}; font-weight:bold; width:24px; text-align:right;">${isViolated?'YES':'NO'}</span>
+            // Render the human state primitives and passive firewalls on the left column side
+            if (config.type === 'core' || config.type === 'shield') {
+                if (currentViewMode === 'topology') {
+                    coresContainer.innerHTML += `
+                        <div class="bit-row" style="padding: 4px 2px;">
+                            <div><strong>${config.name}</strong></div>
                             <label class="switch">
-                                <input type="checkbox" id="bit-${bitStr}" ${isViolated ? 'checked' : ''} onchange="triggerStateChange(); toggleViolationQuestion(${bitNum})">
-                                <span class="slider" style="background-color:${isViolated ? 'var(--pink)' : '#202030'};"></span>
+                                <input type="checkbox" id="bit-${bitStr}" ${state[bitNum] ? 'checked' : ''} onchange="triggerStateChange(); toggleBit(${bitNum})">
+                                <span class="slider"></span>
                             </label>
-                        </div>
-                    </div>`;
+                        </div>`;
+                } else {
+                    let questionText = ""; let isViolated = !state[bitNum];
+                    switch(bitNum) {
+                        case 0: questionText = "Is your biological presence threatened?"; break;
+                        case 1: questionText = "Has your sovereign autonomy been coerced?"; break;
+                        case 2: questionText = "Is your internal moral axis compromised?"; break;
+                        case 3: questionText = "Are you facing personal cyber-harassment?"; break;
+                        case 4: questionText = "Have your physical vessel profiles been crossed?"; break;
+                        case 5: questionText = "Are you systemically excluded from community bounds?"; break;
+                        case 7: questionText = "Are your local asset data vaults unsafe?"; break;
+                        case 8: questionText = "Are you subjected to spatiotemporal tracking?"; break;
+                        case 19: questionText = "Are survival fundamental rights stripped?"; break;
+                        case 20: questionText = "Have civil human rights shields failed you?"; break;
+                        case 21: questionText = "Are diversity protective frames missing?"; break;
+                        case 24: questionText = "Are active online safety filters broken?"; break;
+                    }
+                    coresContainer.innerHTML += `
+                        <div class="bit-row" style="padding: 4px 2px; border-left: 2px solid ${isViolated?'var(--pink)':'transparent'}; background:${isViolated?'rgba(255,0,170,0.02)':'transparent'}">
+                            <div style="font-size:0.7rem; color:${isViolated?'var(--pink)':'#fff'};">${questionText}</div>
+                            <label class="switch">
+                                <input type="checkbox" id="bit-${bitStr}" ${!isViolated ? 'checked' : ''} onchange="triggerStateChange(); toggleViolationQuestion(${bitNum})">
+                                <span class="slider" style="background-color:${isViolated?'var(--pink)':'#202030'};"></span>
+                            </label>
+                        </div>`;
+                }
+
+                // NATIVE 1:1 INTERDEPENDENT ATTACK INJECTION CHANNELS RENDERER ON THE RIGHT SIDE
+                if (config.type === 'core') {
+                    // Generates a mirror threat channel mapping index directly back to its active core row
+                    let isThreatActive = (bitNum === 5) ? (state[26] === true) : false; // Placeholder assignment loop for Bit 5 target mappings
+                    if (bitNum === 5) {
+                        threatsContainer.innerHTML += `
+                            <div class="bit-row" style="padding: 4px 2px; justify-content: space-between; background:${isThreatActive?'rgba(255,0,170,0.04)':'transparent'}">
+                                <div style="font-size:0.65rem; color:${isThreatActive?'var(--pink)':'#8e8eaf'}; font-family:monospace;">➔ STRIKE_B5_ABLEISM</div>
+                                <label class="switch">
+                                    <input type="checkbox" id="bit-26" ${state[26] ? 'checked' : ''} onchange="triggerStateChange(); toggleThreatChannel(26)">
+                                    <span class="slider" style="background-color:#401020;"></span>
+                                </label>
+                            </div>`;
+                    } else {
+                        // Dynamically scales background non-switchable logs for secondary core nodes
+                        threatsContainer.innerHTML += `
+                            <div class="bit-row" style="padding: 4px 2px; justify-content: space-between; border-bottom:1px dashed #0a0a14;">
+                                <div style="font-size:0.65rem; color:#444b60; font-family:monospace;">➔ INJECT_B${bitNum}_STRESS</div>
+                                <span style="font-size:0.6rem; color:#303545; font-family:monospace;">[STANDBY]</span>
+                            </div>`;
+                    }
+                }
             }
-            if (isThreatType) threatsHTML += rowHTML; else coresHTML += rowHTML;
         });
-        container.innerHTML = coresHTML + threatsHTML;
     }
-    function toggleBit(bit) { const el = document.getElementById(`bit-${bit}`); if (el) state[bit] = el.checked; calculateMatrix(); }
-    function toggleViolationQuestion(bit) { const el = document.getElementById(`bit-${bit}`); if (!el) return; if (bit === 26) { state[bit] = el.checked; } else { state[bit] = !el.checked; } initSwitches(); calculateMatrix(); }
+
+    function toggleThreatChannel(threatBit) {
+        const el = document.getElementById(`bit-${threatBit}`);
+        if (el) state[threatBit] = el.checked;
+        initSwitches();
+        calculateMatrix();
+    }
+
+    function toggleBit(bit) { 
+        const el = document.getElementById(`bit-${bit}`); 
+        if (el) state[bit] = el.checked; 
+        calculateMatrix(); 
+    }
+
+    function toggleViolationQuestion(bit) { 
+        const el = document.getElementById(`bit-${bit}`); 
+        if (!el) return; 
+        if (bit === 26) { 
+            state[bit] = el.checked; 
+        } else { 
+            state[bit] = !el.checked; 
+        } 
+        initSwitches(); 
+        calculateMatrix(); 
+    }
+
     // 4. VIEWPORT MAGNIFIER & ASYMMETRIC OVERLAP LAYER TRACE ENGINE
     function toggleZoom() {
-        isZoomed = !isZoomed; const vis = document.getElementById('matrix-vis'); const btn = document.getElementById('btn-zoom');
-        if (isZoomed && vis && btn) { vis.style.transform = "scale(2)"; btn.className = "btn btn-active"; btn.innerText = "Zoom: 2x"; }
-        else if (vis && btn) { vis.style.transform = "scale(1)"; btn.className = "btn"; btn.innerText = "Zoom: 1x"; }
+        isZoomed = !isZoomed; 
+        const vis = document.getElementById('matrix-vis'); 
+        const btn = document.getElementById('btn-zoom');
+        if (isZoomed && vis && btn) { 
+            vis.style.transform = "scale(2)"; 
+            btn.className = "btn btn-active"; 
+            btn.innerText = "Zoom: 2x"; 
+        } else if (vis && btn) { 
+            vis.style.transform = "scale(1)"; 
+            btn.className = "btn"; 
+            btn.innerText = "Zoom: 1x"; 
+        }
     }
+
     function activateCompareTraceMode() {
-        const geoCore = document.getElementById('geo-core'); const traceShape = document.getElementById('trace-geo-core'); const btn = document.getElementById('btn-compare'); if (!geoCore || !traceShape || !btn) return;
+        const geoCore = document.getElementById('geo-core'); 
+        const traceShape = document.getElementById('trace-geo-core'); 
+        const btn = document.getElementById('btn-compare'); 
+        if (!geoCore || !traceShape || !btn) return;
+        
         const currentPoints = geoCore.getAttribute('points');
-        if (!tracePoints) { tracePoints = currentPoints; traceShape.setAttribute('points', tracePoints); traceShape.style.display = 'block'; btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active"; }
-        else { tracePoints = null; traceShape.style.display = 'none'; btn.className = "btn"; btn.innerText = "Compare Trace"; }
+        if (!tracePoints) { 
+            tracePoints = currentPoints; 
+            traceShape.setAttribute('points', tracePoints); 
+            traceShape.style.display = 'block'; 
+            btn.className = "btn btn-active"; 
+            btn.innerText = "Lock Trace Active"; 
+        } else { 
+            tracePoints = null; 
+            traceShape.style.display = 'none'; 
+            btn.className = "btn"; 
+            btn.innerText = "Compare Trace"; 
+        }
     }
 
     // 5. VAULT SECURITY ENGINE CODES
@@ -424,126 +504,243 @@
     function setTimelineMode(mode) { timelineMode = mode; ['spiral', 'linear', '3d', 'fib'].forEach(m => { const b = document.getElementById(`btn-timeline-${m}`); if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; }); renderTimelineBackground(); calculateMatrix(); }
     
     function renderTimelineBackground() {
-        const path = document.getElementById('timeline-path'); const spiralTrack = document.getElementById('fibonacci-spiral-track'); const ticks = document.getElementById('timeline-ticks'); if (!path || !ticks) return;
-        ticks.innerHTML = ''; if (spiralTrack) spiralTrack.style.display = 'none'; document.getElementById('collision-crosshair').style.display = 'none';
+        const path = document.getElementById('timeline-path'); 
+        const spiralTrack = document.getElementById('fibonacci-spiral-track'); 
+        const ticks = document.getElementById('timeline-ticks'); 
+        if (!path || !ticks) return;
+        
+        ticks.innerHTML = ''; 
+        if (spiralTrack) spiralTrack.style.display = 'none'; 
+        document.getElementById('collision-crosshair').style.display = 'none';
+        
         if (timelineMode === 'spiral') {
-            let points = []; for (let theta = 0; theta < 25; theta += 0.15) { let r = 6 + (theta * 4.5); points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); }
-            path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
+            let points = []; 
+            for (let theta = 0; theta < 25; theta += 0.15) { 
+                let r = 6 + (theta * 4.5); 
+                points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); 
+            }
+            path.setAttribute('d', 'M ' + points.join(' L ')); 
+            path.setAttribute('stroke', '#121222');
         } else if (timelineMode === 'fib') {
-            let points = []; const a = 3.5; const b = 0.1406;
-            const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
+            let points = []; 
+            const a = 3.5; 
+            const b = 0.1406;
+            const origin = project3D(0, 0, 0); 
+            const xAxis = project3D(80, 0, 0); 
+            const yAxis = project3D(0, 80, 0); 
+            const zAxis = project3D(0, 0, 80);
+            
             ticks.innerHTML += `
                 <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2" opacity="0.4"/>
                 <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2" opacity="0.4"/>
                 <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2" opacity="0.4"/>
             `;
             for (let theta = 0; theta < 32; theta += 0.04) {
-                let r = a * Math.exp(b * theta); let pt3D = project3D(r * Math.cos(theta), r * Math.sin(theta), theta * 1.5);
-                if (r < 185) { points.push(`${pt3D.x},${pt3D.y}`); if (Math.floor(theta * 10) % 25 === 0) ticks.innerHTML += `<circle cx="${pt3D.x}" cy="${pt3D.y}" r="2" fill="#ff00aa" opacity="0.8"/>`; }
+                let r = a * Math.exp(b * theta); 
+                let pt3D = project3D(r * Math.cos(theta), r * Math.sin(theta), theta * 1.5);
+                if (r < 185) { 
+                    points.push(`${pt3D.x},${pt3D.y}`); 
+                    if (Math.floor(theta * 10) % 25 === 0) {
+                        ticks.innerHTML += `<circle cx="${pt3D.x}" cy="${pt3D.y}" r="2" fill="#ff00aa" opacity="0.8"/>`; 
+                    }
+                }
             }
-            if (spiralTrack) { spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); spiralTrack.setAttribute('stroke', '#ff00aa'); spiralTrack.setAttribute('stroke-width', '1.5'); spiralTrack.setAttribute('opacity', '0.85'); spiralTrack.style.display = 'block'; }
+            if (spiralTrack) { 
+                spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); 
+                spiralTrack.setAttribute('stroke', '#ff00aa'); 
+                spiralTrack.setAttribute('stroke-width', '1.5'); 
+                spiralTrack.setAttribute('opacity', '0.85'); 
+                spiralTrack.style.display = 'block'; 
+            }
             path.setAttribute('d', 'M0,0');
         } else if (timelineMode === 'linear') {
-            path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
-            for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
+            path.setAttribute('d', 'M 40,240 L 360,240'); 
+            path.setAttribute('stroke', '#121222');
+            for (let x = 40; x <= 360; x += 40) { 
+                ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; 
+            }
         } else if (timelineMode === '3d') {
-            path.setAttribute('d', 'M0,0'); const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
-            ticks.innerHTML += `<line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>`;
+            path.setAttribute('d', 'M0,0'); 
+            const origin = project3D(0, 0, 0); 
+            const xAxis = project3D(80, 0, 0); 
+            const yAxis = project3D(0, 80, 0); 
+            const zAxis = project3D(0, 0, 80);
+            ticks.innerHTML += `
+                <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>
+            `;
         }
     }
+
     function injectHexMarker() {
-        const hexBox = document.getElementById('hex-input'); if (!hexBox) return; const hex = hexBox.value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
+        const hexBox = document.getElementById('hex-input'); if (!hexBox) return; 
+        const hex = hexBox.value; 
+        const marker = document.getElementById('hex-marker'); 
+        const label = document.getElementById('hex-marker-label'); 
+        if (!marker || !label) return;
+        
         if (hex.startsWith('0x') && hex.length >= 6) {
-            let val = parseInt(hex, 16); let cx = 140 + ((val % 60) * 2); let cy = 110 + (((val >> 4) % 40) * 2);
-            marker.setAttribute('cx', cx); marker.setAttribute('cy', cy); marker.setAttribute('stroke', '#' + hex.substring(2,8)); marker.style.display = 'block';
-            label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
+            let val = parseInt(hex, 16); 
+            let cx = 140 + ((val % 60) * 2); 
+            let cy = 110 + (((val >> 4) % 40) * 2);
+            marker.setAttribute('cx', cx); 
+            marker.setAttribute('cy', cy); 
+            marker.setAttribute('stroke', '#' + hex.substring(2,8)); 
+            marker.style.display = 'block';
+            label.setAttribute('x', cx + 8); 
+            label.setAttribute('y', cy + 2); 
+            label.innerText = hex; 
+            label.style.display = 'block';
         }
     }
+    
     function compileKatexExpressions() { }
     // 7. CORE RE-RENDERING PIPELINE & CALCULATION ENGINE
     function calculateMatrix() {
-        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; const orthoElement = document.getElementById('ortho-output');
+        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
+        const orthoElement = document.getElementById('ortho-output');
         
-        let noise = 0.5; 
-        if (!state[0]) noise += 5.0; if (!state[1]) noise += 4.0; if (!state[2]) noise += 6.0; 
-        if (!state[3]) noise += 3.5; if (!state[4]) noise += 4.5; if (!state[5]) noise += 4.0; 
-        if (!state[7]) noise += 3.5; if (!state[8]) noise += 2.5; 
+        // 1. Scan core human status primitives to evaluate baseline environmental noise
+        let noise = 0.5;
+        const coreKeys =;
+        coreKeys.forEach(k => {
+            if (state[k] === false) {
+                noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5));
+            }
+        });
         
-        // DYNAMIC THREAT-SHIELD ROUTINE CALCULATOR
-        if (state[26] === true) {
-            if (state[21] === false) { noise += 6.0; } // Severe penalty under unshielded exclusion strike
-            else { noise += 1.0; } // Attenuated systemic stress when Diversity Rights hold the firewall
+        // 2. STRUCTURAL FAULT GATE: Natively processes the exclusion threat cross-product
+        let inclusionFailureFactor = state === false ? 1.0 : 0.0;
+        let activeAbleismStrike = state === true ? 1.0 : 0.0;
+        
+        // Interdependent multiplication loop handles systemic threat weights perfectly
+        noise += 6.0 * inclusionFailureFactor * activeAbleismStrike;
+        
+        // 3. Scan active shields to determine institutional protection limits
+        let shieldStrength = 0.0;
+        const shieldKeys =;
+        shieldKeys.forEach(s => { 
+            if (state[s] === true) shieldStrength += 0.25; 
+        });
+        
+        let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95)); 
+        const outP = document.getElementById('p-collapse-output'); 
+        if (outP) outP.innerText = p_collapse.toFixed(2);
+        // 4. Direct plain-text value injection into the HTML metric container rows
+        const outPNode = document.getElementById('p-collapse-output'); 
+        if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
+        
+        const injPNode = document.getElementById('live-inject-p'); 
+        if (injPNode) injPNode.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
+        
+        const injOrthoNode = document.getElementById('live-inject-ortho'); 
+        if (injOrthoNode) {
+            injOrthoNode.innerHTML = `➔ [ B2(${state?1:0}) • B5(${state?1:0}) ] = <strong>${(state&&!state)?1:0}</strong>`;
         }
         
-        let shields = 0.0; 
-        if (state[19]) shields += 0.25; if (state[20]) shields += 0.25; 
-        if (state[21]) shields += 0.25; if (state[24]) shields += 0.25; 
-        
-        let p_collapse = noise / (1.0 - Math.min(shields, 0.95)); const outP = document.getElementById('p-collapse-output'); if (outP) outP.innerText = p_collapse.toFixed(2);
-        
-        const injP = document.getElementById('live-inject-p'); if (injP) injP.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shields.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
-        const injOrtho = document.getElementById('live-inject-ortho'); if (injOrtho) injOrtho.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>${(state[2]&&!state[5])?1:0}</strong>`;
-        
+        // 5. Update evaluation state readouts for orthogonality constraints
         if (orthoElement) {
-            if (state[26] === true && state[21] === false) { orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; orthoElement.style.color = "var(--pink)"; }
-            else { orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; orthoElement.style.color = "var(--green)"; }
+            if (state === true && state === false) { 
+                orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; 
+                orthoElement.style.color = "var(--pink)"; 
+            } else { 
+                orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; 
+                orthoElement.style.color = "var(--green)"; 
+            }
         }
-
-
-        // 4. Scoreboard Tally Engine: Aggregates active protected vs violated system nodes
+        // 6. Scoreboard Tally Engine: Aggregates active protected vs violated system nodes
         let secureCount = 0; 
         let brokenCount = 0; 
-        const activeKeys = [0, 1, 2, 3, 4, 5, 7, 8, 19, 20, 21, 22, 24, 26];
+        const activeKeys =;
         
-        activeKeys.forEach(k => { if (k === 26) { if (state[k] === true) brokenCount++; else secureCount++; } else { if (state[k] === true) secureCount++; else brokenCount++; } });
-        const outSec = document.getElementById('counter-secure-val'); const outBrk = document.getElementById('counter-broken-val'); const lblBrk = document.getElementById('counter-broken-label');
-        if (outSec) outSec.innerText = secureCount; if (outBrk) { outBrk.innerText = brokenCount; if (brokenCount > 0) { outBrk.style.color = 'var(--pink)'; if (lblBrk) lblBrk.style.color = 'var(--pink)'; } else { outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; } }
+        activeKeys.forEach(k => { 
+            if (k === 26) { 
+                if (state[k] === true) brokenCount++; 
+                else secureCount++; 
+            } else { 
+                if (state[k] === true) secureCount++; 
+                else brokenCount++; 
+            } 
+        });
 
-        const injectCanary = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
+        const outSec = document.getElementById('counter-secure-val'); 
+        const outBrk = document.getElementById('counter-broken-val'); 
+        const lblBrk = document.getElementById('counter-broken-label');
+        
+        if (outSec) outSec.innerText = secureCount; 
+        if (outBrk) { 
+            outBrk.innerText = brokenCount; 
+            if (brokenCount > 0) { 
+                outBrk.style.color = 'var(--pink)'; 
+                if (lblBrk) lblBrk.style.color = 'var(--pink)'; 
+            } else { 
+                outBrk.style.color = '#ffffff'; 
+                if (lblBrk) lblBrk.style.color = '#668'; 
+            } 
+        }
+
+        // 7. Watchdog Canary Circuits: Processes safety limits and trips network warnings
+        const injectCanary = document.getElementById('live-inject-canary'); 
+        const canaryBox = document.getElementById('canary-output');
         if (injectCanary && canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
-                canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems capacity!`; canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
-                injectCanary.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ ALARM ACTIVATED</strong>`; injectCanary.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
-                if (timelineMode === 'fib') { const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5); const crosshair = document.getElementById('collision-crosshair'); if (crosshair) { document.getElementById('collision-point').setAttribute('cx', ptCol.x); document.getElementById('collision-point').setAttribute('cy', ptCol.y); document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); crosshair.style.display = 'block'; } }
+                canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; 
+                canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
+                injectCanary.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; 
+                injectCanary.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+                
+                if (timelineMode === 'fib') {
+                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
+                    const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5);
+                    const crosshair = document.getElementById('collision-crosshair');
+                    
+                    if (crosshair) { 
+                        // DYNAMICALLY MAPS THE POPPERTIME COEFFICIENT TO THE CROSSHAIR Zone ZONE RADIUS
+                        const colPointNode = document.getElementById('collision-point');
+                        if (colPointNode) {
+                            colPointNode.setAttribute('cx', ptCol.x); 
+                            colPointNode.setAttribute('cy', ptCol.y);
+                            colPointNode.setAttribute('r', (poppertimeThreshold * 4).toString()); // Physically expands bounds around danger sectors
+                        }
+                        document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); 
+                        document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); 
+                        crosshair.style.display = 'block'; 
+                    }
+                }
+
             } else {
-                canaryBox.innerText = `🟢 STANDBY: Network operating within normal thermodynamic bounds.`; canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
-                injectCanary.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ SYSTEM SILENT</strong>`; injectCanary.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
+                canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; 
+                canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
+                injectCanary.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; 
+                injectCanary.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
                 const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none';
             }
         }
-        const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
-        const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
-        const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
-
-        if (gCore && nodeEx && nodeAu && nodeIn && gShields) {
-            if (timelineMode === '3d' || timelineMode === 'fib') {
-                let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
-                let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
-                gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
-                nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y); nodeAu.setAttribute('cx', pt_au.x); nodeAu.setAttribute('cy', pt_au.y); nodeIn.setAttribute('cx', pt_in.x); nodeIn.setAttribute('cy', pt_in.y); gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
-                if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
-            } else {
-                let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160; let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
-                gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
-                nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y); nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y); nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y);
-                let sh_size = (state[19] && state[20]) ? 100 : ((state[19] || state[20]) ? 55 : 0); gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
-                if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
-            }
+        
+        const gCore = document.getElementById('geo-core');
+        if (gCore) {
+            let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let in_x = state ? 120 : 200;
+            gCore.setAttribute('points', `200,${ex_y} ${au_x},230 ${in_x},230`);
         }
-        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; }); let intVal = parseInt(binStr, 2);
-        const outRaw = document.getElementById('raw-string-output'); if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | OCT: 0o${intVal.toString(8)} | DEC: ${intVal} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
+        
+        let binStr = ""; 
+        Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; }); 
+        let intVal = parseInt(binStr, 2);
+        
+        const outRaw = document.getElementById('raw-string-output'); 
+        if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
+        
         const vaultIn = document.getElementById('vault-string'); 
         if (vaultIn) vaultIn.value = generateVaultString();
-        compileKatexExpressions();
     }
-
-
+    
     // 8. DATASETS & EVENT PRESETS LOOKUP MAP
     function loadScenario(id) {
         triggerStateChange();
         const scenarios = {
             1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
-            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: false, 24: false, 26: true }, // Ableism Attack: Exclusion active (5:false) + Attack registered (26:true) + Shield dropped (21:false)
+            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: false, 24: false, 26: true }, // Ableism Attack: Exclusion Active + Threat Registered + Shield Dropped
             3:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false },
             4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 24: false, 26: true },
             5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 19: false, 20: false, 21: false, 24: false, 26: true },
@@ -570,8 +767,12 @@
         };
         const selected = scenarios[id];
         if (selected) {
-            Object.keys(BITS).forEach(b => { state[parseInt(b)] = selected[parseInt(b)]; });
-            initSwitches(); calculateMatrix();
+            Object.keys(BITS).forEach(b => { 
+                let bNum = parseInt(b);
+                state[bNum] = !!selected[bNum]; 
+            });
+            initSwitches(); 
+            calculateMatrix();
         }
     }
 
@@ -581,12 +782,15 @@
             try {
                 setTimelineMode('fib');
                 const loader = document.getElementById('loading-universe');
-                if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
-            } catch(e) { setTimelineMode('spiral'); }
+                if (loader) { 
+                    loader.style.opacity = '0'; 
+                    setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); 
+                }
+            } catch(e) { 
+                setTimelineMode('spiral'); 
+            }
         }, 800);
     });
 </script>
 </body>
 </html>
-
-
