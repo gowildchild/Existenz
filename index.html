@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Existenz Platform Matrix Simulator / Crude Edition</title>
     
-    <!-- AUTOMATIC LIVE MATHJAX EXPRESSION INJECTOR -->
-    <script>
-        window.MathJax = {
-            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']] },
-            svg: { fontCache: 'global' }
-        };
-    </script>
-    <script id="MathJax-script" async src="https://jsdelivr.net"></script>
+    <!-- HIGH-VELOCITY RE-COMPILING KATEX MATH ENGINE -->
+    <link rel="stylesheet" href="https://jsdelivr.net">
+    <script defer src="https://jsdelivr.net"></script>
+    <script defer src="https://jsdelivr.net" onload="renderMathInElement(document.body);"></script>
 
     <style>
         :root {
@@ -33,120 +29,125 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Enforces absolute single-page compact view */
+            overflow: hidden; /* Strict Single-Page Compliance */
         }
         body.alarm-active {
             animation: redAlertFlash 1.5s infinite alternate;
         }
         @keyframes redAlertFlash {
-            0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); }
-            100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); }
+            0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); border: 1px solid #440011; }
+            100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); border: 1px solid var(--pink); }
         }
         header {
             border-bottom: 2px solid var(--cyan);
-            padding-bottom: 5px;
-            margin-bottom: 10px;
+            padding-bottom: 4px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
             flex-shrink: 0;
         }
-        h1 { margin: 0; color: var(--cyan); font-size: 1.3rem; font-weight: 800; }
+        h1 { margin: 0; color: var(--cyan); font-size: 1.2rem; font-weight: 800; }
         .grid {
             display: grid;
             grid-template-columns: 1fr 1.2fr;
-            gap: 12px;
+            gap: 10px;
             flex-grow: 1;
-            min-height: 0; /* Critical fix for layout constraints */
+            min-height: 0;
         }
         .column {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             min-height: 0;
         }
         .panel {
             background: var(--panel);
             border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 12px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             min-height: 0;
         }
-        .panel h2 { margin-top: 0; margin-bottom: 8px; color: var(--green); font-size: 0.95rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
+        .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
         .scrollable-content {
             overflow-y: auto;
             flex-grow: 1;
-            padding-right: 5px;
+            padding-right: 4px;
         }
         .bit-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 6px;
+            padding: 5px;
             border-bottom: 1px solid #0f0f1c;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
-        .switch { position: relative; display: inline-block; width: 36px; height: 18px; flex-shrink: 0; }
+        .switch { position: relative; display: inline-block; width: 34px; height: 16px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #202030; transition: .2s; border-radius: 18px;
+            background-color: #202030; transition: .2s; border-radius: 16px;
         }
         .slider:before {
-            position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px;
+            position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px;
             background-color: white; transition: .2s; border-radius: 50%;
         }
         input:checked + .slider { background-color: var(--cyan); }
         input:checked + .slider:before { transform: translateX(18px); }
         .raw-string {
             background: #020204; border-left: 3px solid var(--pink);
-            padding: 6px; font-size: 0.75rem; color: #8e8eaf; font-family: monospace;
-            word-break: break-all;
+            padding: 5px; font-size: 0.7rem; color: #8e8eaf; font-family: monospace;
+            word-break: break-all; margin-top: 5px;
         }
         .btn {
             background: #0f0f1b; border: 1px solid var(--cyan); color: white;
-            padding: 4px 8px; border-radius: 4px; cursor: pointer;
-            font-size: 0.75rem; font-family: monospace; transition: 0.15s;
+            padding: 4px 6px; border-radius: 4px; cursor: pointer;
+            font-size: 0.7rem; font-family: monospace; transition: 0.1s;
         }
         .btn:hover { background: var(--cyan); color: black; font-weight: bold; }
         .btn-active { background: var(--pink) !important; border-color: #fff !important; }
         .formula-box {
-            background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15);
-            border-radius: 4px; padding: 6px; margin: 4px 0; font-size: 0.75rem; color: var(--cyan);
+            background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.12);
+            border-radius: 4px; padding: 4px; margin: 2px 0; font-size: 0.75rem; color: var(--cyan);
         }
-        .metric-val { font-size: 1.2rem; font-weight: bold; color: var(--pink); font-family: monospace; }
-        .input-text { background: #020205; border: 1px solid var(--border); color: #fff; padding: 4px; border-radius: 4px; font-family: monospace; font-size: 0.75rem; }
+        .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
+        .input-text { background: #020205; border: 1px solid var(--border); color: #fff; padding: 3px; border-radius: 4px; font-family: monospace; font-size: 0.7rem; }
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+            flex-shrink: 0;
+        }
     </style>
 </head>
-
 <body>
 <header>
     <div>
         <h1>Existenz Platform Matrix Simulator / Crude Edition</h1>
     </div>
-    <div style="font-family: monospace; font-size: 0.8rem; color: var(--pink);">[<a href="https://github.com/gowildchild/Existenz">CORE</a>: V0.70-COMPACT]</div>
+    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[<a href="https://https://github.com/gowildchild/Existenz">CORE</a>: V0.72-KATEX-ENGINE]</div>
 </header>
 
 <div class="grid">
-    <!-- LEFT CONTROL PACK LAYER -->
+    <!-- LEFT PANEL SETS -->
     <div class="column">
         <div class="panel" style="flex-shrink: 0;">
-            <h2>1 | Parameter Control & State Restore Injection</h2>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.75rem;">
+            <h2>1 | Parameter Control & Vault Recovery Engine</h2>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.7rem;">
                 <div>
-                    <label>Poppertime Threshold ($\mathcal{T}_{\text{critical}}$):</label><br>
-                    <input type="number" id="poppertime-input" value="3.0" step="0.1" class="input-text" style="width: 50px;" onchange="calculateMatrix()">
+                    <label>Poppertime ($\mathcal{T}_{\text{critical}}$):</label><br>
+                    <input type="number" id="poppertime-input" value="3.0" step="0.1" class="input-text" style="width: 45px;" onchange="calculateMatrix()">
                 </div>
                 <div>
-                    <label>Map Hex Coordinate Location (e.g. 0x00F0FF):</label><br>
-                    <input type="text" id="hex-input" value="0x00F0FF" class="input-text" style="width: 80px;" onchange="injectHexMarker()">
+                    <label>Hex Inject (0x00F0FF):</label><br>
+                    <input type="text" id="hex-input" value="0x00F0FF" class="input-text" style="width: 70px;" onchange="injectHexMarker()">
                 </div>
                 <div style="flex-grow: 1;">
-                    <label>Data Vault Sync String (Input to Restore / Copy to Save):</label><br>
+                    <label>Vault Sync Key (Input to Restore / Auto-Generates):</label><br>
                     <div style="display: flex; gap: 4px;">
-                        <input type="text" id="vault-string" class="input-text" style="flex-grow: 1;" placeholder="Paste sync hash string here...">
+                        <input type="text" id="vault-string" class="input-text" style="flex-grow: 1;" placeholder="EX-DF">
                         <button class="btn" onclick="restoreFromVault()">Restore</button>
                         <button class="btn" onclick="copyVaultString()">Copy</button>
                     </div>
@@ -155,82 +156,83 @@
         </div>
 
         <div class="panel" style="flex-grow: 1;">
-            <h2>2 | Dynamic Registry Bit-Shifts</h2>
+            <h2>2 | Dynamic 128-Bit Register Switches</h2>
             <div class="scrollable-content" id="switches-container"></div>
         </div>
 
-        <div class="panel" style="flex-shrink: 0; max-height: 130px;">
-            <h2>3 | Scenarios System Matrix (10 Selectors)</h2>
-            <div class="scrollable-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                <button class="btn" onclick="loadScenario(1)">1. Amsterdam Strip</button>
-                <button class="btn" onclick="loadScenario(2)">2. Plato Flaw</button>
-                <button class="btn" onclick="loadScenario(3)">3. Noise Overflow</button>
-                <button class="btn" onclick="loadScenario(4)">4. Core Breach</button>
-                <button class="btn" onclick="loadScenario(5)">5. Standby Optimal</button>
-                <button class="btn" onclick="loadScenario(6)">6. Ableism Attack</button>
-                <button class="btn" onclick="loadScenario(7)">7. Exploitation Block</button>
-                <button class="btn" onclick="loadScenario(8)">8. Realist Balanced</button>
-                <button class="btn" onclick="loadScenario(9)">9. Proxy Cyber-Swarm</button>
-                <button class="btn" onclick="loadScenario(10)">10. Total Collapse</button>
+        <div class="panel" style="flex-shrink: 0;">
+            <h2>3 | Empirical Scenarios Panel (Zero-Scrollbar Matrix View)</h2>
+            <div class="scenarios-grid">
+                <button class="btn" onclick="loadScenario(1)">1. Plato Flaw State Reduction</button>
+                <button class="btn" onclick="loadScenario(2)">2. Systemic Ableism Attack</button>
+                <button class="btn" onclick="loadScenario(3)">3. Amsterdam Asset Strip</button>
+                <button class="btn" onclick="loadScenario(4)">4. Unreasoned Noise Burst</button>
+                <button class="btn" onclick="loadScenario(5)">5. Core Alliance Breach</button>
+                <button class="btn" onclick="loadScenario(6)">6. Low-Power Standby Equilibrium</button>
+                <button class="btn" onclick="loadScenario(7)">7. Capital Exploitation Protected</button>
+                <button class="btn" onclick="loadScenario(8)">8. Realist Balanced Gray Zone</button>
+                <button class="btn" onclick="loadScenario(9)">9. Cyber-Bullying Proxy Swarm</button>
+                <button class="btn" onclick="loadScenario(10)">10. Total Structural Collapse</button>
             </div>
         </div>
     </div>
 
-    <!-- RIGHT MATHEMATICAL COMPILING LAYERS -->
+    <!-- RIGHT PANEL SETS -->
     <div class="column">
         <div class="panel" style="flex-grow: 1.2; justify-content: center; align-items: center; position: relative;">
-            <div style="position: absolute; top: 8px; right: 8px; z-index: 10;">
+            <div style="position: absolute; top: 6px; right: 6px; z-index: 10; display: flex; gap: 2px;">
                 <button class="btn btn-active" id="btn-timeline-spiral" onclick="setTimelineMode('spiral')">Spiral</button>
                 <button class="btn" id="btn-timeline-linear" onclick="setTimelineMode('linear')">Linear</button>
+                <button class="btn" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>
+                <button class="btn" id="btn-timeline-fib" onclick="setTimelineMode('fib')">Fibonacci Collision</button>
             </div>
-            <svg id="matrix-vis" viewBox="0 0 400 340" style="background:#020204; border:1px solid #121222; border-radius:6px; height: 100%; max-height: 340px;">
+            <svg id="matrix-vis" viewBox="0 0 400 340" style="background:#020204; border:1px solid #121222; border-radius:6px; height: 100%; max-height: 340px; width: 100%;">
                 <g id="grid-bg"></g>
                 <path id="timeline-path" fill="none" stroke="#121222" stroke-width="1.5" />
                 <g id="timeline-ticks"></g>
-                <polygon id="geo-shields" points="200,40 340,170 200,300 60,170" fill="rgba(0, 255, 170, 0.03)" stroke="#00ffaa" stroke-width="1.5" stroke-dasharray="3" />
-                <polygon id="geo-core" points="200,100 270,220 130,220" fill="rgba(0, 240, 255, 0.1)" stroke="#00f0ff" stroke-width="2" />
+                <polygon id="geo-shields" points="200,40 340,170 200,300 60,170" fill="rgba(0, 255, 170, 0.02)" stroke="#00ffaa" stroke-width="1.2" stroke-dasharray="3" />
+                <polygon id="geo-core" points="200,100 270,220 130,220" fill="rgba(0, 240, 255, 0.08)" stroke="#00f0ff" stroke-width="1.8" />
                 <circle id="node-existence" cx="200" cy="100" r="4" fill="#fff" stroke="#ff00aa" stroke-width="1.5" />
                 <circle id="node-autonomy" cx="270" cy="220" r="4" fill="#fff" stroke="#00f0ff" stroke-width="1.5" />
                 <circle id="node-integrity" cx="130" cy="220" r="4" fill="#fff" stroke="#00ffaa" stroke-width="1.5" />
-                <circle id="hex-marker" cx="200" cy="170" r="6" fill="none" stroke="#fff" stroke-width="1.5" style="display:none;" />
-                <text id="hex-marker-label" x="210" y="165" fill="#fff" font-size="8" style="display:none; font-family:monospace;"></text>
+                
+                <g id="collision-crosshair" style="display: none;">
+                    <circle id="collision-point" cx="200" cy="160" r="12" fill="none" stroke="#ff00aa" stroke-width="1.5" stroke-dasharray="2" />
+                    <line id="collision-line-h" x1="50" y1="160" x2="350" y2="160" stroke="rgba(255, 0, 170, 0.3)" stroke-width="1" />
+                    <line id="collision-line-v" x1="200" y1="300" x2="200" y2="20" stroke="rgba(255, 0, 170, 0.3)" stroke-width="1" />
+                    <text x="215" y="155" fill="#ff00aa" font-size="8" font-family="monospace">COLLISION STRUCK</text>
+                </g>
+                <circle id="hex-marker" cx="200" cy="160" r="5" fill="none" stroke="#fff" stroke-width="1.5" style="display:none;" />
+                <text id="hex-marker-label" x="210" y="165" fill="#fff" font-size="7" style="display:none; font-family:monospace;"></text>
             </svg>
         </div>
 
         <div class="panel" style="flex-grow: 1;">
             <h2>4 | Live Mathematical Analytics & Pipelines</h2>
             <div class="scrollable-content" style="font-size: 0.75rem;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
                     <div>
-                        <label>Paradox of Intolerance Tracker ($P_{\text{collapse}}$):</label>
+                        <label>Paradox of Intolerance Tracker (<span id="katex-p-label"></span>):</label>
                         <div class="metric-val" id="p-collapse-output">0.00</div>
                     </div>
-                    <div class="formula-box" style="margin: 0; width: 60%;">
-                        $$\mathcal{P}_{\text{collapse}} = \frac{\sum ( \mathcal{I}_i \cdot \mathcal{A}_i )}{1 - \mathcal{D}_{\text{shield}}}$$
-                    </div>
+                    <div id="equation-p-collapse" class="formula-box" style="margin: 0; width: 65%; font-size: 0.85rem;"></div>
                 </div>
-
-                <div style="margin-bottom: 6px; border-top: 1px solid #101020; padding-top: 4px;">
+                <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 2px;">
                     <label>Orthogonal Intersection Space:</label>
-                    <div id="ortho-output" style="font-weight:bold; color:var(--green); margin:2px 0;">0</div>
-                    <div class="formula-box">
-                        $$\langle \mathbf{V}_{\text{integrity}}, \mathbf{V}_{\text{disability}} \rangle = \sum_{b=0}^{127} (\text{bit}_2 \cdot \text{bit}_5) = 0$$
-                    </div>
+                    <div id="ortho-output" style="font-weight:bold; color:var(--green); margin:1px 0; font-size:0.75rem;">0</div>
+                    <div id="equation-ortho" class="formula-box" style="font-size: 0.85rem;"></div>
                 </div>
-
-                <div style="margin-bottom: 6px; border-top: 1px solid #101020; padding-top: 4px;">
-                    <label>Canary Circuit Event Trigger ($\mathcal{C}_{\text{canary}}$):</label>
-                    <div id="canary-output" style="font-weight:bold; margin:2px 0;">SILENT</div>
-                    <div class="formula-box">
-                        $$\mathcal{C}_{\text{canary}} = \Theta \left( \frac{d}{dt} \sum \mathcal{I}_i - \mathcal{R}_{\text{lattice}} \right) \implies \mathcal{S}_{\text{alert}}$$
-                    </div>
+                <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 2px;">
+                    <label>Canary Circuit Event Trigger (<span id="katex-c-label"></span>):</label>
+                    <div id="canary-output" style="font-weight:bold; margin:1px 0; font-size:0.75rem;">SILENT</div>
+                    <div id="equation-canary" class="formula-box" style="font-size: 0.85rem;"></div>
                 </div>
-
                 <div class="raw-string" id="raw-string-output">0b0000...</div>
             </div>
         </div>
     </div>
 </div>
+
 <script>
     const BITS = {
         0:  { name: "EXISTENCE (B0)", desc: "Biological bodily presence blueprint", type: "core" },
@@ -253,7 +255,7 @@
             const config = BITS[bit];
             container.innerHTML += `
                 <div class="bit-row">
-                    <div><strong>${config.name}</strong> - <span style="color:#5c5c7c; font-size:0.7rem;">${config.desc}</span></div>
+                    <div><strong>${config.name}</strong> - <span style="color:#5c5c7c; font-size:0.65rem;">${config.desc}</span></div>
                     <label class="switch">
                         <input type="checkbox" id="bit-${bit}" ${state[bit] ? 'checked' : ''} onchange="toggleBit(${bit})">
                         <span class="slider"></span>
@@ -269,46 +271,37 @@
 
     function generateVaultString() {
         let binaryCode = Object.keys(BITS).map(b => state[b] ? "1" : "0").join("");
-        let hexCode = parseInt(binaryCode, 2).toString(16).toUpperCase();
-        return `EX-${hexCode}`;
+        return "EX-" + parseInt(binaryCode, 2).toString(16).toUpperCase();
     }
 
     function copyVaultString() {
         const inputStr = document.getElementById('vault-string');
         navigator.clipboard.writeText(inputStr.value);
-        alert(`Configuration captured to clipboard: ${inputStr.value}`);
+        alert(`Configuration Sync Key Copied: ${inputStr.value}`);
     }
 
     function restoreFromVault() {
         const val = document.getElementById('vault-string').value.trim();
         if (val.startsWith("EX-")) {
-            let hex = val.split("-")[1];
+            let hex = val.split("-");
             let bin = parseInt(hex, 16).toString(2).padStart(Object.keys(BITS).length, '0');
             Object.keys(BITS).forEach((b, idx) => {
                 state[b] = bin[idx] === "1";
                 document.getElementById(`bit-${b}`).checked = state[b];
             });
             calculateMatrix();
-        } else {
-            alert("Invalid data vault signature string framework.");
         }
     }
 
     function project3D(x, y, z) {
-        const cx = 200, cy = 170;
-        const screenX = cx + (x * 0.7) - (y * 0.7);
-        const screenY = cy + (x * 0.35) + (y * 0.35) - z;
-        return { x: screenX, y: screenY };
+        const cx = 200, cy = 160;
+        return { x: cx + (x * 0.8) - (y * 0.8), y: cy + (x * 0.4) + (y * 0.4) - z };
     }
+
     function setTimelineMode(mode) {
         timelineMode = mode;
-        let btnContainer = document.getElementById('btn-timeline-spiral').parentElement;
-        if (!document.getElementById('btn-timeline-3d')) {
-            btnContainer.innerHTML += `<button class="btn" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>`;
-        }
-        document.getElementById('btn-timeline-spiral').className = mode === 'spiral' ? 'btn btn-active' : 'btn';
-        document.getElementById('btn-timeline-linear').className = mode === 'linear' ? 'btn btn-active' : 'btn';
-        document.getElementById('btn-timeline-3d').className = mode === '3d' ? 'btn btn-active' : 'btn';
+        const modes = ['spiral', 'linear', '3d', 'fib'];
+        modes.forEach(m => { document.getElementById(`btn-timeline-${m}`).className = mode === m ? 'btn btn-active' : 'btn'; });
         renderTimelineBackground();
         calculateMatrix();
     }
@@ -317,36 +310,29 @@
         const path = document.getElementById('timeline-path');
         const ticks = document.getElementById('timeline-ticks');
         ticks.innerHTML = '';
+        document.getElementById('collision-crosshair').style.display = 'none';
         
-        if (timelineMode === 'spiral') {
+        if (timelineMode === 'spiral' || timelineMode === 'fib') {
             let points = [];
-            for (let theta = 0; theta < 20; theta += 0.15) {
-                let r = 8 + (theta * 4.5);
-                let x = 200 + r * Math.cos(theta);
-                let y = 170 + r * Math.sin(theta);
+            for (let theta = 0; theta < 25; theta += 0.15) {
+                let r = 6 + (theta * 4.5);
+                let x = 200 + r * Math.cos(theta); let y = 160 + r * Math.sin(theta);
                 points.push(`${x},${y}`);
             }
-            path.setAttribute('d', 'M ' + points.join(' L '));
-            path.setAttribute('stroke', '#121222');
+            path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
         } else if (timelineMode === 'linear') {
-            path.setAttribute('d', 'M 40,250 L 360,250');
-            path.setAttribute('stroke', '#121222');
-            for (let x = 40; x <= 360; x += 40) {
-                ticks.innerHTML += `<line x1="${x}" y1="245" x2="${x}" y2="255" stroke="#1c1c3a" stroke-width="1"/>`;
-            }
+            path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
+            for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
         } else if (timelineMode === '3d') {
             path.setAttribute('d', 'M0,0');
-            const origin = project3D(0, 0, 0);
-            const xAxis = project3D(90, 0, 0);
-            const yAxis = project3D(0, 90, 0);
-            const zAxis = project3D(0, 0, 90);
+            const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
             ticks.innerHTML += `
                 <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.5"/>
                 <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.5"/>
                 <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.5"/>
-                <text x="${xAxis.x + 5}" y="${xAxis.y + 5}" fill="#ff00aa" font-size="8">EXISTENCE [X]</text>
-                <text x="${yAxis.x - 65}" y="${yAxis.y + 5}" fill="#00f0ff" font-size="8">AUTONOMY [Y]</text>
-                <text x="${zAxis.x - 20}" y="${zAxis.y - 8}" fill="#00ffaa" font-size="8">INTEGRITY [Z]</text>
+                <text x="${xAxis.x + 4}" y="${xAxis.y + 4}" fill="#ff00aa" font-size="7">EXISTENCE [X]</text>
+                <text x="${yAxis.x - 55}" y="${yAxis.y + 4}" fill="#00f0ff" font-size="7">AUTONOMY [Y]</text>
+                <text x="${zAxis.x - 15}" y="${zAxis.y - 6}" fill="#00ffaa" font-size="7">INTEGRITY [Z]</text>
             `;
         }
     }
@@ -357,13 +343,20 @@
         const label = document.getElementById('hex-marker-label');
         if (hex.startsWith('0x') && hex.length >= 6) {
             let val = parseInt(hex, 16);
-            let cx = 120 + ((val % 80) * 2);
-            let cy = 100 + (((val >> 4) % 60) * 2);
+            let cx = 140 + ((val % 60) * 2); let cy = 110 + (((val >> 4) % 40) * 2);
             marker.setAttribute('cx', cx); marker.setAttribute('cy', cy);
-            marker.setAttribute('stroke', '#' + hex.substring(2,8));
-            marker.style.display = 'block';
-            label.setAttribute('x', cx + 10); label.setAttribute('y', cy + 3);
+            marker.setAttribute('stroke', '#' + hex.substring(2,8)); marker.style.display = 'block';
+            label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2);
             label.innerText = hex; label.style.display = 'block';
+        }
+    }
+    function compileKatexExpressions() {
+        if (typeof katex !== 'undefined') {
+            katex.render("P_{\\text{collapse}}", document.getElementById('katex-p-label'));
+            katex.render("\\mathcal{C}_{\\text{canary}}", document.getElementById('katex-c-label'));
+            katex.render("\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum ( \\mathcal{I}_i \\cdot \\mathcal{A}_i )}{1 - \\mathcal{D}_{\\text{shield}}}", document.getElementById('equation-p-collapse'));
+            katex.render("\\langle \\mathbf{V}_{\\text{integrity}}, \\mathbf{V}_{\\text{disability}} \\rangle = \\sum_{b=0}^{127} (\\text{bit}_2 \\cdot \\text{bit}_5) = 0", document.getElementById('equation-ortho'));
+            katex.render("\\mathcal{C}_{\\text{canary}} = \\Theta \\left( \\frac{d}{\\partial t} \\sum \\mathcal{I}_i - \\mathcal{R}_{\\text{lattice}} \\right) \\implies \\mathcal{S}_{\\text{alert}}", document.getElementById('equation-canary'));
         }
     }
 
@@ -371,78 +364,78 @@
         const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
         const orthoElement = document.getElementById('ortho-output');
         
-        if (state[5] === true) {
+        if (state[2] === true && state[5] === true) {
             orthoElement.innerHTML = `<span style="color:var(--green);">[AFTER FIX - SECURE]:</span> Dot product equals exactly ZERO. Processing constraints are orthogonal. Exploitation is blocked.`;
         } else {
-            orthoElement.innerHTML = `<span style="color:#e08400;">[BEFORE FIX - VULNERABLE]:</span> Bit 5 inactive. Relies on ancient reductions. Vulnerable creator spaces are exposed to resource plundering.`;
+            orthoElement.innerHTML = `<span style="color:#e08400;">[BEFORE FIX - VULNERABLE]:</span> Bit 5 inactive. Relies on ancient state reductions. Vulnerable neuroatypical creator spaces are exposed to resource plundering.`;
         }
 
         let noise = 0.5;
-        if (!state[0]) noise += 5.0; if (!state[1]) noise += 2.0; if (!state[7]) noise += 3.0; if (state[26]) noise += 4.5;
-        let shields = 0.0; if (state[20]) shields += 0.40; if (state[24]) shields += 0.40;
+        if (!state[1]) noise += 4.0; // Plato flaw state constraint
+        if (!state[5]) noise += 5.0; // Ableism vector impact
+        if (!state[7]) noise += 3.5; // Asset strip plundering
+        if (state[26]) noise += 4.5; // Core alliance trust smash
 
+        let shields = 0.0; if (state[20]) shields += 0.40; if (state[24]) shields += 0.40;
         let p_collapse = noise / (1.0 - Math.min(shields, 0.95));
         document.getElementById('p-collapse-output').innerText = p_collapse.toFixed(2);
 
         const canaryBox = document.getElementById('canary-output');
         if (p_collapse >= poppertimeThreshold) {
             canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`;
-            canaryBox.style.color = 'var(--pink)';
-            document.body.classList.add('alarm-active');
+            canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+            if (timelineMode === 'fib') { document.getElementById('collision-crosshair').style.display = 'block'; }
         } else {
             canaryBox.innerText = `🟢 SAFE: Standby network operating within thermodynamic bounds.`;
-            canaryBox.style.color = 'var(--green)';
-            document.body.classList.remove('alarm-active');
+            canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
+            document.getElementById('collision-crosshair').style.display = 'none';
         }
 
         if (timelineMode === '3d') {
-            let ex_val = state[0] ? 70 : 0;
-            let au_val = state[1] ? 70 : 0;
-            let in_val = state[2] ? 70 : 0;
-            let pt_ex = project3D(ex_val, 0, 0);
-            let pt_au = project3D(0, au_val, 0);
-            let pt_in = project3D(0, 0, in_val);
+            let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
+            let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
             document.getElementById('geo-core').setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
             document.getElementById('node-existence').setAttribute('cx', pt_ex.x); document.getElementById('node-existence').setAttribute('cy', pt_ex.y);
             document.getElementById('node-autonomy').setAttribute('cx', pt_au.x);   document.getElementById('node-autonomy').setAttribute('cy', pt_au.y);
             document.getElementById('node-integrity').setAttribute('cx', pt_in.x);  document.getElementById('node-integrity').setAttribute('cy', pt_in.y);
             document.getElementById('geo-shields').setAttribute('points', '0,0 0,0 0,0 0,0');
         } else {
-            let ex_y = state[0] ? 90 : 170; let au_x = state[1] ? 270 : 200; let au_y = state[1] ? 220 : 170; let in_x = state[2] ? 130 : 200; let in_y = state[2] ? 220 : 170;
+            let ex_y = state[0] ? 80 : 160;
+            let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160;
+            let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
             document.getElementById('geo-core').setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
             document.getElementById('node-existence').setAttribute('cx', 200); document.getElementById('node-existence').setAttribute('cy', ex_y);
             document.getElementById('node-autonomy').setAttribute('cx', au_x); document.getElementById('node-autonomy').setAttribute('cy', au_y);
             document.getElementById('node-integrity').setAttribute('cx', in_x); document.getElementById('node-integrity').setAttribute('cy', in_y);
-            let sh_size = state[20] && state[24] ? 110 : (state[20] || state[24] ? 60 : 5);
-            document.getElementById('geo-shields').setAttribute('points', `200,${170-sh_size} ${200+sh_size},170 200,${170+sh_size} ${200-sh_size},170`);
+            let sh_size = state[20] && state[24] ? 100 : (state[20] || state[24] ? 55 : 0);
+            document.getElementById('geo-shields').setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
         }
 
         let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
         document.getElementById('raw-string-output').innerText = "0b" + binStr + " [Live Registry Track]";
         document.getElementById('vault-string').value = generateVaultString();
-        if(window.MathJax && MathJax.typesetLazy) { MathJax.typesetLazy(); }
+        compileKatexExpressions();
     }
 
     function loadScenario(id) {
         const scenarios = {
-            1:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: true, 24: false, 26: false }, 
-            2:  { 0: true, 1: false, 2: true, 5: false, 7: true, 20: false, 24: false, 26: false }, 
-            3:  { 0: true, 1: true, 2: true, 5: false, 7: false, 20: false, 24: false, 26: true }, 
-            4:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: false, 24: false, 26: true }, 
-            5:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: true, 26: false }, 
-            6:  { 0: true, 1: false, 2: true, 5: false, 7: true, 20: false, 24: false, 26: false }, 
-            7:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: false, 24: false, 26: false }, 
-            8:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: false, 26: false }, 
-            9:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: true, 24: false, 26: false }, 
-            10: { 0: false, 1: false, 2: false, 5: false, 7: false, 20: false, 24: false, 26: true } 
+            1:  { 0: true, 1: false, 2: true, 5: true, 7: true, 20: false, 24: false, 26: false },  // Plato Flaw
+            2:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: false, 24: false, 26: false },  // Ableism Attack
+            3:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: true, 24: false, 26: false },  // Amsterdam Strip
+            4:  { 0: true, 1: true, 2: true, 5: false, 7: false, 20: false, 24: false, 26: true },  // Noise Burst
+            5:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: false, 24: false, 26: true },   // Core Breach
+            6:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: true, 26: false },   // Equilibrium
+            7:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: false, 24: false, 26: false },  // Exploitation Secure
+            8:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: false, 26: false },  // Balanced Realist
+            9:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: true, 24: false, 26: false },   // Cyber Swarm
+            10: { 0: false, 1: false, 2: false, 5: false, 7: false, 20: false, 24: false, 26: true } // TOTAL COLLAPSE
         };
         state = scenarios[id];
         Object.keys(BITS).forEach(b => { document.getElementById(`bit-${b}`).checked = state[b]; });
         calculateMatrix();
     }
 
-    initSwitches();
-    setTimeout(() => { setTimelineMode('spiral'); }, 100);
+    window.addEventListener('DOMContentLoaded', () => { initSwitches(); setTimelineMode('spiral'); });
 </script>
 </body>
 </html>
