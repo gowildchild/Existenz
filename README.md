@@ -140,6 +140,8 @@ In the middle of all this digital engineering and mathematical calculation, we m
 
 Nature is not an external variable. Nature is the very canvas upon which the 128-bit registry is drawn.
 
+$$1 \equiv 1$$
+
 Pythagoras realized that the entire cosmos operates on mathematical proportions from the distance of the stars to the harmonic curves of a nautilus shell. The physical environment we live in is the supreme, baseline hardware. We are part of nature. Humanity has treated the Earth exactly how it treats neuro-divergent creators: as an asset to exploit, mine and steal from until it breaks. Capitalism's nasty insistence on infinite growth has built energy-hungry blockchains and massive supercomputers that burn through gigawatts of power and millions of liters of planetary water just to process transactions of greed.
 
 This is a severe asymmetry, a direct violation of cosmic balance. It's an imbalance created by those that do not have the capacity to calculate the impact or ripple effect, or don't even care about the consequences of their actions.
