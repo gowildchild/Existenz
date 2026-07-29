@@ -486,7 +486,6 @@
         const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
         const orthoElement = document.getElementById('ortho-output');
         
-        // 1. Calculate active real-time risk coefficients from register states
         let noise = 0.5; 
         if (!state[0]) noise += 5.0; if (!state[1]) noise += 4.0; if (!state[2]) noise += 6.0; 
         if (!state[3]) noise += 3.5; if (!state[4]) noise += 4.5; if (!state[5]) noise += 3.5; 
@@ -501,64 +500,104 @@
         const outP = document.getElementById('p-collapse-output'); 
         if (outP) outP.innerText = p_collapse.toFixed(2);
         
-        // 2. Direct plain-language value injection into HTML formula panels
         const injP = document.getElementById('live-inject-p');
         if (injP) injP.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shields.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
         
         const injOrtho = document.getElementById('live-inject-ortho');
         if (injOrtho) injOrtho.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>${(state[2]&&state[5])?1:0}</strong>`;
         
-        // 3. Update evaluation state readouts for orthogonality constraints
         if (orthoElement) {
             if (state[2] && state[5]) { 
                 orthoElement.innerHTML = `[COLLISION TRIPPED]: Warning. Integrity and disability profiles collided under ancient rule configurations.`; orthoElement.style.color = "var(--pink)";
             } else { 
-                orthoElement.innerHTML = `[AFTER FIX - SECURE]: Exactly ZERO. Processing constraints are orthogonal. [Exploitation is blocked].`; orthoElement.style.color = "var(--green)";
+                orthoElement.innerHTML = `[AFTER FIX - SECURE]: Processing constraints are orthogonal. Exploitation is blocked by Existenz.`; orthoElement.style.color = "var(--green)";
             }
         }
 
+        let secureCount = 0;
+        let brokenCount = 0;
+        const activeKeys =;
+        
+        activeKeys.forEach(k => {
+            if (k === 26) {
+                if (state[k] === true) brokenCount++;
+                else secureCount++;
+            } else {
+                if (state[k] === true) secureCount++;
+                else brokenCount++;
+            }
+        });
 
-        const injectCanary = document.getElementById('live-inject-canary');
+        const outSec = document.getElementById('counter-secure-val');
+        const outBrk = document.getElementById('counter-broken-val');
+        const lblBrk = document.getElementById('counter-broken-label');
+        
+        if (outSec) outSec.innerText = secureCount;
+        if (outBrk) {
+            outBrk.innerText = brokenCount;
+            if (brokenCount > 0) { outBrk.style.color = 'var(--pink)'; if (lblBrk) lblBrk.style.color = 'var(--pink)'; }
+            else { outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; }
+        }
+        const injectCanaryNode = document.getElementById('live-inject-canary');
         const canaryBox = document.getElementById('canary-output');
         
-        if (injectCanary && canaryBox) {
+        if (injectCanaryNode && canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
-                // Critical alert status mapping configurations
                 canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`;
-                canaryBox.style.color = 'var(--pink)';
-                canaryBox.style.borderColor = 'var(--pink)';
-                
-                injectCanary.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ ALARM ACTIVATED</strong>`;
-                injectCanary.style.color = 'var(--pink)';
-                
-                document.body.classList.add('alarm-active');
+                canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
+                injectCanaryNode.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ ALARM ACTIVATED</strong>`;
+                injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
                 
                 if (timelineMode === 'fib') {
-                    const targetTheta = Math.min(p_collapse * 1.5, 26); 
-                    const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
+                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
                     const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5);
                     const crosshair = document.getElementById('collision-crosshair');
-                    if (crosshair) { 
-                        document.getElementById('collision-point').setAttribute('cx', ptCol.x); document.getElementById('collision-point').setAttribute('cy', ptCol.y); 
-                        document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); 
-                        document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); 
-                        crosshair.style.display = 'block'; 
-                    }
+                    if (crosshair) { document.getElementById('collision-point').setAttribute('cx', ptCol.x); document.getElementById('collision-point').setAttribute('cy', ptCol.y); document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); crosshair.style.display = 'block'; }
                 }
             } else {
-                // Secure, non-alarm baseline configuration mapping loops
                 canaryBox.innerText = `🟢 STANDBY: Network operating within normal thermodynamic bounds.`;
-                canaryBox.style.color = 'var(--green)';
-                canaryBox.style.borderColor = 'var(--border)';
-                
-                injectCanary.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ SYSTEM SILENT</strong>`;
-                injectCanary.style.color = 'var(--green)';
-                
-                document.body.classList.remove('alarm-active');
-                const crosshair = document.getElementById('collision-crosshair'); 
-                if (crosshair) crosshair.style.display = 'none';
+                canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
+                injectCanaryNode.innerHTML = `➔ Limits: [ ${p_collapse.toFixed(2)} vs ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ SYSTEM SILENT</strong>`;
+                injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
+                const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none';
             }
         }
+        
+        const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
+        const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
+        const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
+
+        if (gCore && nodeEx && nodeAu && nodeIn && gShields) {
+            if (timelineMode === '3d' || timelineMode === 'fib') {
+                let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
+                let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
+                gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+                nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y);
+                nodeAu.setAttribute('cx', pt_au.x); nodeAu.setAttribute('cy', pt_au.y);
+                nodeIn.setAttribute('cx', pt_in.x); nodeIn.setAttribute('cy', pt_in.y);
+                gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
+                if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
+            } else {
+                let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160; let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
+                gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+                nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y);
+                nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y);
+                nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y);
+                let sh_size = (state[20] && state[24]) ? 100 : ((state[20] || state[24]) ? 55 : 0);
+                gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
+                if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
+            }
+        }
+        
+        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; });
+        let intVal = parseInt(binStr, 2);
+        const outRaw = document.getElementById('raw-string-output'); 
+        if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | OCT: 0o${intVal.toString(8)} | DEC: ${intVal} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
+        
+        const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
+        compileKatexExpressions();
+    }
+
 
         
         const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
