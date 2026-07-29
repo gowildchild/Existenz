@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Existenz Platform Matrix Simulator / Crude Edition</title>
     
-    <!-- HIGH-VELOCITY PRODUCTION RE-COMPILING KATEX MATH ENGINE -->
+    <!-- PRODUCTION RE-COMPILING KATEX MATH ENGINE -->
     <link rel="stylesheet" href="https://jsdelivr.net">
     <script defer src="https://jsdelivr.net"></script>
     <script defer src="https://jsdelivr.net" onload="renderMathInElement(document.body);"></script>
@@ -29,7 +29,7 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Strict Single-Page App Compliance Bounds */
+            overflow: hidden; /* Strict Single-Page App Bounds */
         }
         body.alarm-active {
             animation: redAlertFlash 1.5s infinite alternate;
@@ -120,8 +120,10 @@
             gap: 4px;
             flex-shrink: 0;
         }
-        
-        /* Interactive SVG Viewport Scaling Container Matrix Properties */
+        #matrix-vis-container {
+            width: 100%; height: 100%; max-height: 340px; display: flex; 
+            justify-content: center; align-items: center; overflow: hidden; position: relative;
+        }
         #matrix-vis {
             transform-origin: center center;
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -134,11 +136,10 @@
     <div>
         <h1>Existenz Platform Matrix Simulator / Crude Edition</h1>
     </div>
-    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[<a href="https://github.com/gowildchild/Existenz/">CORE</a>: V0.76-KATEX-ENGINE]</div>
+    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[SYSTEM: V0.61-KATEX-ENGINE]</div>
 </header>
 
 <div class="grid">
-    <!-- LEFT QUADRANT PANEL LAYOUTS -->
     <div class="column">
         <div class="panel" style="flex-shrink: 0;">
             <h2>1 | Parameter Control & Vault Recovery Engine</h2>
@@ -197,9 +198,7 @@
                 <button class="btn" onclick="loadScenario(25)">25. Harmonic Optimum</button>
             </div>
         </div>
-
     </div>
-    <!-- RIGHT QUADRANT SYSTEM VECTOR LAYERS -->
     <div class="column">
         <div class="panel" style="flex-grow: 1.2; justify-content: center; align-items: center; position: relative; overflow: hidden;">
             <div style="position: absolute; top: 6px; left: 6px; z-index: 10;">
@@ -208,33 +207,31 @@
             <div style="position: absolute; top: 6px; right: 6px; z-index: 10; display: flex; gap: 2px;">
                 <button class="btn" id="btn-timeline-spiral" onclick="setTimelineMode('spiral')">Spiral</button>
                 <button class="btn" id="btn-timeline-linear" onclick="setTimelineMode('linear')">Linear</button>
-                <button class="btn btn-active" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>
+                <button class="btn" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>
                 <button class="btn" id="btn-timeline-fib" onclick="setTimelineMode('fib')">Fibonacci Collision</button>
             </div>
             
-            <div style="width: 100%; height: 100%; max-height: 340px; display: flex; justify-content: center; align-items: center;">
+            <div id="matrix-vis-container">
                 <svg id="matrix-vis" viewBox="0 0 400 340" style="background:#020204; border:1px solid #121222; border-radius:6px; width: 100%; height: 100%;">
-                    <g id="grid-bg"></g>
+                    <!-- BACKGROUND TRACK LAYERS -->
+                    <path id="fibonacci-spiral-track" fill="none" stroke="rgba(255, 0, 170, 0.15)" stroke-width="1.5" style="display: none;" />
                     <path id="timeline-path" fill="none" stroke="#121222" stroke-width="1.5" />
                     <g id="timeline-ticks"></g>
                     
-                    <!-- DYNAMIC GEOMETRIC MORPHING VECTOR OVERLAYS -->
+                    <!-- GEOMETRIC BOUNDS FORM WORKSPACES -->
                     <polygon id="geo-shields" points="200,40 340,170 200,300 60,170" fill="rgba(0, 255, 170, 0.02)" stroke="#00ffaa" stroke-width="1.2" stroke-dasharray="3" />
                     <polygon id="geo-core" points="200,100 270,220 130,220" fill="rgba(0, 240, 255, 0.08)" stroke="#00f0ff" stroke-width="1.8" />
                     
-                    <!-- ACTIVE SYSTEM VERTICES GRAPH NODES -->
                     <circle id="node-existence" cx="200" cy="100" r="4" fill="#fff" stroke="#ff00aa" stroke-width="1.5" />
                     <circle id="node-autonomy" cx="270" cy="220" r="4" fill="#fff" stroke="#00f0ff" stroke-width="1.5" />
                     <circle id="node-integrity" cx="130" cy="220" r="4" fill="#fff" stroke="#00ffaa" stroke-width="1.5" />
                     
-                    <!-- CRITICAL COORDINATES TEXT ANCHORS INDICATORS -->
                     <g id="spatial-labels" style="font-family: monospace; font-size: 8px; font-weight: bold; pointer-events: none;">
                         <text id="lbl-existence" x="210" y="98" fill="#ff00aa">EXISTENCE (B0)</text>
                         <text id="lbl-autonomy" x="280" y="224" fill="#00f0ff">AUTONOMY (B1)</text>
                         <text id="lbl-integrity" x="70" y="224" fill="#00ffaa">INTEGRITY (B2)</text>
                     </g>
                     
-                    <!-- GLOWING INTERACTIVE FIBONACCI CROSSHAIR BOUNDS -->
                     <g id="collision-crosshair" style="display: none;">
                         <circle id="collision-point" cx="200" cy="160" r="12" fill="none" stroke="#ff00aa" stroke-width="1.5" stroke-dasharray="2" />
                         <line id="collision-line-h" x1="40" y1="160" x2="360" y2="160" stroke="rgba(255, 0, 170, 0.35)" stroke-width="1" />
@@ -257,19 +254,16 @@
                     </div>
                     <div id="equation-p-collapse" class="formula-box" style="margin: 0; width: 65%; font-size: 0.85rem;"></div>
                 </div>
-
                 <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 2px;">
                     <label>Orthogonal Intersection Space Vector Capacity:</label>
                     <div id="ortho-output" style="font-weight:bold; color:var(--green); margin:1px 0; font-size:0.75rem;">0</div>
                     <div id="equation-ortho" class="formula-box" style="font-size: 0.85rem;"></div>
                 </div>
-
                 <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 2px;">
                     <label>Canary Circuit Event Trigger Metric (<span id="katex-c-label"></span>):</label>
                     <div id="canary-output" style="font-weight:bold; margin:1px 0; font-size:0.75rem;">SILENT</div>
                     <div id="equation-canary" class="formula-box" style="font-size: 0.85rem;"></div>
                 </div>
-
                 <div class="raw-string" id="raw-string-output">0b0000...</div>
             </div>
         </div>
@@ -321,12 +315,10 @@
         const btn = document.getElementById('btn-zoom');
         if (isZoomed) {
             vis.style.transform = "scale(2)";
-            btn.className = "btn btn-active";
-            btn.innerText = "Zoom: 2x";
+            btn.className = "btn btn-active"; btn.innerText = "Zoom: 2x";
         } else {
             vis.style.transform = "scale(1)";
-            btn.className = "btn";
-            btn.innerText = "Zoom: 1x";
+            btn.className = "btn"; btn.innerText = "Zoom: 1x";
         }
     }
 
@@ -344,18 +336,19 @@
     function restoreFromVault() {
         const val = document.getElementById('vault-string').value.trim();
         if (val.startsWith("EX-")) {
-            let hex = val.split("-")[1];
-            let bin = parseInt(hex, 16).toString(2).padStart(Object.keys(BITS).length, '0');
+            let hex = val.split("-");
+            let bin = parseInt(hex[1], 16).toString(2).padStart(Object.keys(BITS).length, '0');
             Object.keys(BITS).forEach((b, idx) => {
                 state[b] = bin[idx] === "1";
-                document.getElementById(`bit-${b}`).checked = state[b];
+                const el = document.getElementById(`bit-${b}`);
+                if (el) el.checked = state[b];
             });
             calculateMatrix();
         }
     }
 
     function project3D(x, y, z) {
-        const cx = 200, cy = 160; // Absolute Geometric Origin Center Points
+        const cx = 200, cy = 160;
         return { x: cx + (x * 0.8) - (y * 0.8), y: cy + (x * 0.4) + (y * 0.4) - z };
     }
 
@@ -369,11 +362,13 @@
 
     function renderTimelineBackground() {
         const path = document.getElementById('timeline-path');
+        const spiralTrack = document.getElementById('fibonacci-spiral-track');
         const ticks = document.getElementById('timeline-ticks');
         ticks.innerHTML = '';
         document.getElementById('collision-crosshair').style.display = 'none';
+        spiralTrack.style.display = 'none';
         
-        if (timelineMode === 'spiral' || timelineMode === 'fib') {
+        if (timelineMode === 'spiral') {
             let points = [];
             for (let theta = 0; theta < 25; theta += 0.15) {
                 let r = 6 + (theta * 4.5);
@@ -381,6 +376,23 @@
                 points.push(`${x},${y}`);
             }
             path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
+        } else if (timelineMode === 'fib') {
+            // PURE LOGARITHMIC FIBONACCI GOLDEN SPIRAL VISUAL CANVAS RENDERER
+            let points = [];
+            const a = 3.0; const b = 0.14; // Derived mathematically from golden ratio limits
+            for (let theta = 0; theta < 28; theta += 0.08) {
+                let r = a * Math.exp(b * theta);
+                let x = 200 + r * Math.cos(theta); let y = 160 + r * Math.sin(theta);
+                if (r < 170) {
+                    points.push(`${x},${y}`);
+                    if (Math.floor(theta * 10) % 20 === 0) {
+                        ticks.innerHTML += `<circle cx="${x}" cy="${y}" r="2.5" fill="#ff00aa" opacity="0.75"/>`;
+                    }
+                }
+            }
+            spiralTrack.setAttribute('d', 'M ' + points.join(' L '));
+            spiralTrack.style.display = 'block';
+            path.setAttribute('d', 'M0,0'); // Strips alternative timeline backgrounds
         } else if (timelineMode === 'linear') {
             path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
             for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
@@ -417,150 +429,116 @@
                 katex.render("\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum ( \\mathcal{I}_i \\cdot \\mathcal{A}_i )}{1 - \\mathcal{D}_{\\text{shield}}}", document.getElementById('equation-p-collapse'));
                 katex.render("\\langle \\mathbf{V}_{\\text{integrity}}, \\mathbf{V}_{\\text{disability}} \\rangle = \\sum_{b=0}^{127} (\\text{bit}_2 \\cdot \\text{bit}_5) = 0", document.getElementById('equation-ortho'));
                 katex.render("\\mathcal{C}_{\\text{canary}} = \\Theta \\left( \\frac{d}{\\partial t} \\sum \\mathcal{I}_i - \\mathcal{R}_{\\text{lattice}} \\right) \\implies \\mathcal{S}_{\\text{alert}}", document.getElementById('equation-canary'));
-            } catch(e) { console.warn("Pipeline buffer tracking reset."); }
+            } catch(e) { console.warn("Pipeline processing error bypassed."); }
         }
     }
 
-function calculateMatrix() {
-    const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
-    const orthoElement = document.getElementById('ortho-output');
-    
-    if (state[2] && state[5]) {
-        orthoElement.innerHTML = `<span style="color:var(--green);">[AFTER FIX - SECURE]:</span> Dot product equals exactly ZERO. Processing constraints are orthogonal. Exploitation is blocked.`;
-    } else {
-        orthoElement.innerHTML = `<span style="color:#e08400;">[BEFORE FIX - VULNERABLE]:</span> Bit 5 inactive. Relies on ancient reductions. Vulnerable creator spaces are exposed to resource plundering.`;
-    }
-
-    // ADVANCED COEFFICIENT TRACKING PIPELINE (INTEGRATING NEW CORE PRIMITIVES)
-    let noise = 0.5;
-    if (!state[0]) noise += 5.0; // Threat against Existence (B0)
-    if (!state[1]) noise += 4.0; // Coercion / Autonomy Loss (B1)
-    if (!state[2]) noise += 6.0; // Character Assassination / Integrity Void (B2)
-    if (!state[3]) noise += 3.5; // Psychological Trauma / Cyber-harassment (B3)
-    if (!state[4]) noise += 4.5; // Physical Vessel Degradation / Asset Locks (B4)
-    if (!state[7]) noise += 3.5; // Hard Drive Server Plundering / Property Strip (B7)
-    if (!state[8]) noise += 2.5; // Spatiotemporal Tracking / Presence Exposure (B8)
-    if (state[26]) noise += 5.5; // Core Alliance Trust Smash (B26)
-
-    let shields = 0.0; 
-    if (state[20]) shields += 0.40; 
-    if (state[24]) shields += 0.40;
-    
-    // Scale protection bounds if the physical or psychological baseline fails
-    if (!state[3] || !state[4]) shields *= 0.5;
-
-    let p_collapse = noise / (1.0 - Math.min(shields, 0.95));
-    document.getElementById('p-collapse-output').innerText = p_collapse.toFixed(2);
-
-    const canaryBox = document.getElementById('canary-output');
-    if (p_collapse >= poppertimeThreshold) {
-        canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`;
-        canaryBox.style.color = 'var(--pink)';
-        document.body.classList.add('alarm-active');
-            
-        if (timelineMode === 'fib') {
-            // Compute the exact collision target coordinate matching the current P_collapse intensity scale
-            const targetTheta = Math.min(p_collapse * 2.2, 20);
-            const targetR = 5.0 * Math.exp(0.14 * targetTheta);
-            const colX = 200 + targetR * Math.cos(targetTheta);
-            const colY = 160 + targetR * Math.sin(targetTheta);
-                
-            const crosshair = document.getElementById('collision-crosshair');
-            document.getElementById('collision-point').setAttribute('cx', colX);
-            document.getElementById('collision-point').setAttribute('cy', colY);
-            document.getElementById('collision-line-h').setAttribute('y1', colY);
-            document.getElementById('collision-line-h').setAttribute('y2', colY);
-            document.getElementById('collision-line-v').setAttribute('x1', colX);
-            document.getElementById('collision-line-v').setAttribute('x2', colX);
-                
-            crosshair.style.display = 'block';
+    function calculateMatrix() {
+        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
+        const orthoElement = document.getElementById('ortho-output');
+        
+        if (state && state) {
+            orthoElement.innerHTML = `<span style="color:var(--green);">[AFTER FIX - SECURE]:</span> Dot product equals exactly ZERO. Processing constraints are orthogonal. Exploitation is blocked.`;
+        } else {
+            orthoElement.innerHTML = `<span style="color:#e08400;">[BEFORE FIX - VULNERABLE]:</span> Bit 5 inactive. Relies on ancient reductions. Vulnerable creator spaces are exposed to resource plundering.`;
         }
-    } else {
-        canaryBox.innerText = `🟢 SAFE: Standby network operating within thermodynamic bounds.`;
-        canaryBox.style.color = 'var(--green)';
-        document.body.classList.remove('alarm-active');
-        document.getElementById('collision-crosshair').style.display = 'none';
+
+        let noise = 0.5;
+        if (!state) noise += 5.0; if (!state) noise += 4.0; if (!state) noise += 6.0;
+        if (!state) noise += 3.5; if (!state) noise += 4.5; if (!state) noise += 3.5;
+        if (!state) noise += 2.5; if (state) noise += 5.5;
+
+        let shields = 0.0; if (state) shields += 0.40; if (state) shields += 0.40;
+        if (!state || !state) shields *= 0.5;
+
+        let p_collapse = noise / (1.0 - Math.min(shields, 0.95));
+        document.getElementById('p-collapse-output').innerText = p_collapse.toFixed(2);
+
+        const canaryBox = document.getElementById('canary-output');
+        if (p_collapse >= poppertimeThreshold) {
+            canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`;
+            canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+            if (timelineMode === 'fib') {
+                const targetTheta = Math.min(p_collapse * 1.5, 26);
+                const targetR = 3.0 * Math.exp(0.14 * targetTheta);
+                const colX = 200 + targetR * Math.cos(targetTheta); const colY = 160 + targetR * Math.sin(targetTheta);
+                const crosshair = document.getElementById('collision-crosshair');
+                document.getElementById('collision-point').setAttribute('cx', colX); document.getElementById('collision-point').setAttribute('cy', colY);
+                document.getElementById('collision-line-h').setAttribute('y1', colY); document.getElementById('collision-line-h').setAttribute('y2', colY);
+                document.getElementById('collision-line-v').setAttribute('x1', colX); document.getElementById('collision-line-v').setAttribute('x2', colX);
+                crosshair.style.display = 'block';
+            }
+        } else {
+            canaryBox.innerText = `🟢 SAFE: Standby network operating within thermodynamic bounds.`;
+            canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
+            document.getElementById('collision-crosshair').style.display = 'none';
+        }
+
+        const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
+
+        if (timelineMode === '3d') {
+            let ex_val = state ? 75 : 0; let au_val = state ? 75 : 0; let in_val = state ? 75 : 0;
+            let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
+            document.getElementById('geo-core').setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+            document.getElementById('node-existence').setAttribute('cx', pt_ex.x); document.getElementById('node-existence').setAttribute('cy', pt_ex.y);
+            document.getElementById('node-autonomy').setAttribute('cx', pt_au.x);   document.getElementById('node-autonomy').setAttribute('cy', pt_au.y);
+            document.getElementById('node-integrity').setAttribute('cx', pt_in.x);  document.getElementById('node-integrity').setAttribute('cy', pt_in.y);
+            document.getElementById('geo-shields').setAttribute('points', '0,0 0,0 0,0 0,0');
+            lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2);
+            lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8);
+            lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6);
+        } else {
+            let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let au_y = state ? 230 : 160; let in_x = state ? 120 : 200; let in_y = state ? 230 : 160;
+            document.getElementById('geo-core').setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+            document.getElementById('node-existence').setAttribute('cx', 200); document.getElementById('node-existence').setAttribute('cy', ex_y);
+            document.getElementById('node-autonomy').setAttribute('cx', au_x); document.getElementById('node-autonomy').setAttribute('cy', au_y);
+            document.getElementById('node-integrity').setAttribute('cx', in_x); document.getElementById('node-integrity').setAttribute('cy', in_y);
+            let sh_size = state && state ? 100 : (state || state ? 55 : 0);
+            document.getElementById('geo-shields').setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
+            lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2);
+            lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2);
+            lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2);
+        }
+
+        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
+        document.getElementById('raw-string-output').innerText = "0b" + binStr + " [Live Registry Track]";
+        document.getElementById('vault-string').value = generateVaultString();
+        compileKatexExpressions();
     }
-
-
-    // GEOMETRIC TRANSFORM MULTI-MODE ASSIGNMENTS ENGINE
-    const lblEx = document.getElementById('lbl-existence');
-    const lblAu = document.getElementById('lbl-autonomy');
-    const lblIn = document.getElementById('lbl-integrity');
-
-    if (timelineMode === '3d') {
-        let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
-        let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
-        
-        document.getElementById('geo-core').setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
-        document.getElementById('node-existence').setAttribute('cx', pt_ex.x); document.getElementById('node-existence').setAttribute('cy', pt_ex.y);
-        document.getElementById('node-autonomy').setAttribute('cx', pt_au.x);   document.getElementById('node-autonomy').setAttribute('cy', pt_au.y);
-        document.getElementById('node-integrity').setAttribute('cx', pt_in.x);  document.getElementById('node-integrity').setAttribute('cy', pt_in.y);
-        document.getElementById('geo-shields').setAttribute('points', '0,0 0,0 0,0 0,0');
-        
-        lblEx.setAttribute('x', pt_ex.x + 8);  lblEx.setAttribute('y', pt_ex.y + 2);
-        lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8);
-        lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6);
-    } else {
-        let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160; let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
-        
-        document.getElementById('geo-core').setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
-        document.getElementById('node-existence').setAttribute('cx', 200); document.getElementById('node-existence').setAttribute('cy', ex_y);
-        document.getElementById('node-autonomy').setAttribute('cx', au_x); document.getElementById('node-autonomy').setAttribute('cy', au_y);
-        document.getElementById('node-integrity').setAttribute('cx', in_x); document.getElementById('node-integrity').setAttribute('cy', in_y);
-        let sh_size = state[20] && state[24] ? 100 : (state[20] || state[24] ? 55 : 0);
-        document.getElementById('geo-shields').setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
-        
-        lblEx.setAttribute('x', 210);  lblEx.setAttribute('y', ex_y - 2);
-        lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2);
-        lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2);
-    }
-
-    let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
-    document.getElementById('raw-string-output').innerText = "0b" + binStr + " [Live Registry Track]";
-    document.getElementById('vault-string').value = generateVaultString();
-    compileKatexExpressions();
-}
 
     function loadScenario(id) {
         const scenarios = {
-            1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },  // Plato Flaw
-            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: false, 24: false, 26: false }, // Ableism Attack
-            3:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: true, 24: false, 26: false },  // Amsterdam Strip
-            4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 20: false, 24: false, 26: true }, // Noise Burst
-            5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: true },  // Core Breach
-            6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false },   // Standby Opt
-            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },  // Exploitation Blk
-            8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: false, 26: false },  // Realist Balanced
-            9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },   // Cyber Swarm
-            10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 20: false, 24: false, 26: true }, // TOTAL COLLAPSE
-            11: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },  // Psychological Lock
-            12: { 0: true, 1: true, 2: true, 3: true, 4: false, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false }, // Vessel Sabotage
-            13: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: true, 24: false, 26: false },  // Spatiotemporal Hunt
-            14: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false }, // Corporate Data Mine
-            15: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true }, // Sovereign Breach
-            16: { 0: true, 1: true, 2: false, 3: false, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false }, // Algorithmic Bias
-            17: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: true, 20: false, 24: true, 26: false },  // Proxy Extortion
-            18: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false }, // Network Deletion
-            19: { 0: true, 1: true, 2: false, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true },  // Forensic Erasure
-            20: { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 20: false, 24: false, 26: false }, // Asymmetric Strain
-            21: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: true, 26: false },  // Privacy Leak
-            22: { 0: true, 1: false, 2: false, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false }, // Identity Forge
-            23: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false }, // Resource Blockade
-            24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false }, // Kinetic Threat
-            25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: true, 24: true, 26: false }     // Harmonic Optimum
+            1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: false, 24: false, 26: false },
+            3:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: true, 24: false, 26: false },
+            4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 20: false, 24: false, 26: true },
+            5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: true },
+            6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false },
+            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
+            8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: false, 26: false },
+            9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },
+            10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 20: false, 24: false, 26: true },
+            11: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },
+            12: { 0: true, 1: true, 2: true, 3: true, 4: false, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
+            13: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: true, 24: false, 26: false },
+            14: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false },
+            15: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true },
+            16: { 0: true, 1: true, 2: false, 3: false, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            17: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: true, 20: false, 24: true, 26: false },
+            18: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
+            19: { 0: true, 1: true, 2: false, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true },
+            20: { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 20: false, 24: false, 26: false },
+            21: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: true, 26: false },
+            22: { 0: true, 1: false, 2: false, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            23: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false },
+            24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: true, 24: true, 26: false }
         };
-
         state = scenarios[id];
-        Object.keys(BITS).forEach(b => {
-            const el = document.getElementById(`bit-${b}`);
-            if (el) el.checked = state[b];
-        });
+        Object.keys(BITS).forEach(b => { const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; });
         calculateMatrix();
     }
 
-
     window.addEventListener('DOMContentLoaded', () => { initSwitches(); setTimelineMode('3d'); });
 </script>
-</body>
-</html>
+    
