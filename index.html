@@ -605,13 +605,12 @@
         calculateMatrix();
     }
 
-    // SAFE BOOT INITIALIZER SYSTEM
+    // SAFE BOOT CHRONO FOR SYSTEM BUILD PARAMETERS
     window.addEventListener('DOMContentLoaded', () => { 
         initSwitches(); 
-        // Generates a deliberate asynchronous pause allowing elements to bind before parsing math
         setTimeout(() => {
             setTimelineMode('3d'); 
-        }, 150);
+        }, 250); // Gives KaTeX core libraries sufficient headroom to boot fully
     });
 </script>
 
