@@ -430,7 +430,6 @@
         if (isZoomed) { vis.style.transform = "scale(2)"; btn.className = "btn btn-active"; btn.innerText = "Zoom: 2x"; }
         else { vis.style.transform = "scale(1)"; btn.className = "btn"; btn.innerText = "Zoom: 1x"; }
     }
-
     function activateCompareTraceMode() {
         const currentPoints = document.getElementById('geo-core').getAttribute('points');
         const traceShape = document.getElementById('trace-geo-core'); const btn = document.getElementById('btn-compare');
@@ -484,9 +483,10 @@
         }
     }
 
+
     function compileKatexExpressions() {
         if (typeof katex !== 'undefined') {
-            // Explicit array index resolution hooks preventing compilation crashing
+            // FIX: Explicitly targets state variables directly by their property index keys
             let liveNoise = 0.5; 
             if (!state[0]) liveNoise += 5.0; 
             if (!state[1]) liveNoise += 4.0; 
@@ -511,7 +511,7 @@
                 if (pLabel) katex.render("P_{\\text{collapse}}", pLabel);
                 if (cLabel) katex.render("\\mathcal{C}_{\\text{canary}}", cLabel);
                 
-                // Directly interpolates current parameters inside fraction blocks
+                // Directly renders mathematical variables and current calculations on screen
                 const eqP = document.getElementById('equation-p-collapse');
                 if (eqP) katex.render(`\\mathcal{P}_{\\text{collapse}} = \\frac{${liveNoise.toFixed(2)}}{1 - ${liveShields.toFixed(2)}} = \\mathbf{${p_collapse.toFixed(2)}}`, eqP, { displayMode: true });
                 
@@ -523,9 +523,10 @@
                 let alertTrigger = p_collapse >= poppertimeThreshold ? "1 \\implies \\mathbf{ALARM}" : "0 \\implies \\mathbf{SILENT}";
                 const eqCanary = document.getElementById('equation-canary');
                 if (eqCanary) katex.render(`\\mathcal{C}_{\\text{canary}} = \\Theta \\left( ${p_collapse.toFixed(2)} - ${poppertimeThreshold.toFixed(1)} \\right) = \\mathbf{${alertTrigger}}`, eqCanary, { displayMode: true });
-            } catch (err) { console.warn("Buffered compiler framework pass safely."); }
+            } catch (err) { console.warn("Compiler formatting bypassed safely."); }
         }
     }
+
 
     function calculateMatrix() {
         const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0; const orthoElement = document.getElementById('ortho-output');
@@ -589,7 +590,7 @@
             4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 20: false, 24: false, 26: true },
             5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: true },
             6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false },
-            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
+            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false },
             8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: false, 26: false },
             9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },
             10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 20: false, 24: false, 26: true },
@@ -613,7 +614,6 @@
     }
     window.addEventListener('load', () => { initSwitches(); setTimeout(() => { setTimelineMode('fib'); const loader = document.getElementById('loading-universe'); if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); } }, 800); });
 </script>
-
 </body>
 </html>
 
