@@ -471,8 +471,7 @@
         if (state[24]) shields += 0.20; 
         if (state[26]) shields *= 0.5; 
         
-        let p_collapse = noise / (1.0 - Math.min(shields, 0.95)); const outP = document.getElementById('p-collapse-output'); if (outP) outP.innerText = p_collapse.toFixed(2);
-
+        let p_collapse = noise / (1.0 - Math.min(shields, 0.95)); 
         const outP = document.getElementById('p-collapse-output'); 
         if (outP) outP.innerText = p_collapse.toFixed(2);
         
@@ -489,7 +488,7 @@
             if (state[2] === true && state[5] === false) { 
                 orthoElement.innerHTML = `[COLLISION TRIPPED]: Warning. Integrity and disability profiles collided under ancient rule configurations.`; 
                 orthoElement.style.color = "var(--pink)"; 
-                const injOrtho = document.getElementById('live-inject-ortho');
+                injOrtho = document.getElementById('live-inject-ortho');
                 if (injOrtho) {
                     injOrtho.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>1 (Collision)</strong>`; 
                     injOrtho.style.color = "var(--pink)";
@@ -497,7 +496,7 @@
             } else { 
                 orthoElement.innerHTML = `[AFTER FIX - SECURE]: Processing constraints are orthogonal: Exploitation is blocked.`; 
                 orthoElement.style.color = "var(--green)"; 
-                const injOrtho = document.getElementById('live-inject-ortho');
+                injOrtho = document.getElementById('live-inject-ortho');
                 if (injOrtho) {
                     injOrtho.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>0 (Secure)</strong>`; 
                     injOrtho.style.color = "var(--green)";
