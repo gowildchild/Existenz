@@ -355,7 +355,10 @@
     function setTimelineMode(mode) {
         timelineMode = mode;
         const modes = ['spiral', 'linear', '3d', 'fib'];
-        modes.forEach(m => { document.getElementById(`btn-timeline-${m}`).className = mode === m ? 'btn btn-active' : 'btn'; });
+        modes.forEach(m => { 
+            const btn = document.getElementById(`btn-timeline-${m}`);
+            if (btn) btn.className = mode === m ? 'btn btn-active' : 'btn'; 
+        });
         renderTimelineBackground();
         calculateMatrix();
     }
@@ -364,9 +367,11 @@
         const path = document.getElementById('timeline-path');
         const spiralTrack = document.getElementById('fibonacci-spiral-track');
         const ticks = document.getElementById('timeline-ticks');
+        if (!path || !ticks) return;
+        
         ticks.innerHTML = '';
+        if (spiralTrack) spiralTrack.style.display = 'none';
         document.getElementById('collision-crosshair').style.display = 'none';
-        spiralTrack.style.display = 'none';
         
         if (timelineMode === 'spiral') {
             let points = [];
@@ -377,9 +382,8 @@
             }
             path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
         } else if (timelineMode === 'fib') {
-            // PURE LOGARITHMIC FIBONACCI GOLDEN SPIRAL VISUAL CANVAS RENDERER
             let points = [];
-            const a = 3.0; const b = 0.14; // Derived mathematically from golden ratio limits
+            const a = 3.0; const b = 0.14; 
             for (let theta = 0; theta < 28; theta += 0.08) {
                 let r = a * Math.exp(b * theta);
                 let x = 200 + r * Math.cos(theta); let y = 160 + r * Math.sin(theta);
@@ -390,9 +394,11 @@
                     }
                 }
             }
-            spiralTrack.setAttribute('d', 'M ' + points.join(' L '));
-            spiralTrack.style.display = 'block';
-            path.setAttribute('d', 'M0,0'); // Strips alternative timeline backgrounds
+            if (spiralTrack) {
+                spiralTrack.setAttribute('d', 'M ' + points.join(' L '));
+                spiralTrack.style.display = 'block';
+            }
+            path.setAttribute('d', 'M0,0'); 
         } else if (timelineMode === 'linear') {
             path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
             for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
@@ -411,6 +417,7 @@
         const hex = document.getElementById('hex-input').value;
         const marker = document.getElementById('hex-marker');
         const label = document.getElementById('hex-marker-label');
+        if (!marker || !label) return;
         if (hex.startsWith('0x') && hex.length >= 6) {
             let val = parseInt(hex, 16);
             let cx = 140 + ((val % 60) * 2); let cy = 110 + (((val >> 4) % 40) * 2);
@@ -423,13 +430,12 @@
 
     function compileKatexExpressions() {
         if (typeof katex !== 'undefined') {
-            try {
-                katex.render("P_{\\text{collapse}}", document.getElementById('katex-p-label'));
-                katex.render("\\mathcal{C}_{\\text{canary}}", document.getElementById('katex-c-label'));
-                katex.render("\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum ( \\mathcal{I}_i \\cdot \\mathcal{A}_i )}{1 - \\mathcal{D}_{\\text{shield}}}", document.getElementById('equation-p-collapse'));
-                katex.render("\\langle \\mathbf{V}_{\\text{integrity}}, \\mathbf{V}_{\\text{disability}} \\rangle = \\sum_{b=0}^{127} (\\text{bit}_2 \\cdot \\text{bit}_5) = 0", document.getElementById('equation-ortho'));
-                katex.render("\\mathcal{C}_{\\text{canary}} = \\Theta \\left( \\frac{d}{\\partial t} \\sum \\mathcal{I}_i - \\mathcal{R}_{\\text{lattice}} \\right) \\implies \\mathcal{S}_{\\text{alert}}", document.getElementById('equation-canary'));
-            } catch(e) { console.warn("Pipeline processing error bypassed."); }
+            // Bulletproof try/catch safety perimeters to stop raw uncompiled text fields from freezing loops
+            try { katex.render("P_{\\text{collapse}}", document.getElementById('katex-p-label')); } catch(e){}
+            try { katex.render("\\mathcal{C}_{\\text{canary}}", document.getElementById('katex-c-label')); } catch(e){}
+            try { katex.render("\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum ( \\mathcal{I}_i \\cdot \\mathcal{A}_i )}{1 - \\mathcal{D}_{\\text{shield}}}", document.getElementById('equation-p-collapse')); } catch(e){}
+            try { katex.render("\\langle \\mathbf{V}_{\\text{integrity}}, \\mathbf{V}_{\\text{disability}} \\rangle = \\sum_{b=0}^{127} (\\text{bit}_2 \\cdot \\text{bit}_5) = 0", document.getElementById('equation-ortho')); } catch(e){}
+            try { katex.render("\\mathcal{C}_{\\text{canary}} = \\Theta \\left( \\frac{d}{\\partial t} \\sum \\mathcal{I}_i - \\mathcal{R}_{\\text{lattice}} \\right) \\implies \\mathcal{S}_{\\text{alert}}", document.getElementById('equation-canary')); } catch(e){}
         }
     }
 
@@ -437,72 +443,98 @@
         const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
         const orthoElement = document.getElementById('ortho-output');
         
-        if (state && state) {
-            orthoElement.innerHTML = `<span style="color:var(--green);">[AFTER FIX - SECURE]:</span> Dot product equals exactly ZERO. Processing constraints are orthogonal. Exploitation is blocked.`;
-        } else {
-            orthoElement.innerHTML = `<span style="color:#e08400;">[BEFORE FIX - VULNERABLE]:</span> Bit 5 inactive. Relies on ancient reductions. Vulnerable creator spaces are exposed to resource plundering.`;
+        if (orthoElement) {
+            if (state[2] && state[5]) {
+                orthoElement.innerHTML = `<span style="color:var(--green);">[AFTER FIX - SECURE]:</span> Dot product equals exactly ZERO. Processing constraints are orthogonal. Exploitation is blocked.`;
+            } else {
+                orthoElement.innerHTML = `<span style="color:#e08400;">[BEFORE FIX - VULNERABLE]:</span> Bit 5 inactive. Relies on ancient reductions. Vulnerable neuroatypical creator spaces are exposed to resource plundering.`;
+            }
         }
 
         let noise = 0.5;
-        if (!state) noise += 5.0; if (!state) noise += 4.0; if (!state) noise += 6.0;
-        if (!state) noise += 3.5; if (!state) noise += 4.5; if (!state) noise += 3.5;
-        if (!state) noise += 2.5; if (state) noise += 5.5;
+        if (!state[0]) noise += 5.0; if (!state[1]) noise += 4.0; if (!state[2]) noise += 6.0;
+        if (!state[3]) noise += 3.5; if (!state[4]) noise += 4.5; if (!state[7]) noise += 3.5;
+        if (!state[8]) noise += 2.5; if (state[26]) noise += 5.5;
 
-        let shields = 0.0; if (state) shields += 0.40; if (state) shields += 0.40;
-        if (!state || !state) shields *= 0.5;
+        let shields = 0.0; if (state[20]) shields += 0.40; if (state[24]) shields += 0.40;
+        if (!state[3] || !state[4]) shields *= 0.5;
 
         let p_collapse = noise / (1.0 - Math.min(shields, 0.95));
-        document.getElementById('p-collapse-output').innerText = p_collapse.toFixed(2);
+        const outP = document.getElementById('p-collapse-output');
+        if (outP) outP.innerText = p_collapse.toFixed(2);
 
         const canaryBox = document.getElementById('canary-output');
-        if (p_collapse >= poppertimeThreshold) {
-            canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`;
-            canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
-            if (timelineMode === 'fib') {
-                const targetTheta = Math.min(p_collapse * 1.5, 26);
-                const targetR = 3.0 * Math.exp(0.14 * targetTheta);
-                const colX = 200 + targetR * Math.cos(targetTheta); const colY = 160 + targetR * Math.sin(targetTheta);
+        if (canaryBox) {
+            if (p_collapse >= poppertimeThreshold) {
+                canaryBox.innerText = `💥 CRITICAL BREAK: Threat density over-stems cellular capacity!`;
+                canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+                if (timelineMode === 'fib') {
+                    const targetTheta = Math.min(p_collapse * 1.5, 26);
+                    const targetR = 3.0 * Math.exp(0.14 * targetTheta);
+                    const colX = 200 + targetR * Math.cos(targetTheta); const colY = 160 + targetR * Math.sin(targetTheta);
+                    const crosshair = document.getElementById('collision-crosshair');
+                    if (crosshair) {
+                        document.getElementById('collision-point').setAttribute('cx', colX); document.getElementById('collision-point').setAttribute('cy', colY);
+                        document.getElementById('collision-line-h').setAttribute('y1', colY); document.getElementById('collision-line-h').setAttribute('y2', colY);
+                        document.getElementById('collision-line-v').setAttribute('x1', colX); document.getElementById('collision-line-v').setAttribute('x2', colX);
+                        crosshair.style.display = 'block';
+                    }
+                }
+            } else {
+                canaryBox.innerText = `🟢 SAFE: Standby network operating within thermodynamic bounds.`;
+                canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
                 const crosshair = document.getElementById('collision-crosshair');
-                document.getElementById('collision-point').setAttribute('cx', colX); document.getElementById('collision-point').setAttribute('cy', colY);
-                document.getElementById('collision-line-h').setAttribute('y1', colY); document.getElementById('collision-line-h').setAttribute('y2', colY);
-                document.getElementById('collision-line-v').setAttribute('x1', colX); document.getElementById('collision-line-v').setAttribute('x2', colX);
-                crosshair.style.display = 'block';
+                if (crosshair) crosshair.style.display = 'none';
             }
-        } else {
-            canaryBox.innerText = `🟢 SAFE: Standby network operating within thermodynamic bounds.`;
-            canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
-            document.getElementById('collision-crosshair').style.display = 'none';
         }
 
         const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
 
         if (timelineMode === '3d') {
-            let ex_val = state ? 75 : 0; let au_val = state ? 75 : 0; let in_val = state ? 75 : 0;
+            let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
             let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
-            document.getElementById('geo-core').setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+            
+            const gCore = document.getElementById('geo-core');
+            if (gCore) gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+            
             document.getElementById('node-existence').setAttribute('cx', pt_ex.x); document.getElementById('node-existence').setAttribute('cy', pt_ex.y);
             document.getElementById('node-autonomy').setAttribute('cx', pt_au.x);   document.getElementById('node-autonomy').setAttribute('cy', pt_au.y);
             document.getElementById('node-integrity').setAttribute('cx', pt_in.x);  document.getElementById('node-integrity').setAttribute('cy', pt_in.y);
-            document.getElementById('geo-shields').setAttribute('points', '0,0 0,0 0,0 0,0');
-            lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2);
-            lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8);
-            lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6);
+            const gShields = document.getElementById('geo-shields');
+            if (gShields) gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
+            
+            if (lblEx && lblAu && lblIn) {
+                lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2);
+                lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8);
+                lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6);
+            }
         } else {
-            let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let au_y = state ? 230 : 160; let in_x = state ? 120 : 200; let in_y = state ? 230 : 160;
-            document.getElementById('geo-core').setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+            let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160; let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
+            
+            const gCore = document.getElementById('geo-core');
+            if (gCore) gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+            
             document.getElementById('node-existence').setAttribute('cx', 200); document.getElementById('node-existence').setAttribute('cy', ex_y);
             document.getElementById('node-autonomy').setAttribute('cx', au_x); document.getElementById('node-autonomy').setAttribute('cy', au_y);
             document.getElementById('node-integrity').setAttribute('cx', in_x); document.getElementById('node-integrity').setAttribute('cy', in_y);
-            let sh_size = state && state ? 100 : (state || state ? 55 : 0);
-            document.getElementById('geo-shields').setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
-            lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2);
-            lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2);
-            lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2);
+            
+            let sh_size = state[20] && state[24] ? 100 : (state[20] || state[24] ? 55 : 0);
+            const gShields = document.getElementById('geo-shields');
+            if (gShields) gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
+            
+            if (lblEx && lblAu && lblIn) {
+                lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2);
+                lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2);
+                lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2);
+            }
         }
 
         let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
-        document.getElementById('raw-string-output').innerText = "0b" + binStr + " [Live Registry Track]";
-        document.getElementById('vault-string').value = generateVaultString();
+        const outRaw = document.getElementById('raw-string-output');
+        if (outRaw) outRaw.innerText = "0b" + binStr + " [Live Registry Track]";
+        
+        const vaultIn = document.getElementById('vault-string');
+        if (vaultIn) vaultIn.value = generateVaultString();
         compileKatexExpressions();
     }
 
@@ -541,4 +573,5 @@
 
     window.addEventListener('DOMContentLoaded', () => { initSwitches(); setTimelineMode('3d'); });
 </script>
-    
+</body>
+</html>    
