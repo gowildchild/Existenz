@@ -475,37 +475,27 @@
         const outP = document.getElementById('p-collapse-output'); 
         if (outP) outP.innerText = p_collapse.toFixed(2);
         
+        // 2. Direct plain-text value injection into the HTML metric container rows
         const injP = document.getElementById('live-inject-p');
         if (injP) {
             injP.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shields.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
-        }        
-        const injOrtho = document.getElementById('live-inject-ortho');
-        if (injOrtho) injOrtho.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>${(state[2]&&state[5])?1:0}</strong>`;
+        }
         
-        // 3. CORRECTED COLLISION LAYER: Checks for active real-world violations
+        // REPAIRED LINE: Accesses the ortho template directly without re-declaration crashes
+        const injOrthoNode = document.getElementById('live-inject-ortho');
+        if (injOrthoNode) {
+            injOrthoNode.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>${(state[2]&&state[5])?1:0}</strong>`;
+        }
+        
+        // 3. Update evaluation state readouts for orthogonality constraints
         if (orthoElement) {
-            // A logical collision only happens if Bit 2 is active but Bit 5 (Disability) has been dropped/attacked
-            if (state[2] === true && state[5] === false) { 
-                orthoElement.innerHTML = `[COLLISION TRIPPED]: Warning. Integrity and disability profiles collided under ancient rule configurations.`; 
-                orthoElement.style.color = "var(--pink)"; 
-                injOrtho = document.getElementById('live-inject-ortho');
-                if (injOrtho) {
-                    injOrtho.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>1 (Collision)</strong>`; 
-                    injOrtho.style.color = "var(--pink)";
-                }
+            if (state[2] === true && state[5] === false && state[21] === false) { 
+                orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic exclusion event detected. The inclusion axis has been compromised without firewall protection.`; orthoElement.style.color = "var(--pink)"; 
             } else { 
-                orthoElement.innerHTML = `[AFTER FIX - SECURE]: Processing constraints are orthogonal: Exploitation is blocked.`; 
-                orthoElement.style.color = "var(--green)"; 
-                injOrtho = document.getElementById('live-inject-ortho');
-                if (injOrtho) {
-                    injOrtho.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>0 (Secure)</strong>`; 
-                    injOrtho.style.color = "var(--green)";
-                }
+                orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; orthoElement.style.color = "var(--green)"; 
             }
         }
 
-
-        // 4. FIXED STATUS COUNTER PIPELINE: Explicitly maps all 14 active register weights
         // 4. Scoreboard Tally Engine: Aggregates active protected vs violated system nodes
         let secureCount = 0; 
         let brokenCount = 0; 
@@ -562,9 +552,7 @@
                 const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none';
             }
         }
-
-
-        // 6. Project morphing polygon map tracking nodes directly across the viewport plane
+        
         // 6. Project morphing polygon map tracking nodes directly across the viewport plane
         const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
         const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
@@ -592,7 +580,6 @@
             }
         }
         
-        // 7. Process full 4-Base multi-radix synchronous readouts
         let binStr = ""; 
         Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; });
         let intVal = parseInt(binStr, 2);
@@ -601,9 +588,7 @@
         
         const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
         compileKatexExpressions();
-    } // CLOSES MAIN CALCULATEMATRIX ENGINE NEATLY
-
-
+    }
 
 
     function loadScenario(id) {
