@@ -477,7 +477,7 @@
         // 4. Scoreboard Tally Engine: Aggregates active protected vs violated system nodes
         let secureCount = 0; 
         let brokenCount = 0; 
-        const activeKeys =;
+        const activeKeys = [0, 1, 2, 3, 4, 5, 7, 8, 20, 24, 26];
         
         activeKeys.forEach(k => { 
             if (k === 26) { 
