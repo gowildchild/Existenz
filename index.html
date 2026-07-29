@@ -506,6 +506,7 @@
 
 
         // 4. FIXED STATUS COUNTER PIPELINE: Explicitly maps all 14 active register weights
+        // 4. Scoreboard Tally Engine: Aggregates active protected vs violated system nodes
         let secureCount = 0; 
         let brokenCount = 0; 
         const activeKeys = [0, 1, 2, 3, 4, 5, 7, 8, 19, 20, 21, 22, 24, 26];
@@ -531,7 +532,7 @@
             else { outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; } 
         }
 
-        // 5. Update alarm alert boxes and adaptive text parameters
+        // 5. Update system alarm notifications based on poppertime lines
         const injectCanaryNode = document.getElementById('live-inject-canary'); 
         const canaryBox = document.getElementById('canary-output');
         
@@ -546,7 +547,12 @@
                     const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
                     const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5);
                     const crosshair = document.getElementById('collision-crosshair');
-                    if (crosshair) { document.getElementById('collision-point').setAttribute('cx', ptCol.x); document.getElementById('collision-point').setAttribute('cy', ptCol.y); document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); crosshair.style.display = 'block'; }
+                    if (crosshair) { 
+                        document.getElementById('collision-point').setAttribute('cx', ptCol.x); document.getElementById('collision-point').setAttribute('cy', ptCol.y); 
+                        document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); 
+                        document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); 
+                        crosshair.style.display = 'block'; 
+                    }
                 }
             } else {
                 canaryBox.innerText = `🟢 STANDBY: Network operating within normal thermodynamic bounds.`;
@@ -558,6 +564,7 @@
         }
 
 
+        // 6. Project morphing polygon map tracking nodes directly across the viewport plane
         // 6. Project morphing polygon map tracking nodes directly across the viewport plane
         const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
         const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
@@ -579,20 +586,23 @@
                 nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y);
                 nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y);
                 nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y);
-                let sh_size = (state[20] && state[21]) ? 100 : ((state[20] || state[21]) ? 55 : 0);
+                let sh_size = (state[20] && state[24]) ? 100 : ((state[20] || state[24]) ? 55 : 0);
                 gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
                 if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
             }
         }
         
-        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; });
+        // 7. Process full 4-Base multi-radix synchronous readouts
+        let binStr = ""; 
+        Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; });
         let intVal = parseInt(binStr, 2);
         const outRaw = document.getElementById('raw-string-output'); 
         if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | OCT: 0o${intVal.toString(8)} | DEC: ${intVal} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
         
         const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
         compileKatexExpressions();
-    }
+    } // CLOSES MAIN CALCULATEMATRIX ENGINE NEATLY
+
 
 
 
