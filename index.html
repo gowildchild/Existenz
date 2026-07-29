@@ -443,15 +443,26 @@
     }
 
     function compileKatexExpressions() {
+        // Direct, non-lazy DOM compilation injector bypassing browser layout race conditions
         if (typeof katex !== 'undefined') {
-            // Bulletproof try/catch safety perimeters to stop raw uncompiled text fields from freezing loops
-            try { katex.render("P_{\\text{collapse}}", document.getElementById('katex-p-label')); } catch(e){}
-            try { katex.render("\\mathcal{C}_{\\text{canary}}", document.getElementById('katex-c-label')); } catch(e){}
-            try { katex.render("\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum ( \\mathcal{I}_i \\cdot \\mathcal{A}_i )}{1 - \\mathcal{D}_{\\text{shield}}}", document.getElementById('equation-p-collapse')); } catch(e){}
-            try { katex.render("\\langle \\mathbf{V}_{\\text{integrity}}, \\mathbf{V}_{\\text{disability}} \\rangle = \\sum_{b=0}^{127} (\\text{bit}_2 \\cdot \\text{bit}_5) = 0", document.getElementById('equation-ortho')); } catch(e){}
-            try { katex.render("\\mathcal{C}_{\\text{canary}} = \\Theta \\left( \\frac{d}{\\partial t} \\sum \\mathcal{I}_i - \\mathcal{R}_{\\text{lattice}} \\right) \\implies \\mathcal{S}_{\\text{alert}}", document.getElementById('equation-canary')); } catch(e){}
+            try {
+                const pLabel = document.getElementById('katex-p-label');
+                const cLabel = document.getElementById('katex-c-label');
+                const eqP = document.getElementById('equation-p-collapse');
+                const eqOrtho = document.getElementById('equation-ortho');
+                const eqCanary = document.getElementById('equation-canary');
+
+                if (pLabel) katex.render("P_{\\text{collapse}}", pLabel);
+                if (cLabel) katex.render("\\mathcal{C}_{\\text{canary}}", cLabel);
+                if (eqP) katex.render("\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum ( \\mathcal{I}_i \\cdot \\mathcal{A}_i )}{1 - \\mathcal{D}_{\\text{shield}}}", eqP, { displayMode: true });
+                if (eqOrtho) katex.render("\\langle \\mathbf{V}_{\\text{integrity}}, \\mathbf{V}_{\\text{disability}} \\rangle = \\sum_{b=0}^{127} (\\text{bit}_2 \\cdot \\text{bit}_5) = 0", eqOrtho, { displayMode: true });
+                if (eqCanary) katex.render("\\mathcal{C}_{\\text{canary}} = \\Theta \\left( \\frac{d}{\\partial t} \\sum \\mathcal{I}_i - \\mathcal{R}_{\\text{lattice}} \\right) \\implies \\mathcal{S}_{\\text{alert}}", eqCanary, { displayMode: true });
+            } catch (err) {
+                console.warn("KaTeX pipeline render compilation buffered safely: ", err);
+            }
         }
     }
+
 
     function calculateMatrix() {
         const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
@@ -544,12 +555,15 @@
             }
         }
 
-        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
+        let binStr = ""; 
+        Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
         const outRaw = document.getElementById('raw-string-output');
         if (outRaw) outRaw.innerText = "0b" + binStr + " [Live Registry Track]";
         
         const vaultIn = document.getElementById('vault-string');
         if (vaultIn) vaultIn.value = generateVaultString();
+        
+        // FORCES COMPILER RUNTIME SYNC IMMEDIATELY DURING STATE LOADS
         compileKatexExpressions();
     }
 
