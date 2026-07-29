@@ -296,38 +296,28 @@
 
 
 <script>
-    const BITS = {
-        0:  { name: "EXISTENCE (B0)", desc: "Biological bodily presence blueprint", type: "core" },
-        1:  { name: "AUTONOMY (B1)", desc: "Sovereign execution control parameters", type: "core" },
-        2:  { name: "INTEGRITY (B2)", desc: "Internal ethical alignment and moral axis", type: "core" },
-        3:  { name: "PSYCHOLOGY (B3)", desc: "Cognitive internal state and mental peace parameters", type: "core" },
-        4:  { name: "PHYSICAL (B4)", desc: "Physical body vessel boundaries and biosensors tracking", type: "core" },
-        5:  { name: "INCLUSION (B5)", desc: "Systemic state of absolute belonging for all human variance", type: "core" },
-        7:  { name: "PROPERTY (B7)", desc: "Data vaults, hard disks, server safety bounds", type: "core" },
-        8:  { name: "PRESENCE (B8)", desc: "Real-time spatiotemporal hardware network footprint", type: "core" },
-        19: { name: "SHIELD_BASIC_RIGHTS (B19)", desc: "The primitive firewall defending physical and biological survival", type: "shield" },
-        20: { name: "SHIELD_HUMAN_RIGHTS (B20)", desc: "Institutional firewalls guarding civil and legal status", type: "shield" },
-        21: { name: "SHIELD_DIVERSITY_RIGHTS (B21)", desc: "Macro-framework enforcing diversity protections", type: "shield" },
-        24: { name: "THREAT_INTERNET_ACT (B24)", desc: "Active digital targeting, cyber-harassment, or online smear campaign", type: "threat" },
-        26: { name: "THREAT_ABLEISM_ACT (B26)", desc: "Active systemic exclusion strike committed against a citizen", type: "threat" }
+    // 1. UNIVERSAL VERIFIABLE BLUEPRINT: Integrated States, Threat Targets, and Survey Questions
+    const BITS_CONFIG = {
+        0:  { name: "EXISTENCE",        type: "core",   trigger: true,  threat_name: "THREAT_EXISTENCE",        desc: "Threat against physical life baseline blueprint", question: "Is your right to biological life presence threatened?" },
+        1:  { name: "AUTONOMY",         type: "core",   trigger: false, threat_name: "THREAT_AUTONOMY",         desc: "Coercive suppression of sovereign execution liberty", question: "Has your personal sovereign autonomy been coerced?" },
+        2:  { name: "INTEGRITY",        type: "core",   trigger: false, threat_name: "THREAT_INTEGRITY",        desc: "Compromise or infiltration of internal moral axis", question: "Is your internal moral axis compromised?" },
+        3:  { name: "PSYCHOLOGY",       type: "core",   trigger: true,  threat_name: "THREAT_PSYCHOLOGY",       desc: "Targeted psychological pressure or mental stress on family lifelines", question: "Are you experiencing cognitive distress?" },
+        4:  { name: "PHYSICAL",         type: "core",   trigger: true,  threat_name: "THREAT_PHYSICAL",         desc: "Violation of physical body vessel boundaries or family safety perimeters", question: "Have your physical body vessel bounds been crossed?" },
+        5:  { name: "INCLUSION",        type: "core",   trigger: true,  threat_name: "THREAT_INCLUSION",        desc: "Active systemic exclusion, erasure, or community isolation of atypical family members", question: "Are you systemically excluded from community belonging?" },
+        7:  { name: "PROPERTY",         type: "core",   trigger: false, threat_name: "THREAT_PROPERTY",         desc: "Unauthorized asset extraction, lockouts, or local drive theft", question: "Are your personal asset drives unsafe?" },
+        8:  { name: "PRESENCE",         type: "core",   trigger: false, threat_name: "THREAT_PRESENCE",         desc: "Illegal geolocation trace, spatial stalking, or network tracking footprint", question: "Are you subjected to unauthorized data tracking?" },
+        19: { name: "BASIC_RIGHTS",     type: "shield", trigger: false, threat_name: "THREAT_BASIC_RIGHTS",     desc: "Constitutional protection strip targeting base primitive survival", question: "Are basic survival protections stripped away?" },
+        20: { name: "HUMAN_RIGHTS",     type: "shield", trigger: false, threat_name: "THREAT_HUMAN_RIGHTS",     desc: "Civil human rights shield teardown via institutional overreach", question: "Have civil human rights shields failed to protect you?" },
+        21: { name: "DIVERSITY_RIGHTS", type: "shield", trigger: true,  threat_name: "THREAT_DIVERSITY_RIGHTS", desc: "Systemic ableistic exploitation targeting diversity safeguards", question: "Are diversity protective frameworks missing?" },
+        24: { name: "ONLINE_RIGHTS",    type: "shield", trigger: false, threat_name: "THREAT_ONLINE_RIGHTS",    desc: "Network firewall blackout assault disabling harassment defense perimeters", question: "Are active online safety filters broken?" }
     };
 
-    let state = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false };
+    // Parallel Processing Memory Arrays (Threats default to 0/False, States to 1/True)
+    let state_meta = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true };
+    let state_threat = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 19: false, 20: false, 21: false, 24: false };
+    
     let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null; let currentViewMode = 'topology';
     let hasChangedYet = false;
-
-    // COLLAPSES TEXT BLOCKS IMMEDIATELY ON INTERACTION
-    function triggerStateChange() {
-        if (!hasChangedYet) {
-            hasChangedYet = true;
-            const proc = document.getElementById('panel-proclamation');
-            if (proc) {
-                proc.style.maxHeight = '0px'; proc.style.padding = '0px';
-                proc.style.margin = '0px'; proc.style.opacity = '0';
-                setTimeout(() => { proc.style.display = 'none'; }, 400);
-            }
-        }
-    }
 
     function setViewMode(mode) {
         currentViewMode = mode;
@@ -339,79 +329,80 @@
         initSwitches(); calculateMatrix();
     }
 
+    // 2. PASSIVE SWITCHBOARD DISPLAY RENDERING PIPELINE
     function initSwitches() {
         const coresContainer = document.getElementById('cores-switches-container');
         const threatsContainer = document.getElementById('threats-switches-container');
         if (!coresContainer || !threatsContainer) return;
         
-        coresContainer.innerHTML = '';
-        threatsContainer.innerHTML = '';
-        
+        coresContainer.innerHTML = ''; threatsContainer.innerHTML = '';
         let coresHTML = ''; let threatsHTML = '';
         
-        Object.keys(BITS).forEach(bit => {
-            const config = BITS[bit];
+        Object.keys(BITS_CONFIG).forEach(bit => {
+            const config = BITS_CONFIG[bit];
             let bitStr = bit.toString(); let bitNum = parseInt(bit);
-            let isThreatType = config.type === 'threat';
             
-            let rowHTML = "";
+            // LEFT COLUMN DISPATCH: Renders state switches or diagnostic questions natively
             if (currentViewMode === 'topology') {
-                rowHTML = `
+                coresHTML += `
                     <div class="bit-row" style="padding: 4px 2px;">
-                        <div><strong>${config.name}</strong></div>
+                        <div><strong>${bitStr} | ${config.name}</strong></div>
                         <label class="switch">
-                            <input type="checkbox" id="bit-${bitStr}" ${state[bitNum] ? 'checked' : ''} onchange="triggerStateChange(); toggleBit(${bitNum})">
-                            <span class="slider" style="${isThreatType ? 'background-color:#401020;' : ''}"></span>
+                            <input type="checkbox" id="meta-${bitStr}" ${state_meta[bitNum] ? 'checked' : ''} onchange="triggerStateChange(); toggleMetaBit(${bitNum})">
+                            <span class="slider"></span>
                         </label>
                     </div>`;
             } else {
-                let questionText = ""; let isViolated = false;
-                switch(bitNum) {
-                    case 0: questionText = "Is your right to a safe biological life threatened?"; isViolated = !state[bitNum]; break;
-                    case 1: questionText = "Has your sovereign autonomy been coerced?"; isViolated = !state[bitNum]; break;
-                    case 2: questionText = "Is your internal moral axis compromised?"; isViolated = !state[bitNum]; break;
-                    case 3: questionText = "Are you experiencing cognitive distress?"; isViolated = !state[bitNum]; break;
-                    case 4: questionText = "Have your physical vessel boundaries been crossed?"; isViolated = !state[bitNum]; break;
-                    case 5: questionText = "Are you facing community exclusion or isolation?"; isViolated = !state[bitNum]; break;
-                    case 7: questionText = "Are your personal data vaults unsafe?"; isViolated = !state[bitNum]; break;
-                    case 8: questionText = "Are you subjected to digital tracking/stalking?"; isViolated = !state[bitNum]; break;
-                    case 19: questionText = "Are basic protections for survival stripped away?"; isViolated = !state[bitNum]; break;
-                    case 20: questionText = "Have civil human rights shields failed you?"; isViolated = !state[bitNum]; break;
-                    case 21: questionText = "Are diversity protections broken or missing?"; isViolated = !state[bitNum]; break;
-                    case 24: questionText = "Is an active cyber-harassment attack targeting your accounts right now?"; isViolated = state[bitNum]; break;
-                    case 26: questionText = "Is an active ableistic attack being committed against your person right now?"; isViolated = state[bitNum]; break;
-                }
-                rowHTML = `
-                    <div class="bit-row" style="padding:4px 2px; background:${isViolated?'rgba(255,0,170,0.02)':'transparent'}; border-left:2px solid ${isViolated?'var(--pink)':'transparent'}">
-                        <div style="font-size:0.7rem; color:${isViolated?'var(--pink)':'#fff'};">${questionText}</div>
+                let isViolated = !state_meta[bitNum];
+                coresHTML += `
+                    <div class="bit-row" style="padding:4px 2px; border-left:2px solid ${isViolated?'var(--pink)':'transparent'}; background:${isViolated?'rgba(255,0,170,0.02)':'transparent'}">
+                        <div style="font-size:0.7rem; color:${isViolated?'var(--pink)':'#fff'};"><strong>${bitStr}</strong> | ${config.question}</div>
                         <label class="switch">
-                            <input type="checkbox" id="bit-${bitStr}" ${isViolated ? 'checked' : ''} onchange="triggerStateChange(); toggleViolationQuestion(${bitNum})">
+                            <input type="checkbox" id="meta-${bitStr}" ${!isViolated ? 'checked' : ''} onchange="triggerStateChange(); toggleMetaViolation(${bitNum})">
                             <span class="slider" style="background-color:${isViolated?'var(--pink)':'#202030'};"></span>
                         </label>
                     </div>`;
             }
-            if (isThreatType) threatsHTML += rowHTML; else coresHTML += rowHTML;
+
+            // RIGHT COLUMN DISPATCH: Renders parallel threat events and activation triggers
+            let isThreatActive = state_threat[bitNum];
+            let triggerBadge = config.trigger ? `<span style="color:var(--pink); font-size:0.55rem; background:rgba(255,0,170,0.1); padding:1px 3px; border-radius:2px; font-weight:bold; margin-left:4px;">TRG</span>` : '';
+            
+            threatsHTML += `
+                <div class="bit-row" style="padding: 4px 2px; justify-content: space-between; background:${isThreatActive?'rgba(255,0,170,0.04)':'transparent'}" title="${config.desc}">
+                    <div style="font-size:0.65rem; color:${isThreatActive?'var(--pink)':'#8e8eaf'}; font-family:monospace; padding-right:6px;">
+                        <strong>${bitStr} | ${config.threat_name}</strong>${triggerBadge}
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="threat-${bitStr}" ${isThreatActive ? 'checked' : ''} onchange="triggerStateChange(); toggleThreatBit(${bitNum})">
+                        <span class="slider" style="background-color:#401020;"></span>
+                    </label>
+                </div>`;
         });
+        
         coresContainer.innerHTML = coresHTML;
         threatsContainer.innerHTML = threatsHTML;
     }
-    function toggleBit(bit) { 
-        const el = document.getElementById(`bit-${bit.toString()}`); 
-        if (el) state[bit] = el.checked; 
-        calculateMatrix(); 
+    // 3. CENTRAL INPUT EVENT TRACKING PIPELINE
+    function triggerStateChange() {
+        if (!hasChangedYet) {
+            hasChangedYet = true; 
+            const proc = document.getElementById('panel-proclamation');
+            if (proc) { 
+                proc.style.maxHeight = '0px'; proc.style.padding = '0px'; 
+                proc.style.margin = '0px'; proc.style.opacity = '0'; 
+                setTimeout(() => { proc.style.display = 'none'; }, 400); 
+            }
+        }
     }
 
-    function toggleViolationQuestion(bit) { 
-        const el = document.getElementById(`bit-${bit.toString()}`); 
-        if (!el) return; 
-        // Handles the structural inversion safely for threats vs protective states
-        if (bit === 24 || bit === 26) { 
-            state[bit] = el.checked; 
-        } else { 
-            state[bit] = !el.checked; 
-        } 
-        initSwitches(); 
-        calculateMatrix(); 
+    function toggleMetaBit(bit) { const el = document.getElementById(`meta-${bit.toString()}`); if (el) state_meta[bit] = el.checked; calculateMatrix(); }
+    function toggleThreatBit(bit) { const el = document.getElementById(`threat-${bit.toString()}`); if (el) state_threat[bit] = el.checked; calculateMatrix(); }
+    
+    function toggleMetaViolation(bit) {
+        const el = document.getElementById(`meta-${bit.toString()}`); if (!el) return;
+        state_meta[bit] = !el.checked; // Direct mathematical survey state inverter
+        initSwitches(); calculateMatrix();
     }
 
     // 4. VIEWPORT MAGNIFIER & ASYMMETRIC OVERLAP LAYER TRACE ENGINE
@@ -429,7 +420,6 @@
             btn.innerText = "Zoom: 1x"; 
         }
     }
-
 
     function activateCompareTraceMode() {
         const geoCore = document.getElementById('geo-core'); 
@@ -452,27 +442,63 @@
         }
     }
 
-    // 5. VAULT SECURITY ENGINE CODES
     function generateVaultString() {
-        let binaryCode = Object.keys(BITS).map(b => state[parseInt(b)] ? "1" : "0").join("");
-        let stateHex = parseInt(binaryCode, 2).toString(16).toUpperCase();
-        let traceHex = "0"; if (tracePoints) { traceHex = btoa(tracePoints.replace(/[\sL]/g, '_')).replace(/=/g, ''); }
-        return `EX-${stateHex}-${traceHex}`;
+        // 1. Bit-pack and compress the core meta state parameters layer
+        let binaryMeta = Object.keys(BITS_CONFIG).map(b => state_meta[parseInt(b)] ? "1" : "0").join("");
+        let metaHex = parseInt(binaryMeta, 2).toString(16).toUpperCase();
+        
+        // 2. Bit-pack and compress the parallel event threat actions layer
+        let binaryThreat = Object.keys(BITS_CONFIG).map(b => state_threat[parseInt(b)] ? "1" : "0").join("");
+        let threatHex = parseInt(binaryThreat, 2).toString(16).toUpperCase();
+        
+        // 3. Compress background reference silhouettes templates
+        let traceHex = "0"; 
+        if (tracePoints) { 
+            traceHex = btoa(tracePoints.replace(/[\sL]/g, '_')).replace(/=/g, ''); 
+        }
+        return `EX-${metaHex}-${threatHex}-${traceHex}`;
     }
-    function copyVaultString() { const vaultIn = document.getElementById('vault-string'); if (vaultIn) { navigator.clipboard.writeText(vaultIn.value); alert("Sync Key Captured."); } }
+
+    function copyVaultString() { 
+        const vaultIn = document.getElementById('vault-string'); 
+        if (vaultIn) { 
+            navigator.clipboard.writeText(vaultIn.value); 
+            alert("Symmetrical Universe Sync Key Captured."); 
+        } 
+    }
+
     function restoreFromVault() {
-        const valBox = document.getElementById('vault-string'); if (!valBox) return; const val = valBox.value.trim(); if (!val.startsWith("EX-")) return;
+        const valBox = document.getElementById('vault-string'); if (!valBox) return; 
+        const val = valBox.value.trim(); if (!val.startsWith("EX-")) return;
+        
         let segments = val.split("-");
-        if (segments.length >= 2) {
-            let bin = parseInt(segments, 16).toString(2).padStart(Object.keys(BITS).length, '0');
-            Object.keys(BITS).forEach((b, idx) => { state[parseInt(b)] = bin[idx] === "1"; });
-            const traceShape = document.getElementById('trace-geo-core'); const btn = document.getElementById('btn-compare');
-            if (segments && segments !== "0" && traceShape && btn) {
-                try { tracePoints = atob(segments).replace(/_/g, ' '); traceShape.setAttribute('points', tracePoints); traceShape.style.display = 'block'; btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active"; } catch(e) {}
-            } else if (traceShape && btn) { tracePoints = null; traceShape.style.display = 'none'; btn.className = "btn"; btn.innerText = "Compare Trace"; }
+        if (segments.length >= 3) {
+            // A. Decode and assign the core person state meta parameters array layers
+            let binMeta = parseInt(segments[1], 16).toString(2).padStart(Object.keys(BITS_CONFIG).length, '0');
+            Object.keys(BITS_CONFIG).forEach((b, idx) => { state_meta[parseInt(b)] = binMeta[idx] === "1"; });
+            
+            // B. Decode and assign the parallel hostile attack channels array layers
+            let binThreat = parseInt(segments[2], 16).toString(2).padStart(Object.keys(BITS_CONFIG).length, '0');
+            Object.keys(BITS_CONFIG).forEach((b, idx) => { state_threat[parseInt(b)] = binThreat[idx] === "1"; });
+            
+            // C. Decode and redraw the locked comparison geometry canvas polygon traces
+            const traceShape = document.getElementById('trace-geo-core'); 
+            const btn = document.getElementById('btn-compare');
+            if (segments[3] && segments[3] !== "0" && traceShape && btn) {
+                try { 
+                    tracePoints = atob(segments[3]).replace(/_/g, ' '); 
+                    traceShape.setAttribute('points', tracePoints); 
+                    traceShape.style.display = 'block'; 
+                    btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active"; 
+                } catch(e) {}
+            } else if (traceShape && btn) { 
+                tracePoints = null; traceShape.style.display = 'none'; 
+                btn.className = "btn"; btn.innerText = "Compare Trace"; 
+            }
             initSwitches(); calculateMatrix();
         }
     }
+
 
     // 6. GEOMETRIC PERSPECTIVE SPACE PROJECTORS
     function project3D(x, y, z) { return { x: 200 + (x * 0.8) - (y * 0.8), y: 160 + (x * 0.4) + (y * 0.4) - z }; }
@@ -516,45 +542,81 @@
     function compileKatexExpressions() { }
 
     // ==========================================================================
-    // 7. REAL-TIME CALCULATION MATRIX ENGINE & VALUE INJECTION CHANNELS
+    // 7. REAL-TIME CALCULATION MATRIX ENGINE & AUTOMATED VALUE INJECTIONS
     // ==========================================================================
     function calculateMatrix() {
-        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; const orthoElement = document.getElementById('ortho-output');
-
-        const coreKeys = [0, 1, 2, 3, 4, 7, 8];
-        const shieldKeys = [19, 20, 21, 24];        
+        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
+        const orthoElement = document.getElementById('ortho-output');
+        
         let noise = 0.5;
-        coreKeys.forEach(k => { if (state[k] === false) noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5)); });
-        
-        // ABLEISM FAULT GATE
-        if (state === true && state === false && state === false) { noise += 6.0; }
-        
-        // INTERNET THREAT FAULT GATE
-        if (state === true) { if (state === false) { noise += 5.0; } else { noise += 1.5; } }
-        
         let shieldStrength = 0.0;
-        shieldKeys.forEach(s => { if (state[s] === true) shieldStrength += 0.25; });
+        
+        // Dynamically scans and extracts the key lists from the configuration blueprint natively
+        Object.keys(BITS_CONFIG).forEach(b => {
+            let k = parseInt(b);
+            const nodeSpec = BITS_CONFIG[k];
+            
+            // A. Process Core Metadata States Baseline Noise
+            if (nodeSpec.type === "core" && state_meta[k] === false) {
+                noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5));
+            }
+            
+            // B. Process Shield Defensive Resilience Weights
+            if (nodeSpec.type === "shield" && state_meta[k] === true) {
+                shieldStrength += 0.25;
+            }
+            
+            // C. UNIVERSAL IMMUTABLE 1:1 INTERDEPENDENT CROSS-PRODUCT FAULT GATE
+            if (state_threat[k] === true) {
+                if (state_meta[k] === false) {
+                    noise += (k === 5 || k === 21) ? 6.0 : 4.5;
+                    
+                    // CASCADE OVERWRITE PASS: Automatically elevates penalty weight (+5.00) if node trigger is marked True
+                    if (nodeSpec.trigger === true) {
+                        noise += 5.0; 
+                    }
+                } else {
+                    noise += 1.2; // General background system friction parameter damping
+                }
+            }
+        });
         
         let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95));
+        // D. Update plain-text layout metrics values on screen
+        const outPNode = document.getElementById('p-collapse-output'); 
+        if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
         
-        const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
-        const injPNode = document.getElementById('live-inject-p'); if (injPNode) injPNode.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
-        const injOrthoNode = document.getElementById('live-inject-ortho'); if (injOrthoNode) { injOrthoNode.innerHTML = `➔ [ B2(${state?1:0}) • B5(${state?1:0}) ] = <strong>${(state&&!state)?1:0}</strong>`; }
+        const injPNode = document.getElementById('live-inject-p'); 
+        if (injPNode) injPNode.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
         
+        const injOrthoNode = document.getElementById('live-inject-ortho'); 
+        if (injOrthoNode) {
+            injOrthoNode.innerHTML = `➔ [ B2(${state_meta?1:0}) • B5(${state_meta?1:0}) ] = <strong>${(state_meta&&!state_meta)?1:0}</strong>`;
+        }
+        
+        // E. Update display panels layout text for orthogonality rules
         if (orthoElement) {
-            if (state === true && state === false) { orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; orthoElement.style.color = "var(--pink)"; }
-            else { orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; orthoElement.style.color = "var(--green)"; }
+            if (state_threat === true && state_meta === false) { 
+                orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; 
+                orthoElement.style.color = "var(--pink)"; 
+            } else { 
+                orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; 
+                orthoElement.style.color = "var(--green)"; 
+            }
         }
 
+        // F. Combined Dynamic Tally Engine: Evaluates exactly our 12 active bit positions
         let secureCount = 0; let brokenCount = 0;
-        const activeKeys = [...coreKeys, ...shieldKeys, 5, 24, 26];
-        
-        activeKeys.forEach(k => { 
-            if (k === 24 || k === 26) { if (state[k] === true) brokenCount++; else secureCount++; } 
-            else { if (state[k] === true) secureCount++; else brokenCount++; } 
+        Object.keys(BITS_CONFIG).forEach(b => {
+            let k = parseInt(b);
+            if (state_meta[k] === true && state_threat[k] === false) secureCount++;
+            else brokenCount++;
         });
+
         const outSec = document.getElementById('counter-secure-val'); const outBrk = document.getElementById('counter-broken-val'); const lblBrk = document.getElementById('counter-broken-label');
         if (outSec) outSec.innerText = secureCount; if (outBrk) { outBrk.innerText = brokenCount; if (brokenCount > 0) { outBrk.style.color = 'var(--pink)'; if (lblBrk) lblBrk.style.color = 'var(--pink)'; } else { outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; } }
+
+        // G. Canary Watchdog Circuit Notifications Handler
         const injectCanaryNode = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
         if (injectCanaryNode && canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
@@ -570,46 +632,84 @@
                 const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none';
             }
         }
-        const gCore = document.getElementById('geo-core'); if (gCore) { let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let in_x = state ? 120 : 200; gCore.setAttribute('points', `200,${ex_y} ${au_x},230 ${in_x},230`); }
-        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; }); let intVal = parseInt(binStr, 2);
+        // H. Paint current vector geometries across the map container viewport lines
+        const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
+        const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
+        const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
+
+        if (gCore && nodeEx && nodeAu && nodeIn && gShields) {
+            if (timelineMode === '3d' || timelineMode === 'fib') {
+                let ex_val = state_meta ? 75 : 0; let au_val = state_meta ? 75 : 0; let in_val = state_meta ? 75 : 0;
+                let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
+                gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+                nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y);
+                nodeAu.setAttribute('cx', pt_au.x); nodeAu.setAttribute('cy', pt_au.y);
+                nodeIn.setAttribute('cx', pt_in.x); nodeIn.setAttribute('cy', pt_in.y);
+                gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
+                if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
+            } else {
+                let ex_y = state_meta ? 80 : 160; let au_x = state_meta ? 280 : 200; let au_y = state_meta ? 230 : 160; let in_x = state_meta ? 120 : 200; let in_y = state_meta ? 230 : 160;
+                gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+                nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y);
+                nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y);
+                nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y);
+                let sh_size = (state_meta && state_meta) ? 100 : ((state_meta || state_meta) ? 55 : 0); 
+                gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
+                if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
+            }
+        }
+        const gCoreNode = document.getElementById('geo-core'); if (gCoreNode) { let ex_y = state_meta ? 80 : 160; let au_x = state_meta ? 280 : 200; let in_x = state_meta ? 120 : 200; gCoreNode.setAttribute('points', `200,${ex_y} ${au_x},230 ${in_x},230`); }
+        let binStr = ""; Object.keys(BITS_CONFIG).reverse().forEach(b => { binStr += state_meta[parseInt(b)] ? "1" : "0"; }); let intVal = parseInt(binStr, 2);
         const outRaw = document.getElementById('raw-string-output'); if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
         const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
-    }
+    } // CLOSES MAIN CALCULATEMATRIX ENGINE NEATLY
 
-    // 8. DATASETS & EVENT PRESETS LOOKUP MAP
+        
+    // ==========================================================================
+    // 5. IMMUTABLE HISTORICAL SHORTCUT DATASETS & SHORTCUT SHORTCUT MATRICES
+    // ==========================================================================
     function loadScenario(id) {
         triggerStateChange();
         const scenarios = {
-            1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
-            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: false, 24: false, 26: true }, // Ableism Attack Event
-            3:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false },
-            4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 24: false, 26: true },
-            5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 19: false, 20: false, 21: false, 24: false, 26: true },
-            6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true, 26: false },
-            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 24: false, 26: true },
-            8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false },
-            9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: true, 8: true, 19: true, 20: true, 21: true, 24: false, 26: true },
-            10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 19: false, 20: false, 21: false, 24: false, 26: true },
-            11: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: true, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false },
-            12: { 0: true, 1: true, 2: true, 3: true, 4: false, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
-            13: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: true, 21: true, 24: false, 26: false },
-            14: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 24: false, 26: false },
-            15: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: false, 21: false, 24: false, 26: true },
-            16: { 0: true, 1: true, 2: false, 3: false, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
-            17: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 24: true, 26: false },
-            18: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
-            19: { 0: true, 1: true, 2: false, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: false, 21: false, 24: false, 26: true },
-            20: { 0: true, 1: true, 2: true, 3: false, 4: false, 5: true, 7: true, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
-            21: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: false, 21: true, 24: true, 26: false },
-            22: { 0: true, 1: false, 2: false, 3: true, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: false, 24: false, 26: false },
-            23: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 24: false, 26: false },
-            24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: false, 7: true, 8: true, 19: false, 20: false, 21: false, 24: false, 26: false },
-            25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true, 26: false }
+            1:  { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            2:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:false, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} }, // Ableism Attack Event
+            3:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:false, 8:true, 19:true, 20:true, 21:true, 24:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            4:  { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            5:  { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:false, 7:true, 8:true, 19:false, 20:false, 21:false, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
+            6:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true, 24:true},    t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            7:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
+            8:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true, 24:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            9:  { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:true, 21:true, 24:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
+            10: { m: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
+            11: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:true, 21:true, 24:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            12: { m: {0:true, 1:true, 2:true, 3:true, 4:false, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            13: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:true, 21:true, 24:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            14: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true, 24:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            15: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:false, 24:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
+            16: { m: {0:true, 1:true, 2:false, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:true, 24:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            17: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            18: { m: {0:false, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            19: { m: {0:true, 1:true, 2:false, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:false, 24:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
+            20: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:true, 7:true, 8:true, 19:true, 20:false, 21:true, 24:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            21: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:true, 24:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            22: { m: {0:true, 1:false, 2:false, 3:true, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:false, 24:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            23: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true, 24:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            24: { m: {0:false, 1:true, 2:true, 3:true, 4:false, 5:false, 7:true, 8:true, 19:false, 20:false, 21:false, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
+            25: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true, 24:true},    t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} }
         };
         const selected = scenarios[id];
-        if (selected) { Object.keys(BITS).forEach(b => { let bNum = parseInt(b); state[bNum] = !!selected[bNum]; }); initSwitches(); calculateMatrix(); }
+
+        if (selected) {
+            Object.keys(BITS_CONFIG).forEach(b => { 
+                let bNum = parseInt(b); 
+                state_meta[bNum] = !!selected.m[bNum]; 
+                state_threat[bNum] = !!selected.t[bNum]; 
+            });
+            initSwitches(); calculateMatrix();
+        }
     }
 
+    // 6. MULTI-LAYER HARDWARE PIPELINE INITIALIZATION BOOTSTRAPPER
     window.addEventListener('load', () => {
         initSwitches();
         setTimeout(() => {
