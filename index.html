@@ -268,7 +268,6 @@
     }
 
     function generateVaultString() {
-        // Encodes the active boolean array state configuration into a clean compression string
         let binaryCode = Object.keys(BITS).map(b => state[b] ? "1" : "0").join("");
         let hexCode = parseInt(binaryCode, 2).toString(16).toUpperCase();
         return `EX-${hexCode}`;
@@ -295,28 +294,60 @@
         }
     }
 
+    function project3D(x, y, z) {
+        const cx = 200, cy = 170;
+        const screenX = cx + (x * 0.7) - (y * 0.7);
+        const screenY = cy + (x * 0.35) + (y * 0.35) - z;
+        return { x: screenX, y: screenY };
+    }
     function setTimelineMode(mode) {
         timelineMode = mode;
+        let btnContainer = document.getElementById('btn-timeline-spiral').parentElement;
+        if (!document.getElementById('btn-timeline-3d')) {
+            btnContainer.innerHTML += `<button class="btn" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>`;
+        }
         document.getElementById('btn-timeline-spiral').className = mode === 'spiral' ? 'btn btn-active' : 'btn';
         document.getElementById('btn-timeline-linear').className = mode === 'linear' ? 'btn btn-active' : 'btn';
+        document.getElementById('btn-timeline-3d').className = mode === '3d' ? 'btn btn-active' : 'btn';
         renderTimelineBackground();
+        calculateMatrix();
     }
 
     function renderTimelineBackground() {
         const path = document.getElementById('timeline-path');
         const ticks = document.getElementById('timeline-ticks');
         ticks.innerHTML = '';
+        
         if (timelineMode === 'spiral') {
             let points = [];
-            for (let theta = 0; theta < 20; theta += 0.2) {
+            for (let theta = 0; theta < 20; theta += 0.15) {
                 let r = 8 + (theta * 4.5);
                 let x = 200 + r * Math.cos(theta);
                 let y = 170 + r * Math.sin(theta);
                 points.push(`${x},${y}`);
             }
             path.setAttribute('d', 'M ' + points.join(' L '));
-        } else {
-            path.setAttribute('d', 'M 40,280 L 360,280');
+            path.setAttribute('stroke', '#121222');
+        } else if (timelineMode === 'linear') {
+            path.setAttribute('d', 'M 40,250 L 360,250');
+            path.setAttribute('stroke', '#121222');
+            for (let x = 40; x <= 360; x += 40) {
+                ticks.innerHTML += `<line x1="${x}" y1="245" x2="${x}" y2="255" stroke="#1c1c3a" stroke-width="1"/>`;
+            }
+        } else if (timelineMode === '3d') {
+            path.setAttribute('d', 'M0,0');
+            const origin = project3D(0, 0, 0);
+            const xAxis = project3D(90, 0, 0);
+            const yAxis = project3D(0, 90, 0);
+            const zAxis = project3D(0, 0, 90);
+            ticks.innerHTML += `
+                <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.5"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.5"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.5"/>
+                <text x="${xAxis.x + 5}" y="${xAxis.y + 5}" fill="#ff00aa" font-size="8">EXISTENCE [X]</text>
+                <text x="${yAxis.x - 65}" y="${yAxis.y + 5}" fill="#00f0ff" font-size="8">AUTONOMY [Y]</text>
+                <text x="${zAxis.x - 20}" y="${zAxis.y - 8}" fill="#00ffaa" font-size="8">INTEGRITY [Z]</text>
+            `;
         }
     }
 
@@ -343,7 +374,7 @@
         if (state[5] === true) {
             orthoElement.innerHTML = `<span style="color:var(--green);">[AFTER FIX - SECURE]:</span> Dot product equals exactly ZERO. Processing constraints are orthogonal. Exploitation is blocked.`;
         } else {
-            orthoElement.innerHTML = `<span style="color:#e08400;">[BEFORE FIX - VULNERABLE]:</span> Bit 5 inactive. Relies on ancient राज्य reductions. Vulnerable creator spaces are exposed to resource plundering.`;
+            orthoElement.innerHTML = `<span style="color:#e08400;">[BEFORE FIX - VULNERABLE]:</span> Bit 5 inactive. Relies on ancient reductions. Vulnerable creator spaces are exposed to resource plundering.`;
         }
 
         let noise = 0.5;
@@ -364,44 +395,54 @@
             document.body.classList.remove('alarm-active');
         }
 
-        let ex_y = state[0] ? 100 : 170; let au_x = state[1] ? 270 : 200; let au_y = state[1] ? 220 : 170; let in_x = state[2] ? 130 : 200; let in_y = state[2] ? 220 : 170;
-        document.getElementById('geo-core').setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
-        document.getElementById('node-existence').setAttribute('cy', ex_y);
-        document.getElementById('node-autonomy').setAttribute('cx', au_x); document.getElementById('node-autonomy').setAttribute('cy', au_y);
-        document.getElementById('node-integrity').setAttribute('cx', in_x); document.getElementById('node-integrity').setAttribute('cy', in_y);
-
-        let sh_size = state[20] && state[24] ? 120 : (state[20] || state[24] ? 70 : 10);
-        document.getElementById('geo-shields').setAttribute('points', `200,${170-sh_size} ${200+sh_size},170 200,${170+sh_size} ${200-sh_size},170`);
+        if (timelineMode === '3d') {
+            let ex_val = state[0] ? 70 : 0;
+            let au_val = state[1] ? 70 : 0;
+            let in_val = state[2] ? 70 : 0;
+            let pt_ex = project3D(ex_val, 0, 0);
+            let pt_au = project3D(0, au_val, 0);
+            let pt_in = project3D(0, 0, in_val);
+            document.getElementById('geo-core').setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+            document.getElementById('node-existence').setAttribute('cx', pt_ex.x); document.getElementById('node-existence').setAttribute('cy', pt_ex.y);
+            document.getElementById('node-autonomy').setAttribute('cx', pt_au.x);   document.getElementById('node-autonomy').setAttribute('cy', pt_au.y);
+            document.getElementById('node-integrity').setAttribute('cx', pt_in.x);  document.getElementById('node-integrity').setAttribute('cy', pt_in.y);
+            document.getElementById('geo-shields').setAttribute('points', '0,0 0,0 0,0 0,0');
+        } else {
+            let ex_y = state[0] ? 90 : 170; let au_x = state[1] ? 270 : 200; let au_y = state[1] ? 220 : 170; let in_x = state[2] ? 130 : 200; let in_y = state[2] ? 220 : 170;
+            document.getElementById('geo-core').setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+            document.getElementById('node-existence').setAttribute('cx', 200); document.getElementById('node-existence').setAttribute('cy', ex_y);
+            document.getElementById('node-autonomy').setAttribute('cx', au_x); document.getElementById('node-autonomy').setAttribute('cy', au_y);
+            document.getElementById('node-integrity').setAttribute('cx', in_x); document.getElementById('node-integrity').setAttribute('cy', in_y);
+            let sh_size = state[20] && state[24] ? 110 : (state[20] || state[24] ? 60 : 5);
+            document.getElementById('geo-shields').setAttribute('points', `200,${170-sh_size} ${200+sh_size},170 200,${170+sh_size} ${200-sh_size},170`);
+        }
 
         let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
         document.getElementById('raw-string-output').innerText = "0b" + binStr + " [Live Registry Track]";
         document.getElementById('vault-string').value = generateVaultString();
-        
-        // Updates MathJax container equations dynamically without lagging the editor thread
         if(window.MathJax && MathJax.typesetLazy) { MathJax.typesetLazy(); }
     }
 
     function loadScenario(id) {
         const scenarios = {
-            1:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: true, 24: false, 26: false }, // Amsterdam
-            2:  { 0: true, 1: false, 2: true, 5: false, 7: true, 20: false, 24: false, 26: false }, // Plato Flaw
-            3:  { 0: true, 1: true, 2: true, 5: false, 7: false, 20: false, 24: false, 26: true }, // Noise
-            4:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: false, 24: false, 26: true }, // Breach
-            5:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: true, 26: false }, // Equilibrium
-            6:  { 0: true, 1: false, 2: true, 5: false, 7: true, 20: false, 24: false, 26: false }, // Ableism Attack
-            7:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: false, 24: false, 26: false }, // Exploitation Shielded
-            8:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: false, 26: false }, // Balanced Realist
-            9:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: true, 24: false, 26: false }, // Swarm
-            10: { 0: false, 1: false, 2: false, 5: false, 7: false, 20: false, 24: false, 26: true } // Collapse
+            1:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: true, 24: false, 26: false }, 
+            2:  { 0: true, 1: false, 2: true, 5: false, 7: true, 20: false, 24: false, 26: false }, 
+            3:  { 0: true, 1: true, 2: true, 5: false, 7: false, 20: false, 24: false, 26: true }, 
+            4:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: false, 24: false, 26: true }, 
+            5:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: true, 26: false }, 
+            6:  { 0: true, 1: false, 2: true, 5: false, 7: true, 20: false, 24: false, 26: false }, 
+            7:  { 0: true, 1: true, 2: true, 5: true, 7: false, 20: false, 24: false, 26: false }, 
+            8:  { 0: true, 1: true, 2: true, 5: false, 7: true, 20: true, 24: false, 26: false }, 
+            9:  { 0: true, 1: true, 2: true, 5: true, 7: true, 20: true, 24: false, 26: false }, 
+            10: { 0: false, 1: false, 2: false, 5: false, 7: false, 20: false, 24: false, 26: true } 
         };
         state = scenarios[id];
         Object.keys(BITS).forEach(b => { document.getElementById(`bit-${b}`).checked = state[b]; });
         calculateMatrix();
     }
 
-    // RUN TIME BOOT
     initSwitches();
-    setTimelineMode('spiral');
+    setTimeout(() => { setTimelineMode('spiral'); }, 100);
 </script>
 </body>
 </html>
