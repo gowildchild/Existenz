@@ -380,25 +380,38 @@
                 let x = 200 + r * Math.cos(theta); let y = 160 + r * Math.sin(theta);
                 points.push(`${x},${y}`);
             }
-            path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
+            path.setAttribute('d', 'M ' + points.join(' L ')); 
+            path.setAttribute('stroke', '#121222');
         } else if (timelineMode === 'fib') {
+            // HIGH-RESOLUTION LOGARITHMIC GOLDEN SPIRAL VISUALIZATION
             let points = [];
-            const a = 3.0; const b = 0.14; 
-            for (let theta = 0; theta < 28; theta += 0.08) {
+            const a = 4.0; // Starting scale radius
+            const b = 0.1406; // Strict growth factor based on the Golden Ratio Constant (Phi = 1.618)
+            
+            // Ultra-fine step interval to force a perfectly smooth, fluid curve geometry
+            for (let theta = 0; theta < 32; theta += 0.03) {
                 let r = a * Math.exp(b * theta);
-                let x = 200 + r * Math.cos(theta); let y = 160 + r * Math.sin(theta);
-                if (r < 170) {
+                let x = 200 + r * Math.cos(theta);
+                let y = 160 + r * Math.sin(theta);
+                
+                if (r < 185) {
                     points.push(`${x},${y}`);
-                    if (Math.floor(theta * 10) % 20 === 0) {
-                        ticks.innerHTML += `<circle cx="${x}" cy="${y}" r="2.5" fill="#ff00aa" opacity="0.75"/>`;
+                    // Plot distinctive golden ratio sequence markers along the sweeping path
+                    if (Math.floor(theta * 10) % 25 === 0) {
+                        ticks.innerHTML += `<circle cx="${x}" cy="${y}" r="2" fill="#ff00aa" opacity="0.8"/>`;
                     }
                 }
             }
+            
             if (spiralTrack) {
                 spiralTrack.setAttribute('d', 'M ' + points.join(' L '));
+                // Elevate the layout attributes to cut through the background panel masks
+                spiralTrack.setAttribute('stroke', '#ff00aa'); 
+                spiralTrack.setAttribute('stroke-width', '1.5');
+                spiralTrack.setAttribute('opacity', '0.85');
                 spiralTrack.style.display = 'block';
             }
-            path.setAttribute('d', 'M0,0'); 
+            path.setAttribute('d', 'M0,0'); // Disables alternative linear layout properties
         } else if (timelineMode === 'linear') {
             path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
             for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
@@ -412,6 +425,7 @@
             `;
         }
     }
+
 
     function injectHexMarker() {
         const hex = document.getElementById('hex-input').value;
