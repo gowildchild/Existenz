@@ -1,6 +1,6 @@
 # The Birth of Human Rights and Existential Survival in Mathematical Form
 
-**Modified:** 2026-07-29 | **Created:** 2026-06-20  
+**Modified:** 2026-07-29 | **Created:** 2026-06-20
 **Research Project Proposal:** PROJECT EXISTENZ  v0.70
 **Subtitle:** Stateless Event-Driven 128-Bit Matrix for Low-Power Existential Forensic Reporting/Recording  
 **Principal Architect:** Gunther Voet (existenz@xsrv.net)  
@@ -340,7 +340,7 @@ I thank you for your attention, if you got any questions, feel free to ask me.
 
 **Gunther Voet**  
 Copyright © 2026 Gunther Voet. All Rights Reserved.  
-*Codenamed: Existenz (Cosmic Karma-driven protocol / v0.61 PoC)*
+*Codenamed: Existenz (Cosmic Karma-driven protocol / v0.70 PoC)*
 
 This documentation and the underlying reference code are free software: you can redistribute them and/or modify them under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
