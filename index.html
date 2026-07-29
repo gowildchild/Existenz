@@ -594,40 +594,40 @@
             label.style.display = 'block';
         }
     }
+
+    // const activeKeys = [0, 1, 2, 3, 4, 5, 7, 8, 19, 20, 21, 24, 26];
     
-    function compileKatexExpressions() { }
-    // 7. CORE RE-RENDERING PIPELINE & CALCULATION ENGINE
+    // ==========================================================================
+    // 7. REAL-TIME CALCULATION MATRIX ENGINE & VALUE INJECTION CHANNELS
+    // ==========================================================================
     function calculateMatrix() {
         const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
         const orthoElement = document.getElementById('ortho-output');
         
-        // 1. Scan core human status primitives to evaluate baseline environmental noise
+        // A. Scan core human status primitives to evaluate baseline environmental noise
         let noise = 0.5;
-        const activeKeys = [0, 1, 2, 3, 4, 5, 7, 8, 19, 20, 21, 24, 26];
+        const coreKeys = [0, 1, 2, 3, 4, 7, 8];
         coreKeys.forEach(k => {
             if (state[k] === false) {
                 noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5));
             }
         });
         
-        // 2. STRUCTURAL FAULT GATE: Natively processes the exclusion threat cross-product
-        let inclusionFailureFactor = state === false ? 1.0 : 0.0;
-        let activeAbleismStrike = state === true ? 1.0 : 0.0;
-        
-        // Interdependent multiplication loop handles systemic threat weights perfectly
+        // B. NATIVE TOPOLOGY FAULT GATE: Cross-product validates itself natively
+        // Ableism Threat (B26) multiplies with Inclusion Failure (1 - B5) completely natively
+        let inclusionFailureFactor = state[5] === false ? 1.0 : 0.0;
+        let activeAbleismStrike = state[26] === true ? 1.0 : 0.0;
         noise += 6.0 * inclusionFailureFactor * activeAbleismStrike;
         
-        // 3. Scan active shields to determine institutional protection limits
+        // C. Scan firewalls to compute defensive damping limits
         let shieldStrength = 0.0;
-        const activeKeys = [0, 1, 2, 3, 4, 5, 7, 8, 19, 20, 21, 22, 24, 26];
+        const shieldKeys = [19, 20, 21, 24];
         shieldKeys.forEach(s => { 
             if (state[s] === true) shieldStrength += 0.25; 
         });
         
-        let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95)); 
-        const outP = document.getElementById('p-collapse-output'); 
-        if (outP) outP.innerText = p_collapse.toFixed(2);
-        // 4. Direct plain-text value injection into the HTML metric container rows
+        let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95));
+        // D. Update plain-text layout metrics values on screen
         const outPNode = document.getElementById('p-collapse-output'); 
         if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
         
@@ -636,12 +636,12 @@
         
         const injOrthoNode = document.getElementById('live-inject-ortho'); 
         if (injOrthoNode) {
-            injOrthoNode.innerHTML = `➔ [ B2(${state?1:0}) • B5(${state?1:0}) ] = <strong>${(state&&!state)?1:0}</strong>`;
+            injOrthoNode.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>${(state[2]&&!state[5])?1:0}</strong>`;
         }
         
-        // 5. Update evaluation state readouts for orthogonality constraints
+        // E. Update display panels layout text for orthogonality rules
         if (orthoElement) {
-            if (state === true && state === false) { 
+            if (state[26] === true && state[21] === false) { 
                 orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; 
                 orthoElement.style.color = "var(--pink)"; 
             } else { 
@@ -649,10 +649,11 @@
                 orthoElement.style.color = "var(--green)"; 
             }
         }
-        // 6. Scoreboard Tally Engine: Aggregates active protected vs violated system nodes
+
+        // F. Scoreboard Tally Engine: Counts secure vs broken channels matching our 13 nodes
+        const activeKeys = [...coreKeys, ...shieldKeys, 5, 26];
         let secureCount = 0; 
         let brokenCount = 0; 
-        const activeKeys =;
         
         activeKeys.forEach(k => { 
             if (k === 26) { 
@@ -672,17 +673,12 @@
         if (outBrk) { 
             outBrk.innerText = brokenCount; 
             if (brokenCount > 0) { 
-                outBrk.style.color = 'var(--pink)'; 
-                if (lblBrk) lblBrk.style.color = 'var(--pink)'; 
+                outBrk.style.color = 'var(--pink)'; if (lblBrk) lblBrk.style.color = 'var(--pink)'; 
             } else { 
-                outBrk.style.color = '#ffffff'; 
-                if (lblBrk) lblBrk.style.color = '#668'; 
+                outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; 
             } 
         }
 
-        // 7. Watchdog Canary Circuits: Processes safety limits and trips network warnings
-        const injectCanary = document.getElementById('live-inject-canary'); 
-        const canaryBox = document.getElementById('canary-output');
         if (injectCanary && canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
                 canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; 
@@ -690,25 +686,22 @@
                 injectCanary.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; 
                 injectCanary.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
                 
-                if (timelineMode === 'fib') {
-                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
-                    const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5);
-                    const crosshair = document.getElementById('collision-crosshair');
-                    
+                if (timelineMode === 'fib') { 
+                    const targetTheta = Math.min(p_collapse * 1.5, 26); 
+                    const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
+                    const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5); 
+                    const crosshair = document.getElementById('collision-crosshair'); 
                     if (crosshair) { 
-                        // DYNAMICALLY MAPS THE POPPERTIME COEFFICIENT TO THE CROSSHAIR Zone ZONE RADIUS
                         const colPointNode = document.getElementById('collision-point');
                         if (colPointNode) {
-                            colPointNode.setAttribute('cx', ptCol.x); 
-                            colPointNode.setAttribute('cy', ptCol.y);
-                            colPointNode.setAttribute('r', (poppertimeThreshold * 4).toString()); // Physically expands bounds around danger sectors
+                            colPointNode.setAttribute('cx', ptCol.x); colPointNode.setAttribute('cy', ptCol.y);
+                            colPointNode.setAttribute('r', (poppertimeThreshold * 4).toString()); 
                         }
                         document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); 
                         document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); 
                         crosshair.style.display = 'block'; 
-                    }
+                    } 
                 }
-
             } else {
                 canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; 
                 canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
@@ -718,9 +711,10 @@
             }
         }
         
+        // H. Paint current vector geometries across the map container viewport lines
         const gCore = document.getElementById('geo-core');
         if (gCore) {
-            let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let in_x = state ? 120 : 200;
+            let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let in_x = state[2] ? 120 : 200;
             gCore.setAttribute('points', `200,${ex_y} ${au_x},230 ${in_x},230`);
         }
         
@@ -733,23 +727,23 @@
         
         const vaultIn = document.getElementById('vault-string'); 
         if (vaultIn) vaultIn.value = generateVaultString();
-    }
-    
+    } 
+    // ==========================================================================
     // 8. DATASETS & EVENT PRESETS LOOKUP MAP
-    // 8. DATASETS & EVENT PRESETS LOOKUP MAP
+    // ==========================================================================
     function loadScenario(id) {
         triggerStateChange();
         const scenarios = {
             1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
-            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: false, 24: false, 26: true }, // Ableism Attack Event (B26 Active)
+            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: false, 24: false, 26: true }, // Ableism Attack Event
             3:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false },
             4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 24: false, 26: true },
-            5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 19: false, 20: false, 21: false, 24: false, 26: true }, // Aggravated Strike Event
+            5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 19: false, 20: false, 21: false, 24: false, 26: true },
             6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true, 26: false },
-            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 24: false, 26: true }, // Threat active, shield holding
+            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 24: false, 26: true },
             8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false },
             9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: true, 8: true, 19: true, 20: true, 21: true, 24: false, 26: true },
-            10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 19: false, 20: false, 21: false, 24: false, 26: true }, // Total Collapse Event
+            10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 19: false, 20: false, 21: false, 24: false, 26: true },
             11: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: true, 8: true, 19: true, 20: true, 21: true, 24: false, 26: false },
             12: { 0: true, 1: true, 2: true, 3: true, 4: false, 5: false, 7: false, 8: true, 19: true, 20: false, 21: true, 24: false, 26: false },
             13: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: false, 19: true, 20: true, 21: true, 24: false, 26: false },
@@ -764,34 +758,26 @@
             22: { 0: true, 1: false, 2: false, 3: true, 4: true, 5: false, 7: true, 8: true, 19: true, 20: false, 21: false, 24: false, 26: false },
             23: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: false, 8: false, 19: true, 20: false, 21: true, 24: false, 26: false },
             24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: false, 7: true, 8: true, 19: false, 20: false, 21: false, 24: false, 26: false },
-            25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true, 26: false } // Harmonic Optimum
+            25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true, 26: false }
         };
         const selected = scenarios[id];
         if (selected) {
-            // Evaluates and forces values cleanly into core states and event registers
             Object.keys(BITS).forEach(b => { 
-                let bNum = parseInt(b);
-                state[bNum] = !!selected[bNum]; 
+                let bNum = parseInt(b); state[bNum] = !!selected[bNum]; 
             });
-            initSwitches(); 
-            calculateMatrix();
+            initSwitches(); calculateMatrix();
         }
     }
 
-
+    // 9. RE-SYNCHRONIZED APP HARDWARE BOOTSTRAPPER
     window.addEventListener('load', () => {
         initSwitches();
         setTimeout(() => {
             try {
                 setTimelineMode('fib');
                 const loader = document.getElementById('loading-universe');
-                if (loader) { 
-                    loader.style.opacity = '0'; 
-                    setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); 
-                }
-            } catch(e) { 
-                setTimelineMode('spiral'); 
-            }
+                if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
+            } catch(e) { setTimelineMode('spiral'); }
         }, 800);
     });
 </script>
