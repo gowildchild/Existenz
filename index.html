@@ -628,6 +628,7 @@
         
         let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95));
         // D. Update plain-text layout metrics values on screen
+        // 2. Direct plain-text value injection into the HTML metric container rows
         const outPNode = document.getElementById('p-collapse-output'); 
         if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
         
@@ -639,9 +640,9 @@
             injOrthoNode.innerHTML = `➔ [ B2(${state[2]?1:0}) • B5(${state[5]?1:0}) ] = <strong>${(state[2]&&!state[5])?1:0}</strong>`;
         }
         
-        // E. Update display panels layout text for orthogonality rules
+        // 3. Update evaluation state readouts for orthogonality constraints
         if (orthoElement) {
-            if (state[26] === true && state[21] === false) { 
+            if (state[26] === true && state[5] === false) { 
                 orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; 
                 orthoElement.style.color = "var(--pink)"; 
             } else { 
@@ -650,16 +651,21 @@
             }
         }
 
+
         // F. Scoreboard Tally Engine: Counts secure vs broken channels matching our 13 nodes
-        const activeKeys = [...coreKeys, ...shieldKeys, 5, 26];
         let secureCount = 0; 
         let brokenCount = 0; 
         
+        // STITCHES THE ARRAYS AUTOMATICALLY TO MONITOR ALL 13 VALIDATED NODES
+        const activeKeys = [...coreKeys, ...shieldKeys, 5, 26];
+        
         activeKeys.forEach(k => { 
             if (k === 26) { 
+                // For active events: true means a violation is ongoing
                 if (state[k] === true) brokenCount++; 
                 else secureCount++; 
             } else { 
+                // For core states and shields: true means a secure pillar asset
                 if (state[k] === true) secureCount++; 
                 else brokenCount++; 
             } 
@@ -679,16 +685,19 @@
             } 
         }
 
-        if (injectCanary && canaryBox) {
+        // 5. Watchdog Canary Circuit: Monitors threshold bounds safely using synchronized variables
+        const injectCanaryNode = document.getElementById('live-inject-canary'); 
+        const canaryBox = document.getElementById('canary-output');
+        
+        if (injectCanaryNode && canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
                 canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; 
                 canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
-                injectCanary.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; 
-                injectCanary.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; 
+                injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
                 
                 if (timelineMode === 'fib') { 
-                    const targetTheta = Math.min(p_collapse * 1.5, 26); 
-                    const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
+                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
                     const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5); 
                     const crosshair = document.getElementById('collision-crosshair'); 
                     if (crosshair) { 
@@ -705,29 +714,23 @@
             } else {
                 canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; 
                 canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
-                injectCanary.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; 
-                injectCanary.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
+                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; 
+                injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
                 const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none';
             }
         }
         
-        // H. Paint current vector geometries across the map container viewport lines
         const gCore = document.getElementById('geo-core');
         if (gCore) {
             let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let in_x = state[2] ? 120 : 200;
             gCore.setAttribute('points', `200,${ex_y} ${au_x},230 ${in_x},230`);
         }
         
-        let binStr = ""; 
-        Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; }); 
-        let intVal = parseInt(binStr, 2);
-        
-        const outRaw = document.getElementById('raw-string-output'); 
-        if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
-        
-        const vaultIn = document.getElementById('vault-string'); 
-        if (vaultIn) vaultIn.value = generateVaultString();
-    } 
+        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[parseInt(b)] ? "1" : "0"; }); let intVal = parseInt(binStr, 2);
+        const outRaw = document.getElementById('raw-string-output'); if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
+        const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
+    }
+
     // ==========================================================================
     // 8. DATASETS & EVENT PRESETS LOOKUP MAP
     // ==========================================================================
