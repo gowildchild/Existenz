@@ -124,9 +124,9 @@ Existenz honors nature 100% by operating with **absolute, very radical energy ef
 
 It runs like most of my applications. It bypasses global synchronization and runs on clean, single-cycle bitwise arithmetic restricted to immediate space-time neighbors: **the entire global protocol can execute on just 0.1 watts of total power.**
 
-It requires less electricity than a single biological brain cell.
-
 $$Heuristic:\ \mathcal{P}_{\text{global}} = \sum_{c=1}^{9} \left( \mathcal{E}_{\text{bitwise}} \cdot \gamma_c \right) \ll \mathcal{P}_{\text{biological}}$$
+
+It requires less electricity than a single biological brain cell.
 
 By designing the code to match the low-power harmonic architecture of the natural world, Existenz protects both the human spirit and the planetary vessel. It proves that true intelligence does not need to burn the world down to defend it. The math remains clean, the shields are watertight and the geometry of nature is finally restored to perfect and silent harmony.
 
@@ -134,6 +134,9 @@ So, better not tell a neuro-typical to be a burden for the world, because neuro-
 
 ## 7 | Architectural Blueprint (prototype core specifications)
 
+This equation formalizes the model with the exact cascading drop into an absolute and irreversible execution collapse. When deep personal betrayal occurs, your trust infrastructure doesn't just decay, it acts as a digital dead-bolt.
+
+$$\mathcal{S}_{\text{state}} = \left( \mathcal{M}_{\text{exist}} \land \neg\left(\mathcal{T}_{\text{core}} \lor \mathcal{T}_{\text{digital}}\right) \right) \implies \lim_{\mathcal{T}_{\text{core}} \to 1} \mathcal{D}_{\text{shield}} = 0$$
 
 ```python
 # ==========================================================================
@@ -214,10 +217,6 @@ class ExistentialRipples(IntFlag):
     TRUST_PERSONAL = 1 << 29 # 536870912 Intuitive Human Validation 
     TRUST_ABSOLUTE = 1 << 30 # 1073741824 The Supreme Alliance Apex Bond
 ```
-
-This equation formalizes the model with the exact cascading drop into an absolute and irreversible execution collapse. When deep personal betrayal occurs, your trust infrastructure doesn't just decay, it acts as a digital dead-bolt.
-
-$$\mathcal{S}_{\text{state}} = \left( \mathcal{M}_{\text{exist}} \land \neg\left(\mathcal{T}_{\text{core}} \lor \mathcal{T}_{\text{digital}}\right) \right) \implies \lim_{\mathcal{T}_{\text{core}} \to 1} \mathcal{D}_{\text{shield}} = 0$$
 
 
 ## 8 | How do I make a visual representation of Existenz? Not with AI!
