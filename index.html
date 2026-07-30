@@ -319,12 +319,17 @@
     };
 
     // Parallel Processing Memory Arrays (Threats default to 0/False, States to 1/True)
-    let state_core = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true, 128: true, 129: true };
-    let state_threat = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 19: false, 20: false, 21: false, 24: false, 128: false, 129: false };
+
+    let state_core = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 6: true, 7: true, 8: true, 10: true, 20: true, 30: false, 31: false, 32: true, 128: true, 129: true };
+    let state_threat = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 6: false, 7: false, 8: false, 10: false, 20: false, 30: false, 31: false, 32: false, 128: false, 129: false };
     
     let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null; let currentViewMode = 'topology';
     let forceStaticNoiseOverlay = false;
-
+    // INTERACTIVE 3D SPACE CAMERA VARIABLES (MOUSE ROTATION MAP TRACKERS)
+    let rotX = -0.5; // Controls the pitch angle (tilt)
+    let rotY = 0.6;  // Controls the yaw angle (spin rotation)
+    let isDraggingSpace = false; let previousMouseX = 0; let previousMouseY = 0;
+    
     function toggleStaticNoiseCircuit() {
         forceStaticNoiseOverlay = !forceStaticNoiseOverlay;
         const btn = document.getElementById('btn-toggle-noise');
@@ -504,13 +509,39 @@
     // ==========================================================================
     // 6. GEOMETRIC PERSPECTIVE SPACE PROJECTORS & TIMELINE CONTROL CHANNELS
     // ==========================================================================
-    function project3D(x, y, z) { 
+    function project3DF(x, y, z) { 
         return { 
             x: 200 + (x * 0.8) - (y * 0.8), 
             y: 160 + (x * 0.4) + (y * 0.4) - z 
         }; 
     }
 
+    // ==========================================================================
+    // 6. TRUE 3D ROTATABLE PERSPECTIVE LENS SPACE PROJECTORS
+    // ==========================================================================
+    function project3D(x, y, z) {
+        // 1. First Pass: Apply Pitch Rotation Matrix across the vertical plane (X-axis tilt)
+        let cosX = Math.cos(rotX); let sinX = Math.sin(rotX);
+        let y1 = y * cosX - z * sinX;
+        let z1 = y * sinX + z * cosX;
+        
+        // 2. Second Pass: Apply Yaw Rotation Matrix across the horizontal plane (Y-axis spin)
+        let cosY = Math.cos(rotY); let sinY = Math.sin(rotY);
+        let x2 = x * cosY - z1 * sinY;
+        let z2 = x * sinY + z1 * cosY;
+        
+        // 3. Focal Lens Projection Formula
+        const focalLength = 260; 
+        const cameraDistance = 180; 
+        const distanceZ = y1 + cameraDistance;
+        
+        return {
+            x: 200 + (x2 * focalLength) / distanceZ,
+            y: 160 + (z2 * focalLength) / distanceZ
+        };
+    }
+
+    
     function setTimelineMode(mode) { 
         timelineMode = mode; 
         ['spiral', 'linear', '3d', 'fib'].forEach(m => { 
@@ -813,6 +844,36 @@
     // 9. APP PIPELINE HARDWARE BOOTSTRAPPER
     window.addEventListener('load', () => {
         initSwitches();
+        
+        const interactionCanvasViewport = document.getElementById('matrix-vis');
+        if (interactionCanvasViewport) {
+            // Track mouse click down actions inside the canvas frame
+            interactionCanvasViewport.addEventListener('mousedown', (e) => {
+                isDraggingSpace = true;
+                previousMouseX = e.clientX; previousMouseY = e.clientY;
+                interactionCanvasViewport.style.cursor = 'grabbing';
+            });
+
+            // Re-calculate angles instantly when dragging mouse across screen rows
+            window.addEventListener('mousemove', (e) => {
+                if (!isDraggingSpace) return;
+                let deltaX = e.clientX - previousMouseX;
+                let deltaY = e.clientY - previousMouseY;
+                
+                rotY += deltaX * 0.007; // Speeds up or dampens horizontal spin tracking
+                rotX += deltaY * 0.007; // Speeds up or dampens vertical tilt angles
+                
+                previousMouseX = e.clientX; previousMouseY = e.clientY;
+                calculateMatrix(); // Forces your entire 3D mesh polygon wireframe to update instantly
+            });
+
+            // Disengage dragging state cleanly on mouse release
+            window.addEventListener('mouseup', () => {
+                isDraggingSpace = false;
+                if (interactionCanvasViewport) interactionCanvasViewport.style.cursor = 'grab';
+            });
+        }
+
         setTimeout(() => {
             try {
                 setTimelineMode('fib');
