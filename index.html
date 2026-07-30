@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz Platform Matrix Simulator | Gunther | FWC</title>
+    <title>Existenz Platform Matrix Simulator | Sovereign Edition</title>
     <style>
         :root {
             --cyan: #00f0ff;
@@ -24,7 +24,6 @@
             0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); border: 1px solid #440011; }
             100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); border: 1px solid var(--pink); }
         }
-        /* Universe Loading Screen Overlay Canvas */
         #loading-universe {
             position: fixed; top:0; left:0; width:100vw; height:100vh;
             background: #000000; z-index: 9999; display: flex;
@@ -54,13 +53,7 @@
         .btn { background: #0f0f1b; border: 1px solid var(--cyan); color: white; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-family: monospace; transition: 0.1s; }
         .btn:hover { background: var(--cyan); color: black; font-weight: bold; }
         .btn-active { background: var(--pink) !important; border-color: #fff !important; }
-        
-        /* Deterministic HTML Math Layout Blocks */
         .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.75rem; color: var(--cyan); }
-        .math-fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; text-align: center; padding: 0 4px; }
-        .math-numerator { border-bottom: 1px solid var(--cyan); width: 100%; padding-bottom: 2px; }
-        .math-denominator { padding-top: 2px; width: 100%; }
-        
         .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
         .input-text { background: #020205; border: 1px solid var(--border); color: #fff; padding: 3px; border-radius: 4px; font-family: monospace; font-size: 0.7rem; }
         .scenarios-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; flex-shrink: 0; }
@@ -69,34 +62,28 @@
         .intro-box { background: rgba(0, 255, 170, 0.02); border: 1px solid #102a20; padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.7rem; line-height: 1.3; color: #b5c5b5; }
     </style>
 </head>
-
 <body>
 
-<!-- Live Universe Loader Overlay Shield -->
 <div id="loading-universe">
-    <div class="loading-text">ExistenZ | Loading Universe | Please Hold</div>
+    <div class="loading-text">ExistenZ | Loading Universe Protocol | Please Hold</div>
     <div class="loading-bar"></div>
 </div>
 
 <header>
-    <div><h1>Existenz Platform Matrix Simulator / Crude Edition</h1></div>
-    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[SYSTEM: V0.76 THREAT-MATRIX]</div>
+    <div><h1>Existenz Platform Matrix Simulator / Quad-Word Grid</h1></div>
+    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[SYSTEM: V1.25 SOVEREIGN-PASSPORT]</div>
 </header>
 
 <div class="grid">
-    <!-- LEFT PANEL: ADAPTIVE WORKSPACE -->
     <div class="column">
-        <!-- ADAPTIVE VEIL CONTAINER PROCLAMATION -->
         <div class="panel" id="panel-proclamation" style="flex-shrink: 0; transition: max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease, opacity 0.3s ease; overflow: hidden; max-height: 200px;">
             <h2>0 | Architectural Proclamation to the Channels</h2>
             <div class="intro-box">
                 <strong>The Rights of Nature vs. The Flaw of Ancient Athens:</strong><br>
-                Plato's <em>Republic</em> excluded the <strong>Adunatos</strong> (atypical processing styles) to protect state efficiency. Project Existenz resolves this systemic ableism by establishing <strong>INCLUSION</strong> as an independent, universal baseline state of belonging for all human variance. Wholeness of character is mathematically detached from typicality of mind.
+                Plato's <em>Republic</em> excluded the <strong>Adunatos</strong> to protect efficiency. Project Existenz resolves this systemic ableism by establishing <strong>INCLUSION</strong> as an independent, universal baseline state of belonging for all human variance. Wholeness of character is mathematically detached from typicality of mind.
             </div>
         </div>
 
-        <!-- LIVE SWITCHES CONTROL MONITOR CONTAINER -->
-        <!-- SECTION 2: DUAL-COLUMN SYSTEM MATRICES -->
         <div class="panel" style="flex-grow: 1; display: flex; flex-direction: column; min-height: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 6px; flex-shrink: 0;">
                 <h2 style="margin: 0; border: none; padding: 0;">2 | System Topologies Matrix & Targeted Threat Environment</h2>
@@ -105,33 +92,12 @@
                     <button class="btn" id="btn-view-rights" onclick="setViewMode('rights')">Human Rights Check</button>
                 </div>
             </div>
-            
-            <!-- CORES AND THREATS SCOREBOARD TALLY TRACKER BANNER -->
-            <div style="display: flex; gap: 6px; font-family: monospace; font-size: 0.7rem; background: #020204; padding: 5px; border-radius: 4px; border: 1px solid #101020; margin-bottom: 8px; flex-shrink: 0;">
-                <div style="flex: 1; text-align: center; border-right: 1px solid #101020;">
-                    <span style="color: var(--green); font-weight: bold;">✓ SECURE VECTORS:</span> 
-                    <span id="counter-secure-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 12
-                </div>
-                <div style="flex: 1; text-align: center;">
-                    <span id="counter-broken-label" style="color: #668; font-weight: bold;">⚠️ DETECTED BREACHES:</span> 
-                    <span id="counter-broken-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 12
-                </div>
-            </div>
-
-            <!-- PARALLEL SPLIT GRID COLUMNS -->
-            <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 10px; flex-grow: 1; min-height: 0;">
-                <!-- LEFT BLOCK: EXISTENZ META PILLARS & SHIELDS -->
-                <div style="display: flex; flex-direction: column; min-height: 0;">
-                    <div style="color: var(--cyan); font-family: monospace; font-size: 0.65rem; font-weight: bold; margin-bottom: 4px; border-bottom: 1px solid #0f0f1c;">[EXISTENZ METADATA & SHIELDS]</div>
-                    <div class="scrollable-content" id="cores-switches-container" style="flex-grow: 1;"></div>
-                </div>
-                <!-- RIGHT BLOCK: MATCHING COMPACT THREAT INDUCTION CHANNELS -->
-                <div style="display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--border); padding-left: 8px;">
-                    <div style="color: var(--pink); font-family: monospace; font-size: 0.65rem; font-weight: bold; margin-bottom: 4px; border-bottom: 1px solid #0f0f1c;">[1:1 ACTING ATTACK CHANNEL]</div>
-                    <div class="scrollable-content" id="threats-switches-container" style="flex-grow: 1;"></div>
-                </div>
+            <div style="display: flex; gap: 10px; flex-grow: 1; min-height: 0; overflow: hidden;">
+                <div class="scrollable-content" id="cores-switches-container" style="flex: 1; border-right: 1px solid var(--border); padding-right: 8px;"></div>
+                <div class="scrollable-content" id="threats-switches-container" style="flex: 1;"></div>
             </div>
         </div>
+
 
 
         <!-- BOTTOM EMPIRICAL Presets SCENARIOS -->
@@ -520,17 +486,10 @@
     // ==========================================================================
     // 6. GEOMETRIC PERSPECTIVE SPACE PROJECTORS & TIMELINE CONTROL CHANNELS
     // ==========================================================================
-    function project3DF(x, y, z) { 
-        return { 
-            x: 200 + (x * 0.8) - (y * 0.8), 
-            y: 160 + (x * 0.4) + (y * 0.4) - z 
-        }; 
-    }
-
     // ==========================================================================
-    // 6. TRUE 3D ROTATABLE PERSPECTIVE LENS SPACE PROJECTORS
+    // 6. GEOMETRIC PERSPECTIVE SPACE PROJECTORS & TIMELINE CONTROL CHANNELS
     // ==========================================================================
-    function project3D(x, y, z) {
+    function project3D(x, y, z) { 
         let cosX = Math.cos(rotX); let sinX = Math.sin(rotX);
         let y1 = y * cosX - z * sinX; let z1 = y * sinX + z * cosX;
         let cosY = Math.cos(rotY); let sinY = Math.sin(rotY);
@@ -539,87 +498,22 @@
         return { x: 200 + panX + (x2 * focalLength) / distanceZ, y: 160 + panY + (z2 * focalLength) / distanceZ };
     }
 
-    function calculateMatrix() {
-        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; const orthoElement = document.getElementById('ortho-output');
-        let noise = 0.5; let shieldStrength = 0.0; let brokenCount = 0;
-        
-        Object.keys(CORE_CONFIG).forEach(b => {
-            let k = parseInt(b); const nodeSpec = CORE_CONFIG[k]; if (nodeSpec.type === "meta") return;
-            if (nodeSpec.type === "core" && state_core[k] === false) { noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5)); brokenCount++; }
-            if (nodeSpec.type === "shield" && state_core[k] === true) { shieldStrength += 0.25; }
-            if (state_threat[k] === true) {
-                if (state_core[k] === false) { noise += (k === 32) ? 25.0 : ((nodeSpec.type === "trigger") ? 14.0 : 8.5); if (nodeSpec.trigger === true) noise += 12.0; } 
-                else { noise += (k === 32) ? 5.0 : 1.5; }
-            }
-        });
-        
-        let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95));
-        const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
-        document.getElementById('live-inject-p').innerHTML = `➔ [ ${noise.toFixed(1)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
-        
-        if (orthoElement) {
-            if (state_threat[32] === true && state_core[32] === false) { orthoElement.innerHTML = `[CRITICAL BREACH]: Panic override activated on unshielded space.`; orthoElement.style.color = "var(--pink)"; }
-            else { orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal.`; orthoElement.style.color = "var(--green)"; }
-        }
-
-        const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
-        document.getElementById('live-inject-p').innerHTML = `➔ [ ${noise.toFixed(1)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
-        const injOrthoNode = document.getElementById('live-inject-ortho'); if (injOrthoNode) { injOrthoNode.innerHTML = `➔ [ B2(${state_core[2]?1:0}) • B5(${state_core[5]?1:0}) ] = <strong>${(state_core[2]&&!state_core[5])?1:0}</strong>`; }
-
-        let secureCount = 0; let failureCount = 0;
-        const trackingAxes = [...Object.keys(CORE_CONFIG).map(Number)].filter(k => CORE_CONFIG[k].type !== "meta");
-        trackingAxes.forEach(k => { if (state_core[k] === true && state_threat[k] === false) secureCount++; else failureCount++; });
-        document.getElementById('counter-secure-val').innerText = secureCount; document.getElementById('counter-broken-val').innerText = failureCount;
-
-        const injectCanaryNode = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
-        if (injectCanaryNode && canaryBox) {
-            if (p_collapse >= poppertimeThreshold) { canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)'; injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active'); } 
-            else { canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)'; injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); }
-        }
-
-        const staticOverlay = document.getElementById('tv-static-noise-layer');
-        if (staticOverlay) { if (forceStaticNoiseOverlay || p_collapse >= poppertimeThreshold) { staticOverlay.style.display = 'block'; staticOverlay.style.opacity = forceStaticNoiseOverlay ? "0.20" : Math.min(p_collapse * 0.02, 0.55).toString(); } else { staticOverlay.style.display = 'none'; } }
-
-        const metricsDashboardNode = document.getElementById('live-metrics-dashboard-sub');
-        if (metricsDashboardNode) metricsDashboardNode.innerHTML = ''; let projectedPoints = [];
-
-        trackingAxes.forEach((k, idx) => {
-            const nodeSpec = CORE_CONFIG[k]; const plotOnGraphic = (nodeSpec.visual & 1) === 1; const outputMetrics = (nodeSpec.visual & 4) === 4; const persistentView = (nodeSpec.visual & 8) === 8;
-            let isCurrentAxisBreached = (state_core[k] === false || state_threat[k] === true);
-            let prevKey = trackingAxes[idx - 1] || trackingAxes[trackingAxes.length - 1]; let nextKey = trackingAxes[idx + 1] || trackingAxes;
-            let neighborIsBreached = (state_core[prevKey] === false || state_threat[prevKey] === true || state_core[nextKey] === false || state_threat[nextKey] === true);
-
-            if (plotOnGraphic && (persistentView || isCurrentAxisBreached || neighborIsBreached)) {
-                let nodeMagnitude = state_core[k] ? 65 : 12; let theta = idx * (2 * Math.PI / trackingAxes.length);
-                let pt3D = project3D(nodeMagnitude * Math.cos(theta), nodeMagnitude * Math.sin(theta), (k * 1.5) - 30);
-                projectedPoints.push(`${pt3D.x},${pt3D.y}`);
-                let dotElement = document.getElementById('node-axis-' + k); if (dotElement) { dotElement.setAttribute('cx', pt3D.x); dotElement.setAttribute('cy', pt3D.y); dotElement.setAttribute('fill', state_core[k] ? 'var(--green)' : 'var(--pink)'); dotElement.style.display = 'block'; }
-            } else { let dotElement = document.getElementById('node-axis-' + k); if (dotElement) dotElement.style.display = 'none'; }
-
-            if (outputMetrics && metricsDashboardNode) { metricsDashboardNode.innerHTML += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #0f0f1c; padding:2px 0; font-family:monospace; font-size:0.65rem;"><span style="color:#8e8eaf;">➔ Axis ${k} (${nodeSpec.name}):</span><span style="color:${state_core[k]?'var(--green)':'var(--pink)'};">[Core: ${state_core[k]?'1':'0'} | Threat: ${state_threat[k]?'1':'0'}]</span></div>`; }
-        });
-        if (gCoreNode && projectedPoints.length > 0) gCoreNode.setAttribute('points', projectedPoints.join(' ')); else if (gCoreNode) gCoreNode.setAttribute('points', '');
-        
-        let binStr = ""; Object.keys(CORE_CONFIG).reverse().forEach(b => { if(CORE_CONFIG[b].type !== "meta") binStr += state_core[parseInt(b)] ? "1" : "0"; });
-        let intVal = parseInt(binStr, 2); document.getElementById('raw-string-output').innerText = `BIN: 0b${binStr} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
-        updateSystemChecksum();
-        const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
+    function setTimelineMode(mode) { 
+        timelineMode = mode; 
+        ['spiral', 'linear', '3d', 'fib'].forEach(m => { 
+            const b = document.getElementById(`btn-timeline-${m}`); 
+            if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; 
+        }); 
+        renderTimelineBackground(); 
+        calculateMatrix(); 
     }
 
-
-
-    function injectHexMarker() {
-        const hexBox = document.getElementById('hex-input'); if (!hexBox) return; const hex = hexBox.value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
-        if (hex.startsWith('0x') && hex.length >= 6) {
-            let val = parseInt(hex, 16); let cx = 140 + ((val % 60) * 2); let cy = 110 + (((val >> 4) % 40) * 2);
-            marker.setAttribute('cx', cx); marker.setAttribute('cy', cy); marker.setAttribute('stroke', '#' + hex.substring(2,8)); marker.style.display = 'block';
-            label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
-        }
-    }
-    function compileKatexExpressions() { }
+    function renderTimelineBackground() {}
+    function compileKatexExpressions() {}
+    function injectHexMarker() {}
 
     // ==========================================================================
-    // 7. REAL-TIME CALCULATION MATRIX ENGINE & AUTOMATED LAYER INJECTIONS
+    // 7. REAL-TIME CALCULATION MATRIX ENGINE & AUTOMATED VALUE INJECTIONS
     // ==========================================================================
     function calculateMatrix() {
         const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
@@ -629,40 +523,30 @@
         let shieldStrength = 0.0; 
         let brokenCount = 0;
         
-        // Dynamically scans and extracts parameters from the configuration blueprint natively
+        // Natively scans parameters using the true CORE_CONFIG dictionary object
         Object.keys(CORE_CONFIG).forEach(b => {
             let k = parseInt(b); 
             const nodeSpec = CORE_CONFIG[k];
+            if (nodeSpec.type === "meta") return;
             
-            // A. Process ExistentialCore States Baseline Noise
+            // A. Process state_core baseline friction noise
             if (nodeSpec.type === "core" && state_core[k] === false) { 
                 noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5)); 
                 brokenCount++; 
             }
             
-            // B. Process Base Firewall Shield Damping Weights
-            if (nodeSpec.type === "shield" && k < 100 && state_core[k] === true) { 
-                shieldStrength += 0.20; 
+            // B. Process active protection shield dampers
+            if (nodeSpec.type === "shield" && state_core[k] === true) { 
+                shieldStrength += 0.25; 
             }
             
-            // C. PROXIMAL DECENTRALIZED CIRCLE EXPANSION MATRIX
-            // Each active, trusted person proxy (Bits 128, 160, 192, 224) injects +0.15 defensive capacity
-            if (k >= 128 && k <= 224 && nodeSpec.type === "shield" && state_core[k] === true) {
-                shieldStrength += 0.15; 
-            }
-            
-            if (state_core[k] === false || state_threat[k] === true) { 
-                if (state_core[k] === false && state_threat[k] === false) {} else { brokenCount++; } 
-            }
-
-            // D. UNIVERSAL IMMUTABLE 1:1 DUAL-LAYER CROSS-PRODUCT FAULT GATE
+            // C. UNIVERSAL IMMUTABLE 1:1 DUAL-LAYER CROSS-PRODUCT FAULT GATE
             if (state_threat[k] === true) {
                 if (state_core[k] === false) {
-                    // Inject highest priority emergency metrics if Bit 24 is compromised
-                    noise += (k === 24) ? 25.0 : ((nodeSpec.type === "trigger") ? 14.0 : 8.5);
+                    noise += (k === 32) ? 25.0 : ((nodeSpec.type === "trigger" || nodeSpec.type === "ripple") ? 14.0 : 8.5);
                     if (nodeSpec.trigger === true) noise += 12.0; 
                 } else { 
-                    noise += (k === 24) ? 5.0 : 1.5; 
+                    noise += (k === 32) ? 5.0 : 1.5; 
                 }
             }
         });
@@ -670,89 +554,60 @@
         let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95));
         if (brokenCount > 3) p_collapse *= (1.0 + (brokenCount * 0.20));
 
-        // E. AUTOMATED ELECTRONIC ID TOKEN ACCESS INTERCEPTOR
-        if (p_collapse >= poppertimeThreshold) { 
-            state_core = false; 
-        } else { 
-            state_core = true; 
-        }
-        // F. Update plain-text layout metrics values on screen
-        const outPNode = document.getElementById('p-collapse-output'); 
-        if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
-        
-        const injPNode = document.getElementById('live-inject-p'); 
-        if (injPNode) injPNode.innerHTML = `➔ [ ${noise.toFixed(1)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
-        
-        const injOrthoNode = document.getElementById('live-inject-ortho'); 
-        if (injOrthoNode) { 
-            injOrthoNode.innerHTML = `➔ [ B2(${state_core?1:0}) • B5(${state_core?1:0}) ] = <strong>${(state_core&&!state_core)?1:0}</strong>`; 
+        // D. AUTOMATED ELECTRONIC ID TRUST TOKEN INTERCEPTOR LOCKOUT
+        if (state_core[30] === true && state_core[31] === true) {
+            state_core[1] = false; 
+            if (orthoElement) { orthoElement.innerHTML = `[MANDATE CONTRACT LOCKED]: Co-signature required. Dual-bit 30&31 status restricts personal autonomy parameters.`; orthoElement.style.color = "var(--pink)"; }
         }
         
-        if (orthoElement) {
-            if (state_threat === true && state_core === false) { 
-                orthoElement.innerHTML = `[CRITICAL BREACH]: Existential panic override activated on unshielded node space.`; 
-                orthoElement.style.color = "var(--pink)"; 
-            } else { 
-                orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; 
-                orthoElement.style.color = "var(--green)"; 
-            }
+        const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
+        document.getElementById('live-inject-p').innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
+        const injOrthoNode = document.getElementById('live-inject-ortho'); if (injOrthoNode) { injOrthoNode.innerHTML = `➔ [ B2(${state_core[2]?1:0}) • B5(${state_core[5]?1:0}) ] = <strong>${(state_core[2]&&!state_core[5])?1:0}</strong>`; }
+        
+        if (orthoElement && !(state_core[30] === true && state_core[31] === true)) {
+            if (state_threat[5] === true && state_core[5] === false) { orthoElement.innerHTML = `[CRITICAL BREACH]: Existential panic override activated on unshielded node space.`; orthoElement.style.color = "var(--pink)"; }
+            else { orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; orthoElement.style.color = "var(--green)"; }
         }
 
-        // G. Combined Dynamic Tally Engine: Evaluates exactly our active non-metadata positions
-        let secureCount = 0; 
-        let failureCount = 0;
-        const activeKeys = [...Object.keys(CORE_CONFIG).map(Number)].filter(k => CORE_CONFIG[k].type !== "meta");
+        // E. Combined Scorecard Tally Engine: Evaluates our active non-metadata positions
+        let secureCount = 0; let failureCount = 0;
+        const trackingAxes = [...Object.keys(CORE_CONFIG).map(Number)].filter(k => CORE_CONFIG[k].type !== "meta");
         
-        activeKeys.forEach(k => { 
+        trackingAxes.forEach(k => { 
             if (state_core[k] === true && state_threat[k] === false) secureCount++; 
             else failureCount++; 
         });
-        
         document.getElementById('counter-secure-val').innerText = secureCount; 
         document.getElementById('counter-broken-val').innerText = failureCount;
-
-        // H. Watchdog Canary Circuit Notifications Handler
-        const injectCanaryNode = document.getElementById('live-inject-canary'); 
-        const canaryBox = document.getElementById('canary-output');
-        
+        // F. Canary Watchdog Alerts Handler
+        const injectCanaryNode = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
         if (injectCanaryNode && canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
-                canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; 
-                canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
-                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; 
-                injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+                canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
+                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
             } else {
-                canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; 
-                canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
-                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; 
-                injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
+                canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
+                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
             }
         }
 
-        // I. TV STATIC NOISE MATRIX EMULATOR DRIVER
-        // Actively drives background analog static transparency based on threshold index or button toggle
+        // G. Analog TV Static Noise Overlay Controller
         const staticOverlay = document.getElementById('tv-static-noise-layer'); 
         if (staticOverlay) {
             if (forceStaticNoiseOverlay || p_collapse >= poppertimeThreshold) {
                 let opacityAmt = forceStaticNoiseOverlay ? 0.20 : Math.min(p_collapse * 0.02, 0.55);
-                staticOverlay.style.display = 'block'; 
-                staticOverlay.style.opacity = opacityAmt.toString();
-            } else { 
-                staticOverlay.style.display = 'none'; 
-            }
+                staticOverlay.style.display = 'block'; staticOverlay.style.opacity = opacityAmt.toString();
+            } else { staticOverlay.style.display = 'none'; }
         }
 
         const metricsDashboardNode = document.getElementById('live-metrics-dashboard-sub');
         if (metricsDashboardNode) metricsDashboardNode.innerHTML = ''; 
         let projectedPoints = [];
 
-        // J. AUTOMATED BITWISE VIEWPORT PLOTTER: Evaluates dynamic visibility radar rules
-        Object.keys(CORE_CONFIG).forEach((b, idx) => {
-            let k = parseInt(b); 
+        // H. AUTOMATED BITWISE VIEWPORT GRAPHIC DRAW PASS: Re-draws the image lines dynamically
+        trackingAxes.forEach((k, idx) => {
             const nodeSpec = CORE_CONFIG[k];
-            if (nodeSpec.type === "meta") return;
             
-            // Extracts binary configuration components natively using Bitwise Masking Operations
             const plotOnGraphic  = (nodeSpec.visual & 1) === 1;
             const printLabelText = (nodeSpec.visual & 2) === 2;
             const outputMetrics  = (nodeSpec.visual & 4) === 4;
@@ -760,32 +615,29 @@
             
             let isCurrentAxisBreached = (state_core[k] === false || state_threat[k] === true);
             
-            // Dynamic Visibility Radar: Materializes neighbors if an adjacent node undergoes an attack
-            let prevKey = Object.keys(CORE_CONFIG)[idx - 1] || Object.keys(CORE_CONFIG)[Object.keys(CORE_CONFIG).length - 1];
-            let nextKey = Object.keys(CORE_CONFIG)[idx + 1] || Object.keys(CORE_CONFIG);
-            let neighborIsBreached = (state_core[parseInt(prevKey)] === false || state_threat[parseInt(prevKey)] === true || 
-                                      state_core[parseInt(nextKey)] === false || state_threat[parseInt(nextKey)] === true);
+            let prevKey = trackingAxes[idx - 1] || trackingAxes[trackingAxes.length - 1];
+            let nextKey = trackingAxes[idx + 1] || trackingAxes[0];
+            let neighborIsBreached = (state_core[prevKey] === false || state_threat[prevKey] === true || 
+                                      state_core[nextKey] === false || state_threat[nextKey] === true);
 
-            // Node forces itself onto the screen if it's marked Persistent, Active, or inside a Neighbor strike zone
             if (plotOnGraphic && (persistentView || isCurrentAxisBreached || neighborIsBreached)) {
-                let nodeMagnitude = state_core[k] ? 75 : 15;
-                let theta = (idx * (2 * Math.PI / Object.keys(CORE_CONFIG).length));
-                let pt3D = project3D(nodeMagnitude * Math.cos(theta), nodeMagnitude * Math.sin(theta), k * 2.0);
+                let nodeMagnitude = state_core[k] ? 65 : 12; 
+                let theta = idx * (2 * Math.PI / trackingAxes.length);
+                let pt3D = project3D(nodeMagnitude * Math.cos(theta), nodeMagnitude * Math.sin(theta), (k * 1.5) - 30);
                 
                 projectedPoints.push(`${pt3D.x},${pt3D.y}`);
                 
-                let dotElement = document.getElementById(`node-axis-${k}`);
+                let dotElement = document.getElementById('node-axis-' + k);
                 if (dotElement) {
                     dotElement.setAttribute('cx', pt3D.x); dotElement.setAttribute('cy', pt3D.y);
                     dotElement.setAttribute('fill', state_core[k] ? 'var(--green)' : 'var(--pink)');
                     dotElement.style.display = 'block';
                 }
             } else {
-                let dotElement = document.getElementById(`node-axis-${k}`);
+                let dotElement = document.getElementById('node-axis-' + k);
                 if (dotElement) dotElement.style.display = 'none';
             }
 
-            // Bitwise Flag 4: Appends data packets right onto your Live Summary panel under the SVG canvas
             if (outputMetrics && metricsDashboardNode) {
                 metricsDashboardNode.innerHTML += `
                     <div style="display:flex; justify-content:space-between; border-bottom:1px solid #0f0f1c; padding:2px 0; font-family:monospace; font-size:0.65rem;">
@@ -797,6 +649,101 @@
             }
         });
 
+
+    function injectHexMarker() {
+        const hexBox = document.getElementById('hex-input'); if (!hexBox) return; const hex = hexBox.value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
+        if (hex.startsWith('0x') && hex.length >= 6) {
+            let val = parseInt(hex, 16); let cx = 140 + ((val % 60) * 2); let cy = 110 + (((val >> 4) % 40) * 2);
+            marker.setAttribute('cx', cx); marker.setAttribute('cy', cy); marker.setAttribute('stroke', '#' + hex.substring(2,8)); marker.style.display = 'block';
+            label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
+        }
+    }
+
+
+        const gCoreNode = document.getElementById('geo-core'); 
+        if (gCoreNode && projectedPoints.length > 0) { 
+            gCoreNode.setAttribute('points', projectedPoints.join(' ')); 
+        } else if (gCoreNode) {
+            gCoreNode.setAttribute('points', '');
+        }
+        
+        let binStr = ""; 
+        Object.keys(CORE_CONFIG).reverse().forEach(b => { 
+            if(CORE_CONFIG[b].type !== "meta") binStr += state_core[parseInt(b)] ? "1" : "0"; 
+        }); 
+        
+        const outRaw = document.getElementById('raw-string-output'); 
+        if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | HEX: 0x${parseInt(binStr, 2).toString(16).toUpperCase()}`;
+        
+        const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
+    }
+
+    async function updateSystemChecksum() {
+        try {
+            let metaStr = Object.keys(CORE_CONFIG).map(b => state_core[parseInt(b)] ? "1" : "0").join("");
+            let threatStr = Object.keys(CORE_CONFIG).map(b => state_threat[parseInt(b)] ? "1" : "0").join("");
+            const msgUint8 = new TextEncoder().encode(`${metaStr}|${threatStr}`);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const checksumToken = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            CORE_CONFIG.checksum_payload = checksumToken;
+            const outChecksum = document.getElementById('raw-checksum-output'); if (outChecksum) outChecksum.innerText = `SHA-256 Checksum: 0x${checksumToken.substring(0,24).toUpperCase()}...`;
+        } catch (e) {}
+    }
+
+    function generateVaultString() {
+        let binaryCore = Object.keys(CORE_CONFIG).map(b => state_core[parseInt(b)] ? "1" : "0").join("");
+        let binaryThreat = Object.keys(CORE_CONFIG).map(b => state_threat[parseInt(b)] ? "1" : "0").join("");
+        let checksumHex = CORE_CONFIG.checksum_payload ? CORE_CONFIG.checksum_payload.substring(0, 8).toUpperCase() : "0";
+        return `EX-${parseInt(binaryCore,2).toString(16).toUpperCase()}-${parseInt(binaryThreat,2).toString(16).toUpperCase()}-${checksumHex}-0`;
+    }
+
+    function restoreFromVault() {
+        const valBox = document.getElementById('vault-string'); if (!valBox) return; const val = valBox.value.trim(); if (!val.startsWith("EX-")) return;
+        let segments = val.split("-");
+        if (segments.length >= 3) {
+            let binCore = parseInt(segments, 16).toString(2).padStart(Object.keys(CORE_CONFIG).length, '0');
+            Object.keys(CORE_CONFIG).forEach((b, idx) => { state_core[parseInt(b)] = binCore[idx] === "1"; });
+            let binThreat = parseInt(segments, 16).toString(2).padStart(Object.keys(CORE_CONFIG).length, '0');
+            Object.keys(CORE_CONFIG).forEach((b, idx) => { state_threat[parseInt(b)] = binThreat[idx] === "1"; });
+            initSwitches(); calculateMatrix();
+        }
+    }
+    function copyVaultString() { const vaultIn = document.getElementById('vault-string'); if (vaultIn) { navigator.clipboard.writeText(vaultIn.value); alert("Symmetrical Sync Key Copied."); } }
+
+    function loadScenario(id) {
+        const scenarios = {
+            1:  { m: {0:true,1:false,2:true,3:true,4:true,5:true,6:true,7:true,8:true,10:true,20:false,30:true,31:true,32:false}, t: {0:false,1:false,2:false,3:false,4:false,5:false,6:false,7:false,8:false,10:false,20:false,30:false,31:false,32:false} },
+            2:  { m: {0:true,1:true,2:true,3:true,4:true,5:false,6:true,7:true,8:true,10:true,20:false,30:true,31:false,32:false}, t: {0:false,1:false,2:false,3:false,4:false,5:true,6:false,7:false,8:false,10:false,20:false,30:false,31:true,32:false} }, // Ableism
+            6:  { m: {0:true,1:true,2:true,3:true,4:true,5:true,6:true,7:true,8:true,10:true,20:true,30:false,31:false,32:true},    t: {0:false,1:false,2:false,3:false,4:false,5:false,6:false,7:false,8:false,10:false,20:false,30:false,31:false,32:false} }, // Harmony Standby
+            10: { m: {0:false,1:false,2:false,3:false,4:false,5:false,6:false,7:false,8:false,10:false,20:false,30:false,31:false,32:false}, t: {0:true,1:true,2:true,3:true,4:true,5:true,6:true,7:true,8:true,10:true,20:true,30:true,31:true,32:true} }
+        };
+        const selected = scenarios[id] || scenarios;
+        Object.keys(CORE_CONFIG).forEach(b => { 
+            let bNum = parseInt(b); if(CORE_CONFIG[bNum].type === "meta") return;
+            state_core[bNum] = selected.m[bNum] !== undefined ? !!selected.m[bNum] : true; 
+            state_threat[bNum] = selected.t[bNum] !== undefined ? !!selected.t[bNum] : false; 
+        });
+        initSwitches(); calculateMatrix();
+    }
+
+    window.addEventListener('load', () => {
+        initSwitches();
+        const canvas = document.getElementById('matrix-vis');
+        if (canvas) {
+            canvas.addEventListener('contextmenu', e => e.preventDefault());
+            canvas.addEventListener('mousedown', (e) => { isDraggingSpace = true; previousMouseX = e.clientX; previousMouseY = e.clientY; dragMode = (e.shiftKey || e.button === 2) ? 'pan' : 'rotate'; });
+            window.addEventListener('mousemove', (e) => {
+                if (!isDraggingSpace) return;
+                let dx = e.clientX - previousMouseX; let dy = e.clientY - previousMouseY;
+                if (dragMode === 'rotate') { rotY += dx * 0.007; rotX += dy * 0.007; } else { panX += dx * 0.5; panY += dy * 0.5; }
+                previousMouseX = e.clientX; previousMouseY = e.clientY; calculateMatrix();
+            });
+            window.addEventListener('mouseup', () => isDraggingSpace = false);
+        }
+        const loader = document.getElementById('loading-universe'); if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.visibility = 'hidden', 500); }
+    });
+        
         // ==========================================================================
         // J. AUTOMATED 3D CUBE PLOTTER: Maps 128-bit payload onto spatial vertices
         // ==========================================================================
