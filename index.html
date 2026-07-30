@@ -362,9 +362,11 @@
         Object.keys(CORE_CONFIG).forEach(bit => {
             const config = CORE_CONFIG[bit];
             let bitStr = bit.toString(); let bitNum = parseInt(bit);
+            
+            // Filters out indices 128 and 129 from appearing as interactive checkboxes
             if (config.type === "meta") return;
             
-            // LEFT COLUMN DISPATCH: Renders state parameters natively from schema text fields
+            // LEFT COLUMN DISPATCH: Renders state parameters natively from schema fields
             if (currentViewMode === 'topology') {
                 coresHTML += `
                     <div class="bit-row" style="padding: 4px 2px;">
@@ -469,7 +471,13 @@
         }
     }
 
-    // 5. VAULT SECURE ENGINE CODES (SYNCHRONIZED DUAL-LAYER CROSS-COMPRESSION)
+    // 3. CENTRAL INPUT EVENT TRACKING PIPELINE
+    function toggleCoreBit(bit) { const el = document.getElementById(`core-${bit.toString()}`); if (el) state_core[bit] = el.checked; calculateMatrix(); }
+    function toggleThreatBit(bit) { const el = document.getElementById(`threat-${bit.toString()}`); if (el) state_threat[bit] = el.checked; calculateMatrix(); }
+    function toggleCoreViolation(bit) { const el = document.getElementById(`core-${bit.toString()}`); if (!el) return; state_core[bit] = !el.checked; initSwitches(); calculateMatrix(); }
+
+    // ==========================================================================
+    // 5. VAULT SECURE ENGINE: COMPRESSES BOTH 0-FOLD LAYERS NATIVELY
     // ==========================================================================
     function generateVaultString() {
         let binaryCore = Object.keys(CORE_CONFIG).map(b => state_core[parseInt(b)] ? "1" : "0").join("");
@@ -478,29 +486,20 @@
         let binaryThreat = Object.keys(CORE_CONFIG).map(b => state_threat[parseInt(b)] ? "1" : "0").join("");
         let threatHex = parseInt(binaryThreat, 2).toString(16).toUpperCase();
         
-        let traceHex = "0"; if (tracePoints) { traceHex = btoa(tracePoints.replace(/[\sL]/g, '_')).replace(/=/g, ''); }
-        return `EX-${coreHex}-${threatHex}-${traceHex}`;
-    }
-
-    function copyVaultString() { 
-        const vaultIn = document.getElementById('vault-string'); 
-        if (vaultIn) { navigator.clipboard.writeText(vaultIn.value); alert("Symmetrical Sync Key Captured."); } 
+        let tacoNetworkChecksum = "TACO0000"; let traceHex = "0"; 
+        if (tracePoints) { traceHex = btoa(tracePoints.replace(/[\sL]/g, '_')).replace(/=/g, ''); }
+        return `EX-${coreHex}-${threatHex}-${tacoNetworkChecksum}-${traceHex}`;
     }
 
     function restoreFromVault() {
         const valBox = document.getElementById('vault-string'); if (!valBox) return; const val = valBox.value.trim(); if (!val.startsWith("EX-")) return;
         let segments = val.split("-");
-        if (segments.length >= 3) {
+        if (segments.length >= 4) {
             let binCore = parseInt(segments, 16).toString(2).padStart(Object.keys(CORE_CONFIG).length, '0');
             Object.keys(CORE_CONFIG).forEach((b, idx) => { state_core[parseInt(b)] = binCore[idx] === "1"; });
             
             let binThreat = parseInt(segments, 16).toString(2).padStart(Object.keys(CORE_CONFIG).length, '0');
             Object.keys(CORE_CONFIG).forEach((b, idx) => { state_threat[parseInt(b)] = binThreat[idx] === "1"; });
-            
-            const traceShape = document.getElementById('trace-geo-core'); const btn = document.getElementById('btn-compare');
-            if (segments && segments !== "0" && traceShape && btn) {
-                try { tracePoints = atob(segments).replace(/_/g, ' '); traceShape.setAttribute('points', tracePoints); traceShape.style.display = 'block'; btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active"; } catch(e) {}
-            } else if (traceShape && btn) { tracePoints = null; traceShape.style.display = 'none'; btn.className = "btn"; btn.innerText = "Compare Trace"; }
             initSwitches(); calculateMatrix();
         }
     }
@@ -860,37 +859,50 @@
     
         
     // ==========================================================================
-    // 8. DATASETS & EVENT PRESETS LOOKUP MAP (DUAL-LAYER LAYER ALIGNED)
+    // ==========================================================================
+    // 8. IMMUTABLE HISTORICAL PRESETS DATASETS (0-FOLD 10-BIT BLOCK COMPLIANT)
     // ==========================================================================
     function loadScenario(id) {
         if (typeof triggerStateChange === "function") triggerStateChange();
         const scenarios = {
-            1:  { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:false, 21:true, 24:false, 128:true, 129:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            2:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:false, 24:false, 128:true, 129:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false, 128:false, 129:false} }, // Ableism Attack Event
-            3:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:false, 8:true, 19:true, 20:true, 21:true, 24:false, 128:true, 129:true},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            4:  { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:false, 128:true, 129:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            5:  { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:false, 7:true, 8:true, 19:false, 20:false, 21:false, 24:false, 128:true, 129:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false, 128:false, 129:false} },
-            6:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true, 24:true, 128:true, 129:true},    t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            7:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true, 24:false, 128:true, 129:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false, 128:false, 129:false} },
-            8:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true, 24:false, 128:true, 129:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            9:  { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:true, 21:true, 24:false, 128:true, 129:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false, 128:false, 129:false} },
-            10: { m: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false, 128:false, 129:false} },
-            11: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:true, 21:true, 24:false, 128:true, 129:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            12: { m: {0:true, 1:true, 2:true, 3:true, 4:false, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:false, 128:true, 129:true},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            13: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:true, 21:true, 24:false, 128:true, 129:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            14: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true, 24:false, 128:true, 129:true},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            15: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:false, 24:false, 128:true, 129:true},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false, 128:false, 129:false} },
-            16: { m: {0:true, 1:true, 2:false, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:true, 24:false, 128:true, 129:true},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            17: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:true, 128:true, 129:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            18: { m: {0:false, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:false, 128:true, 129:true},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            19: { m: {0:true, 1:true, 2:false, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:false, 24:false, 128:true, 129:true},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false, 128:false, 129:false} },
-            20: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:true, 7:true, 8:true, 19:true, 20:false, 21:true, 24:false, 128:true, 129:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            21: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:true, 24:true, 128:true, 129:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            22: { m: {0:true, 1:false, 2:false, 3:true, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:false, 24:false, 128:true, 129:true},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            23: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true, 24:false, 128:true, 129:true},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            24: { m: {0:false, 1:true, 2:true, 3:true, 4:false, 5:false, 7:true, 8:true, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} },
-            25: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true, 24:true, 128:true, 129:true},    t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false, 128:false, 129:false} }
+            1:  { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            2:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:true, 8:true, 10:true, 20:false, 30:false, 31:false, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} }, // Ableism Event
+            3:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:false, 8:true, 10:true, 20:true, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            4:  { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:false, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            5:  { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:false, 6:true, 7:true, 8:true, 10:false, 20:false, 30:false, 31:false, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} },
+            6:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:true},    t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} }, // Harmony Standby
+            7:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:false, 8:false, 10:true, 20:false, 30:true, 31:true, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} },
+            8:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            9:  { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} },
+            10: { m: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false}, t: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:true} }, // Total Collapse Emergency
+            11: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            12: { m: {0:true, 1:true, 2:true, 3:true, 4:false, 5:false, 6:true, 7:false, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            13: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:true, 8:false, 10:true, 20:true, 30:true, 31:true, 32:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            14: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:false, 8:false, 10:true, 20:false, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            15: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:false, 6:true, 7:true, 8:false, 10:true, 20:false, 30:false, 31:false, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} },
+            16: { m: {0:true, 1:true, 2:false, 3:false, 4:true, 5:false, 6:true, 7:true, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            17: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:false, 8:true, 10:true, 20:false, 30:true, 31:true, 32:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            18: { m: {0:false, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:false, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            19: { m: {0:true, 1:true, 2:false, 3:true, 4:true, 5:false, 6:true, 7:true, 8:false, 10:true, 20:false, 30:false, 31:false, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} },
+            20: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:true, 6:true, 7:true, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            21: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:true, 8:false, 10:true, 20:false, 30:true, 31:true, 32:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            22: { m: {0:true, 1:false, 2:false, 3:true, 4:true, 5:false, 6:true, 7:true, 8:true, 10:true, 20:false, 30:false, 31:false, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            23: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:false, 8:false, 10:true, 20:false, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            24: { m: {0:false, 1:true, 2:true, 3:true, 4:false, 5:false, 6:true, 7:true, 8:true, 10:false, 20:false, 30:false, 31:false, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
+            25: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:true},    t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} }
         };
+        
+        const selected = scenarios[id] || scenarios[6]; // Defaults safely to Standby Harmony if unmatched
+        Object.keys(CORE_CONFIG).forEach(b => { 
+            let bNum = parseInt(b); 
+            if(CORE_CONFIG[bNum].type === "meta") return;
+            state_core[bNum] = selected.m[bNum] !== undefined ? !!selected.m[bNum] : true; 
+            state_threat[bNum] = selected.t[bNum] !== undefined ? !!selected.t[bNum] : false; 
+        });
+        initSwitches(); 
+        calculateMatrix();
+    }
+
         const selected = scenarios[id];
         if (selected) {
             Object.keys(CORE_CONFIG).forEach(b => { 
