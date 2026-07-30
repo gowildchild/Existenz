@@ -297,7 +297,7 @@
 
 <script>
     // ==========================================================================
-    // 1. IMMUTABLE 128-BIT SYSTEM PROTOCOL SCHEMATICS (UNIVERSAL CORE PROTOCOL)
+    // 1. IMMUTABLE 128-BIT SYSTEM PROTOCOL SCHEMATICS (CORE ALIGNED REFUGE MAP)
     // ==========================================================================
     const CORE_CONFIG = {
         0:  { name: "EXISTENCE",        type: "core",   trigger: true,  visual: 15, threat_name: "THREAT_EXISTENCE",        desc: "Threat against physical life baseline blueprint", question: "Is your right to biological life presence threatened?" },
@@ -305,52 +305,64 @@
         2:  { name: "INTEGRITY",        type: "core",   trigger: false, visual: 7,  threat_name: "THREAT_INTEGRITY",        desc: "Compromise or infiltration of internal moral axis", question: "Is your internal moral axis compromised?" },
         3:  { name: "PSYCHOLOGY",       type: "core",   trigger: true,  visual: 15, threat_name: "THREAT_PSYCHOLOGY",       desc: "Targeted psychological pressure or mental stress on family lifelines", question: "Are you experiencing cognitive distress?" },
         4:  { name: "PHYSICAL",         type: "core",   trigger: true,  visual: 7,  threat_name: "THREAT_PHYSICAL",         desc: "Violation of physical body vessel boundaries or family safety perimeters", question: "Have your physical body vessel bounds been crossed?" },
-        5:  { name: "INCLUSION",        type: "core",   trigger: true,  visual: 15, threat_name: "THREAT_INCLUSION",        desc: "Active systemic exclusion, erasure, or community isolation of atypical family members", question: "Are you systemically excluded from community belonging?" },
+        5:  { name: "DISABILITY",       type: "core",   trigger: true,  visual: 15, threat_name: "THREAT_DISABILITY",       desc: "Systemic ableistic actions attempting to devalue neurodivergent variance", question: "Is active systemic ableism being targeted against your person?" },
+        6:  { name: "DEVELOPMENT",      type: "core",   trigger: false, visual: 7,  threat_name: "THREAT_DEVELOPMENT",      desc: "Evolutionary intellectual blockades or creative erasure", question: "Are your creative or intellectual parameters blocked?" },
         7:  { name: "PROPERTY",         type: "core",   trigger: false, visual: 1,  threat_name: "THREAT_PROPERTY",         desc: "Unauthorized asset extraction, lockouts, or local drive theft", question: "Are your personal asset drives unsafe?" },
         8:  { name: "PRESENCE",         type: "core",   trigger: false, visual: 1,  threat_name: "THREAT_PRESENCE",         desc: "Illegal geolocation trace, spatial stalking, or network tracking footprint", question: "Are you subjected to unauthorized data tracking?" },
-        19: { name: "BASIC_RIGHTS",     type: "shield", trigger: false, visual: 15, threat_name: "THREAT_BASIC_RIGHTS",     desc: "Constitutional protection strip targeting base primitive survival", question: "Are basic survival protections stripped away?" },
+        10: { name: "BASIC_RIGHTS",     type: "shield", trigger: false, visual: 15, threat_name: "THREAT_BASIC_RIGHTS",     desc: "Constitutional protection strip targeting base primitive survival", question: "Are basic survival protections stripped away?" },
         20: { name: "HUMAN_RIGHTS",     type: "shield", trigger: false, visual: 15, threat_name: "THREAT_HUMAN_RIGHTS",     desc: "Civil human rights shield teardown via institutional overreach", question: "Have civil human rights shields failed to protect you?" },
-        21: { name: "DIVERSITY_RIGHTS", type: "shield", trigger: true,  visual: 15, threat_name: "THREAT_DIVERSITY_RIGHTS", desc: "Systemic ableistic exploitation targeting diversity safeguards", question: "Are diversity protective frameworks missing?" },
-        24: { name: "EXISTENTIAL",      type: "shield", trigger: true,  visual: 15, threat_name: "THREAT_EXISTENTIAL",      desc: "Active emergency coercion strike / Panic Dead-Man switch trigger", question: "Is your top-priority existential safety or panic override line tripped?" },
+        30: { name: "SHIELD_DIVERSITY",    type: "shield", trigger: true,  visual: 15, threat_name: "THREAT_DIVERSITY_STATUS", desc: "Special status framework protecting multi-variance neurotypes", question: "Are disability protective frameworks missing?" },
+        31: { name: "SHIELD_ASYLUM",       type: "shield", trigger: true,  visual: 15, threat_name: "THREAT_ASYLUM_STATUS",    desc: "Temporary asylum or naturalization status protecting refugees", question: "Has your legal right to temporary refuge shelter failed?" },
+        32: { name: "EXISTENTIAL",      type: "shield", trigger: true,  visual: 15, threat_name: "THREAT_EXISTENTIAL",      desc: "Active emergency coercion strike / Panic Dead-Man switch trigger", question: "Is your top-priority existential safety or panic override line tripped?" },
         
-        // MOVED ALIGNED EXTERNAL ENVELOPE CONTROLS (OUTSIDE THE 128-BIT PAYLOAD WIDTH)
-        128: { name: "STRUCTURE_SIZE",  type: "meta",   trigger: false, visual: 4,  threat_name: "META_SIZE_DESCRIPTOR",    desc: "Defines the exact active physical size bit-width of this specific passport instance", question: "System Metadata Size Parameter Line" },
-        129: { name: "CRYPTO_SIGNATURE", type: "meta",  trigger: false, visual: 4,  threat_name: "META_HASH_OF_HASHES",     desc: "Stores the separate public-key certificates of all layers and their unified master hash", question: "System Cryptographic Vault Check-Bit Signature" }
+        128: { name: "STRUCTURE_SIZE",  type: "meta",   trigger: false, visual: 4,  threat_name: "META_SIZE_DESCRIPTOR",    desc: "Defines the physical size bit-width of this instance", question: "Metadata Size Parameter Row" },
+        129: { name: "CRYPTO_SIGNATURE", type: "meta",  trigger: false, visual: 4,  threat_name: "META_HASH_OF_HASHES",     desc: "Stores certificates and their master hash", question: "Cryptographic Vault Check-Bit Signature" }
     };
-
-    // Parallel Processing Memory Arrays (Threats default to 0/False, States to 1/True)
 
     let state_core = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 6: true, 7: true, 8: true, 10: true, 20: true, 30: false, 31: false, 32: true, 128: true, 129: true };
     let state_threat = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 6: false, 7: false, 8: false, 10: false, 20: false, 30: false, 31: false, 32: false, 128: false, 129: false };
     
     let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null; let currentViewMode = 'topology';
     let forceStaticNoiseOverlay = false;
-    // INTERACTIVE 3D SPACE CAMERA VARIABLES (MOUSE ROTATION MAP TRACKERS)
-    let rotX = -0.5; // Controls the pitch angle (tilt)
-    let rotY = 0.6;  // Controls the yaw angle (spin rotation)
-    let isDraggingSpace = false; let previousMouseX = 0; let previousMouseY = 0;
-    
-    function toggleStaticNoiseCircuit() {
-        forceStaticNoiseOverlay = !forceStaticNoiseOverlay;
-        const btn = document.getElementById('btn-toggle-noise');
-        if (btn) btn.className = forceStaticNoiseOverlay ? 'btn btn-active' : 'btn';
-        calculateMatrix();
-    }
-
-    let hasChangedYet = false;
+    let rotX = -0.5; let rotY = 0.6; let panX = 0; let panY = 0;
+    let isDraggingSpace = false; let dragMode = 'rotate'; let previousMouseX = 0; let previousMouseY = 0;
 
     function setViewMode(mode) {
         currentViewMode = mode;
         const btnTop = document.getElementById('btn-view-topology'); const btnRgt = document.getElementById('btn-view-rights');
-        if (btnTop && btnRgt) {
-            btnTop.className = mode === 'topology' ? 'btn btn-active' : 'btn';
-            btnRgt.className = mode === 'rights' ? 'btn btn-active' : 'btn';
-        }
+        if (btnTop && btnRgt) { btnTop.className = mode === 'topology' ? 'btn btn-active' : 'btn'; btnRgt.className = mode === 'rights' ? 'btn btn-active' : 'btn'; }
         initSwitches(); calculateMatrix();
     }
 
-    // 2. PASSIVE SWITCHBOARD DISPLAY RENDERING PIPELINE
-    // 2. PASSIVE SWITCHBOARD RENDERING PIPELINE
+    function initSwitches() {
+        const coresContainer = document.getElementById('cores-switches-container');
+        const threatsContainer = document.getElementById('threats-switches-container');
+        if (!coresContainer || !threatsContainer) return;
+        coresContainer.innerHTML = ''; threatsContainer.innerHTML = '';
+        let coresHTML = ''; let threatsHTML = '';
+        
+        Object.keys(CORE_CONFIG).forEach(bit => {
+            const config = CORE_CONFIG[bit]; let bitStr = bit.toString(); let bitNum = parseInt(bit);
+            if (config.type === "meta") return;
+            
+            if (currentViewMode === 'topology') {
+                coresHTML += `<div class="bit-row" style="padding:4px 2px;"><div><strong>${bitStr} | ${config.name}</strong></div><label class="switch"><input type="checkbox" id="core-${bitStr}" ${state_core[bitNum]?'checked':''} onchange="toggleCoreBit(${bitNum})"><span class="slider"></span></label></div>`;
+            } else {
+                let isViolated = !state_core[bitNum];
+                coresHTML += `<div class="bit-row" style="padding:4px 2px; border-left:2px solid ${isViolated?'var(--pink)':'transparent'}; background:${isViolated?'rgba(255,0,170,0.02)':'transparent'}"><div style="font-size:0.7rem; color:${isViolated?'var(--pink)':'#fff'};"><strong>${bitStr}</strong> | ${config.question}</div><label class="switch"><input type="checkbox" id="core-${bitStr}" ${!isViolated?'checked':''} onchange="toggleCoreViolation(${bitNum})"><span class="slider" style="background-color:${isViolated?'var(--pink)':'#202030'};"></span></label></div>`;
+            }
+            let isThreatActive = state_threat[bitNum];
+            let triggerBadge = config.trigger ? `<span style="color:var(--pink); font-size:0.55rem; background:rgba(255,0,170,0.1); padding:1px 3px; border-radius:2px; font-weight:bold; margin-left:4px;">TRG</span>` : '';
+            threatsHTML += `<div class="bit-row" style="padding:4px 2px; justify-content:space-between; background:${isThreatActive?'rgba(255,0,170,0.04)':'transparent'}" title="${config.desc}"><div style="font-size:0.65rem; color:${isThreatActive?'var(--pink)':'#8e8eaf'}; font-family:monospace; padding-right:6px;"><strong>${bitStr} | ${config.threat_name}</strong>${triggerBadge}</div><label class="switch"><input type="checkbox" id="threat-${bitStr}" ${isThreatActive?'checked':''} onchange="toggleThreatBit(${bitNum})"><span class="slider" style="background-color:#401020;"></span></label></div>`;
+        });
+        coresContainer.innerHTML = coresHTML; threatsContainer.innerHTML = threatsHTML;
+    }
+
+    function toggleCoreBit(bit) { const el = document.getElementById(`core-${bit}`); if (el) state_core[bit] = el.checked; calculateMatrix(); }
+    function toggleThreatBit(bit) { const el = document.getElementById(`threat-${bit}`); if (el) state_threat[bit] = el.checked; calculateMatrix(); }
+    function toggleCoreViolation(bit) { const el = document.getElementById(`core-${bit}`); if (!el) return; state_core[bit] = !el.checked; initSwitches(); calculateMatrix(); }
+    function toggleZoom() { isZoomed = !isZoomed; const vis = document.getElementById('matrix-vis'); const btn = document.getElementById('btn-zoom'); if (isZoomed && vis && btn) { vis.style.transform = "scale(2)"; btn.className = "btn btn-active"; btn.innerText = "Zoom: 2x"; } else if (vis && btn) { vis.style.transform = "scale(1)"; btn.className = "btn"; btn.innerText = "Zoom: 1x"; } }
+
     function initSwitches() {
         const coresContainer = document.getElementById('cores-switches-container');
         const threatsContainer = document.getElementById('threats-switches-container');
@@ -519,73 +531,76 @@
     // 6. TRUE 3D ROTATABLE PERSPECTIVE LENS SPACE PROJECTORS
     // ==========================================================================
     function project3D(x, y, z) {
-        // 1. First Pass: Apply Pitch Rotation Matrix across the vertical plane (X-axis tilt)
         let cosX = Math.cos(rotX); let sinX = Math.sin(rotX);
-        let y1 = y * cosX - z * sinX;
-        let z1 = y * sinX + z * cosX;
-        
-        // 2. Second Pass: Apply Yaw Rotation Matrix across the horizontal plane (Y-axis spin)
+        let y1 = y * cosX - z * sinX; let z1 = y * sinX + z * cosX;
         let cosY = Math.cos(rotY); let sinY = Math.sin(rotY);
-        let x2 = x * cosY - z1 * sinY;
-        let z2 = x * sinY + z1 * cosY;
-        
-        // 3. Focal Lens Projection Formula
-        const focalLength = 260; 
-        const cameraDistance = 180; 
-        const distanceZ = y1 + cameraDistance;
-        
-        return {
-            x: 200 + (x2 * focalLength) / distanceZ,
-            y: 160 + (z2 * focalLength) / distanceZ
-        };
+        let x2 = x * cosY - z1 * sinY; let z2 = x * sinY + z1 * cosY;
+        const focalLength = 260; const cameraDistance = 180; const distanceZ = y1 + cameraDistance;
+        return { x: 200 + panX + (x2 * focalLength) / distanceZ, y: 160 + panY + (z2 * focalLength) / distanceZ };
     }
 
-    
-    function setTimelineMode(mode) { 
-        timelineMode = mode; 
-        ['spiral', 'linear', '3d', 'fib'].forEach(m => { 
-            const b = document.getElementById(`btn-timeline-${m}`); 
-            if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; 
-        }); 
-        renderTimelineBackground(); 
-        calculateMatrix(); 
-    }
-
-    function renderTimelineBackground() {
-        const path = document.getElementById('timeline-path'); 
-        const spiralTrack = document.getElementById('fibonacci-spiral-track'); 
-        const ticks = document.getElementById('timeline-ticks'); 
-        if (!path || !ticks) return;
+    function calculateMatrix() {
+        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; const orthoElement = document.getElementById('ortho-output');
+        let noise = 0.5; let shieldStrength = 0.0; let brokenCount = 0;
         
-        ticks.innerHTML = ''; 
-        if (spiralTrack) spiralTrack.style.display = 'none'; 
-        document.getElementById('collision-crosshair').style.display = 'none';
-        
-        if (timelineMode === 'spiral') {
-            let points = []; for (let theta = 0; theta < 25; theta += 0.15) { let r = 6 + (theta * 4.5); points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); }
-            path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
-        } else if (timelineMode === 'fib') {
-            let points = []; const a = 3.5; const b = 0.1406;
-            const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
-            ticks.innerHTML += `
-                <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2" opacity="0.4"/>
-                <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2" opacity="0.4"/>
-                <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2" opacity="0.4"/>
-            `;
-            for (let theta = 0; theta < 32; theta += 0.04) {
-                let r = a * Math.exp(b * theta); let pt3D = project3D(r * Math.cos(theta), r * Math.sin(theta), theta * 1.5);
-                if (r < 185) { points.push(`${pt3D.x},${pt3D.y}`); if (Math.floor(theta * 10) % 25 === 0) ticks.innerHTML += `<circle cx="${pt3D.x}" cy="${pt3D.y}" r="2" fill="#ff00aa" opacity="0.8"/>`; }
+        Object.keys(CORE_CONFIG).forEach(b => {
+            let k = parseInt(b); const nodeSpec = CORE_CONFIG[k]; if (nodeSpec.type === "meta") return;
+            if (nodeSpec.type === "core" && state_core[k] === false) { noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5)); brokenCount++; }
+            if (nodeSpec.type === "shield" && state_core[k] === true) { shieldStrength += 0.25; }
+            if (state_threat[k] === true) {
+                if (state_core[k] === false) { noise += (k === 32) ? 25.0 : ((nodeSpec.type === "trigger") ? 14.0 : 8.5); if (nodeSpec.trigger === true) noise += 12.0; } 
+                else { noise += (k === 32) ? 5.0 : 1.5; }
             }
-            if (spiralTrack) { spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); spiralTrack.setAttribute('stroke', '#ff00aa'); spiralTrack.setAttribute('stroke-width', '1.5'); spiralTrack.setAttribute('opacity', '0.85'); spiralTrack.style.display = 'block'; }
-            path.setAttribute('d', 'M0,0');
-        } else if (timelineMode === 'linear') {
-            path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
-            for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
-        } else if (timelineMode === '3d') {
-            path.setAttribute('d', 'M0,0'); const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
-            ticks.innerHTML += `<line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>`;
+        });
+        
+        let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95));
+        const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
+        document.getElementById('live-inject-p').innerHTML = `➔ [ ${noise.toFixed(1)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
+        
+        if (orthoElement) {
+            if (state_threat[32] === true && state_core[32] === false) { orthoElement.innerHTML = `[CRITICAL BREACH]: Panic override activated on unshielded space.`; orthoElement.style.color = "var(--pink)"; }
+            else { orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal.`; orthoElement.style.color = "var(--green)"; }
         }
+
+        let secureCount = 0; let failureCount = 0;
+        const trackingAxes = [...Object.keys(CORE_CONFIG).map(Number)].filter(k => CORE_CONFIG[k].type !== "meta");
+        trackingAxes.forEach(k => { if (state_core[k] === true && state_threat[k] === false) secureCount++; else failureCount++; });
+        document.getElementById('counter-secure-val').innerText = secureCount; document.getElementById('counter-broken-val').innerText = failureCount;
+
+        const injectCanaryNode = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
+        if (injectCanaryNode && canaryBox) {
+            if (p_collapse >= poppertimeThreshold) { canaryBox.innerText = `💥 ALERT: Structural breach!`; canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)'; injectCanaryNode.innerHTML = `➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active'); } 
+            else { canaryBox.innerText = `🟢 PASSIVE STANDBY`; canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)'; injectCanaryNode.innerHTML = `➔ <strong>✓ CIRCUITS SECURE</strong>`; injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); }
+        }
+
+        const staticOverlay = document.getElementById('tv-static-noise-layer');
+        if (staticOverlay) { if (forceStaticNoiseOverlay || p_collapse >= poppertimeThreshold) { staticOverlay.style.display = 'block'; staticOverlay.style.opacity = forceStaticNoiseOverlay ? "0.20" : Math.min(p_collapse*0.02, 0.55).toString(); } else { staticOverlay.style.display = 'none'; } }
+
+        const gCoreNode = document.getElementById('geo-core'); const metricsDashboardNode = document.getElementById('live-metrics-dashboard-sub');
+        if (metricsDashboardNode) metricsDashboardNode.innerHTML = ''; let projectedPoints = [];
+
+        trackingAxes.forEach((k, idx) => {
+            const nodeSpec = CORE_CONFIG[k]; const plotOnGraphic = (nodeSpec.visual & 1) === 1; const outputMetrics = (nodeSpec.visual & 4) === 4; const persistentView = (nodeSpec.visual & 8) === 8;
+            let isCurrentAxisBreached = (state_core[k] === false || state_threat[k] === true);
+            let prevKey = trackingAxes[idx - 1] || trackingAxes[trackingAxes.length - 1]; let nextKey = trackingAxes[idx + 1] || trackingAxes[0];
+            let neighborIsBreached = (state_core[prevKey] === false || state_threat[prevKey] === true || state_core[nextKey] === false || state_threat[nextKey] === true);
+
+            if (plotOnGraphic && (persistentView || isCurrentAxisBreached || neighborIsBreached)) {
+                let nodeMagnitude = state_core[k] ? 65 : 12; let theta = idx * (2 * Math.PI / trackingAxes.length);
+                let pt3D = project3D(nodeMagnitude * Math.cos(theta), nodeMagnitude * Math.sin(theta), (k * 1.5) - 30);
+                projectedPoints.push(`${pt3D.x},${pt3D.y}`);
+                let dotElement = document.getElementById('node-axis-' + k); if (dotElement) { dotElement.setAttribute('cx', pt3D.x); dotElement.setAttribute('cy', pt3D.y); dotElement.setAttribute('fill', state_core[k] ? 'var(--green)' : 'var(--pink)'); dotElement.style.display = 'block'; }
+            } else { let dotElement = document.getElementById('node-axis-' + k); if (dotElement) dotElement.style.display = 'none'; }
+
+            if (outputMetrics && metricsDashboardNode) { metricsDashboardNode.innerHTML += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #0f0f1c; padding:2px 0; font-family:monospace; font-size:0.65rem;"><span style="color:#8e8eaf;">➔ Axis ${k} (${nodeSpec.name}):</span><span style="color:${state_core[k]?'var(--green)':'var(--pink)'};">[Core: ${state_core[k]?'1':'0'} | Threat: ${state_threat[k]?'1':'0'}]</span></div>`; }
+        });
+        if (gCoreNode && projectedPoints.length > 0) gCoreNode.setAttribute('points', projectedPoints.join(' ')); else if (gCoreNode) gCoreNode.setAttribute('points', '');
+        
+        let binStr = ""; Object.keys(CORE_CONFIG).reverse().forEach(b => { if(CORE_CONFIG[b].type !== "meta") binStr += state_core[parseInt(b)] ? "1" : "0"; });
+        document.getElementById('raw-string-output').innerText = `BIN: 0b${binStr} | HEX: 0x${parseInt(binStr, 2).toString(16).toUpperCase()}`;
+        const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
     }
+
 
     function injectHexMarker() {
         const hexBox = document.getElementById('hex-input'); if (!hexBox) return; const hex = hexBox.value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
