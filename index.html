@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz Platform Matrix Simulator | Sovereign Edition</title>
+    <title>Existenz Platform Matrix Simulator / Crude Edition</title>
+    
+    <!-- PRODUCTION RE-COMPILING KATEX MATH ENGINE -->
+    <link rel="stylesheet" href="https://jsdelivr.net">
+    <script defer src="https://jsdelivr.net"></script>
+    <script defer src="https://jsdelivr.net" onload="renderMathInElement(document.body);"></script>
+
     <style>
         :root {
             --cyan: #00f0ff;
@@ -24,84 +30,79 @@
             0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); border: 1px solid #440011; }
             100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); border: 1px solid var(--pink); }
         }
-        #loading-universe {
-            position: fixed; top:0; left:0; width:100vw; height:100vh;
-            background: #000000; z-index: 9999; display: flex;
-            flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        .loading-text { color: var(--cyan); font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 15px; }
-        .loading-bar { width: 200px; height: 2px; background: #111; border-radius: 2px; overflow: hidden; position: relative; }
-        .loading-bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--pink); animation: sweep 1.5s infinite linear; }
-        @keyframes sweep { 0% { left: -50%; } 100% { left: 100%; } }
-        
         header { border-bottom: 2px solid var(--cyan); padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
-        h1 { margin: 0; color: var(--cyan); font-size: 1.2rem; font-weight: 800; }
+        h1 { margin: 0; color: var(--cyan); font-size: 1.1rem; font-weight: 800; }
         .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; flex-grow: 1; min-height: 0; }
         .column { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
         .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; min-height: 0; }
-        .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
+        .panel h2 { margin-top: 0; margin-bottom: 4px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
         .scrollable-content { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
-        .bit-row { display: flex; align-items: center; justify-content: space-between; padding: 5px; border-bottom: 1px solid #0f0f1c; font-size: 0.75rem; }
+        .bit-row { display: flex; align-items: center; justify-content: space-between; padding: 4px; border-bottom: 1px solid #0f0f1c; font-size: 0.75rem; }
         .switch { position: relative; display: inline-block; width: 34px; height: 16px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #202030; transition: .2s; border-radius: 16px; }
         .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--cyan); }
         input:checked + .slider:before { transform: translateX(18px); }
-        .raw-string { background: #020204; border-left: 3px solid var(--pink); padding: 5px; font-size: 0.7rem; color: #8e8eaf; font-family: monospace; word-break: break-all; margin-top: 5px; }
+        .raw-string { background: #020204; border-left: 3px solid var(--pink); padding: 5px; font-size: 0.7rem; color: #8e8eaf; font-family: monospace; word-break: break-all; margin-top: 4px; }
         .btn { background: #0f0f1b; border: 1px solid var(--cyan); color: white; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-family: monospace; transition: 0.1s; }
         .btn:hover { background: var(--cyan); color: black; font-weight: bold; }
         .btn-active { background: var(--pink) !important; border-color: #fff !important; }
-        .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.75rem; color: var(--cyan); }
+        .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.12); border-radius: 4px; padding: 4px; margin: 2px 0; font-size: 0.7rem; color: var(--cyan); }
         .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
         .input-text { background: #020205; border: 1px solid var(--border); color: #fff; padding: 3px; border-radius: 4px; font-family: monospace; font-size: 0.7rem; }
-        .scenarios-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; flex-shrink: 0; }
-        #matrix-vis-container { width: 100%; height: 100%; max-height: 340px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
+        .scenarios-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; flex-shrink: 0; }
+        #matrix-vis-container { width: 100%; height: 100%; max-height: 290px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
         #matrix-vis { transform-origin: center center; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .intro-box { background: rgba(0, 255, 170, 0.02); border: 1px solid #102a20; padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.7rem; line-height: 1.3; color: #b5c5b5; }
+        .intro-box { background: rgba(0, 255, 170, 0.02); border: 1px solid #102a20; padding: 8px; border-radius: 4px; margin-bottom: 6px; font-size: 0.75rem; line-height: 1.35; color: #b5c5b5; }
     </style>
 </head>
 <body>
 
-<div id="loading-universe">
-    <div class="loading-text">ExistenZ | Loading Universe Protocol | Please Hold</div>
-    <div class="loading-bar"></div>
-</div>
-
 <header>
-    <div><h1>Existenz Platform Matrix Simulator / Quad-Word Grid</h1></div>
-    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[SYSTEM: V1.25 SOVEREIGN-PASSPORT]</div>
+    <div><h1>Existenz Platform Matrix Simulator (by Gunther V)</h1></div>
+    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[SYSTEM: V0.76b TRACE-COMPILER]</div>
 </header>
 
 <div class="grid">
+    <!-- LEFT QUADRANT PANEL LAYOUTS -->
     <div class="column">
-        <div class="panel" id="panel-proclamation" style="flex-shrink: 0; transition: max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease, opacity 0.3s ease; overflow: hidden; max-height: 200px;">
+        <div class="panel" style="flex-shrink: 0;">
             <h2>0 | Architectural Proclamation to the Channels</h2>
             <div class="intro-box">
-                <strong>The Rights of Nature vs. The Flaw of Ancient Athens:</strong><br>
-                Plato's <em>Republic</em> excluded the <strong>Adunatos</strong> to protect efficiency. Project Existenz resolves this systemic ableism by establishing <strong>INCLUSION</strong> as an independent, universal baseline state of belonging for all human variance. Wholeness of character is mathematically detached from typicality of mind.
+                <strong>The Mathematical Rights of Nature vs. The Flaw of Ancient Athens:</strong><br>
+                Plato argued in <em>The Republic</em> that an ideal state must exclude or marginalize the <strong>Adunatos</strong> (those without power/atypical physical or mental processing style), viewing non-conformity as a disruption to efficiency. This is a severe mathematical asymmetry. Project Existenz fixes this ancient flaw by placing <strong>DISABILITY</strong> at an independent, orthogonal register coordinate at <strong>Bit 5</strong>. Wholeness of character has nothing to do with typicality of mind. Geometry is unassailable.
             </div>
         </div>
 
-        <div class="panel" style="flex-grow: 1; display: flex; flex-direction: column; min-height: 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 6px; flex-shrink: 0;">
-                <h2 style="margin: 0; border: none; padding: 0;">2 | System Topologies Matrix & Targeted Threat Environment</h2>
-                <div style="display: flex; gap: 2px;">
-                    <button class="btn btn-active" id="btn-view-topology" onclick="setViewMode('topology')">Topology View</button>
-                    <button class="btn" id="btn-view-rights" onclick="setViewMode('rights')">Human Rights Check</button>
+        <div class="panel" style="flex-shrink: 0;">
+            <h2>1 | Parameter Control & Vault Recovery Engine</h2>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap; font-size: 0.7rem;">
+                <div>
+                    <label>Poppertime ($\mathcal{T}_{\text{critical}}$):</label><br>
+                    <input type="number" id="poppertime-input" value="3.0" step="0.1" class="input-text" style="width: 45px;" onchange="calculateMatrix()">
+                </div>
+                <div>
+                    <label>Hex Inject:</label><br>
+                    <input type="text" id="hex-input" value="0x00F0FF" class="input-text" style="width: 70px;" onchange="injectHexMarker()">
+                </div>
+                <div style="flex-grow: 1;">
+                    <label>Vault Sync Key:</label><br>
+                    <div style="display: flex; gap: 4px;">
+                        <input type="text" id="vault-string" class="input-text" style="flex-grow: 1;" placeholder="EX-DF">
+                        <button class="btn" onclick="restoreFromVault()">Restore</button>
+                        <button class="btn" onclick="copyVaultString()">Copy</button>
+                    </div>
                 </div>
             </div>
-            <div style="display: flex; gap: 10px; flex-grow: 1; min-height: 0; overflow: hidden;">
-                <div class="scrollable-content" id="cores-switches-container" style="flex: 1; border-right: 1px solid var(--border); padding-right: 8px;"></div>
-                <div class="scrollable-content" id="threats-switches-container" style="flex: 1;"></div>
-            </div>
         </div>
 
+        <div class="panel" style="flex-grow: 1;">
+            <h2>2 | Dynamic 128-Bit Register Switches</h2>
+            <div class="scrollable-content" id="switches-container"></div>
+        </div>
 
-
-        <!-- BOTTOM EMPIRICAL Presets SCENARIOS -->
-        <div class="panel" style="flex-shrink: 0;">
+        <div class="panel" style="flex-shrink: 0; min-height: 155px;">
             <h2>3 | Empirical Scenarios Panel (25-Module Matrix View)</h2>
             <div class="scenarios-grid">
                 <button class="btn" onclick="loadScenario(1)">1. Plato Flaw</button>
@@ -133,65 +134,30 @@
         </div>
     </div>
 
-    <!-- RIGHT QUADRANT COLLOCATED LAYOUTS -->
+    <!-- RIGHT QUADRANT SYSTEM VECTOR LAYERS -->
     <div class="column">
-        <!-- REPOSITIONS PARAMETER CONTROLS DIRECTLY ABOVE SVG GRID -->
-        <div class="panel" style="flex-shrink: 0;">
-            <h2>1 | Parameter Control & Vault Recovery Engine</h2>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.7rem;">
-                <div>
-                    <label>Poppertime Threshold:</label><br>
-                    <input type="number" id="poppertime-input" value="3.0" step="0.1" class="input-text" style="width: 45px;" onchange="triggerStateChange(); calculateMatrix()">
-                </div>
-                <div>
-                    <label>Hex Inject:</label><br>
-                    <input type="text" id="hex-input" value="0x00F0FF" class="input-text" style="width: 70px;" onchange="injectHexMarker()">
-                </div>
-                <div style="flex-grow: 1;">
-                    <label>Vault Sync Key:</label><br>
-                    <div style="display: flex; gap: 4px;">
-                        <input type="text" id="vault-string" class="input-text" style="flex-grow: 1;" placeholder="EX-DF">
-                        <button class="btn" onclick="triggerStateChange(); restoreFromVault()">Restore</button>
-                        <button class="btn" onclick="copyVaultString()">Copy</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="panel" style="flex-grow: 1.2; justify-content: center; align-items: center; position: relative; overflow: hidden;">
             <div style="position: absolute; top: 6px; left: 6px; z-index: 10; display: flex; gap: 4px;">
                 <button class="btn" id="btn-zoom" onclick="toggleZoom()" style="border-color: var(--pink); color: var(--pink);">Zoom: 1x</button>
                 <button class="btn" id="btn-compare" onclick="activateCompareTraceMode()" style="border-color: var(--green); color: var(--green);">Compare Trace</button>
             </div>
             <div style="position: absolute; top: 6px; right: 6px; z-index: 10; display: flex; gap: 2px;">
-                <button class="btn" id="btn-toggle-noise" onclick="toggleStaticNoiseOverlay()">Noise</button>
                 <button class="btn" id="btn-timeline-spiral" onclick="setTimelineMode('spiral')">Spiral</button>
                 <button class="btn" id="btn-timeline-linear" onclick="setTimelineMode('linear')">Linear</button>
-                <button class="btn" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>
-                <button class="btn" id="btn-timeline-fib" onclick="setTimelineMode('fib')">Fibonacci</button>
+                <button class="btn btn-active" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>
+                <button class="btn" id="btn-timeline-fib" onclick="setTimelineMode('fib')">Fibonacci Collision</button>
             </div>
             
-           <div id="matrix-vis-container">
+            <div id="matrix-vis-container">
                 <svg id="matrix-vis" viewBox="0 0 400 340" style="background:#020204; border:1px solid #121222; border-radius:6px; width: 100%; height: 100%;">
-                    <!-- NEON SHADOW FILTER DEFINITION -->
-                    <defs>
-                        <filter id="neon-glow-trace" x="-20%" y="-20%" width="140%" height="140%">
-                            <feGaussianBlur stdDeviation="2.5" result="blur" />
-                            <feMerge>
-                                <feMergeNode in="blur" />
-                                <feMergeNode in="SourceGraphic" />
-                            </feMerge>
-                        </filter>
-                    </defs>
-                    <!-- BACKGROUND TIMELINE AXES -->
-                    <path id="fibonacci-spiral-track" fill="none" stroke="rgba(255, 0, 170, 0.4)" stroke-width="1.8" style="display: none;" />
+                    <path id="fibonacci-spiral-track" fill="none" stroke="rgba(255, 0, 170, 0.15)" stroke-width="1.5" style="display: none;" />
                     <path id="timeline-path" fill="none" stroke="#121222" stroke-width="1.5" />
                     <g id="timeline-ticks"></g>
                     
-                    <!-- THE MISSING OVERLAP RAYTRACE LAYER (GHOST GREEN POLYGON) -->
-                    <polygon id="trace-geo-core" points="0,0 0,0 0,0" fill="rgba(0, 255, 170, 0.04)" stroke="#00ffaa" stroke-width="1.8" stroke-dasharray="4,3" filter="url(#neon-glow-trace)" style="display: none; pointer-events: none;" />
+                    <!-- THE TRACE OVERLAP BOUNDING LAYER SHAPES (GREEN INTERPOLATION GHOST) -->
+                    <polygon id="trace-geo-core" points="0,0 0,0 0,0" fill="none" stroke="rgba(0, 255, 170, 0.4)" stroke-width="1" stroke-dasharray="2,2" style="display: none;" />
                     
-                    <!-- MAIN APP MATRIX GRAPHICS -->
+                    <!-- MAIN GEOMETRIC METRIC SHAPES -->
                     <polygon id="geo-shields" points="200,40 340,170 200,300 60,170" fill="rgba(0, 255, 170, 0.02)" stroke="#00ffaa" stroke-width="1.2" stroke-dasharray="3" />
                     <polygon id="geo-core" points="200,100 270,220 130,220" fill="rgba(0, 240, 255, 0.08)" stroke="#00f0ff" stroke-width="1.8" />
                     
@@ -215,45 +181,30 @@
                 </svg>
             </div>
         </div>
-        <div id="tv-static-noise-layer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; background:rgba(120,120,120,0.05); mix-blend-mode:overlay; display:none; z-index:5;"></div>
+
         <div class="panel" style="flex-grow: 1;">
-            <h2>4 | Live Mathematical Analytics & Core Pipelines</h2>
+            <h2>4 | Live Mathematical Analytics Readouts</h2>
             <div class="scrollable-content" style="font-size: 0.75rem; font-family: monospace;">
-                
-                <!-- NATIVE HARDCODED ALGEBRA FRACTION VALUE BLOCK -->
-                <div style="margin-bottom: 6px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: #020204; padding: 5px; border-radius: 4px;">
-                        <div><strong>Paradox of Intolerance Tracker [P_collapse]:</strong></div>
+                <div style="margin-bottom: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #020204; padding: 4px; border-radius: 4px; border: 1px solid var(--border);">
+                        <div><strong>Paradox of Intolerance Tracker (<span id="katex-p-label"></span>):</strong></div>
                         <div class="metric-val" id="p-collapse-output">0.00</div>
                     </div>
-                    <div class="formula-box" id="native-eq-p" style="display: flex; align-items: center; gap: 8px;">
-                        P_collapse = 
-                        <div class="math-fraction">
-                            <div class="math-numerator">∑ (Threat_i · Accel_i)</div>
-                            <div class="math-denominator">1 - Shield_efficiency</div>
-                        </div>
-                        <span id="live-inject-p" style="color: var(--pink); font-weight: bold; margin-left: auto;"></span>
-                    </div>
+                    <div id="equation-p-collapse" class="formula-box" style="margin-top: 2px;"></div>
+                    <div style="color: #668; font-size: 0.7rem; padding-left: 4px;" id="live-calc-p"></div>
                 </div>
-
-                <!-- ORTHOGONAL INDEPENDENCE READOUT -->
-                <div style="margin-bottom: 6px; border-top: 1px solid #101020; padding-top: 4px;">
-                    <div id="ortho-output" style="font-weight:bold; color:var(--green); background:#020204; padding:5px; border-radius:4px;">Evaluating Axis...</div>
-                    <div class="formula-box" id="native-eq-ortho" style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>⟨ V_integrity , V_disability ⟩ = ∑ (bit_2 · bit_5)</span>
-                        <span id="live-inject-ortho" style="color: var(--green); font-weight: bold;">= 0</span>
-                    </div>
+                <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 2px;">
+                    <label>Orthogonal Intersection Space Capacity:</label>
+                    <div id="ortho-output" style="font-weight:bold; color:var(--green); margin:1px 0; font-size:0.75rem;">0</div>
+                    <div id="equation-ortho" class="formula-box"></div>
+                    <div style="color: #668; font-size: 0.7rem; padding-left: 4px;" id="live-calc-ortho"></div>
                 </div>
-
-                <!-- CANARY METRIC STEP READOUT -->
-                <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 4px;">
-                    <div id="canary-output" style="font-weight:bold; background:#020204; padding:5px; border-radius:4px;">SILENT</div>
-                    <div class="formula-box" id="native-eq-canary" style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>C_canary = Θ ( d/dt ∑ I_i - R_lattice ) ➔ S_alert</span>
-                        <span id="live-inject-canary" style="color: var(--pink); font-weight: bold;"></span>
-                    </div>
+                <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 2px;">
+                    <label>Canary Circuit Event Trigger Metric (<span id="katex-c-label"></span>):</label>
+                    <div id="canary-output" style="font-weight:bold; margin:1px 0; font-size:0.75rem;">SILENT</div>
+                    <div id="equation-canary" class="formula-box"></div>
+                    <div style="color: #668; font-size: 0.7rem; padding-left: 4px;" id="live-calc-canary"></div>
                 </div>
-
                 <div class="raw-string" id="raw-string-output">0b0000...</div>
             </div>
         </div>
@@ -261,668 +212,435 @@
 </div>
 
 
+    
 <script>
-    // ==========================================================================
-    // 1. IMMUTABLE 128-BIT SYSTEM PROTOCOL SCHEMATICS (CORE ALIGNED REFUGE MAP)
-    // ==========================================================================
-    const CORE_CONFIG = {
-        0:  { name: "EXISTENCE",        type: "core",   trigger: true,  visual: 15, threat_name: "THREAT_EXISTENCE",        desc: "Threat against physical life baseline blueprint", question: "Is your right to biological life presence threatened?" },
-        1:  { name: "AUTONOMY",         type: "core",   trigger: false, visual: 7,  threat_name: "THREAT_AUTONOMY",         desc: "Coercive suppression of sovereign execution liberty", question: "Has your personal sovereign autonomy been coerced?" },
-        2:  { name: "INTEGRITY",        type: "core",   trigger: false, visual: 7,  threat_name: "THREAT_INTEGRITY",        desc: "Compromise or infiltration of internal moral axis", question: "Is your internal moral axis compromised?" },
-        3:  { name: "PSYCHOLOGY",       type: "core",   trigger: true,  visual: 15, threat_name: "THREAT_PSYCHOLOGY",       desc: "Targeted psychological pressure or mental stress on family lifelines", question: "Are you experiencing cognitive distress?" },
-        4:  { name: "PHYSICAL",         type: "core",   trigger: true,  visual: 7,  threat_name: "THREAT_PHYSICAL",         desc: "Violation of physical body vessel boundaries or family safety perimeters", question: "Have your physical body vessel bounds been crossed?" },
-        5:  { name: "DISABILITY",       type: "core",   trigger: true,  visual: 15, threat_name: "THREAT_DISABILITY",       desc: "Systemic ableistic actions attempting to devalue neurodivergent variance", question: "Is active systemic ableism being targeted against your person?" },
-        6:  { name: "DEVELOPMENT",      type: "core",   trigger: false, visual: 7,  threat_name: "THREAT_DEVELOPMENT",      desc: "Evolutionary intellectual blockades or creative erasure", question: "Are your creative or intellectual parameters blocked?" },
-        7:  { name: "PROPERTY",         type: "core",   trigger: false, visual: 1,  threat_name: "THREAT_PROPERTY",         desc: "Unauthorized asset extraction, lockouts, or local drive theft", question: "Are your personal asset drives unsafe?" },
-        8:  { name: "PRESENCE",         type: "core",   trigger: false, visual: 1,  threat_name: "THREAT_PRESENCE",         desc: "Illegal geolocation trace, spatial stalking, or network tracking footprint", question: "Are you subjected to unauthorized data tracking?" },
-        10: { name: "BASIC_RIGHTS",     type: "shield", trigger: false, visual: 15, threat_name: "THREAT_BASIC_RIGHTS",     desc: "Constitutional protection strip targeting base primitive survival", question: "Are basic survival protections stripped away?" },
-        20: { name: "HUMAN_RIGHTS",     type: "shield", trigger: false, visual: 15, threat_name: "THREAT_HUMAN_RIGHTS",     desc: "Civil human rights shield teardown via institutional overreach", question: "Have civil human rights shields failed to protect you?" },
-        30: { name: "SHIELD_DIVERSITY",    type: "shield", trigger: true,  visual: 15, threat_name: "THREAT_DIVERSITY_STATUS", desc: "Special status framework protecting multi-variance neurotypes", question: "Are disability protective frameworks missing?" },
-        31: { name: "SHIELD_ASYLUM",       type: "shield", trigger: true,  visual: 15, threat_name: "THREAT_ASYLUM_STATUS",    desc: "Temporary asylum or naturalization status protecting refugees", question: "Has your legal right to temporary refuge shelter failed?" },
-        32: { name: "EXISTENTIAL",      type: "shield", trigger: true,  visual: 15, threat_name: "THREAT_EXISTENTIAL",      desc: "Active emergency coercion strike / Panic Dead-Man switch trigger", question: "Is your top-priority existential safety or panic override line tripped?" },
-        
-        128: { name: "STRUCTURE_SIZE",  type: "meta",   trigger: false, visual: 4,  threat_name: "META_SIZE_DESCRIPTOR",    desc: "Defines the physical size bit-width of this instance", question: "Metadata Size Parameter Row" },
-        129: { name: "CRYPTO_SIGNATURE", type: "meta",  trigger: false, visual: 4,  threat_name: "META_HASH_OF_HASHES",     desc: "Stores certificates and their master hash", question: "Cryptographic Vault Check-Bit Signature" }
+    const BITS = {
+        0:  { name: "EXISTENCE (B0)", desc: "Biological bodily presence blueprint", type: "core" },
+        1:  { name: "AUTONOMY (B1)", desc: "Sovereign execution control parameters", type: "core" },
+        2:  { name: "INTEGRITY (B2)", desc: "Internal ethical alignment and moral axis", type: "core" },
+        3:  { name: "PSYCHOLOGY (B3)", desc: "Cognitive internal state and mental peace parameters", type: "core" },
+        4:  { name: "PHYSICAL (B4)", desc: "Physical body vessel boundaries and biosensors tracking", type: "core" },
+        5:  { name: "DISABILITY (B5)", desc: "Neuroatypical (AuDHD) coordinate axis space", type: "core" },
+        7:  { name: "PROPERTY (B7)", desc: "Data vaults, hard disks, server safety bounds", type: "core" },
+        8:  { name: "PRESENCE (B8)", desc: "Real-time spatiotemporal hardware network footprint", type: "core" },
+        20: { name: "SHIELD_HUMAN_RIGHTS (B20)", desc: "Institutional boundary level firewalls", type: "shield" },
+        24: { name: "SHIELD_ONLINE_RIGHTS (B24)", desc: "Cyber-harassment mitigation perimeters", type: "shield" },
+        26: { name: "TRUST_BROKEN_CORE (B26)", desc: "Shatters core alliance and drops shields", type: "threat" }
     };
 
-    let state_core = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 6: true, 7: true, 8: true, 10: true, 20: true, 30: false, 31: false, 32: true, 128: true, 129: true };
-    let state_threat = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 6: false, 7: false, 8: false, 10: false, 20: false, 30: false, 31: false, 32: false, 128: false, 129: false };
-    
-    let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null; let currentViewMode = 'topology';
-    let forceStaticNoiseOverlay = false;
-    let rotX = -0.5; let rotY = 0.6; let panX = 0; let panY = 0;
-    let isDraggingSpace = false; let dragMode = 'rotate'; let previousMouseX = 0; let previousMouseY = 0;
-
-    function setViewMode(mode) {
-        currentViewMode = mode;
-        const btnTop = document.getElementById('btn-view-topology'); const btnRgt = document.getElementById('btn-view-rights');
-        if (btnTop && btnRgt) { btnTop.className = mode === 'topology' ? 'btn btn-active' : 'btn'; btnRgt.className = mode === 'rights' ? 'btn btn-active' : 'btn'; }
-        initSwitches(); calculateMatrix();
-    }
+    let state = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false };
+    let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null;
 
     function initSwitches() {
-        const coresContainer = document.getElementById('cores-switches-container');
-        const threatsContainer = document.getElementById('threats-switches-container');
-        if (!coresContainer || !threatsContainer) return;
-        coresContainer.innerHTML = ''; threatsContainer.innerHTML = '';
-        let coresHTML = ''; let threatsHTML = '';
-        
-        Object.keys(CORE_CONFIG).forEach(bit => {
-            const config = CORE_CONFIG[bit]; let bitStr = bit.toString(); let bitNum = parseInt(bit);
-            if (config.type === "meta") return;
-            
-            if (currentViewMode === 'topology') {
-                coresHTML += `<div class="bit-row" style="padding:4px 2px;"><div><strong>${bitStr} | ${config.name}</strong></div><label class="switch"><input type="checkbox" id="core-${bitStr}" ${state_core[bitNum]?'checked':''} onchange="toggleCoreBit(${bitNum})"><span class="slider"></span></label></div>`;
-            } else {
-                let isViolated = !state_core[bitNum];
-                coresHTML += `<div class="bit-row" style="padding:4px 2px; border-left:2px solid ${isViolated?'var(--pink)':'transparent'}; background:${isViolated?'rgba(255,0,170,0.02)':'transparent'}"><div style="font-size:0.7rem; color:${isViolated?'var(--pink)':'#fff'};"><strong>${bitStr}</strong> | ${config.question}</div><label class="switch"><input type="checkbox" id="core-${bitStr}" ${!isViolated?'checked':''} onchange="toggleCoreViolation(${bitNum})"><span class="slider" style="background-color:${isViolated?'var(--pink)':'#202030'};"></span></label></div>`;
-            }
-            let isThreatActive = state_threat[bitNum];
-            let triggerBadge = config.trigger ? `<span style="color:var(--pink); font-size:0.55rem; background:rgba(255,0,170,0.1); padding:1px 3px; border-radius:2px; font-weight:bold; margin-left:4px;">TRG</span>` : '';
-            threatsHTML += `<div class="bit-row" style="padding:4px 2px; justify-content:space-between; background:${isThreatActive?'rgba(255,0,170,0.04)':'transparent'}" title="${config.desc}"><div style="font-size:0.65rem; color:${isThreatActive?'var(--pink)':'#8e8eaf'}; font-family:monospace; padding-right:6px;"><strong>${bitStr} | ${config.threat_name}</strong>${triggerBadge}</div><label class="switch"><input type="checkbox" id="threat-${bitStr}" ${isThreatActive?'checked':''} onchange="toggleThreatBit(${bitNum})"><span class="slider" style="background-color:#401020;"></span></label></div>`;
+        const container = document.getElementById('switches-container'); container.innerHTML = '';
+        Object.keys(BITS).forEach(bit => {
+            const config = BITS[bit];
+            container.innerHTML += `<div class="bit-row"><div><strong>${config.name}</strong> - <span style="color:#5c5c7c; font-size:0.65rem;">${config.desc}</span></div><label class="switch"><input type="checkbox" id="bit-${bit}" ${state[bit] ? 'checked' : ''} onchange="toggleBit(${bit})"><span class="slider"></span></label></div>`;
         });
-        coresContainer.innerHTML = coresHTML; threatsContainer.innerHTML = threatsHTML;
     }
-
-    function toggleCoreBit(bit) { const el = document.getElementById(`core-${bit}`); if (el) state_core[bit] = el.checked; calculateMatrix(); }
-    function toggleThreatBit(bit) { const el = document.getElementById(`threat-${bit}`); if (el) state_threat[bit] = el.checked; calculateMatrix(); }
-    function toggleCoreViolation(bit) { const el = document.getElementById(`core-${bit}`); if (!el) return; state_core[bit] = !el.checked; initSwitches(); calculateMatrix(); }
-    function toggleZoom() { isZoomed = !isZoomed; const vis = document.getElementById('matrix-vis'); const btn = document.getElementById('btn-zoom'); if (isZoomed && vis && btn) { vis.style.transform = "scale(2)"; btn.className = "btn btn-active"; btn.innerText = "Zoom: 2x"; } else if (vis && btn) { vis.style.transform = "scale(1)"; btn.className = "btn"; btn.innerText = "Zoom: 1x"; } }
-
-    function initSwitches() {
-        const coresContainer = document.getElementById('cores-switches-container');
-        const threatsContainer = document.getElementById('threats-switches-container');
-        if (!coresContainer || !threatsContainer) return;
-        
-        coresContainer.innerHTML = ''; threatsContainer.innerHTML = '';
-        let coresHTML = ''; let threatsHTML = '';
-        
-        Object.keys(CORE_CONFIG).forEach(bit => {
-            const config = CORE_CONFIG[bit];
-            let bitStr = bit.toString(); let bitNum = parseInt(bit);
-            
-            // Filters out indices 128 and 129 from appearing as interactive checkboxes
-            if (config.type === "meta") return;
-            
-            // LEFT COLUMN DISPATCH: Renders state parameters natively from schema fields
-            if (currentViewMode === 'topology') {
-                coresHTML += `
-                    <div class="bit-row" style="padding: 4px 2px;">
-                        <div><strong>${bitStr} | ${config.name}</strong></div>
-                        <label class="switch">
-                            <input type="checkbox" id="core-${bitStr}" ${state_core[bitNum] ? 'checked' : ''} onchange="toggleCoreBit(${bitNum})">
-                            <span class="slider"></span>
-                        </label>
-                    </div>`;
-            } else {
-                let isViolated = !state_core[bitNum];
-                coresHTML += `
-                    <div class="bit-row" style="padding:4px 2px; border-left:2px solid ${isViolated?'var(--pink)':'transparent'}; background:${isViolated?'rgba(255,0,170,0.02)':'transparent'}">
-                        <div style="font-size:0.7rem; color:${isViolated?'var(--pink)':'#fff'};"><strong>${bitStr}</strong> | ${config.question}</div>
-                        <label class="switch">
-                            <input type="checkbox" id="core-${bitStr}" ${!isViolated ? 'checked' : ''} onchange="toggleCoreViolation(${bitNum})">
-                            <span class="slider" style="background-color:${isViolated?'var(--pink)':'#202030'};"></span>
-                        </label>
-                    </div>`;
-            }
-
-            // RIGHT COLUMN DISPATCH: Renders parallel threat events and activation triggers
-            let isThreatActive = state_threat[bitNum];
-            let triggerBadge = config.trigger ? `<span style="color:var(--pink); font-size:0.55rem; background:rgba(255,0,170,0.1); padding:1px 3px; border-radius:2px; font-weight:bold; margin-left:4px;">TRG</span>` : '';
-            
-            threatsHTML += `
-                <div class="bit-row" style="padding: 4px 2px; justify-content: space-between; background:${isThreatActive?'rgba(255,0,170,0.04)':'transparent'}" title="${config.desc}">
-                    <div style="font-size:0.65rem; color:${isThreatActive?'var(--pink)':'#8e8eaf'}; font-family:monospace; padding-right:6px;">
-                        <strong>${bitStr} | ${config.threat_name}</strong>${triggerBadge}
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="threat-${bitStr}" ${isThreatActive ? 'checked' : ''} onchange="toggleThreatBit(${bitNum})">
-                        <span class="slider" style="background-color:#401020;"></span>
-                    </label>
-                </div>`;
-        });
-        
-        coresContainer.innerHTML = coresHTML; threatsContainer.innerHTML = threatsHTML;
-    }
-
-
-    // 3. CENTRAL INPUT EVENT TRACKING PIPELINE
-    function triggerStateChange() {
-        if (!hasChangedYet) {
-            hasChangedYet = true; 
-            const proc = document.getElementById('panel-proclamation');
-            if (proc) { 
-                proc.style.maxHeight = '0px'; proc.style.padding = '0px'; 
-                proc.style.margin = '0px'; proc.style.opacity = '0'; 
-                setTimeout(() => { proc.style.display = 'none'; }, 400); 
-            }
-        }
-    }
-    
-    // 3. CENTRAL INPUT INTERCEPTOR PIPELINE (CORE-LOGIC SEGMENTED)
-    function toggleCoreBit(bit) { 
-        const el = document.getElementById(`core-${bit.toString()}`); 
-        if (el) state_core[bit] = el.checked; 
-        calculateMatrix(); 
-    }
-
-    function toggleThreatBit(bit) { 
-        const el = document.getElementById(`threat-${bit.toString()}`); 
-        if (el) state_threat[bit] = el.checked; 
-        calculateMatrix(); 
-    }
-
-    function toggleCoreViolation(bit) { 
-        const el = document.getElementById(`core-${bit.toString()}`); 
-        if (!el) return; 
-        state_core[bit] = !el.checked; // Direct mathematical survey state inverter
-        initSwitches(); 
-        calculateMatrix(); 
-    }
-
-    // 4. VIEWPORT MAGNIFIER & ASYMMETRIC OVERLAP LAYER TRACE ENGINE
+    function toggleBit(bit) { state[bit] = document.getElementById(`bit-${bit}`).checked; calculateMatrix(); }
     function toggleZoom() {
         isZoomed = !isZoomed; const vis = document.getElementById('matrix-vis'); const btn = document.getElementById('btn-zoom');
-        if (isZoomed && vis && btn) { vis.style.transform = "scale(2)"; btn.className = "btn btn-active"; btn.innerText = "Zoom: 2x"; }
-        else if (vis && btn) { vis.style.transform = "scale(1)"; btn.className = "btn"; btn.innerText = "Zoom: 1x"; }
+        if (isZoomed) { vis.style.transform = "scale(2)"; btn.className = "btn btn-active"; btn.innerText = "Zoom: 2x"; }
+        else { vis.style.transform = "scale(1)"; btn.className = "btn"; btn.innerText = "Zoom: 1x"; }
     }
-
-
     function activateCompareTraceMode() {
-        const geoCore = document.getElementById('geo-core'); 
-        const traceShape = document.getElementById('trace-geo-core'); 
-        const btn = document.getElementById('btn-compare'); 
-        if (!geoCore || !traceShape || !btn) return;
-        
-        const currentPoints = geoCore.getAttribute('points');
-        if (!tracePoints) { 
-            tracePoints = currentPoints; 
-            traceShape.setAttribute('points', tracePoints); 
-            traceShape.style.display = 'block'; 
-            btn.className = "btn btn-active"; 
-            btn.innerText = "Lock Trace Active"; 
-        } else { 
-            tracePoints = null; 
-            traceShape.style.display = 'none'; 
-            btn.className = "btn"; 
-            btn.innerText = "Compare Trace"; 
-        }
+        const currentPoints = document.getElementById('geo-core').getAttribute('points');
+        const traceShape = document.getElementById('trace-geo-core'); const btn = document.getElementById('btn-compare');
+        if (!tracePoints) {
+            tracePoints = currentPoints; if (traceShape) { traceShape.setAttribute('points', tracePoints); traceShape.style.display = 'block'; }
+            if (btn) { btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active"; }
+        } else { tracePoints = null; if (traceShape) traceShape.style.display = 'none'; if (btn) { btn.className = "btn"; btn.innerText = "Compare Trace"; } }
     }
-
-    // 3. CENTRAL INPUT EVENT TRACKING PIPELINE
-    function toggleCoreBit(bit) { const el = document.getElementById(`core-${bit.toString()}`); if (el) state_core[bit] = el.checked; calculateMatrix(); }
-    function toggleThreatBit(bit) { const el = document.getElementById(`threat-${bit.toString()}`); if (el) state_threat[bit] = el.checked; calculateMatrix(); }
-    function toggleCoreViolation(bit) { const el = document.getElementById(`core-${bit.toString()}`); if (!el) return; state_core[bit] = !el.checked; initSwitches(); calculateMatrix(); }
-
-    // ==========================================================================
-    // 5. VAULT SECURE ENGINE: COMPRESSES BOTH 0-FOLD LAYERS NATIVELY
-    // ==========================================================================
-    function generateVaultString() {
-        let binaryCore = Object.keys(CORE_CONFIG).map(b => state_core[parseInt(b)] ? "1" : "0").join("");
-        let coreHex = parseInt(binaryCore, 2).toString(16).toUpperCase();
-        
-        let binaryThreat = Object.keys(CORE_CONFIG).map(b => state_threat[parseInt(b)] ? "1" : "0").join("");
-        let threatHex = parseInt(binaryThreat, 2).toString(16).toUpperCase();
-        
-        let tacoNetworkChecksum = "TACO0000"; let traceHex = "0"; 
-        if (tracePoints) { traceHex = btoa(tracePoints.replace(/[\sL]/g, '_')).replace(/=/g, ''); }
-        return `EX-${coreHex}-${threatHex}-${tacoNetworkChecksum}-${traceHex}`;
-    }
-
+    function generateVaultString() { let binaryCode = Object.keys(BITS).map(b => state[b] ? "1" : "0").join(""); return "EX-" + parseInt(binaryCode, 2).toString(16).toUpperCase(); }
+    function copyVaultString() { navigator.clipboard.writeText(document.getElementById('vault-string').value); alert("Sync Key Captured."); }
     function restoreFromVault() {
-        const valBox = document.getElementById('vault-string'); if (!valBox) return; const val = valBox.value.trim(); if (!val.startsWith("EX-")) return;
-        let segments = val.split("-");
-        if (segments.length >= 4) {
-            let binCore = parseInt(segments, 16).toString(2).padStart(Object.keys(CORE_CONFIG).length, '0');
-            Object.keys(CORE_CONFIG).forEach((b, idx) => { state_core[parseInt(b)] = binCore[idx] === "1"; });
-            
-            let binThreat = parseInt(segments, 16).toString(2).padStart(Object.keys(CORE_CONFIG).length, '0');
-            Object.keys(CORE_CONFIG).forEach((b, idx) => { state_threat[parseInt(b)] = binThreat[idx] === "1"; });
-            initSwitches(); calculateMatrix();
+        const val = document.getElementById('vault-string').value.trim();
+        if (val.startsWith("EX-")) {
+            let bin = parseInt(val.split("-"), 16).toString(2).padStart(Object.keys(BITS).length, '0');
+            Object.keys(BITS).forEach((b, idx) => { state[b] = bin[idx] === "1"; const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; });
+            calculateMatrix();
         }
     }
+    function project3D(x, y, z) { return { x: 200 + (x * 0.8) - (y * 0.8), y: 160 + (x * 0.4) + (y * 0.4) - z }; }
+    function setTimelineMode(mode) { timelineMode = mode; ['spiral', 'linear', '3d', 'fib'].forEach(m => { const b = document.getElementById(`btn-timeline-${m}`); if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; }); renderTimelineBackground(); calculateMatrix(); }
 
-
-    // ==========================================================================
-    // 6. GEOMETRIC PERSPECTIVE SPACE PROJECTORS & TIMELINE CONTROL CHANNELS
-    // ==========================================================================
-    // ==========================================================================
-    // 6. GEOMETRIC PERSPECTIVE SPACE PROJECTORS & TIMELINE CONTROL CHANNELS
-    // ==========================================================================
-    function project3D(x, y, z) { 
-        let cosX = Math.cos(rotX); let sinX = Math.sin(rotX);
-        let y1 = y * cosX - z * sinX; let z1 = y * sinX + z * cosX;
-        let cosY = Math.cos(rotY); let sinY = Math.sin(rotY);
-        let x2 = x * cosY - z1 * sinY; let z2 = x * sinY + z1 * cosY;
-        const focalLength = 260; const cameraDistance = 180; const distanceZ = y1 + cameraDistance;
-        return { x: 200 + panX + (x2 * focalLength) / distanceZ, y: 160 + panY + (z2 * focalLength) / distanceZ };
+    function renderTimelineBackground() {
+        const path = document.getElementById('timeline-path'); const spiralTrack = document.getElementById('fibonacci-spiral-track'); const ticks = document.getElementById('timeline-ticks'); if (!path || !ticks) return;
+        ticks.innerHTML = ''; if (spiralTrack) spiralTrack.style.display = 'none'; document.getElementById('collision-crosshair').style.display = 'none';
+        if (timelineMode === 'spiral') {
+            let points = []; for (let theta = 0; theta < 25; theta += 0.15) { let r = 6 + (theta * 4.5); points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); }
+            path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
+        } else if (timelineMode === 'fib') {
+            let points = []; const a = 4.0; const b = 0.1406;
+            for (let theta = 0; theta < 32; theta += 0.03) {
+                let r = a * Math.exp(b * theta); let x = 200 + r * Math.cos(theta); let y = 160 + r * Math.sin(theta);
+                if (r < 185) { points.push(`${x},${y}`); if (Math.floor(theta * 10) % 25 === 0) ticks.innerHTML += `<circle cx="${x}" cy="${y}" r="2" fill="#ff00aa" opacity="0.8"/>`; }
+            }
+            if (spiralTrack) { spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); spiralTrack.setAttribute('stroke', '#ff00aa'); spiralTrack.setAttribute('stroke-width', '1.5'); spiralTrack.setAttribute('opacity', '0.85'); spiralTrack.style.display = 'block'; }
+            path.setAttribute('d', 'M0,0');
+        } else if (timelineMode === 'linear') {
+            path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
+            for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
+        } else if (timelineMode === '3d') {
+            path.setAttribute('d', 'M0,0'); const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
+            ticks.innerHTML += `<line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>`;
+        }
     }
-
-    function setTimelineMode(mode) { 
-        timelineMode = mode; 
-        ['spiral', 'linear', '3d', 'fib'].forEach(m => { 
-            const b = document.getElementById(`btn-timeline-${m}`); 
-            if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; 
-        }); 
-        renderTimelineBackground(); 
-        calculateMatrix(); 
-    }
-
-    function renderTimelineBackground() {}
-    function compileKatexExpressions() {}
-    function injectHexMarker() {}
-
-    // ==========================================================================
-    // 7. REAL-TIME CALCULATION MATRIX ENGINE & AUTOMATED VALUE INJECTIONS
-    // ==========================================================================
-    function calculateMatrix() {
-        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
-        const orthoElement = document.getElementById('ortho-output');
-        
-        let noise = 0.5; 
-        let shieldStrength = 0.0; 
-        let brokenCount = 0;
-        
-        // Natively scans parameters using the true CORE_CONFIG dictionary object
-        Object.keys(CORE_CONFIG).forEach(b => {
-            let k = parseInt(b); 
-            const nodeSpec = CORE_CONFIG[k];
-            if (nodeSpec.type === "meta") return;
-            
-            // A. Process state_core baseline friction noise
-            if (nodeSpec.type === "core" && state_core[k] === false) { 
-                noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5)); 
-                brokenCount++; 
-            }
-            
-            // B. Process active protection shield dampers
-            if (nodeSpec.type === "shield" && state_core[k] === true) { 
-                shieldStrength += 0.25; 
-            }
-            
-            // C. UNIVERSAL IMMUTABLE 1:1 DUAL-LAYER CROSS-PRODUCT FAULT GATE
-            if (state_threat[k] === true) {
-                if (state_core[k] === false) {
-                    noise += (k === 32) ? 25.0 : ((nodeSpec.type === "trigger" || nodeSpec.type === "ripple") ? 14.0 : 8.5);
-                    if (nodeSpec.trigger === true) noise += 12.0; 
-                } else { 
-                    noise += (k === 32) ? 5.0 : 1.5; 
-                }
-            }
-        });
-        
-        let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95));
-        if (brokenCount > 3) p_collapse *= (1.0 + (brokenCount * 0.20));
-
-        // D. AUTOMATED ELECTRONIC ID TRUST TOKEN INTERCEPTOR LOCKOUT
-        if (state_core[30] === true && state_core[31] === true) {
-            state_core[1] = false; 
-            if (orthoElement) { orthoElement.innerHTML = `[MANDATE CONTRACT LOCKED]: Co-signature required. Dual-bit 30&31 status restricts personal autonomy parameters.`; orthoElement.style.color = "var(--pink)"; }
-        }
-        
-        const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
-        document.getElementById('live-inject-p').innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
-        const injOrthoNode = document.getElementById('live-inject-ortho'); if (injOrthoNode) { injOrthoNode.innerHTML = `➔ [ B2(${state_core[2]?1:0}) • B5(${state_core[5]?1:0}) ] = <strong>${(state_core[2]&&!state_core[5])?1:0}</strong>`; }
-        
-        if (orthoElement && !(state_core[30] === true && state_core[31] === true)) {
-            if (state_threat[5] === true && state_core[5] === false) { orthoElement.innerHTML = `[CRITICAL BREACH]: Existential panic override activated on unshielded node space.`; orthoElement.style.color = "var(--pink)"; }
-            else { orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; orthoElement.style.color = "var(--green)"; }
-        }
-
-        // E. Combined Scorecard Tally Engine: Evaluates our active non-metadata positions
-        let secureCount = 0; let failureCount = 0;
-        const trackingAxes = [...Object.keys(CORE_CONFIG).map(Number)].filter(k => CORE_CONFIG[k].type !== "meta");
-        
-        trackingAxes.forEach(k => { 
-            if (state_core[k] === true && state_threat[k] === false) secureCount++; 
-            else failureCount++; 
-        });
-        document.getElementById('counter-secure-val').innerText = secureCount; 
-        document.getElementById('counter-broken-val').innerText = failureCount;
-        // F. Canary Watchdog Alerts Handler
-        const injectCanaryNode = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
-        if (injectCanaryNode && canaryBox) {
-            if (p_collapse >= poppertimeThreshold) {
-                canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
-                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
-            } else {
-                canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
-                injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
-            }
-        }
-
-        // G. Analog TV Static Noise Overlay Controller
-        const staticOverlay = document.getElementById('tv-static-noise-layer'); 
-        if (staticOverlay) {
-            if (forceStaticNoiseOverlay || p_collapse >= poppertimeThreshold) {
-                let opacityAmt = forceStaticNoiseOverlay ? 0.20 : Math.min(p_collapse * 0.02, 0.55);
-                staticOverlay.style.display = 'block'; staticOverlay.style.opacity = opacityAmt.toString();
-            } else { staticOverlay.style.display = 'none'; }
-        }
-
-        const metricsDashboardNode = document.getElementById('live-metrics-dashboard-sub');
-        if (metricsDashboardNode) metricsDashboardNode.innerHTML = ''; 
-        let projectedPoints = [];
-
-        // H. AUTOMATED BITWISE VIEWPORT GRAPHIC DRAW PASS: Re-draws the image lines dynamically
-        trackingAxes.forEach((k, idx) => {
-            const nodeSpec = CORE_CONFIG[k];
-            
-            const plotOnGraphic  = (nodeSpec.visual & 1) === 1;
-            const printLabelText = (nodeSpec.visual & 2) === 2;
-            const outputMetrics  = (nodeSpec.visual & 4) === 4;
-            const persistentView = (nodeSpec.visual & 8) === 8;
-            
-            let isCurrentAxisBreached = (state_core[k] === false || state_threat[k] === true);
-            
-            let prevKey = trackingAxes[idx - 1] || trackingAxes[trackingAxes.length - 1];
-            let nextKey = trackingAxes[idx + 1] || trackingAxes[0];
-            let neighborIsBreached = (state_core[prevKey] === false || state_threat[prevKey] === true || 
-                                      state_core[nextKey] === false || state_threat[nextKey] === true);
-
-            if (plotOnGraphic && (persistentView || isCurrentAxisBreached || neighborIsBreached)) {
-                let nodeMagnitude = state_core[k] ? 65 : 12; 
-                let theta = idx * (2 * Math.PI / trackingAxes.length);
-                let pt3D = project3D(nodeMagnitude * Math.cos(theta), nodeMagnitude * Math.sin(theta), (k * 1.5) - 30);
-                
-                projectedPoints.push(`${pt3D.x},${pt3D.y}`);
-                
-                let dotElement = document.getElementById('node-axis-' + k);
-                if (dotElement) {
-                    dotElement.setAttribute('cx', pt3D.x); dotElement.setAttribute('cy', pt3D.y);
-                    dotElement.setAttribute('fill', state_core[k] ? 'var(--green)' : 'var(--pink)');
-                    dotElement.style.display = 'block';
-                }
-            } else {
-                let dotElement = document.getElementById('node-axis-' + k);
-                if (dotElement) dotElement.style.display = 'none';
-            }
-
-            if (outputMetrics && metricsDashboardNode) {
-                metricsDashboardNode.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid #0f0f1c; padding:2px 0; font-family:monospace; font-size:0.65rem;">
-                        <span style="color:#8e8eaf;">➔ Axis ${k} (${nodeSpec.name}):</span>
-                        <span style="color:${state_core[k]?'var(--green)':'var(--pink)'};">
-                            [Core: ${state_core[k]?'1':'0'} | Threat: ${state_threat[k]?'1':'0'}]
-                        </span>
-                    </div>`;
-            }
-        });
-
-
     function injectHexMarker() {
-        const hexBox = document.getElementById('hex-input'); if (!hexBox) return; const hex = hexBox.value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
+        const hex = document.getElementById('hex-input').value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
         if (hex.startsWith('0x') && hex.length >= 6) {
             let val = parseInt(hex, 16); let cx = 140 + ((val % 60) * 2); let cy = 110 + (((val >> 4) % 40) * 2);
             marker.setAttribute('cx', cx); marker.setAttribute('cy', cy); marker.setAttribute('stroke', '#' + hex.substring(2,8)); marker.style.display = 'block';
             label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
         }
     }
+    function compileKatexExpressions() {
+        if (typeof katex !== 'undefined') {
+            let liveNoise = 0.5; if (!state) liveNoise += 5.0; if (!state) liveNoise += 4.0; if (!state) liveNoise += 6.0; if (!state) liveNoise += 3.5; if (!state) liveNoise += 4.5; if (!state) trackProperty=3.5; if (!state) liveNoise += 2.5; if (state) liveNoise += 5.5;
+            let liveShields = 0.0; if (state) liveShields += 0.40; if (state) liveShields += 0.40; if (!state || !state) liveShields *= 0.5;
+            const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
+            const p_collapse = liveNoise / (1.0 - Math.min(liveShields, 0.95));
 
-
-        const gCoreNode = document.getElementById('geo-core'); 
-        if (gCoreNode && projectedPoints.length > 0) { 
-            gCoreNode.setAttribute('points', projectedPoints.join(' ')); 
-        } else if (gCoreNode) {
-            gCoreNode.setAttribute('points', '');
+            try {
+                katex.render("P_{\\text{collapse}}", document.getElementById('katex-p-label'));
+                katex.render("\\mathcal{C}_{\\text{canary}}", document.getElementById('katex-c-label'));
+                
+                // FIXED STRUCTURAL VALUE INJECTIONS (Inserts real values directly inside the fraction math nodes)
+                katex.render(`\\mathcal{P}_{\\text{collapse}} = \\frac{${liveNoise.toFixed(2)}}{1 - ${liveShields.toFixed(2)}} = \\mathbf{${p_collapse.toFixed(2)}}`, document.getElementById('equation-p-collapse'), { displayMode: true });
+                
+                let b2 = state ? "1" : "0"; let b5 = state ? "1" : "0";
+                let res = (state && state) ? "1 \\implies \\text{Collision}" : "0 \\implies \\text{Orthogonal}";
+                katex.render(`\\langle \\mathbf{V}_{2}(${b2}), \\mathbf{V}_{5}(${b5}) \\rangle = \\mathbf{${res}}`, document.getElementById('equation-ortho'), { displayMode: true });
+                
+                let alertTrigger = p_collapse >= poppertimeThreshold ? "1 \\implies \\mathbf{ALARM}" : "0 \\implies \\mathbf{SILENT}";
+                katex.render(`\\mathcal{C}_{\\text{canary}} = \\Theta \\left( ${p_collapse.toFixed(2)} - ${poppertimeThreshold.toFixed(1)} \\right) = \\mathbf{${alertTrigger}}`, document.getElementById('equation-canary'), { displayMode: true });
+            } catch (err) { console.warn("Buffered compiler framework pass."); }
         }
+    }
+    function calculateMatrix() {
+        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0; const orthoElement = document.getElementById('ortho-output');
+        let noise = 0.5; if (!state) noise += 5.0; if (!state) noise += 4.0; if (!state) noise += 6.0; if (!state) noise += 3.5; if (!state) noise += 4.5; if (!state) noise += 3.5; if (!state) noise += 2.5; if (state) noise += 5.5;
+        let shields = 0.0; if (state) shields += 0.40; if (state) shields += 0.40; if (!state || !state) shields *= 0.5;
+        let p_collapse = noise / (1.0 - Math.min(shields, 0.95)); const outP = document.getElementById('p-collapse-output'); if (outP) outP.innerText = p_collapse.toFixed(2);
         
-        let binStr = ""; 
-        Object.keys(CORE_CONFIG).reverse().forEach(b => { 
-            if(CORE_CONFIG[b].type !== "meta") binStr += state_core[parseInt(b)] ? "1" : "0"; 
-        }); 
-        
-        const outRaw = document.getElementById('raw-string-output'); 
-        if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | HEX: 0x${parseInt(binStr, 2).toString(16).toUpperCase()}`;
-        
+        if (orthoElement) {
+            if (state && state) { orthoElement.innerHTML = `[COLLISION]: Warning. Register conflict under ancientState variables.`; orthoElement.style.color = "var(--pink)"; }
+            else { orthoElement.innerHTML = `[SECURE]: Inner Product equals ZERO. Disability is perfectly independent.`; orthoElement.style.color = "var(--green)"; }
+        }
+
+        const canaryBox = document.getElementById('canary-output');
+        if (canaryBox) {
+            if (p_collapse >= poppertimeThreshold) {
+                canaryBox.innerText = `💥 ALARM ACTIVE`; canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+                if (timelineMode === 'fib') {
+                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); const colX = 200 + targetR * Math.cos(targetTheta); const colY = 160 + targetR * Math.sin(targetTheta); const crosshair = document.getElementById('collision-crosshair');
+                    if (crosshair) { document.getElementById('collision-point').setAttribute('cx', colX); document.getElementById('collision-point').setAttribute('cy', colY); document.getElementById('collision-line-h').setAttribute('y1', colY); document.getElementById('collision-line-h').setAttribute('y2', colY); document.getElementById('collision-line-v').setAttribute('x1', colX); document.getElementById('collision-line-v').setAttribute('x2', colX); crosshair.style.display = 'block'; }
+                }
+            } else { canaryBox.innerText = `🟢 SAFE`; canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none'; }
+        }
+        const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
+        const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
+        const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
+
+        if (timelineMode === '3d') {
+            let ex_val = state ? 75 : 0; let au_val = state ? 75 : 0; let in_val = state ? 75 : 0;
+            let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
+            if (gCore) gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+            if (nodeEx) nodeEx.setAttribute('cx', pt_ex.x); if (nodeEx) nodeEx.setAttribute('cy', pt_ex.y);
+            if (nodeAu) nodeAu.setAttribute('cx', pt_au.x); if (nodeAu) nodeAu.setAttribute('cy', pt_au.y);
+            if (nodeIn) nodeIn.setAttribute('cx', pt_in.x); if (nodeIn) nodeIn.setAttribute('cy', pt_in.y);
+            if (gShields) gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
+            if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
+        } else {
+            let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let au_y = state ? 230 : 160; let in_x = state ? 120 : 200; let in_y = state ? 230 : 160;
+            if (gCore) gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+            if (nodeEx) { nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y); }
+            if (nodeAu) { nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y); }
+            if (nodeIn) { nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y); }
+            let sh_size = (state && state) ? 100 : ((state || state) ? 55 : 0);
+            if (gShields) gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
+            if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
+        }
+        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
+        const outRaw = document.getElementById('raw-string-output'); if (outRaw) outRaw.innerText = "0b" + binStr + " [Live Registry Track]";
         const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
+        compileKatexExpressions();
     }
-
-    async function updateSystemChecksum() {
-        try {
-            let metaStr = Object.keys(CORE_CONFIG).map(b => state_core[parseInt(b)] ? "1" : "0").join("");
-            let threatStr = Object.keys(CORE_CONFIG).map(b => state_threat[parseInt(b)] ? "1" : "0").join("");
-            const msgUint8 = new TextEncoder().encode(`${metaStr}|${threatStr}`);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const checksumToken = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            CORE_CONFIG.checksum_payload = checksumToken;
-            const outChecksum = document.getElementById('raw-checksum-output'); if (outChecksum) outChecksum.innerText = `SHA-256 Checksum: 0x${checksumToken.substring(0,24).toUpperCase()}...`;
-        } catch (e) {}
-    }
-
-    function generateVaultString() {
-        let binaryCore = Object.keys(CORE_CONFIG).map(b => state_core[parseInt(b)] ? "1" : "0").join("");
-        let binaryThreat = Object.keys(CORE_CONFIG).map(b => state_threat[parseInt(b)] ? "1" : "0").join("");
-        let checksumHex = CORE_CONFIG.checksum_payload ? CORE_CONFIG.checksum_payload.substring(0, 8).toUpperCase() : "0";
-        return `EX-${parseInt(binaryCore,2).toString(16).toUpperCase()}-${parseInt(binaryThreat,2).toString(16).toUpperCase()}-${checksumHex}-0`;
-    }
-
-    function restoreFromVault() {
-        const valBox = document.getElementById('vault-string'); if (!valBox) return; const val = valBox.value.trim(); if (!val.startsWith("EX-")) return;
-        let segments = val.split("-");
-        if (segments.length >= 3) {
-            let binCore = parseInt(segments, 16).toString(2).padStart(Object.keys(CORE_CONFIG).length, '0');
-            Object.keys(CORE_CONFIG).forEach((b, idx) => { state_core[parseInt(b)] = binCore[idx] === "1"; });
-            let binThreat = parseInt(segments, 16).toString(2).padStart(Object.keys(CORE_CONFIG).length, '0');
-            Object.keys(CORE_CONFIG).forEach((b, idx) => { state_threat[parseInt(b)] = binThreat[idx] === "1"; });
-            initSwitches(); calculateMatrix();
-        }
-    }
-    function copyVaultString() { const vaultIn = document.getElementById('vault-string'); if (vaultIn) { navigator.clipboard.writeText(vaultIn.value); alert("Symmetrical Sync Key Copied."); } }
-
     function loadScenario(id) {
         const scenarios = {
-            1:  { m: {0:true,1:false,2:true,3:true,4:true,5:true,6:true,7:true,8:true,10:true,20:false,30:true,31:true,32:false}, t: {0:false,1:false,2:false,3:false,4:false,5:false,6:false,7:false,8:false,10:false,20:false,30:false,31:false,32:false} },
-            2:  { m: {0:true,1:true,2:true,3:true,4:true,5:false,6:true,7:true,8:true,10:true,20:false,30:true,31:false,32:false}, t: {0:false,1:false,2:false,3:false,4:false,5:true,6:false,7:false,8:false,10:false,20:false,30:false,31:true,32:false} }, // Ableism
-            6:  { m: {0:true,1:true,2:true,3:true,4:true,5:true,6:true,7:true,8:true,10:true,20:true,30:false,31:false,32:true},    t: {0:false,1:false,2:false,3:false,4:false,5:false,6:false,7:false,8:false,10:false,20:false,30:false,31:false,32:false} }, // Harmony Standby
-            10: { m: {0:false,1:false,2:false,3:false,4:false,5:false,6:false,7:false,8:false,10:false,20:false,30:false,31:false,32:false}, t: {0:true,1:true,2:true,3:true,4:true,5:true,6:true,7:true,8:true,10:true,20:true,30:true,31:true,32:true} }
+            1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            3:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: true, 24: false, 26: false },
+            4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 20: false, 24: false, 26: true },
+            5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: true },
+            6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false },
+            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
+            8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: false, 26: false },
+            9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },
+            10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 20: false, 24: false, 26: true },
+            11: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },
+            12: { 0: true, 1: true, 2: true, 3: true, 4: false, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
+            13: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: true, 24: false, 26: false },
+            14: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false },
+            15: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true },
+            16: { 0: true, 1: true, 2: false, 3: false, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            17: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: true, 20: false, 24: true, 26: false },
+            18: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
+            19: { 0: true, 1: true, 2: false, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true },
+            20: { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 20: false, 24: false, 26: false },
+            21: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: true, 26: false },
+            22: { 0: true, 1: false, 2: false, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            23: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false },
+            24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: true, 24: true, 26: false }
         };
-        const selected = scenarios[id] || scenarios;
-        Object.keys(CORE_CONFIG).forEach(b => { 
-            let bNum = parseInt(b); if(CORE_CONFIG[bNum].type === "meta") return;
-            state_core[bNum] = selected.m[bNum] !== undefined ? !!selected.m[bNum] : true; 
-            state_threat[bNum] = selected.t[bNum] !== undefined ? !!selected.t[bNum] : false; 
-        });
-        initSwitches(); calculateMatrix();
+        state = scenarios[id]; Object.keys(BITS).forEach(b => { const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; }); calculateMatrix();
     }
-
-    window.addEventListener('load', () => {
-        initSwitches();
-        const canvas = document.getElementById('matrix-vis');
-        if (canvas) {
-            canvas.addEventListener('contextmenu', e => e.preventDefault());
-            canvas.addEventListener('mousedown', (e) => { isDraggingSpace = true; previousMouseX = e.clientX; previousMouseY = e.clientY; dragMode = (e.shiftKey || e.button === 2) ? 'pan' : 'rotate'; });
-            window.addEventListener('mousemove', (e) => {
-                if (!isDraggingSpace) return;
-                let dx = e.clientX - previousMouseX; let dy = e.clientY - previousMouseY;
-                if (dragMode === 'rotate') { rotY += dx * 0.007; rotX += dy * 0.007; } else { panX += dx * 0.5; panY += dy * 0.5; }
-                previousMouseX = e.clientX; previousMouseY = e.clientY; calculateMatrix();
-            });
-            window.addEventListener('mouseup', () => isDraggingSpace = false);
-        }
-        const loader = document.getElementById('loading-universe'); if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.visibility = 'hidden', 500); }
-    });
-        
-        // ==========================================================================
-        // J. AUTOMATED 3D CUBE PLOTTER: Maps 128-bit payload onto spatial vertices
-        // ==========================================================================
-        const gCoreNode = document.getElementById('geo-core');
-        const metricsDashboardNode = document.getElementById('live-metrics-dashboard-sub');
-        const staticOverlay = document.getElementById('tv-static-noise-layer');
-        
-        if (staticOverlay) {
-            if (forceStaticNoiseOverlay || p_collapse >= poppertimeThreshold) {
-                let opacityAmt = forceStaticNoiseOverlay ? 0.20 : Math.min(p_collapse * 0.02, 0.55);
-                staticOverlay.style.display = 'block'; staticOverlay.style.opacity = opacityAmt.toString();
-            } else { staticOverlay.style.display = 'none'; }
-        }
-
-        if (metricsDashboardNode) metricsDashboardNode.innerHTML = ''; 
-        let projectedPoints = [];
-
-        // Definition Matrix for the 8 Symmetrical Vertices of the 3D Cube
-        const cubeVertices = [
-            { k: 0,  x: -50, y: -50, z: -50 }, // Bottom-Left-Back
-            { k: 1,  x:  50, y: -50, z: -50 }, // Bottom-Right-Back
-            { k: 2,  x:  50, y:  50, z: -50 }, // Bottom-Right-Front
-            { k: 3,  x: -50, y:  50, z: -50 }, // Bottom-Left-Front
-            { k: 4,  x: -50, y: -50, z:  50 }, // Top-Left-Back
-            { k: 5,  x:  50, y: -50, z:  50 }, // Top-Right-Back
-            { k: 10, x:  50, y:  50, z:  50 }, // Top-Right-Front
-            { k: 24, x: -50, y:  50, z:  50 }  // Top-Left-Front (Existential Panic Anchor)
-        ];
-
-        cubeVertices.forEach((vertex) => {
-            const k = vertex.k;
-            const nodeSpec = CORE_CONFIG[k];
-            if (!nodeSpec) return;
-
-            const plotOnGraphic  = (nodeSpec.visual & 1) === 1;
-            const outputMetrics  = (nodeSpec.visual & 4) === 4;
-
-            let isBreached = (state_core[k] === false || state_threat[k] === true);
-            
-            // Buckles and distorts the cube face vertices inward toward 0 if a threat breaches safety bounds
-            let scaleFactor = isBreached ? 0.25 : 1.0;
-            
-            let pt3D = project3D(vertex.x * scaleFactor, vertex.y * scaleFactor, vertex.z * scaleFactor);
-            projectedPoints.push(`${pt3D.x},${pt3D.y}`);
-
-            // Updates physical dot landmarks on the canvas grid
-            let dotElement = document.getElementById(`node-axis-${k}`);
-            if (dotElement) {
-                dotElement.setAttribute('cx', pt3D.x); dotElement.setAttribute('cy', pt3D.y);
-                dotElement.setAttribute('fill', state_core[k] ? 'var(--green)' : 'var(--pink)');
-                dotElement.style.display = plotOnGraphic ? 'block' : 'none';
-            }
-
-            if (outputMetrics && metricsDashboardNode) {
-                metricsDashboardNode.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid #0f0f1c; padding:2px 0; font-family:monospace; font-size:0.65rem;">
-                        <span style="color:#8e8eaf;">➔ Vertex ${k} (${nodeSpec.name}):</span>
-                        <span style="color:${state_core[k]?'var(--green)':'var(--pink)'};">[Core: ${state_core[k]?'1':'0'} | Threat: ${state_threat[k]?'1':'0'}]</span>
-                    </div>`;
-            }
-        });
-
-        if (gCoreNode && projectedPoints.length > 0) { 
-            gCoreNode.setAttribute('points', projectedPoints.join(' ')); 
-        }
-
-        let binStr = ""; 
-        Object.keys(CORE_CONFIG).reverse().forEach(b => { 
-            if(CORE_CONFIG[b].type !== "meta") binStr += state_core[parseInt(b)] ? "1" : "0"; 
-        }); 
-        let intVal = parseInt(binStr, 2);
-        
-        const outRaw = document.getElementById('raw-string-output'); 
-        if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
-        
-        const vaultIn = document.getElementById('vault-string'); 
-        if (vaultIn) vaultIn.value = generateVaultString();
-    } // CLOSES MAIN CALCULATEMATRIX ENGINE NEATLY AND LEADS TO LOADSCENARIO
+    window.addEventListener('load', () => { initSwitches(); setTimeout(() => { setTimelineMode('fib'); const loader = document.getElementById('loading-universe'); if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); } }, 800); });
+</script>
 
 
     
-        
-    // ==========================================================================
-    // ==========================================================================
-    // 8. IMMUTABLE HISTORICAL PRESETS DATASETS (0-FOLD 10-BIT BLOCK COMPLIANT)
-    // ==========================================================================
-    function loadScenario(id) {
-        if (typeof triggerStateChange === "function") triggerStateChange();
-        const scenarios = {
-            1:  { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            2:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:true, 8:true, 10:true, 20:false, 30:false, 31:false, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} }, // Ableism Event
-            3:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:false, 8:true, 10:true, 20:true, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            4:  { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:false, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            5:  { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:false, 6:true, 7:true, 8:true, 10:false, 20:false, 30:false, 31:false, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} },
-            6:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:true},    t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} }, // Harmony Standby
-            7:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:false, 8:false, 10:true, 20:false, 30:true, 31:true, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} },
-            8:  { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            9:  { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} },
-            10: { m: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false}, t: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:true} }, // Total Collapse Emergency
-            11: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            12: { m: {0:true, 1:true, 2:true, 3:true, 4:false, 5:false, 6:true, 7:false, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            13: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:true, 8:false, 10:true, 20:true, 30:true, 31:true, 32:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            14: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:false, 8:false, 10:true, 20:false, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            15: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:false, 6:true, 7:true, 8:false, 10:true, 20:false, 30:false, 31:false, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} },
-            16: { m: {0:true, 1:true, 2:false, 3:false, 4:true, 5:false, 6:true, 7:true, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            17: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:false, 8:true, 10:true, 20:false, 30:true, 31:true, 32:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            18: { m: {0:false, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:false, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            19: { m: {0:true, 1:true, 2:false, 3:true, 4:true, 5:false, 6:true, 7:true, 8:false, 10:true, 20:false, 30:false, 31:false, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:true, 32:false} },
-            20: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:true, 6:true, 7:true, 8:true, 10:true, 20:false, 30:true, 31:true, 32:false},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            21: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:true, 8:false, 10:true, 20:false, 30:true, 31:true, 32:true},   t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            22: { m: {0:true, 1:false, 2:false, 3:true, 4:true, 5:false, 6:true, 7:true, 8:true, 10:true, 20:false, 30:false, 31:false, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            23: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:true, 7:false, 8:false, 10:true, 20:false, 30:true, 31:true, 32:false},  t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            24: { m: {0:false, 1:true, 2:true, 3:true, 4:false, 5:false, 6:true, 7:true, 8:true, 10:false, 20:false, 30:false, 31:false, 32:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} },
-            25: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 10:true, 20:true, 30:true, 31:true, 32:true},    t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 10:false, 20:false, 30:false, 31:false, 32:false} }
-        };
-        
-        const selected = scenarios[id] || scenarios[6]; // Defaults safely to Standby Harmony if unmatched
-        Object.keys(CORE_CONFIG).forEach(b => { 
-            let bNum = parseInt(b); 
-            if(CORE_CONFIG[bNum].type === "meta") return;
-            state_core[bNum] = selected.m[bNum] !== undefined ? !!selected.m[bNum] : true; 
-            state_threat[bNum] = selected.t[bNum] !== undefined ? !!selected.t[bNum] : false; 
+<script>
+    const BITS = {
+        0:  { name: "EXISTENCE (B0)", desc: "Biological bodily presence blueprint", type: "core" },
+        1:  { name: "AUTONOMY (B1)", desc: "Sovereign execution control parameters", type: "core" },
+        2:  { name: "INTEGRITY (B2)", desc: "Internal ethical alignment and moral axis", type: "core" },
+        3:  { name: "PSYCHOLOGY (B3)", desc: "Cognitive internal state and mental peace parameters", type: "core" },
+        4:  { name: "PHYSICAL (B4)", desc: "Physical body vessel boundaries and biosensors tracking", type: "core" },
+        5:  { name: "DISABILITY (B5)", desc: "Neuroatypical (AuDHD) coordinate axis space", type: "core" },
+        7:  { name: "PROPERTY (B7)", desc: "Data vaults, hard disks, server safety bounds", type: "core" },
+        8:  { name: "PRESENCE (B8)", desc: "Real-time spatiotemporal hardware network footprint", type: "core" },
+        20: { name: "SHIELD_HUMAN_RIGHTS (B20)", desc: "Institutional boundary level firewalls", type: "shield" },
+        24: { name: "SHIELD_ONLINE_RIGHTS (B24)", desc: "Cyber-harassment mitigation perimeters", type: "shield" },
+        26: { name: "TRUST_BROKEN_CORE (B26)", desc: "Shatters core alliance and drops shields", type: "threat" }
+    };
+
+    let state = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false };
+    let timelineMode = '3d'; let isZoomed = false;
+    let tracePoints = null; // Memory container to lock the overlapping trace baseline coordinates
+
+    function initSwitches() {
+        const container = document.getElementById('switches-container'); container.innerHTML = '';
+        Object.keys(BITS).forEach(bit => {
+            const config = BITS[bit];
+            container.innerHTML += `<div class="bit-row"><div><strong>${config.name}</strong> - <span style="color:#5c5c7c; font-size:0.65rem;">${config.desc}</span></div><label class="switch"><input type="checkbox" id="bit-${bit}" ${state[bit] ? 'checked' : ''} onchange="toggleBit(${bit})"><span class="slider"></span></label></div>`;
         });
-        initSwitches(); 
-        calculateMatrix();
+    }
+    function toggleBit(bit) { state[bit] = document.getElementById(`bit-${bit}`).checked; calculateMatrix(); }
+    function toggleZoom() {
+        isZoomed = !isZoomed; const vis = document.getElementById('matrix-vis'); const btn = document.getElementById('btn-zoom');
+        if (isZoomed) { vis.style.transform = "scale(2)"; btn.className = "btn btn-active"; btn.innerText = "Zoom: 2x"; }
+        else { vis.style.transform = "scale(1)"; btn.className = "btn"; btn.innerText = "Zoom: 1x"; }
     }
 
-        const selected = scenarios[id];
-        if (selected) {
-            Object.keys(CORE_CONFIG).forEach(b => { 
-                let bNum = parseInt(b); 
-                state_core[bNum] = !!selected.m[bNum]; 
-                state_threat[bNum] = !!selected.t[bNum]; 
-            });
-            initSwitches(); calculateMatrix();
+    // LAYER TRACE CONFIGURATOR ENGINE HOOKS
+    function activateCompareTraceMode() {
+        const currentPoints = document.getElementById('geo-core').getAttribute('points');
+        const traceShape = document.getElementById('trace-geo-core');
+        const btn = document.getElementById('btn-compare');
+        
+        if (!tracePoints) {
+            tracePoints = currentPoints;
+            traceShape.setAttribute('points', tracePoints);
+            traceShape.style.display = 'block';
+            btn.className = "btn btn-active";
+            btn.innerText = "Lock Trace Active";
+            alert("Base model geometry coordinates locked in memory layer. Select a second scenario or flip registers to visually project the tracking trace overlap!");
+        } else {
+            tracePoints = null;
+            traceShape.style.display = 'none';
+            btn.className = "btn";
+            btn.innerText = "Compare Trace";
         }
     }
 
-    // 9. APP PIPELINE HARDWARE BOOTSTRAPPER
-    // 9. RE-SYNCHRONIZED APP INITIALIZATION & INTERACTIVE 3D MOUSE GRABBERS
+    function generateVaultString() { let binaryCode = Object.keys(BITS).map(b => state[b] ? "1" : "0").join(""); return "EX-" + parseInt(binaryCode, 2).toString(16).toUpperCase(); }
+    function copyVaultString() { navigator.clipboard.writeText(document.getElementById('vault-string').value); alert("Sync Key Captured."); }
+    function restoreFromVault() {
+        const val = document.getElementById('vault-string').value.trim();
+        if (val.startsWith("EX-")) {
+            let bin = parseInt(val.split("-"), 16).toString(2).padStart(Object.keys(BITS).length, '0');
+            Object.keys(BITS).forEach((b, idx) => { state[b] = bin[idx] === "1"; const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; });
+            calculateMatrix();
+        }
+    }
+    function project3D(x, y, z) { return { x: 200 + (x * 0.8) - (y * 0.8), y: 160 + (x * 0.4) + (y * 0.4) - z }; }
+    function setTimelineMode(mode) { timelineMode = mode; ['spiral', 'linear', '3d', 'fib'].forEach(m => { const b = document.getElementById(`btn-timeline-${m}`); if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; }); renderTimelineBackground(); calculateMatrix(); }
+
+    function renderTimelineBackground() {
+        const path = document.getElementById('timeline-path'); const spiralTrack = document.getElementById('fibonacci-spiral-track'); const ticks = document.getElementById('timeline-ticks'); if (!path || !ticks) return;
+        ticks.innerHTML = ''; if (spiralTrack) spiralTrack.style.display = 'none'; document.getElementById('collision-crosshair').style.display = 'none';
+        if (timelineMode === 'spiral') {
+            let points = []; for (let theta = 0; theta < 25; theta += 0.15) { let r = 6 + (theta * 4.5); points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); }
+            path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
+        } else if (timelineMode === 'fib') {
+            let points = []; const a = 4.0; const b = 0.1406;
+            for (let theta = 0; theta < 32; theta += 0.03) {
+                let r = a * Math.exp(b * theta); let x = 200 + r * Math.cos(theta); let y = 160 + r * Math.sin(theta);
+                if (r < 185) { points.push(`${x},${y}`); if (Math.floor(theta * 10) % 25 === 0) ticks.innerHTML += `<circle cx="${x}" cy="${y}" r="2" fill="#ff00aa" opacity="0.8"/>`; }
+            }
+            if (spiralTrack) { spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); spiralTrack.setAttribute('stroke', '#ff00aa'); spiralTrack.setAttribute('stroke-width', '1.5'); spiralTrack.setAttribute('opacity', '0.85'); spiralTrack.style.display = 'block'; }
+            path.setAttribute('d', 'M0,0');
+        } else if (timelineMode === 'linear') {
+            path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
+            for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
+        } else if (timelineMode === '3d') {
+            path.setAttribute('d', 'M0,0'); const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
+            ticks.innerHTML += `<line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>`;
+        }
+    }
+    function injectHexMarker() {
+        const hex = document.getElementById('hex-input').value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
+        if (hex.startsWith('0x') && hex.length >= 6) {
+            let val = parseInt(hex, 16); let cx = 140 + ((val % 60) * 2); let cy = 110 + (((val >> 4) % 40) * 2);
+            marker.setAttribute('cx', cx); marker.setAttribute('cy', cy); marker.setAttribute('stroke', '#' + hex.substring(2,8)); marker.style.display = 'block';
+            label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
+        }
+    }
+    function compileKatexExpressions() {
+        if (typeof katex !== 'undefined') {
+            // 1. Calculate active real-time variables directly from system state
+            let liveNoise = 0.5;
+            if (!state[0]) liveNoise += 5.0;
+            if (!state[1]) liveNoise += 4.0;
+            if (!state[2]) liveNoise += 6.0;
+            if (!state[3]) liveNoise += 3.5;
+            if (!state[4]) liveNoise += 4.5;
+            if (!state[7]) liveNoise += 3.5;
+            if (!state[8]) liveNoise += 2.5;
+            if (state[26]) liveNoise += 5.5;
+
+            let liveShields = 0.0;
+            if (state[20]) liveShields += 0.40;
+            if (state[24]) liveShields += 0.40;
+            if (!state[3] || !state[4]) liveShields *= 0.5;
+
+            const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
+            const p_collapse = liveNoise / (1.0 - Math.min(liveShields, 0.95));
+
+            // 2. Direct Value Injection into KaTeX Equations (Bypassing browser race conditions)
+            try {
+                katex.render("P_{\\text{collapse}}", document.getElementById('katex-p-label'));
+                katex.render("\\mathcal{C}_{\\text{canary}}", document.getElementById('katex-c-label'));
+                
+                // Injects numbers directly inside the fraction bar strings
+                katex.render(`\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum (${liveNoise.toFixed(2)})}{1 - (${liveShields.toFixed(2)})} = \\mathbf{${p_collapse.toFixed(2)}}`, document.getElementById('equation-p-collapse'));
+                
+                let b2 = state[2] ? "1" : "0";
+                let b5 = state[5] ? "1" : "0";
+                let res = (state[2] && state[5]) ? "1 \\implies \\text{Collision}" : "0 \\implies \\text{Orthogonal}";
+                katex.render(`\\langle \\mathbf{V}_{2}\\,(${b2}), \\mathbf{V}_{5}\\,(${b5}) \\rangle = \\mathbf{${res}}`, document.getElementById('equation-ortho'));
+                
+                let alertTrigger = p_collapse >= poppertimeThreshold ? "1 \\implies \\mathbf{ALARM}" : "0 \\implies \\mathbf{SILENT}";
+                katex.render(`\\mathcal{C}_{\\text{canary}} = \\Theta \\left( ${p_collapse.toFixed(2)} - ${poppertimeThreshold.toFixed(1)} \\right) = \\mathbf{${alertTrigger}}`, document.getElementById('equation-canary'));
+            } catch(e) { 
+                console.warn("KaTeX dynamic calculation pipeline reset: ", e); 
+            }
+        }
+    }
+    function calculateMatrix() {
+        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0; const orthoElement = document.getElementById('ortho-output');
+        let noise = 0.5; if (!state) noise += 5.0; if (!state) noise += 4.0; if (!state) noise += 6.0; if (!state) noise += 3.5; if (!state) noise += 4.5; if (!state) noise += 3.5; if (!state) noise += 2.5; if (state) noise += 5.5;
+        let shields = 0.0; if (state) shields += 0.40; if (state) shields += 0.40; if (!state || !state) shields *= 0.5;
+        let p_collapse = noise / (1.0 - Math.min(shields, 0.95)); const outP = document.getElementById('p-collapse-output'); if (outP) outP.innerText = p_collapse.toFixed(2);
+        
+        if (orthoElement) {
+            if (state && state) { orthoElement.innerHTML = `[COLLISION]: Warning. Register conflict under ancientState variables.`; orthoElement.style.color = "var(--pink)"; }
+            else { orthoElement.innerHTML = `[SECURE]: Inner Product equals ZERO. Disability is perfectly independent.`; orthoElement.style.color = "var(--green)"; }
+        }
+
+        const canaryBox = document.getElementById('canary-output');
+        if (canaryBox) {
+            if (p_collapse >= poppertimeThreshold) {
+                canaryBox.innerText = `💥 ALARM ACTIVE`; canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+                if (timelineMode === 'fib') {
+                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); const colX = 200 + targetR * Math.cos(targetTheta); const colY = 160 + targetR * Math.sin(targetTheta); const crosshair = document.getElementById('collision-crosshair');
+                    if (crosshair) { document.getElementById('collision-point').setAttribute('cx', colX); document.getElementById('collision-point').setAttribute('cy', colY); document.getElementById('collision-line-h').setAttribute('y1', colY); document.getElementById('collision-line-h').setAttribute('y2', colY); document.getElementById('collision-line-v').setAttribute('x1', colX); document.getElementById('collision-line-v').setAttribute('x2', colX); crosshair.style.display = 'block'; }
+                }
+            } else { canaryBox.innerText = `🟢 SAFE`; canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none'; }
+        }
+        const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
+        const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
+        const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
+
+        if (timelineMode === '3d') {
+            let ex_val = state ? 75 : 0; let au_val = state ? 75 : 0; let in_val = state ? 75 : 0;
+            let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
+            if (gCore) gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+            if (nodeEx) nodeEx.setAttribute('cx', pt_ex.x); if (nodeEx) nodeEx.setAttribute('cy', pt_ex.y);
+            if (nodeAu) nodeAu.setAttribute('cx', pt_au.x); if (nodeAu) nodeAu.setAttribute('cy', pt_au.y);
+            if (nodeIn) nodeIn.setAttribute('cx', pt_in.x); if (nodeIn) nodeIn.setAttribute('cy', pt_in.y);
+            if (gShields) gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
+            if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
+        } else {
+            let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let au_y = state ? 230 : 160; let in_x = state ? 120 : 200; let in_y = state ? 230 : 160;
+            if (gCore) gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+            if (nodeEx) { nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y); }
+            if (nodeAu) { nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y); }
+            if (nodeIn) { nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y); }
+            let sh_size = (state && state) ? 100 : ((state || state) ? 55 : 0);
+            if (gShields) gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
+            if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
+        }
+        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
+        const outRaw = document.getElementById('raw-string-output'); if (outRaw) outRaw.innerText = "0b" + binStr + " [Live Registry Track]";
+        const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
+        compileKatexExpressions();
+    }
+    function loadScenario(id) {
+        const scenarios = {
+            1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            3:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: true, 24: false, 26: false },
+            4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 20: false, 24: false, 26: true },
+            5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: true },
+            6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false },
+            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
+            8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: false, 26: false },
+            9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },
+            10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 20: false, 24: false, 26: true },
+            11: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },
+            12: { 0: true, 1: true, 2: true, 3: true, 4: false, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
+            13: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: true, 24: false, 26: false },
+            14: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false },
+            15: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true },
+            16: { 0: true, 1: true, 2: false, 3: false, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            17: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: true, 20: false, 24: true, 26: false },
+            18: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
+            19: { 0: true, 1: true, 2: false, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true },
+            20: { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 20: false, 24: false, 26: false },
+            21: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: true, 26: false },
+            22: { 0: true, 1: false, 2: false, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            23: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false },
+            24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
+            25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: true, 24: true, 26: false }
+        };
+        state = scenarios[id]; Object.keys(BITS).forEach(b => { const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; }); calculateMatrix();
+    }
+    window.addEventListener('load', () => { initSwitches(); setTimeout(() => { setTimelineMode('fib'); const loader = document.getElementById('loading-universe'); if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); } }, 800); });
     window.addEventListener('load', () => {
+        // Stage 1: Build structural switch elements inside the DOM tree layout
         initSwitches();
         
-        const interactionCanvasViewport = document.getElementById('matrix-vis');
-        if (interactionCanvasViewport) {
-            interactionCanvasViewport.addEventListener('mousedown', (e) => {
-                isDraggingSpace = true;
-                previousMouseX = e.clientX; previousMouseY = e.clientY;
-                interactionCanvasViewport.style.cursor = 'grabbing';
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (!isDraggingSpace) return;
-                let deltaX = e.clientX - previousMouseX;
-                let deltaY = e.clientY - previousMouseY;
-                
-                // Updates horizontal yaw and vertical pitch simultaneously
-                rotY += deltaX * 0.007; 
-                rotX += deltaY * 0.007; 
-                
-                previousMouseX = e.clientX; previousMouseY = e.clientY;
-                calculateMatrix(); // Redraws the distorted 3D cube mesh lines instantly
-            });
-
-            window.addEventListener('mouseup', () => {
-                isDraggingSpace = false;
-                if (interactionCanvasViewport) interactionCanvasViewport.style.cursor = 'grab';
-            });
-        }
-
+        // Stage 2: Asynchronous choke delay allowing hardware viewport synchronization
         setTimeout(() => {
             try {
-                setTimelineMode('fib');
-                const loader = document.getElementById('loading-universe');
-                if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
-            } catch(e) { setTimelineMode('spiral'); }
-        }, 800);
-    });
+                // Force the platform map to deploy 3D Isometric view natively
+                setTimelineMode('3d');
+                
+                // Fire the calculation loop to inject live numeric data states
+                calculateMatrix();
+                
+                console.log("PROJECT EXISTENZ - Live 3D Matrix Engine successfully initialized - guntherv/v0.76beta");
+            } catch (bootError) {
+                console.error("Boot loop bypassed safely: ", bootError);
+                // Fail-safe fallback to standard spiral track if rendering bounds fail
+                setTimelineMode('spiral');
+            }
+        }, 300); // 300ms buffer ensures unassailable cross-platform layout binding
+    });    
 </script>
 </body>
 </html>
-
