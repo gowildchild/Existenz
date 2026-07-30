@@ -777,11 +777,72 @@
             }
         });
 
-        const gCoreNode = document.getElementById('geo-core'); 
+        // ==========================================================================
+        // J. AUTOMATED 3D CUBE PLOTTER: Maps 128-bit payload onto spatial vertices
+        // ==========================================================================
+        const gCoreNode = document.getElementById('geo-core');
+        const metricsDashboardNode = document.getElementById('live-metrics-dashboard-sub');
+        const staticOverlay = document.getElementById('tv-static-noise-layer');
+        
+        if (staticOverlay) {
+            if (forceStaticNoiseOverlay || p_collapse >= poppertimeThreshold) {
+                let opacityAmt = forceStaticNoiseOverlay ? 0.20 : Math.min(p_collapse * 0.02, 0.55);
+                staticOverlay.style.display = 'block'; staticOverlay.style.opacity = opacityAmt.toString();
+            } else { staticOverlay.style.display = 'none'; }
+        }
+
+        if (metricsDashboardNode) metricsDashboardNode.innerHTML = ''; 
+        let projectedPoints = [];
+
+        // Definition Matrix for the 8 Symmetrical Vertices of the 3D Cube
+        const cubeVertices = [
+            { k: 0,  x: -50, y: -50, z: -50 }, // Bottom-Left-Back
+            { k: 1,  x:  50, y: -50, z: -50 }, // Bottom-Right-Back
+            { k: 2,  x:  50, y:  50, z: -50 }, // Bottom-Right-Front
+            { k: 3,  x: -50, y:  50, z: -50 }, // Bottom-Left-Front
+            { k: 4,  x: -50, y: -50, z:  50 }, // Top-Left-Back
+            { k: 5,  x:  50, y: -50, z:  50 }, // Top-Right-Back
+            { k: 10, x:  50, y:  50, z:  50 }, // Top-Right-Front
+            { k: 24, x: -50, y:  50, z:  50 }  // Top-Left-Front (Existential Panic Anchor)
+        ];
+
+        cubeVertices.forEach((vertex) => {
+            const k = vertex.k;
+            const nodeSpec = CORE_CONFIG[k];
+            if (!nodeSpec) return;
+
+            const plotOnGraphic  = (nodeSpec.visual & 1) === 1;
+            const outputMetrics  = (nodeSpec.visual & 4) === 4;
+
+            let isBreached = (state_core[k] === false || state_threat[k] === true);
+            
+            // Buckles and distorts the cube face vertices inward toward 0 if a threat breaches safety bounds
+            let scaleFactor = isBreached ? 0.25 : 1.0;
+            
+            let pt3D = project3D(vertex.x * scaleFactor, vertex.y * scaleFactor, vertex.z * scaleFactor);
+            projectedPoints.push(`${pt3D.x},${pt3D.y}`);
+
+            // Updates physical dot landmarks on the canvas grid
+            let dotElement = document.getElementById(`node-axis-${k}`);
+            if (dotElement) {
+                dotElement.setAttribute('cx', pt3D.x); dotElement.setAttribute('cy', pt3D.y);
+                dotElement.setAttribute('fill', state_core[k] ? 'var(--green)' : 'var(--pink)');
+                dotElement.style.display = plotOnGraphic ? 'block' : 'none';
+            }
+
+            if (outputMetrics && metricsDashboardNode) {
+                metricsDashboardNode.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid #0f0f1c; padding:2px 0; font-family:monospace; font-size:0.65rem;">
+                        <span style="color:#8e8eaf;">➔ Vertex ${k} (${nodeSpec.name}):</span>
+                        <span style="color:${state_core[k]?'var(--green)':'var(--pink)'};">[Core: ${state_core[k]?'1':'0'} | Threat: ${state_threat[k]?'1':'0'}]</span>
+                    </div>`;
+            }
+        });
+
         if (gCoreNode && projectedPoints.length > 0) { 
             gCoreNode.setAttribute('points', projectedPoints.join(' ')); 
         }
-        
+
         let binStr = ""; 
         Object.keys(CORE_CONFIG).reverse().forEach(b => { 
             if(CORE_CONFIG[b].type !== "meta") binStr += state_core[parseInt(b)] ? "1" : "0"; 
@@ -842,32 +903,31 @@
     }
 
     // 9. APP PIPELINE HARDWARE BOOTSTRAPPER
+    // 9. RE-SYNCHRONIZED APP INITIALIZATION & INTERACTIVE 3D MOUSE GRABBERS
     window.addEventListener('load', () => {
         initSwitches();
         
         const interactionCanvasViewport = document.getElementById('matrix-vis');
         if (interactionCanvasViewport) {
-            // Track mouse click down actions inside the canvas frame
             interactionCanvasViewport.addEventListener('mousedown', (e) => {
                 isDraggingSpace = true;
                 previousMouseX = e.clientX; previousMouseY = e.clientY;
                 interactionCanvasViewport.style.cursor = 'grabbing';
             });
 
-            // Re-calculate angles instantly when dragging mouse across screen rows
             window.addEventListener('mousemove', (e) => {
                 if (!isDraggingSpace) return;
                 let deltaX = e.clientX - previousMouseX;
                 let deltaY = e.clientY - previousMouseY;
                 
-                rotY += deltaX * 0.007; // Speeds up or dampens horizontal spin tracking
-                rotX += deltaY * 0.007; // Speeds up or dampens vertical tilt angles
+                // Updates horizontal yaw and vertical pitch simultaneously
+                rotY += deltaX * 0.007; 
+                rotX += deltaY * 0.007; 
                 
                 previousMouseX = e.clientX; previousMouseY = e.clientY;
-                calculateMatrix(); // Forces your entire 3D mesh polygon wireframe to update instantly
+                calculateMatrix(); // Redraws the distorted 3D cube mesh lines instantly
             });
 
-            // Disengage dragging state cleanly on mouse release
             window.addEventListener('mouseup', () => {
                 isDraggingSpace = false;
                 if (interactionCanvasViewport) interactionCanvasViewport.style.cursor = 'grab';
@@ -885,3 +945,4 @@
 </script>
 </body>
 </html>
+
