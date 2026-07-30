@@ -3,13 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz Platform Matrix Simulator / Crude Edition</title>
-    
-    <!-- PRODUCTION RE-COMPILING KATEX MATH ENGINE -->
-    <link rel="stylesheet" href="https://jsdelivr.net">
-    <script defer src="https://jsdelivr.net"></script>
-    <script defer src="https://jsdelivr.net" onload="renderMathInElement(document.body);"></script>
-
+    <title>Existenz Platform Matrix Simulator / Gunther Voet</title>
     <style>
         :root {
             --cyan: #00f0ff;
@@ -30,56 +24,76 @@
             0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); border: 1px solid #440011; }
             100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); border: 1px solid var(--pink); }
         }
+        /* Universe Loading Screen Overlay Canvas */
+        #loading-universe {
+            position: fixed; top:0; left:0; width:100vw; height:100vh;
+            background: #000000; z-index: 9999; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .loading-text { color: var(--cyan); font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 15px; }
+        .loading-bar { width: 200px; height: 2px; background: #111; border-radius: 2px; overflow: hidden; position: relative; }
+        .loading-bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--pink); animation: sweep 1.5s infinite linear; }
+        @keyframes sweep { 0% { left: -50%; } 100% { left: 100%; } }
+        
         header { border-bottom: 2px solid var(--cyan); padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
-        h1 { margin: 0; color: var(--cyan); font-size: 1.1rem; font-weight: 800; }
+        h1 { margin: 0; color: var(--cyan); font-size: 1.2rem; font-weight: 800; }
         .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; flex-grow: 1; min-height: 0; }
         .column { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
         .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; min-height: 0; }
-        .panel h2 { margin-top: 0; margin-bottom: 4px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
+        .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
         .scrollable-content { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
-        .bit-row { display: flex; align-items: center; justify-content: space-between; padding: 4px; border-bottom: 1px solid #0f0f1c; font-size: 0.75rem; }
+        .bit-row { display: flex; align-items: center; justify-content: space-between; padding: 5px; border-bottom: 1px solid #0f0f1c; font-size: 0.75rem; }
         .switch { position: relative; display: inline-block; width: 34px; height: 16px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #202030; transition: .2s; border-radius: 16px; }
         .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--cyan); }
         input:checked + .slider:before { transform: translateX(18px); }
-        .raw-string { background: #020204; border-left: 3px solid var(--pink); padding: 5px; font-size: 0.7rem; color: #8e8eaf; font-family: monospace; word-break: break-all; margin-top: 4px; }
+        .raw-string { background: #020204; border-left: 3px solid var(--pink); padding: 5px; font-size: 0.7rem; color: #8e8eaf; font-family: monospace; word-break: break-all; margin-top: 5px; }
         .btn { background: #0f0f1b; border: 1px solid var(--cyan); color: white; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-family: monospace; transition: 0.1s; }
         .btn:hover { background: var(--cyan); color: black; font-weight: bold; }
         .btn-active { background: var(--pink) !important; border-color: #fff !important; }
-        .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.12); border-radius: 4px; padding: 4px; margin: 2px 0; font-size: 0.7rem; color: var(--cyan); }
+        
+        /* Deterministic HTML Math Layout Blocks */
+        .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.75rem; color: var(--cyan); }
+        .math-fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; text-align: center; padding: 0 4px; }
+        .math-numerator { border-bottom: 1px solid var(--cyan); width: 100%; padding-bottom: 2px; }
+        .math-denominator { padding-top: 2px; width: 100%; }
+        
         .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
         .input-text { background: #020205; border: 1px solid var(--border); color: #fff; padding: 3px; border-radius: 4px; font-family: monospace; font-size: 0.7rem; }
-        .scenarios-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; flex-shrink: 0; }
-        #matrix-vis-container { width: 100%; height: 100%; max-height: 290px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
+        .scenarios-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; flex-shrink: 0; }
+        #matrix-vis-container { width: 100%; height: 100%; max-height: 340px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
         #matrix-vis { transform-origin: center center; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .intro-box { background: rgba(0, 255, 170, 0.02); border: 1px solid #102a20; padding: 8px; border-radius: 4px; margin-bottom: 6px; font-size: 0.75rem; line-height: 1.35; color: #b5c5b5; }
+        .intro-box { background: rgba(0, 255, 170, 0.02); border: 1px solid #102a20; padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.7rem; line-height: 1.3; color: #b5c5b5; }
     </style>
 </head>
+
 <body>
 
-<header>
-    <div><h1>Existenz Platform Matrix Simulator (by Gunther V)</h1></div>
-    <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[SYSTEM: V0.76b TRACE-COMPILER]</div>
-</header>
+<!-- Live Universe Loader Overlay Shield -->
+<div id="loading-universe">
+    <div class="loading-text">ExistenZ | Loading universe | please hold</div>
+    <div class="loading-bar"></div>
+</div>
 
 <div class="grid">
-    <!-- LEFT QUADRANT PANEL LAYOUTS -->
+    <!-- LEFT PANEL LAYOUTS -->
     <div class="column">
         <div class="panel" style="flex-shrink: 0;">
             <h2>0 | Architectural Proclamation to the Channels</h2>
             <div class="intro-box">
-                <strong>The Mathematical Rights of Nature vs. The Flaw of Ancient Athens:</strong><br>
-                Plato argued in <em>The Republic</em> that an ideal state must exclude or marginalize the <strong>Adunatos</strong> (those without power/atypical physical or mental processing style), viewing non-conformity as a disruption to efficiency. This is a severe mathematical asymmetry. Project Existenz fixes this ancient flaw by placing <strong>DISABILITY</strong> at an independent, orthogonal register coordinate at <strong>Bit 5</strong>. Wholeness of character has nothing to do with typicality of mind. Geometry is unassailable.
+                <strong>The Rights of Nature vs. The Flaw of Ancient Athens:</strong><br>
+                Plato's <em>Republic</em> excluded the <strong>Adunatos</strong> (atypical processing styles) to protect state efficiency. Project Existenz resolves this systemic ableism by establishing <strong>DISABILITY</strong> at an independent, orthogonal coordinate axis at <strong>Bit 5</strong>. Wholeness of character is mathematically detached from typicality of mind. Harmony is achieved through geometric inclusivity.
             </div>
         </div>
 
         <div class="panel" style="flex-shrink: 0;">
             <h2>1 | Parameter Control & Vault Recovery Engine</h2>
-            <div style="display: flex; gap: 6px; flex-wrap: wrap; font-size: 0.7rem;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.7rem;">
                 <div>
-                    <label>Poppertime ($\mathcal{T}_{\text{critical}}$):</label><br>
+                    <label>Poppertime ($\mathcal{T}$):</label><br>
                     <input type="number" id="poppertime-input" value="3.0" step="0.1" class="input-text" style="width: 45px;" onchange="calculateMatrix()">
                 </div>
                 <div>
@@ -102,7 +116,7 @@
             <div class="scrollable-content" id="switches-container"></div>
         </div>
 
-        <div class="panel" style="flex-shrink: 0; min-height: 155px;">
+        <div class="panel" style="flex-shrink: 0;">
             <h2>3 | Empirical Scenarios Panel (25-Module Matrix View)</h2>
             <div class="scenarios-grid">
                 <button class="btn" onclick="loadScenario(1)">1. Plato Flaw</button>
@@ -144,20 +158,21 @@
             <div style="position: absolute; top: 6px; right: 6px; z-index: 10; display: flex; gap: 2px;">
                 <button class="btn" id="btn-timeline-spiral" onclick="setTimelineMode('spiral')">Spiral</button>
                 <button class="btn" id="btn-timeline-linear" onclick="setTimelineMode('linear')">Linear</button>
-                <button class="btn btn-active" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>
-                <button class="btn" id="btn-timeline-fib" onclick="setTimelineMode('fib')">Fibonacci Collision</button>
+                <button class="btn" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>
+                <button class="btn" id="btn-timeline-fib" onclick="setTimelineMode('fib')">Fibonacci</button>
             </div>
             
             <div id="matrix-vis-container">
                 <svg id="matrix-vis" viewBox="0 0 400 340" style="background:#020204; border:1px solid #121222; border-radius:6px; width: 100%; height: 100%;">
-                    <path id="fibonacci-spiral-track" fill="none" stroke="rgba(255, 0, 170, 0.15)" stroke-width="1.5" style="display: none;" />
+                    <!-- BACKGROUND OVERLAY LINES -->
+                    <path id="fibonacci-spiral-track" fill="none" stroke="rgba(255, 0, 170, 0.4)" stroke-width="1.8" style="display: none;" />
                     <path id="timeline-path" fill="none" stroke="#121222" stroke-width="1.5" />
                     <g id="timeline-ticks"></g>
                     
-                    <!-- THE TRACE OVERLAP BOUNDING LAYER SHAPES (GREEN INTERPOLATION GHOST) -->
-                    <polygon id="trace-geo-core" points="0,0 0,0 0,0" fill="none" stroke="rgba(0, 255, 170, 0.4)" stroke-width="1" stroke-dasharray="2,2" style="display: none;" />
+                    <!-- THE TRACE OVERLAP GHOST POLYGON -->
+                    <polygon id="trace-geo-core" points="0,0 0,0 0,0" fill="none" stroke="rgba(0, 255, 170, 0.45)" stroke-width="1.2" stroke-dasharray="2,2" style="display: none;" />
                     
-                    <!-- MAIN GEOMETRIC METRIC SHAPES -->
+                    <!-- MAIN RENDERED SHAPES -->
                     <polygon id="geo-shields" points="200,40 340,170 200,300 60,170" fill="rgba(0, 255, 170, 0.02)" stroke="#00ffaa" stroke-width="1.2" stroke-dasharray="3" />
                     <polygon id="geo-core" points="200,100 270,220 130,220" fill="rgba(0, 240, 255, 0.08)" stroke="#00f0ff" stroke-width="1.8" />
                     
@@ -183,36 +198,48 @@
         </div>
 
         <div class="panel" style="flex-grow: 1;">
-            <h2>4 | Live Mathematical Analytics Readouts</h2>
+            <h2>4 | Live Mathematical Analytics & Core Pipelines</h2>
             <div class="scrollable-content" style="font-size: 0.75rem; font-family: monospace;">
-                <div style="margin-bottom: 4px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: #020204; padding: 4px; border-radius: 4px; border: 1px solid var(--border);">
-                        <div><strong>Paradox of Intolerance Tracker (<span id="katex-p-label"></span>):</strong></div>
+                
+                <!-- NATIVE HARDCODED ALGEBRA FRACTION VALUE BLOCK -->
+                <div style="margin-bottom: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #020204; padding: 5px; border-radius: 4px;">
+                        <div><strong>Paradox of Intolerance Tracker [P_collapse]:</strong></div>
                         <div class="metric-val" id="p-collapse-output">0.00</div>
                     </div>
-                    <div id="equation-p-collapse" class="formula-box" style="margin-top: 2px;"></div>
-                    <div style="color: #668; font-size: 0.7rem; padding-left: 4px;" id="live-calc-p"></div>
+                    <div class="formula-box" id="native-eq-p" style="display: flex; align-items: center; gap: 8px;">
+                        P_collapse = 
+                        <div class="math-fraction">
+                            <div class="math-numerator">∑ (Threat_i · Accel_i)</div>
+                            <div class="math-denominator">1 - Shield_efficiency</div>
+                        </div>
+                        <span id="live-inject-p" style="color: var(--pink); font-weight: bold; margin-left: auto;"></span>
+                    </div>
                 </div>
-                <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 2px;">
-                    <label>Orthogonal Intersection Space Capacity:</label>
-                    <div id="ortho-output" style="font-weight:bold; color:var(--green); margin:1px 0; font-size:0.75rem;">0</div>
-                    <div id="equation-ortho" class="formula-box"></div>
-                    <div style="color: #668; font-size: 0.7rem; padding-left: 4px;" id="live-calc-ortho"></div>
+
+                <!-- ORTHOGONAL INDEPENDENCE READOUT -->
+                <div style="margin-bottom: 6px; border-top: 1px solid #101020; padding-top: 4px;">
+                    <div id="ortho-output" style="font-weight:bold; color:var(--green); background:#020204; padding:5px; border-radius:4px;">Evaluating Axis...</div>
+                    <div class="formula-box" id="native-eq-ortho" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>⟨ V_integrity , V_disability ⟩ = ∑ (bit_2 · bit_5)</span>
+                        <span id="live-inject-ortho" style="color: var(--green); font-weight: bold;">= 0</span>
+                    </div>
                 </div>
-                <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 2px;">
-                    <label>Canary Circuit Event Trigger Metric (<span id="katex-c-label"></span>):</label>
-                    <div id="canary-output" style="font-weight:bold; margin:1px 0; font-size:0.75rem;">SILENT</div>
-                    <div id="equation-canary" class="formula-box"></div>
-                    <div style="color: #668; font-size: 0.7rem; padding-left: 4px;" id="live-calc-canary"></div>
+
+                <!-- CANARY METRIC STEP READOUT -->
+                <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 4px;">
+                    <div id="canary-output" style="font-weight:bold; background:#020204; padding:5px; border-radius:4px;">SILENT</div>
+                    <div class="formula-box" id="native-eq-canary" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>C_canary = Θ ( d/dt ∑ I_i - R_lattice ) ➔ S_alert</span>
+                        <span id="live-inject-canary" style="color: var(--pink); font-weight: bold;"></span>
+                    </div>
                 </div>
+
                 <div class="raw-string" id="raw-string-output">0b0000...</div>
             </div>
         </div>
     </div>
 </div>
-
-
-    
 <script>
     const BITS = {
         0:  { name: "EXISTENCE (B0)", desc: "Biological bodily presence blueprint", type: "core" },
@@ -232,234 +259,39 @@
     let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null;
 
     function initSwitches() {
-        const container = document.getElementById('switches-container'); container.innerHTML = '';
+        const container = document.getElementById('switches-container'); if (!container) return;
+        container.innerHTML = '';
         Object.keys(BITS).forEach(bit => {
             const config = BITS[bit];
             container.innerHTML += `<div class="bit-row"><div><strong>${config.name}</strong> - <span style="color:#5c5c7c; font-size:0.65rem;">${config.desc}</span></div><label class="switch"><input type="checkbox" id="bit-${bit}" ${state[bit] ? 'checked' : ''} onchange="toggleBit(${bit})"><span class="slider"></span></label></div>`;
         });
     }
-    function toggleBit(bit) { state[bit] = document.getElementById(`bit-${bit}`).checked; calculateMatrix(); }
+    function toggleBit(bit) { const el = document.getElementById(`bit-${bit}`); if (el) state[bit] = el.checked; calculateMatrix(); }
     function toggleZoom() {
         isZoomed = !isZoomed; const vis = document.getElementById('matrix-vis'); const btn = document.getElementById('btn-zoom');
-        if (isZoomed) { vis.style.transform = "scale(2)"; btn.className = "btn btn-active"; btn.innerText = "Zoom: 2x"; }
-        else { vis.style.transform = "scale(1)"; btn.className = "btn"; btn.innerText = "Zoom: 1x"; }
+        if (isZoomed && vis && btn) { vis.style.transform = "scale(2)"; btn.className = "btn btn-active"; btn.innerText = "Zoom: 2x"; }
+        else if (vis && btn) { vis.style.transform = "scale(1)"; btn.className = "btn"; btn.innerText = "Zoom: 1x"; }
     }
-    function activateCompareTraceMode() {
-        const currentPoints = document.getElementById('geo-core').getAttribute('points');
-        const traceShape = document.getElementById('trace-geo-core'); const btn = document.getElementById('btn-compare');
-        if (!tracePoints) {
-            tracePoints = currentPoints; if (traceShape) { traceShape.setAttribute('points', tracePoints); traceShape.style.display = 'block'; }
-            if (btn) { btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active"; }
-        } else { tracePoints = null; if (traceShape) traceShape.style.display = 'none'; if (btn) { btn.className = "btn"; btn.innerText = "Compare Trace"; } }
-    }
-    function generateVaultString() { let binaryCode = Object.keys(BITS).map(b => state[b] ? "1" : "0").join(""); return "EX-" + parseInt(binaryCode, 2).toString(16).toUpperCase(); }
-    function copyVaultString() { navigator.clipboard.writeText(document.getElementById('vault-string').value); alert("Sync Key Captured."); }
-    function restoreFromVault() {
-        const val = document.getElementById('vault-string').value.trim();
-        if (val.startsWith("EX-")) {
-            let bin = parseInt(val.split("-"), 16).toString(2).padStart(Object.keys(BITS).length, '0');
-            Object.keys(BITS).forEach((b, idx) => { state[b] = bin[idx] === "1"; const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; });
-            calculateMatrix();
-        }
-    }
-    function project3D(x, y, z) { return { x: 200 + (x * 0.8) - (y * 0.8), y: 160 + (x * 0.4) + (y * 0.4) - z }; }
-    function setTimelineMode(mode) { timelineMode = mode; ['spiral', 'linear', '3d', 'fib'].forEach(m => { const b = document.getElementById(`btn-timeline-${m}`); if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; }); renderTimelineBackground(); calculateMatrix(); }
-
-    function renderTimelineBackground() {
-        const path = document.getElementById('timeline-path'); const spiralTrack = document.getElementById('fibonacci-spiral-track'); const ticks = document.getElementById('timeline-ticks'); if (!path || !ticks) return;
-        ticks.innerHTML = ''; if (spiralTrack) spiralTrack.style.display = 'none'; document.getElementById('collision-crosshair').style.display = 'none';
-        if (timelineMode === 'spiral') {
-            let points = []; for (let theta = 0; theta < 25; theta += 0.15) { let r = 6 + (theta * 4.5); points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); }
-            path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
-        } else if (timelineMode === 'fib') {
-            let points = []; const a = 4.0; const b = 0.1406;
-            for (let theta = 0; theta < 32; theta += 0.03) {
-                let r = a * Math.exp(b * theta); let x = 200 + r * Math.cos(theta); let y = 160 + r * Math.sin(theta);
-                if (r < 185) { points.push(`${x},${y}`); if (Math.floor(theta * 10) % 25 === 0) ticks.innerHTML += `<circle cx="${x}" cy="${y}" r="2" fill="#ff00aa" opacity="0.8"/>`; }
-            }
-            if (spiralTrack) { spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); spiralTrack.setAttribute('stroke', '#ff00aa'); spiralTrack.setAttribute('stroke-width', '1.5'); spiralTrack.setAttribute('opacity', '0.85'); spiralTrack.style.display = 'block'; }
-            path.setAttribute('d', 'M0,0');
-        } else if (timelineMode === 'linear') {
-            path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
-            for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
-        } else if (timelineMode === '3d') {
-            path.setAttribute('d', 'M0,0'); const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
-            ticks.innerHTML += `<line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>`;
-        }
-    }
-    function injectHexMarker() {
-        const hex = document.getElementById('hex-input').value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
-        if (hex.startsWith('0x') && hex.length >= 6) {
-            let val = parseInt(hex, 16); let cx = 140 + ((val % 60) * 2); let cy = 110 + (((val >> 4) % 40) * 2);
-            marker.setAttribute('cx', cx); marker.setAttribute('cy', cy); marker.setAttribute('stroke', '#' + hex.substring(2,8)); marker.style.display = 'block';
-            label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
-        }
-    }
-    function compileKatexExpressions() {
-        if (typeof katex !== 'undefined') {
-            let liveNoise = 0.5; if (!state) liveNoise += 5.0; if (!state) liveNoise += 4.0; if (!state) liveNoise += 6.0; if (!state) liveNoise += 3.5; if (!state) liveNoise += 4.5; if (!state) trackProperty=3.5; if (!state) liveNoise += 2.5; if (state) liveNoise += 5.5;
-            let liveShields = 0.0; if (state) liveShields += 0.40; if (state) liveShields += 0.40; if (!state || !state) liveShields *= 0.5;
-            const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
-            const p_collapse = liveNoise / (1.0 - Math.min(liveShields, 0.95));
-
-            try {
-                katex.render("P_{\\text{collapse}}", document.getElementById('katex-p-label'));
-                katex.render("\\mathcal{C}_{\\text{canary}}", document.getElementById('katex-c-label'));
-                
-                // FIXED STRUCTURAL VALUE INJECTIONS (Inserts real values directly inside the fraction math nodes)
-                katex.render(`\\mathcal{P}_{\\text{collapse}} = \\frac{${liveNoise.toFixed(2)}}{1 - ${liveShields.toFixed(2)}} = \\mathbf{${p_collapse.toFixed(2)}}`, document.getElementById('equation-p-collapse'), { displayMode: true });
-                
-                let b2 = state ? "1" : "0"; let b5 = state ? "1" : "0";
-                let res = (state && state) ? "1 \\implies \\text{Collision}" : "0 \\implies \\text{Orthogonal}";
-                katex.render(`\\langle \\mathbf{V}_{2}(${b2}), \\mathbf{V}_{5}(${b5}) \\rangle = \\mathbf{${res}}`, document.getElementById('equation-ortho'), { displayMode: true });
-                
-                let alertTrigger = p_collapse >= poppertimeThreshold ? "1 \\implies \\mathbf{ALARM}" : "0 \\implies \\mathbf{SILENT}";
-                katex.render(`\\mathcal{C}_{\\text{canary}} = \\Theta \\left( ${p_collapse.toFixed(2)} - ${poppertimeThreshold.toFixed(1)} \\right) = \\mathbf{${alertTrigger}}`, document.getElementById('equation-canary'), { displayMode: true });
-            } catch (err) { console.warn("Buffered compiler framework pass."); }
-        }
-    }
-    function calculateMatrix() {
-        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0; const orthoElement = document.getElementById('ortho-output');
-        let noise = 0.5; if (!state) noise += 5.0; if (!state) noise += 4.0; if (!state) noise += 6.0; if (!state) noise += 3.5; if (!state) noise += 4.5; if (!state) noise += 3.5; if (!state) noise += 2.5; if (state) noise += 5.5;
-        let shields = 0.0; if (state) shields += 0.40; if (state) shields += 0.40; if (!state || !state) shields *= 0.5;
-        let p_collapse = noise / (1.0 - Math.min(shields, 0.95)); const outP = document.getElementById('p-collapse-output'); if (outP) outP.innerText = p_collapse.toFixed(2);
-        
-        if (orthoElement) {
-            if (state && state) { orthoElement.innerHTML = `[COLLISION]: Warning. Register conflict under ancientState variables.`; orthoElement.style.color = "var(--pink)"; }
-            else { orthoElement.innerHTML = `[SECURE]: Inner Product equals ZERO. Disability is perfectly independent.`; orthoElement.style.color = "var(--green)"; }
-        }
-
-        const canaryBox = document.getElementById('canary-output');
-        if (canaryBox) {
-            if (p_collapse >= poppertimeThreshold) {
-                canaryBox.innerText = `💥 ALARM ACTIVE`; canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
-                if (timelineMode === 'fib') {
-                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); const colX = 200 + targetR * Math.cos(targetTheta); const colY = 160 + targetR * Math.sin(targetTheta); const crosshair = document.getElementById('collision-crosshair');
-                    if (crosshair) { document.getElementById('collision-point').setAttribute('cx', colX); document.getElementById('collision-point').setAttribute('cy', colY); document.getElementById('collision-line-h').setAttribute('y1', colY); document.getElementById('collision-line-h').setAttribute('y2', colY); document.getElementById('collision-line-v').setAttribute('x1', colX); document.getElementById('collision-line-v').setAttribute('x2', colX); crosshair.style.display = 'block'; }
-                }
-            } else { canaryBox.innerText = `🟢 SAFE`; canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none'; }
-        }
-        const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
-        const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
-        const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
-
-        if (timelineMode === '3d') {
-            let ex_val = state ? 75 : 0; let au_val = state ? 75 : 0; let in_val = state ? 75 : 0;
-            let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
-            if (gCore) gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
-            if (nodeEx) nodeEx.setAttribute('cx', pt_ex.x); if (nodeEx) nodeEx.setAttribute('cy', pt_ex.y);
-            if (nodeAu) nodeAu.setAttribute('cx', pt_au.x); if (nodeAu) nodeAu.setAttribute('cy', pt_au.y);
-            if (nodeIn) nodeIn.setAttribute('cx', pt_in.x); if (nodeIn) nodeIn.setAttribute('cy', pt_in.y);
-            if (gShields) gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
-            if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
-        } else {
-            let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let au_y = state ? 230 : 160; let in_x = state ? 120 : 200; let in_y = state ? 230 : 160;
-            if (gCore) gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
-            if (nodeEx) { nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y); }
-            if (nodeAu) { nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y); }
-            if (nodeIn) { nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y); }
-            let sh_size = (state && state) ? 100 : ((state || state) ? 55 : 0);
-            if (gShields) gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
-            if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
-        }
-        let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
-        const outRaw = document.getElementById('raw-string-output'); if (outRaw) outRaw.innerText = "0b" + binStr + " [Live Registry Track]";
-        const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
-        compileKatexExpressions();
-    }
-    function loadScenario(id) {
-        const scenarios = {
-            1:  { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
-            2:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
-            3:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: true, 24: false, 26: false },
-            4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 20: false, 24: false, 26: true },
-            5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: true },
-            6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false },
-            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
-            8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: false, 26: false },
-            9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },
-            10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 20: false, 24: false, 26: true },
-            11: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },
-            12: { 0: true, 1: true, 2: true, 3: true, 4: false, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
-            13: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: true, 24: false, 26: false },
-            14: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false },
-            15: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true },
-            16: { 0: true, 1: true, 2: false, 3: false, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
-            17: { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: false, 8: true, 20: false, 24: true, 26: false },
-            18: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
-            19: { 0: true, 1: true, 2: false, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: false, 26: true },
-            20: { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 7: true, 8: true, 20: false, 24: false, 26: false },
-            21: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: false, 20: false, 24: true, 26: false },
-            22: { 0: true, 1: false, 2: false, 3: true, 4: true, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
-            23: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false },
-            24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
-            25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: true, 24: true, 26: false }
-        };
-        state = scenarios[id]; Object.keys(BITS).forEach(b => { const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; }); calculateMatrix();
-    }
-    window.addEventListener('load', () => { initSwitches(); setTimeout(() => { setTimelineMode('fib'); const loader = document.getElementById('loading-universe'); if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); } }, 800); });
-</script>
-
-
     
-<script>
-    const BITS = {
-        0:  { name: "EXISTENCE (B0)", desc: "Biological bodily presence blueprint", type: "core" },
-        1:  { name: "AUTONOMY (B1)", desc: "Sovereign execution control parameters", type: "core" },
-        2:  { name: "INTEGRITY (B2)", desc: "Internal ethical alignment and moral axis", type: "core" },
-        3:  { name: "PSYCHOLOGY (B3)", desc: "Cognitive internal state and mental peace parameters", type: "core" },
-        4:  { name: "PHYSICAL (B4)", desc: "Physical body vessel boundaries and biosensors tracking", type: "core" },
-        5:  { name: "DISABILITY (B5)", desc: "Neuroatypical (AuDHD) coordinate axis space", type: "core" },
-        7:  { name: "PROPERTY (B7)", desc: "Data vaults, hard disks, server safety bounds", type: "core" },
-        8:  { name: "PRESENCE (B8)", desc: "Real-time spatiotemporal hardware network footprint", type: "core" },
-        20: { name: "SHIELD_HUMAN_RIGHTS (B20)", desc: "Institutional boundary level firewalls", type: "shield" },
-        24: { name: "SHIELD_ONLINE_RIGHTS (B24)", desc: "Cyber-harassment mitigation perimeters", type: "shield" },
-        26: { name: "TRUST_BROKEN_CORE (B26)", desc: "Shatters core alliance and drops shields", type: "threat" }
-    };
-
-    let state = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false };
-    let timelineMode = '3d'; let isZoomed = false;
-    let tracePoints = null; // Memory container to lock the overlapping trace baseline coordinates
-
-    function initSwitches() {
-        const container = document.getElementById('switches-container'); container.innerHTML = '';
-        Object.keys(BITS).forEach(bit => {
-            const config = BITS[bit];
-            container.innerHTML += `<div class="bit-row"><div><strong>${config.name}</strong> - <span style="color:#5c5c7c; font-size:0.65rem;">${config.desc}</span></div><label class="switch"><input type="checkbox" id="bit-${bit}" ${state[bit] ? 'checked' : ''} onchange="toggleBit(${bit})"><span class="slider"></span></label></div>`;
-        });
-    }
-    function toggleBit(bit) { state[bit] = document.getElementById(`bit-${bit}`).checked; calculateMatrix(); }
-    function toggleZoom() {
-        isZoomed = !isZoomed; const vis = document.getElementById('matrix-vis'); const btn = document.getElementById('btn-zoom');
-        if (isZoomed) { vis.style.transform = "scale(2)"; btn.className = "btn btn-active"; btn.innerText = "Zoom: 2x"; }
-        else { vis.style.transform = "scale(1)"; btn.className = "btn"; btn.innerText = "Zoom: 1x"; }
-    }
-
-    // LAYER TRACE CONFIGURATOR ENGINE HOOKS
     function activateCompareTraceMode() {
-        const currentPoints = document.getElementById('geo-core').getAttribute('points');
-        const traceShape = document.getElementById('trace-geo-core');
-        const btn = document.getElementById('btn-compare');
+        const geoCore = document.getElementById('geo-core');
+        const traceShape = document.getElementById('trace-geo-core'); const btn = document.getElementById('btn-compare');
+        if (!geoCore || !traceShape || !btn) return;
         
+        const currentPoints = geoCore.getAttribute('points');
         if (!tracePoints) {
             tracePoints = currentPoints;
             traceShape.setAttribute('points', tracePoints);
             traceShape.style.display = 'block';
-            btn.className = "btn btn-active";
-            btn.innerText = "Lock Trace Active";
-            alert("Base model geometry coordinates locked in memory layer. Select a second scenario or flip registers to visually project the tracking trace overlap!");
-        } else {
-            tracePoints = null;
-            traceShape.style.display = 'none';
-            btn.className = "btn";
-            btn.innerText = "Compare Trace";
-        }
+            btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active";
+            alert("Base model geometry coordinates locked. Select a second scenario or flip registers to visually project the tracking trace overlap!");
+        } else { tracePoints = null; traceShape.style.display = 'none'; btn.className = "btn"; btn.innerText = "Compare Trace"; }
     }
-
     function generateVaultString() { let binaryCode = Object.keys(BITS).map(b => state[b] ? "1" : "0").join(""); return "EX-" + parseInt(binaryCode, 2).toString(16).toUpperCase(); }
-    function copyVaultString() { navigator.clipboard.writeText(document.getElementById('vault-string').value); alert("Sync Key Captured."); }
+    function copyVaultString() { const vaultIn = document.getElementById('vault-string'); if (vaultIn) { navigator.clipboard.writeText(vaultIn.value); alert("Sync Key Captured."); } }
     function restoreFromVault() {
-        const val = document.getElementById('vault-string').value.trim();
+        const valBox = document.getElementById('vault-string'); if (!valBox) return;
+        const val = valBox.value.trim();
         if (val.startsWith("EX-")) {
             let bin = parseInt(val.split("-"), 16).toString(2).padStart(Object.keys(BITS).length, '0');
             Object.keys(BITS).forEach((b, idx) => { state[b] = bin[idx] === "1"; const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; });
@@ -468,18 +300,25 @@
     }
     function project3D(x, y, z) { return { x: 200 + (x * 0.8) - (y * 0.8), y: 160 + (x * 0.4) + (y * 0.4) - z }; }
     function setTimelineMode(mode) { timelineMode = mode; ['spiral', 'linear', '3d', 'fib'].forEach(m => { const b = document.getElementById(`btn-timeline-${m}`); if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; }); renderTimelineBackground(); calculateMatrix(); }
-
     function renderTimelineBackground() {
         const path = document.getElementById('timeline-path'); const spiralTrack = document.getElementById('fibonacci-spiral-track'); const ticks = document.getElementById('timeline-ticks'); if (!path || !ticks) return;
         ticks.innerHTML = ''; if (spiralTrack) spiralTrack.style.display = 'none'; document.getElementById('collision-crosshair').style.display = 'none';
+        
         if (timelineMode === 'spiral') {
             let points = []; for (let theta = 0; theta < 25; theta += 0.15) { let r = 6 + (theta * 4.5); points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); }
             path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
         } else if (timelineMode === 'fib') {
-            let points = []; const a = 4.0; const b = 0.1406;
-            for (let theta = 0; theta < 32; theta += 0.03) {
-                let r = a * Math.exp(b * theta); let x = 200 + r * Math.cos(theta); let y = 160 + r * Math.sin(theta);
-                if (r < 185) { points.push(`${x},${y}`); if (Math.floor(theta * 10) % 25 === 0) ticks.innerHTML += `<circle cx="${x}" cy="${y}" r="2" fill="#ff00aa" opacity="0.8"/>`; }
+            let points = []; const a = 3.5; const b = 0.1406;
+            const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
+            ticks.innerHTML += `
+                <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2" opacity="0.4"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2" opacity="0.4"/>
+                <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2" opacity="0.4"/>
+            `;
+            for (let theta = 0; theta < 32; theta += 0.04) {
+                let r = a * Math.exp(b * theta);
+                let pt3D = project3D(r * Math.cos(theta), r * Math.sin(theta), theta * 1.5);
+                if (r < 185) { points.push(`${pt3D.x},${pt3D.y}`); if (Math.floor(theta * 10) % 25 === 0) ticks.innerHTML += `<circle cx="${pt3D.x}" cy="${pt3D.y}" r="2" fill="#ff00aa" opacity="0.8"/>`; }
             }
             if (spiralTrack) { spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); spiralTrack.setAttribute('stroke', '#ff00aa'); spiralTrack.setAttribute('stroke-width', '1.5'); spiralTrack.setAttribute('opacity', '0.85'); spiralTrack.style.display = 'block'; }
             path.setAttribute('d', 'M0,0');
@@ -492,102 +331,77 @@
         }
     }
     function injectHexMarker() {
-        const hex = document.getElementById('hex-input').value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
+        const hexBox = document.getElementById('hex-input'); if (!hexBox) return;
+        const hex = hexBox.value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
         if (hex.startsWith('0x') && hex.length >= 6) {
             let val = parseInt(hex, 16); let cx = 140 + ((val % 60) * 2); let cy = 110 + (((val >> 4) % 40) * 2);
             marker.setAttribute('cx', cx); marker.setAttribute('cy', cy); marker.setAttribute('stroke', '#' + hex.substring(2,8)); marker.style.display = 'block';
             label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
         }
     }
-    function compileKatexExpressions() {
-        if (typeof katex !== 'undefined') {
-            // 1. Calculate active real-time variables directly from system state
-            let liveNoise = 0.5;
-            if (!state[0]) liveNoise += 5.0;
-            if (!state[1]) liveNoise += 4.0;
-            if (!state[2]) liveNoise += 6.0;
-            if (!state[3]) liveNoise += 3.5;
-            if (!state[4]) liveNoise += 4.5;
-            if (!state[7]) liveNoise += 3.5;
-            if (!state[8]) liveNoise += 2.5;
-            if (state[26]) liveNoise += 5.5;
-
-            let liveShields = 0.0;
-            if (state[20]) liveShields += 0.40;
-            if (state[24]) liveShields += 0.40;
-            if (!state[3] || !state[4]) liveShields *= 0.5;
-
-            const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0;
-            const p_collapse = liveNoise / (1.0 - Math.min(liveShields, 0.95));
-
-            // 2. Direct Value Injection into KaTeX Equations (Bypassing browser race conditions)
-            try {
-                katex.render("P_{\\text{collapse}}", document.getElementById('katex-p-label'));
-                katex.render("\\mathcal{C}_{\\text{canary}}", document.getElementById('katex-c-label'));
-                
-                // Injects numbers directly inside the fraction bar strings
-                katex.render(`\\mathcal{P}_{\\text{collapse}} = \\frac{\\sum (${liveNoise.toFixed(2)})}{1 - (${liveShields.toFixed(2)})} = \\mathbf{${p_collapse.toFixed(2)}}`, document.getElementById('equation-p-collapse'));
-                
-                let b2 = state[2] ? "1" : "0";
-                let b5 = state[5] ? "1" : "0";
-                let res = (state[2] && state[5]) ? "1 \\implies \\text{Collision}" : "0 \\implies \\text{Orthogonal}";
-                katex.render(`\\langle \\mathbf{V}_{2}\\,(${b2}), \\mathbf{V}_{5}\\,(${b5}) \\rangle = \\mathbf{${res}}`, document.getElementById('equation-ortho'));
-                
-                let alertTrigger = p_collapse >= poppertimeThreshold ? "1 \\implies \\mathbf{ALARM}" : "0 \\implies \\mathbf{SILENT}";
-                katex.render(`\\mathcal{C}_{\\text{canary}} = \\Theta \\left( ${p_collapse.toFixed(2)} - ${poppertimeThreshold.toFixed(1)} \\right) = \\mathbf{${alertTrigger}}`, document.getElementById('equation-canary'));
-            } catch(e) { 
-                console.warn("KaTeX dynamic calculation pipeline reset: ", e); 
-            }
-        }
-    }
     function calculateMatrix() {
-        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input').value) || 3.0; const orthoElement = document.getElementById('ortho-output');
-        let noise = 0.5; if (!state) noise += 5.0; if (!state) noise += 4.0; if (!state) noise += 6.0; if (!state) noise += 3.5; if (!state) noise += 4.5; if (!state) noise += 3.5; if (!state) noise += 2.5; if (state) noise += 5.5;
-        let shields = 0.0; if (state) shields += 0.40; if (state) shields += 0.40; if (!state || !state) shields *= 0.5;
+        const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; const orthoElement = document.getElementById('ortho-output');
+        let noise = 0.5; if (!state[0]) noise += 5.0; if (!state[1]) noise += 4.0; if (!state[2]) noise += 6.0; if (!state[3]) noise += 3.5; if (!state[4]) noise += 4.5; if (!state[7]) noise += 3.5; if (!state[8]) noise += 2.5; if (state[26]) noise += 5.5;
+        let shields = 0.0; if (state[20]) shields += 0.40; if (state[24]) shields += 0.40; if (!state[3] || !state[4]) shields *= 0.5;
         let p_collapse = noise / (1.0 - Math.min(shields, 0.95)); const outP = document.getElementById('p-collapse-output'); if (outP) outP.innerText = p_collapse.toFixed(2);
         
         if (orthoElement) {
-            if (state && state) { orthoElement.innerHTML = `[COLLISION]: Warning. Register conflict under ancientState variables.`; orthoElement.style.color = "var(--pink)"; }
-            else { orthoElement.innerHTML = `[SECURE]: Inner Product equals ZERO. Disability is perfectly independent.`; orthoElement.style.color = "var(--green)"; }
+            if (state[2] && state[5]) { 
+                orthoElement.innerHTML = `[COLLISION TRIPPED]: Warning. Integrity and disability profiles collided under ancient rule configurations.`; orthoElement.style.color = "var(--pink)";
+                document.getElementById('live-inject-ortho').innerHTML = `= 1 ➔ Collision`; document.getElementById('live-inject-ortho').style.color = "var(--pink)";
+            } else { 
+                orthoElement.innerHTML = `[AFTER FIX - SECURE]: Dot product equals exactly ZERO. Processing constraints are orthogonal. Exploitation is blocked.`; orthoElement.style.color = "var(--green)";
+                document.getElementById('live-inject-ortho').innerHTML = `= 0 ➔ Secure`; document.getElementById('live-inject-ortho').style.color = "var(--green)";
+            }
         }
-
+        document.getElementById('live-inject-p').innerHTML = `= \\frac{${noise.toFixed(2)}}{1 - ${shields.toFixed(2)}} = \\mathbf{${p_collapse.toFixed(2)}}$`;
+        document.getElementById('live-inject-canary').innerHTML = `➔ \\mathbf{${p_collapse>=poppertimeThreshold?'ALARM':'SILENT'}(${p_collapse.toFixed(1)})}`;
         const canaryBox = document.getElementById('canary-output');
         if (canaryBox) {
             if (p_collapse >= poppertimeThreshold) {
-                canaryBox.innerText = `💥 ALARM ACTIVE`; canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+                canaryBox.innerText = `💥 CRITICAL BREAK`; canaryBox.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
                 if (timelineMode === 'fib') {
-                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); const colX = 200 + targetR * Math.cos(targetTheta); const colY = 160 + targetR * Math.sin(targetTheta); const crosshair = document.getElementById('collision-crosshair');
-                    if (crosshair) { document.getElementById('collision-point').setAttribute('cx', colX); document.getElementById('collision-point').setAttribute('cy', colY); document.getElementById('collision-line-h').setAttribute('y1', colY); document.getElementById('collision-line-h').setAttribute('y2', colY); document.getElementById('collision-line-v').setAttribute('x1', colX); document.getElementById('collision-line-v').setAttribute('x2', colX); crosshair.style.display = 'block'; }
+                    const targetTheta = Math.min(p_collapse * 1.5, 26); const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
+                    const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5);
+                    const crosshair = document.getElementById('collision-crosshair');
+                    if (crosshair) { document.getElementById('collision-point').setAttribute('cx', ptCol.x); document.getElementById('collision-point').setAttribute('cy', ptCol.y); document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); crosshair.style.display = 'block'; }
                 }
             } else { canaryBox.innerText = `🟢 SAFE`; canaryBox.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none'; }
         }
+        
         const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
         const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
         const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
 
-        if (timelineMode === '3d') {
-            let ex_val = state ? 75 : 0; let au_val = state ? 75 : 0; let in_val = state ? 75 : 0;
-            let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
-            if (gCore) gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
-            if (nodeEx) nodeEx.setAttribute('cx', pt_ex.x); if (nodeEx) nodeEx.setAttribute('cy', pt_ex.y);
-            if (nodeAu) nodeAu.setAttribute('cx', pt_au.x); if (nodeAu) nodeAu.setAttribute('cy', pt_au.y);
-            if (nodeIn) nodeIn.setAttribute('cx', pt_in.x); if (nodeIn) nodeIn.setAttribute('cy', pt_in.y);
-            if (gShields) gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
-            if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
-        } else {
-            let ex_y = state ? 80 : 160; let au_x = state ? 280 : 200; let au_y = state ? 230 : 160; let in_x = state ? 120 : 200; let in_y = state ? 230 : 160;
-            if (gCore) gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
-            if (nodeEx) { nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y); }
-            if (nodeAu) { nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y); }
-            if (nodeIn) { nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y); }
-            let sh_size = (state && state) ? 100 : ((state || state) ? 55 : 0);
-            if (gShields) gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
-            if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
+        if (gCore && nodeEx && nodeAu && nodeIn && gShields) {
+            if (timelineMode === '3d' || timelineMode === 'fib') {
+                let ex_val = state[0] ? 75 : 0; let au_val = state[1] ? 75 : 0; let in_val = state[2] ? 75 : 0;
+                let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
+                gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+                nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y);
+                nodeAu.setAttribute('cx', pt_au.x); nodeAu.setAttribute('cy', pt_au.y);
+                nodeIn.setAttribute('cx', pt_in.x); nodeIn.setAttribute('cy', pt_in.y);
+                gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
+                if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
+            } else {
+                let ex_y = state[0] ? 80 : 160; let au_x = state[1] ? 280 : 200; let au_y = state[1] ? 230 : 160; let in_x = state[2] ? 120 : 200; let in_y = state[2] ? 230 : 160;
+                gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+                nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y);
+                nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y);
+                nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y);
+                let sh_size = (state[20] && state[24]) ? 100 : ((state[20] || state[24]) ? 55 : 0);
+                gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
+                if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
+            }
         }
+        
+        // UPGRADED COMPLETE MULTI-RADIX CRYPTO DATA MONITOR
         let binStr = ""; Object.keys(BITS).reverse().forEach(b => { binStr += state[b] ? "1" : "0"; });
-        const outRaw = document.getElementById('raw-string-output'); if (outRaw) outRaw.innerText = "0b" + binStr + " [Live Registry Track]";
+        let intVal = parseInt(binStr, 2);
+        const outRaw = document.getElementById('raw-string-output'); 
+        if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | OCT: 0o${intVal.toString(8)} | DEC: ${intVal} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
+        
         const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
-        compileKatexExpressions();
     }
     function loadScenario(id) {
         const scenarios = {
@@ -597,7 +411,7 @@
             4:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: false, 7: false, 8: true, 20: false, 24: false, 26: true },
             5:  { 0: true, 1: true, 2: true, 3: false, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: true },
             6:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: true, 26: false },
-            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: true, 20: false, 24: false, 26: false },
+            7:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: false, 8: false, 20: false, 24: false, 26: false },
             8:  { 0: true, 1: true, 2: true, 3: true, 4: true, 5: false, 7: true, 8: true, 20: true, 24: false, 26: false },
             9:  { 0: true, 1: true, 2: true, 3: false, 4: true, 5: true, 7: true, 8: true, 20: true, 24: false, 26: false },
             10: { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 20: false, 24: false, 26: true },
@@ -617,30 +431,32 @@
             24: { 0: false, 1: true, 2: true, 3: true, 4: false, 5: true, 7: true, 8: true, 20: false, 24: false, 26: false },
             25: { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 20: true, 24: true, 26: false }
         };
-        state = scenarios[id]; Object.keys(BITS).forEach(b => { const el = document.getElementById(`bit-${b}`); if (el) el.checked = state[b]; }); calculateMatrix();
+        const selected = scenarios[id];
+        if (selected) {
+            Object.keys(BITS).forEach(b => {
+                state[b] = selected[b];
+                const el = document.getElementById(`bit-${b}`);
+                if (el) el.checked = state[b];
+            });
+            calculateMatrix();
+        }
     }
-    window.addEventListener('load', () => { initSwitches(); setTimeout(() => { setTimelineMode('fib'); const loader = document.getElementById('loading-universe'); if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); } }, 800); });
     window.addEventListener('load', () => {
-        // Stage 1: Build structural switch elements inside the DOM tree layout
         initSwitches();
-        
-        // Stage 2: Asynchronous choke delay allowing hardware viewport synchronization
         setTimeout(() => {
             try {
-                // Force the platform map to deploy 3D Isometric view natively
-                setTimelineMode('3d');
-                
-                // Fire the calculation loop to inject live numeric data states
-                calculateMatrix();
-                
-                console.log("PROJECT EXISTENZ - Live 3D Matrix Engine successfully initialized - guntherv/v0.76beta");
-            } catch (bootError) {
-                console.error("Boot loop bypassed safely: ", bootError);
-                // Fail-safe fallback to standard spiral track if rendering bounds fail
+                setTimelineMode('fib');
+                const loader = document.getElementById('loading-universe');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => { loader.style.visibility = 'hidden'; }, 500);
+                }
+            } catch(bootErr) {
+                console.error("Boot loop protection bypass active: ", bootErr);
                 setTimelineMode('spiral');
             }
-        }, 300); // 300ms buffer ensures unassailable cross-platform layout binding
-    });    
+        }, 800);
+    });
 </script>
 </body>
 </html>
