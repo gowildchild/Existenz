@@ -562,6 +562,10 @@
             else { orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal.`; orthoElement.style.color = "var(--green)"; }
         }
 
+        const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
+        document.getElementById('live-inject-p').innerHTML = `➔ [ ${noise.toFixed(1)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
+        const injOrthoNode = document.getElementById('live-inject-ortho'); if (injOrthoNode) { injOrthoNode.innerHTML = `➔ [ B2(${state_core[2]?1:0}) • B5(${state_core[5]?1:0}) ] = <strong>${(state_core[2]&&!state_core[5])?1:0}</strong>`; }
+
         let secureCount = 0; let failureCount = 0;
         const trackingAxes = [...Object.keys(CORE_CONFIG).map(Number)].filter(k => CORE_CONFIG[k].type !== "meta");
         trackingAxes.forEach(k => { if (state_core[k] === true && state_threat[k] === false) secureCount++; else failureCount++; });
@@ -569,20 +573,20 @@
 
         const injectCanaryNode = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
         if (injectCanaryNode && canaryBox) {
-            if (p_collapse >= poppertimeThreshold) { canaryBox.innerText = `💥 ALERT: Structural breach!`; canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)'; injectCanaryNode.innerHTML = `➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active'); } 
-            else { canaryBox.innerText = `🟢 PASSIVE STANDBY`; canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)'; injectCanaryNode.innerHTML = `➔ <strong>✓ CIRCUITS SECURE</strong>`; injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); }
+            if (p_collapse >= poppertimeThreshold) { canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)'; injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠️ WATCHDOG ALARM HIGH</strong>`; injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active'); } 
+            else { canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)'; injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active'); }
         }
 
         const staticOverlay = document.getElementById('tv-static-noise-layer');
-        if (staticOverlay) { if (forceStaticNoiseOverlay || p_collapse >= poppertimeThreshold) { staticOverlay.style.display = 'block'; staticOverlay.style.opacity = forceStaticNoiseOverlay ? "0.20" : Math.min(p_collapse*0.02, 0.55).toString(); } else { staticOverlay.style.display = 'none'; } }
+        if (staticOverlay) { if (forceStaticNoiseOverlay || p_collapse >= poppertimeThreshold) { staticOverlay.style.display = 'block'; staticOverlay.style.opacity = forceStaticNoiseOverlay ? "0.20" : Math.min(p_collapse * 0.02, 0.55).toString(); } else { staticOverlay.style.display = 'none'; } }
 
-        const gCoreNode = document.getElementById('geo-core'); const metricsDashboardNode = document.getElementById('live-metrics-dashboard-sub');
+        const metricsDashboardNode = document.getElementById('live-metrics-dashboard-sub');
         if (metricsDashboardNode) metricsDashboardNode.innerHTML = ''; let projectedPoints = [];
 
         trackingAxes.forEach((k, idx) => {
             const nodeSpec = CORE_CONFIG[k]; const plotOnGraphic = (nodeSpec.visual & 1) === 1; const outputMetrics = (nodeSpec.visual & 4) === 4; const persistentView = (nodeSpec.visual & 8) === 8;
             let isCurrentAxisBreached = (state_core[k] === false || state_threat[k] === true);
-            let prevKey = trackingAxes[idx - 1] || trackingAxes[trackingAxes.length - 1]; let nextKey = trackingAxes[idx + 1] || trackingAxes[0];
+            let prevKey = trackingAxes[idx - 1] || trackingAxes[trackingAxes.length - 1]; let nextKey = trackingAxes[idx + 1] || trackingAxes;
             let neighborIsBreached = (state_core[prevKey] === false || state_threat[prevKey] === true || state_core[nextKey] === false || state_threat[nextKey] === true);
 
             if (plotOnGraphic && (persistentView || isCurrentAxisBreached || neighborIsBreached)) {
@@ -597,9 +601,11 @@
         if (gCoreNode && projectedPoints.length > 0) gCoreNode.setAttribute('points', projectedPoints.join(' ')); else if (gCoreNode) gCoreNode.setAttribute('points', '');
         
         let binStr = ""; Object.keys(CORE_CONFIG).reverse().forEach(b => { if(CORE_CONFIG[b].type !== "meta") binStr += state_core[parseInt(b)] ? "1" : "0"; });
-        document.getElementById('raw-string-output').innerText = `BIN: 0b${binStr} | HEX: 0x${parseInt(binStr, 2).toString(16).toUpperCase()}`;
+        let intVal = parseInt(binStr, 2); document.getElementById('raw-string-output').innerText = `BIN: 0b${binStr} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
+        updateSystemChecksum();
         const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
     }
+
 
 
     function injectHexMarker() {
