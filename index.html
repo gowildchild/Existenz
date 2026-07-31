@@ -3,7 +3,7 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Existenz Platform Matrix Simulator | Gunther | FWC v0.82</title>
+ <title>Existenz Platform Matrix Simulator | Gunther | FWC v0.83</title>
  <style>
  :root {
  --cyan: #00f0ff;
@@ -499,7 +499,6 @@
   }
  }
  // 7. REAL-TIME CALCULATION MATRIX ENGINE & AUTOMATED VALUE INJECTIONS
- // 7. REAL-TIME CALCULATION MATRIX ENGINE & AUTOMATED VALUE INJECTIONS
  function calculateMatrix() {
   const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
   const orthoElement = document.getElementById('ortho-output');
@@ -618,9 +617,10 @@
    else { outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; } 
   }
 
+  // FIXED ALARM CONDITIONAL: Only trigger a structural breach if the limit is exceeded AND an active threat is detected!
   const injectCanaryNode = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
   if (injectCanaryNode && canaryBox) {
-   if (p_collapse >= poppertimeThreshold) {
+   if (p_collapse >= poppertimeThreshold && activeThreatNames.length > 0) {
     canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
     injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠ WATCHDOG ALARM HIGH</strong>`; injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
     if (timelineMode === 'fib') { 
@@ -628,6 +628,7 @@
      if (crosshair) { const colPointNode = document.getElementById('collision-point'); if (colPointNode) { colPointNode.setAttribute('cx', ptCol.x); colPointNode.setAttribute('cy', ptCol.y); colPointNode.setAttribute('r', (poppertimeThreshold * 4).toString()); } document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); crosshair.style.display = 'block'; } 
     }
    } else {
+    // If no active threats exist, the circuit stays green and calm even if p_collapse scales high
     canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
     injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
     const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none';
