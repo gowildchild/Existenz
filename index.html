@@ -3,7 +3,7 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Existenz Platform Matrix Simulator | Gunther | FWC v0.83</title>
+ <title>Existenz Platform Matrix Simulator | Gunther | FWC v0.84</title>
  <style>
  :root {
  --cyan: #00f0ff;
@@ -665,13 +665,40 @@
    }
   }
 
-  // RADIX STRING COMPILATION: COMPILING THE DYNAMIC SYSTEM NUMERICS (DECIMAL CODE RESTORED)
-  let binStr = ""; Object.keys(BITS_CONFIG).reverse().forEach(b => { binStr += state_meta[parseInt(b)] ? "1" : "0"; }); 
+  // FIXED RADIX COLLISION MONITOR: Renders threats directly into the live binary stream
+  let binDisplayHTML = ""; 
+  let binStr = ""; 
+  
+  // Scan the register arrays backwards to print the bits in correct descending order
+  Object.keys(BITS_CONFIG).reverse().forEach(b => {
+   let k = parseInt(b);
+   let bitValue = state_meta[k] ? "1" : "0";
+   binStr += bitValue; // Keep the raw string pure for the decimal/hex math parsing
+   
+   // Check if a hostile attack channel is actively turned on for this exact bit index
+   if (state_threat[k] === true) {
+    // Inject a warning-red flashing indicator directly into the binary stream
+    binDisplayHTML += `<span style="color: var(--pink); font-weight: bold; animation: pulse 0.5s infinite alternate;">${bitValue}</span>`;
+   } else if (state_meta[k] === true) {
+    // Secure vector state shows up in a steady, clear green
+    binDisplayHTML += `<span style="color: var(--green);">${bitValue}</span>`;
+   } else {
+    // Deactivated vector state stays dim/gray
+    binDisplayHTML += `<span style="color: #444466;">${bitValue}</span>`;
+   }
+  });
+
+  // Re-calculate the numerical values using the pure binary string layout
   let intVal = parseInt(binStr, 2);
   const outRaw = document.getElementById('raw-string-output'); 
-  if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | DEC: ${intVal} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
+  if (outRaw) {
+   // Switch innerText to innerHTML so the browser can paint your custom colors instantly
+   outRaw.innerHTML = `BIN: 0b${binDisplayHTML} | DEC: <span style="color:${activeThreatNames.length > 0 ? 'var(--pink)' : '#fff'}">${intVal}</span> | HEX: <span style="color:${activeThreatNames.length > 0 ? 'var(--pink)' : '#fff'}">0x${intVal.toString(16).toUpperCase()}</span>`;
+  }
+  
   const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
  }
+
  function loadScenario(id) {
   triggerStateChange();
   const scenarios = {
