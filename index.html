@@ -503,7 +503,8 @@
   const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
   const orthoElement = document.getElementById('ortho-output');
   let noise = 0.5;
-  let shieldStrength = 0.0;
+  // ADD BIAS VECTOR FLOOR: Universe starts with a standard 0.25 baseline safety factor
+  let shieldStrength = 0.25;
 
   // Process system compliance calculations
   Object.keys(BITS_CONFIG).forEach(b => {
