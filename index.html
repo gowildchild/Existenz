@@ -3,7 +3,7 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Existenz Platform Matrix Simulator | Gunther | FWC v0.81</title>
+ <title>Existenz Platform Matrix Simulator | Gunther | FWC v0.82</title>
  <style>
  :root {
  --cyan: #00f0ff;
@@ -76,7 +76,7 @@
  <div class="loading-bar"></div>
 </div>
 <header>
- <div><h1>Existenz Platform Matrix Simulator / </h1></div>
+ <div><h1>Existenz Platform Matrix Simulator / Human-Rights</h1></div>
  <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[<a href="https://github.com/gowildchild/Existenz">CORE</a>: V0.81 THREAT-MATRIX]</div>
 </header>
 <div class="grid">
@@ -94,7 +94,7 @@
   <!-- SECTION 2: DUAL-COLUMN SYSTEM MATRICES -->
   <div class="panel" style="flex-grow: 1; display: flex; flex-direction: column; min-height: 0;">
    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 6px; flex-shrink: 0;">
-    <h2 style="margin: 0; border: none; padding: 0;">2 | System Topologies Matrix & Targeted Threat Environment</h2>
+    <h2>2 | System Topologies Matrix & Targeted Threat Environment</h2>
     <div style="display: flex; gap: 2px;">
      <button class="btn btn-active" id="btn-view-topology" onclick="setViewMode('topology')">Topology View</button>
      <button class="btn" id="btn-view-rights" onclick="setViewMode('rights')">Human Rights Check</button>
@@ -104,11 +104,11 @@
    <div style="display: flex; gap: 6px; font-family: monospace; font-size: 0.7rem; background: #020204; padding: 5px; border-radius: 4px; border: 1px solid #101020; margin-bottom: 8px; flex-shrink: 0;">
     <div style="flex: 1; text-align: center; border-right: 1px solid #101020;">
      <span style="color: var(--green); font-weight: bold;">✓ SECURE VECTORS:</span> 
-     <span id="counter-secure-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 12
+     <span id="counter-secure-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 11
     </div>
     <div style="flex: 1; text-align: center;">
      <span id="counter-broken-label" style="color: #668; font-weight: bold;">⚠ DETECTED BREACHES:</span> 
-     <span id="counter-broken-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 12
+     <span id="counter-broken-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 11
     </div>
    </div>
    <!-- PARALLEL SPLIT GRID COLUMNS -->
@@ -208,19 +208,19 @@
      <path id="timeline-path" fill="none" stroke="#121222" stroke-width="1.5" />
      <g id="timeline-ticks"></g>
      
-     <!-- PERMANENT IMMUTABLE RIGHTS ENCLOSURES (Visible Across All Geometric Timelines) -->
-     <!-- OUTER SHIELD: HUMAN RIGHTS ENCLOSURE -->
+     <!-- REALISTIC DYNAMIC RIGHTS ENCLOSURES (Managed by calculation script) -->
+     <!-- SHIELD A: HUMAN RIGHTS ENCLOSURE -->
      <polygon id="permanent-human-rights-shield" points="200,30 350,170 200,310 50,170" fill="none" stroke="rgba(0, 255, 170, 0.25)" stroke-width="1.2" stroke-dasharray="4,4" />
-     <text x="210" y="42" fill="rgba(0, 255, 170, 0.4)" style="font-family: monospace; font-size: 6px; letter-spacing: 1px;">[ SHIELD A: HUMAN RIGHTS ENCLOSURE ]</text>
+     <text id="lbl-shield-a" x="210" y="42" fill="rgba(0, 255, 170, 0.4)" style="font-family: monospace; font-size: 6px; letter-spacing: 1px;">[ SHIELD A: HUMAN RIGHTS ENCLOSURE ]</text>
      
-     <!-- INNER BOX: BASIC RIGHTS ENCLOSURE -->
+     <!-- SHIELD B: BASIC RIGHTS ENCLOSURE -->
      <rect id="permanent-basic-rights-box" x="90" y="60" width="220" height="220" fill="none" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1" stroke-dasharray="3,5" rx="4" />
-     <text x="96" y="72" fill="rgba(0, 240, 255, 0.35)" style="font-family: monospace; font-size: 6px; letter-spacing: 1px;">[ SHIELD B: BASIC RIGHTS BOX ]</text>
+     <text id="lbl-shield-b" x="96" y="72" fill="rgba(0, 240, 255, 0.35)" style="font-family: monospace; font-size: 6px; letter-spacing: 1px;">[ SHIELD B: BASIC RIGHTS BOX ]</text>
 
      <!-- THE GHOST TRACE OVERLAP RENDER LAYER -->
      <polygon id="trace-geo-core" points="0,0 0,0 0,0" fill="rgba(0, 255, 170, 0.04)" stroke="#00ffaa" stroke-width="1.8" stroke-dasharray="4,3" filter="url(#neon-glow-trace)" style="display: none; pointer-events: none;" />
      
-     <!-- DYNAMIC VARIABLE SYSTEM SHAPES -->
+     <!-- DYNAMIC VARIABLE CORE SYSTEM SHAPES -->
      <polygon id="geo-shields" points="200,40 340,170 200,300 60,170" fill="rgba(0, 255, 170, 0.02)" stroke="#00ffaa" stroke-width="1.2" stroke-dasharray="3" />
      <polygon id="geo-core" points="200,100 270,220 130,220" fill="rgba(0, 240, 255, 0.08)" stroke="#00f0ff" stroke-width="1.8" />
      <circle id="node-existence" cx="200" cy="100" r="4" fill="#fff" stroke="#ff00aa" stroke-width="1.5" />
@@ -280,9 +280,8 @@
   </div>
  </div>
 </div>
-
 <script>
- // 1. UNIVERSAL VERIFIABLE BLUEPRINT: Integrated States, Threat Targets, and Survey Questions
+ // 1. RESTRUCTURED SYSTEM COMPLIANCE BLUEPRINT DICTIONARY (ONLINE_RIGHTS Purged)
  const BITS_CONFIG = {
   0: { name: "EXISTENCE", type: "core", trigger: true, threat_name: "THREAT_EXISTENCE", desc: "Threat against physical life baseline blueprint", question: "Is your right to biological life presence threatened?" },
   1: { name: "AUTONOMY", type: "core", trigger: false, threat_name: "THREAT_AUTONOMY", desc: "Coercive suppression of sovereign execution liberty", question: "Has your personal sovereign autonomy been coerced?" },
@@ -294,13 +293,12 @@
   8: { name: "PRESENCE", type: "core", trigger: false, threat_name: "THREAT_PRESENCE", desc: "Illegal geolocation trace, spatial stalking, or network tracking footprint", question: "Are you subjected to unauthorized data tracking?" },
   19: { name: "BASIC_RIGHTS", type: "shield", trigger: false, threat_name: "THREAT_BASIC_RIGHTS", desc: "Constitutional protection strip targeting base primitive survival", question: "Are basic survival protections stripped away?" },
   20: { name: "HUMAN_RIGHTS", type: "shield", trigger: false, threat_name: "THREAT_HUMAN_RIGHTS", desc: "Civil human rights shield teardown via institutional overreach", question: "Have civil human rights shields failed to protect you?" },
-  21: { name: "DIVERSITY_RIGHTS", type: "shield", trigger: true, threat_name: "THREAT_DIVERSITY_RIGHTS", desc: "Systemic ableistic exploitation targeting diversity safeguards", question: "Are diversity protective frameworks missing?" },
-  24: { name: "ONLINE_RIGHTS", type: "shield", trigger: false, threat_name: "THREAT_ONLINE_RIGHTS", desc: "Network firewall blackout assault disabling harassment defense perimeters", question: "Are active online safety filters broken?" }
+  21: { name: "DIVERSITY_RIGHTS", type: "shield", trigger: true, threat_name: "THREAT_DIVERSITY_RIGHTS", desc: "Systemic ableistic exploitation targeting diversity safeguards", question: "Are diversity protective frameworks missing?" }
  };
 
- // Parallel Processing Memory Arrays (Threats default to 0/False, States to 1/True)
- let state_meta = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true, 24: true };
- let state_threat = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 19: false, 20: false, 21: false, 24: false };
+ // Active Register System Matrix Status Configuration Tracks
+ let state_meta = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true };
+ let state_threat = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 19: false, 20: false, 21: false };
  let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null; let currentViewMode = 'topology';
  let hasChangedYet = false;
 
@@ -313,7 +311,6 @@
   }
   initSwitches(); calculateMatrix();
  }
-
  // 2. PASSIVE SWITCHBOARD DISPLAY RENDERING PIPELINE
  function initSwitches() {
   const coresContainer = document.getElementById('cores-switches-container');
@@ -331,7 +328,7 @@
     <div class="bit-row" style="padding: 4px 2px;">
      <div><strong>${bitStr} | ${config.name}</strong></div>
      <label class="switch">
-      <input type="checkbox" id="meta-${bitStr}" ${state_meta[bitNum] ? 'checked' : ''} onchange="triggerStateChange(); toggleMetaBit(${bitNum})">
+      <input type="checkbox" id="meta-${bitStr}" ${state_meta[bitNum] ? 'checked' : ''} onchange="toggleMetaBit(${bitNum})">
       <span class="slider"></span>
      </label>
     </div>`;
@@ -341,7 +338,7 @@
     <div class="bit-row" style="padding:4px 2px; border-left:2px solid ${isViolated?'var(--pink)':'transparent'}; background:${isViolated?'rgba(255,0,170,0.02)':'transparent'}">
      <div style="font-size:0.7rem; color:${isViolated?'var(--pink)':'#fff'};"><strong>${bitStr}</strong> | ${config.question}</div>
      <label class="switch">
-      <input type="checkbox" id="meta-${bitStr}" ${!isViolated ? 'checked' : ''} onchange="triggerStateChange(); toggleMetaViolation(${bitNum})">
+      <input type="checkbox" id="meta-${bitStr}" ${!isViolated ? 'checked' : ''} onchange="toggleMetaViolation(${bitNum})">
       <span class="slider" style="background-color:${isViolated?'var(--pink)':'#202030'};"></span>
      </label>
     </div>`;
@@ -355,7 +352,7 @@
      <strong>${bitStr} | ${config.threat_name}</strong>${triggerBadge}
     </div>
     <label class="switch">
-     <input type="checkbox" id="threat-${bitStr}" ${isThreatActive ? 'checked' : ''} onchange="triggerStateChange(); toggleThreatBit(${bitNum})">
+     <input type="checkbox" id="threat-${bitStr}" ${isThreatActive ? 'checked' : ''} onchange="toggleThreatBit(${bitNum})">
      <span class="slider" style="background-color:#401020;"></span>
     </label>
    </div>`;
@@ -376,14 +373,13 @@
    }
   }
  }
- function toggleMetaBit(bit) { const el = document.getElementById(`meta-${bit.toString()}`); if (el) state_meta[bit] = el.checked; calculateMatrix(); }
- function toggleThreatBit(bit) { const el = document.getElementById(`threat-${bit.toString()}`); if (el) state_threat[bit] = el.checked; calculateMatrix(); }
+ function toggleMetaBit(bit) { triggerStateChange(); const el = document.getElementById(`meta-${bit}`); if (el) state_meta[bit] = el.checked; calculateMatrix(); }
+ function toggleThreatBit(bit) { triggerStateChange(); const el = document.getElementById(`threat-${bit}`); if (el) state_threat[bit] = el.checked; calculateMatrix(); }
  function toggleMetaViolation(bit) {
-  const el = document.getElementById(`meta-${bit.toString()}`); if (!el) return;
-  state_meta[bit] = !el.checked;
+  triggerStateChange(); const el = document.getElementById(`meta-${bit}`); if (!el) return;
+  state_meta[bit] = el.checked;
   initSwitches(); calculateMatrix();
  }
-
  // 4. VIEWPORT MAGNIFIER & ASYMMETRIC OVERLAP LAYER TRACE ENGINE
  function toggleZoom() {
   isZoomed = !isZoomed; 
@@ -445,12 +441,12 @@
   if (segments.length >= 3) {
    let binMeta = parseInt(segments[1], 16).toString(2).padStart(Object.keys(BITS_CONFIG).length, '0');
    Object.keys(BITS_CONFIG).forEach((b, idx) => { state_meta[parseInt(b)] = binMeta[idx] === "1"; });
-   let binThreat = parseInt(segments[2], 16).toString(2).padStart(Object.keys(BITS_CONFIG).length, '0');
+   let binThreat = parseInt(segments, 16).toString(2).padStart(Object.keys(BITS_CONFIG).length, '0');
    Object.keys(BITS_CONFIG).forEach((b, idx) => { state_threat[parseInt(b)] = binThreat[idx] === "1"; });
    const traceShape = document.getElementById('trace-geo-core'); const btn = document.getElementById('btn-compare');
-   if (segments[3] && segments[3] !== "0" && traceShape && btn) {
+   if (segments && segments !== "0" && traceShape && btn) {
     try { 
-     tracePoints = atob(segments[3]).replace(/_/g, ' '); 
+     tracePoints = atob(segments).replace(/_/g, ' '); 
      traceShape.setAttribute('points', tracePoints); 
      traceShape.style.display = 'block'; 
      btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active"; 
@@ -461,7 +457,6 @@
    initSwitches(); calculateMatrix();
   }
  }
-
  // 6. GEOMETRIC PERSPECTIVE SPACE PROJECTORS
  function project3D(x, y, z) { return { x: 200 + (x * 0.8) - (y * 0.8), y: 160 + (x * 0.4) + (y * 0.4) - z }; }
  function setTimelineMode(mode) { timelineMode = mode; ['spiral', 'linear', '3d', 'fib'].forEach(m => { const b = document.getElementById(`btn-timeline-${m}`); if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; }); renderTimelineBackground(); calculateMatrix(); }
@@ -494,6 +489,7 @@
    ticks.innerHTML += `<line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>`;
   }
  }
+
  function injectHexMarker() {
   const hexBox = document.getElementById('hex-input'); if (!hexBox) return; const hex = hexBox.value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
   if (hex.startsWith('0x') && hex.length >= 6) {
@@ -509,6 +505,7 @@
   let noise = 0.5;
   let shieldStrength = 0.0;
 
+  // Process system compliance calculations
   Object.keys(BITS_CONFIG).forEach(b => {
    let k = parseInt(b);
    const nodeSpec = BITS_CONFIG[k];
@@ -516,7 +513,7 @@
     noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5));
    }
    if (nodeSpec.type === "shield" && state_meta[k] === true) {
-    shieldStrength += 0.25;
+    shieldStrength += 0.33; // Adjusted weight due to online rights unmapping
    }
    if (state_threat[k] === true) {
     if (state_meta[k] === false) {
@@ -528,6 +525,41 @@
    }
   });
 
+  // REALISTIC ENCLOSURE VISIBILITY & DISCOLORATION MODIFIERS
+  const shieldA = document.getElementById('permanent-human-rights-shield');
+  const lblShieldA = document.getElementById('lbl-shield-a');
+  if (shieldA && lblShieldA) {
+   // Hide completely if HUMAN_RIGHTS (B20) or DIVERSITY_RIGHTS (B21) are deactivated
+   if (state_meta[20] === false || state_meta[21] === false) {
+    shieldA.style.display = 'none'; lblShieldA.style.display = 'none';
+   } else {
+    shieldA.style.display = 'block'; lblShieldA.style.display = 'block';
+    // Shift to reddish color if human rights or diversity vectors are explicitly under threat
+    if (state_threat[20] === true || state_threat[21] === true) {
+     shieldA.setAttribute('stroke', '#ff00aa'); lblShieldA.setAttribute('fill', '#ff00aa');
+    } else {
+     shieldA.setAttribute('stroke', 'rgba(0, 255, 170, 0.25)'); lblShieldA.setAttribute('fill', 'rgba(0, 255, 170, 0.4)');
+    }
+   }
+  }
+
+  const shieldB = document.getElementById('permanent-basic-rights-box');
+  const lblShieldB = document.getElementById('lbl-shield-b');
+  if (shieldB && lblShieldB) {
+   // Hide completely if BASIC_RIGHTS (B19) is deactivated
+   if (state_meta[19] === false) {
+    shieldB.style.display = 'none'; lblShieldB.style.display = 'none';
+   } else {
+    shieldB.style.display = 'block'; lblShieldB.style.display = 'block';
+    // Shift to reddish color if basic rights are actively threatened
+    if (state_threat[19] === true) {
+     shieldB.setAttribute('stroke', '#ff00aa'); lblShieldB.setAttribute('fill', '#ff00aa');
+    } else {
+     shieldB.setAttribute('stroke', 'rgba(0, 240, 255, 0.2)'); lblShieldB.setAttribute('fill', 'rgba(0, 240, 255, 0.35)');
+    }
+   }
+  }
+
   let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95));
   const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
   const injPNode = document.getElementById('live-inject-p'); if (injPNode) injPNode.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
@@ -535,11 +567,11 @@
   if (injOrthoNode) {
    let b2Val = state_meta[2] ? 1 : 0;
    let b5Val = state_meta[5] ? 1 : 0;
-   injOrthoNode.innerHTML = `➔ [ B2(${b2Val}) • B5(${b5Val}) ] = <strong>${(b2Val === 0 || b5Val === 0) ? 1 : 0}</strong>`;
+   injOrthoNode.innerHTML = `➔ [ B2(${b2Val}) • B5(${b5Val}) ] = <strong>${(b2Val === 1 && b5Val === 1) ? 1 : 0}</strong>`;
   }
 
   if (orthoElement) {
-   if (state_meta[5] === false && state_meta[21] === false && state_threat[5] === true) { 
+   if (state_meta[2] === false && state_meta[5] === false && state_threat[5] === true) { 
     orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; 
     orthoElement.style.color = "var(--pink)"; 
    } else { 
@@ -562,6 +594,7 @@
    if (brokenCount > 0) { outBrk.style.color = 'var(--pink)'; if (lblBrk) lblBrk.style.color = 'var(--pink)'; } 
    else { outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; } 
   }
+
   const injectCanaryNode = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
   if (injectCanaryNode && canaryBox) {
    if (p_collapse >= poppertimeThreshold) {
@@ -577,12 +610,18 @@
     const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none';
    }
   }
+
+  // CORE POLYGON GEOMETRIC FALL-AWAY ATTRIBUTE MATRIX RENDERER
   const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
   const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
   const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
   if (gCore && nodeEx && nodeAu && nodeIn && gShields) {
+   // Dynamic fall away coordinates if vectors are clicked off OR under active threat channels
+   let ex_val = (state_meta[0] === true && state_threat[0] === false) ? 75 : 0; 
+   let au_val = (state_meta[1] === true && state_threat[1] === false) ? 75 : 0; 
+   let in_val = (state_meta[2] === true && state_threat[2] === false) ? 75 : 0;
+
    if (timelineMode === '3d' || timelineMode === 'fib') {
-    let ex_val = state_meta[0] ? 75 : 0; let au_val = state_meta[1] ? 75 : 0; let in_val = state_meta[2] ? 75 : 0;
     let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
     gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
     nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y);
@@ -591,50 +630,52 @@
     gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
     if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
    } else {
-    let ex_y = state_meta[0] ? 80 : 160; let au_x = state_meta[1] ? 280 : 200; let au_y = state_meta[1] ? 230 : 160; let in_x = state_meta[2] ? 120 : 200; let in_y = state_meta[2] ? 230 : 160;
+    let ex_y = (ex_val > 0) ? 80 : 160; let au_x = (au_val > 0) ? 280 : 200; let au_y = (au_val > 0) ? 230 : 160; let in_x = (in_val > 0) ? 120 : 200; let in_y = (in_val > 0) ? 230 : 160;
     gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
     nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y);
     nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y);
     nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y);
-    let sh_size = (state_meta[20] && state_meta[24]) ? 100 : ((state_meta[20] || state_meta[24]) ? 55 : 0); 
+    let sh_size = (state_meta[19] && state_meta[20]) ? 100 : ((state_meta[19] || state_meta[20]) ? 55 : 0); 
     gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
     if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
    }
   }
 
-  let binStr = ""; Object.keys(BITS_CONFIG).reverse().forEach(b => { binStr += state_meta[parseInt(b)] ? "1" : "0"; }); let intVal = parseInt(binStr, 2);
-  const outRaw = document.getElementById('raw-string-output'); if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
+  // RADIX STRING COMPILATION: COMPILING THE DYNAMIC SYSTEM NUMERICS (DECIMAL CODE RESTORED)
+  let binStr = ""; Object.keys(BITS_CONFIG).reverse().forEach(b => { binStr += state_meta[parseInt(b)] ? "1" : "0"; }); 
+  let intVal = parseInt(binStr, 2);
+  const outRaw = document.getElementById('raw-string-output'); 
+  if (outRaw) outRaw.innerText = `BIN: 0b${binStr} | DEC: ${intVal} | HEX: 0x${intVal.toString(16).toUpperCase()}`;
   const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
  }
-
  function loadScenario(id) {
   triggerStateChange();
   const scenarios = {
-   1: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   2: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:false, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
-   3: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:false, 8:true, 19:true, 20:true, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   4: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   5: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:false, 7:true, 8:true, 19:false, 20:false, 21:false, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
-   6: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true, 24:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   7: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
-   8: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   9: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:true, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
-   10: { m: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
-   11: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:true, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   12: { m: {0:true, 1:true, 2:true, 3:true, 4:false, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   13: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:true, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   14: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   15: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:false, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
-   16: { m: {0:true, 1:true, 2:false, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   17: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   18: { m: {0:false, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   19: { m: {0:true, 1:true, 2:false, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:false, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true, 24:false} },
-   20: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:true, 7:true, 8:true, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   21: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:true, 24:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   22: { m: {0:true, 1:false, 2:false, 3:true, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:false, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   23: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   24: { m: {0:false, 1:true, 2:true, 3:true, 4:false, 5:false, 7:true, 8:true, 19:false, 20:false, 21:false, 24:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} },
-   25: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true, 24:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false, 24:false} }
+   1: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   2: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
+   3: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:false, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   4: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   5: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:false, 7:true, 8:true, 19:false, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
+   6: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   7: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
+   8: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   9: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
+   10: { m: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
+   11: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   12: { m: {0:true, 1:true, 2:true, 3:true, 4:false, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   13: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   14: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   15: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
+   16: { m: {0:true, 1:true, 2:false, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   17: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   18: { m: {0:false, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   19: { m: {0:true, 1:true, 2:false, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
+   20: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:true, 7:true, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   21: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   22: { m: {0:true, 1:false, 2:false, 3:true, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   23: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   24: { m: {0:false, 1:true, 2:true, 3:true, 4:false, 5:false, 7:true, 8:true, 19:false, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
+   25: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} }
   };
   const selected = scenarios[id];
   if (selected) {
