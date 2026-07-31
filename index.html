@@ -3,7 +3,7 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Existenz Platform Matrix Simulator | Gunther Voet | FWC v0.80</title>
+ <title>Existenz Platform Matrix Simulator | Gunther | FWC v0.81</title>
  <style>
  :root {
  --cyan: #00f0ff;
@@ -18,13 +18,16 @@
  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
  margin: 0; padding: 10px; box-sizing: border-box;
  height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+ border: 2px solid var(--green); transition: border-color 0.2s ease, box-shadow 0.2s ease;
  }
- body.alarm-active { animation: redAlertFlash 1.5s infinite alternate; }
+ body.alarm-active { 
+ border-color: var(--pink) !important;
+ animation: redAlertFlash 1.5s infinite alternate; 
+ }
  @keyframes redAlertFlash {
- 0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); border: 1px solid #440011; }
- 100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); border: 1px solid var(--pink); }
+ 0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); }
+ 100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); }
  }
- /* Universe Loading Screen Overlay Canvas */
  #loading-universe {
  position: fixed; top:0; left:0; width:100vw; height:100vh;
  background: #000000; z-index: 9999; display: flex;
@@ -53,7 +56,6 @@
  .btn { background: #0f0f1b; border: 1px solid var(--cyan); color: white; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-family: monospace; transition: 0.1s; }
  .btn:hover { background: var(--cyan); color: black; font-weight: bold; }
  .btn-active { background: var(--pink) !important; border-color: #fff !important; }
- /* Deterministic HTML Math Layout Blocks */
  .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.75rem; color: var(--cyan); }
  .math-fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; text-align: center; padding: 0 4px; }
  .math-numerator { border-bottom: 1px solid var(--cyan); width: 100%; padding-bottom: 2px; }
@@ -74,8 +76,8 @@
  <div class="loading-bar"></div>
 </div>
 <header>
- <div><h1>Existenz Platform Matrix Simulator / Crude Edition</h1></div>
- <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[SYSTEM: V0.80 THREAT-MATRIX]</div>
+ <div><h1>Existenz Platform Matrix Simulator / </h1></div>
+ <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[<a href="https://github.com/gowildchild/Existenz">CORE</a>: V0.81 THREAT-MATRIX]</div>
 </header>
 <div class="grid">
  <!-- LEFT PANEL: ADAPTIVE WORKSPACE -->
@@ -89,7 +91,6 @@
     <strong>DISABILITY</strong> as an independent, orthogonal baseline coordinate axis. Wholeness of character is mathematically detached from typicality of mind.
    </div>
   </div>
-  <!-- LIVE SWITCHES CONTROL MONITOR CONTAINER -->
   <!-- SECTION 2: DUAL-COLUMN SYSTEM MATRICES -->
   <div class="panel" style="flex-grow: 1; display: flex; flex-direction: column; min-height: 0;">
    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 6px; flex-shrink: 0;">
@@ -112,19 +113,16 @@
    </div>
    <!-- PARALLEL SPLIT GRID COLUMNS -->
    <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 10px; flex-grow: 1; min-height: 0;">
-    <!-- LEFT BLOCK: EXISTENZ META PILLARS & SHIELDS -->
     <div style="display: flex; flex-direction: column; min-height: 0;">
      <div style="color: var(--cyan); font-family: monospace; font-size: 0.65rem; font-weight: bold; margin-bottom: 4px; border-bottom: 1px solid #0f0f1c;">[EXISTENZ METADATA & SHIELDS]</div>
      <div class="scrollable-content" id="cores-switches-container" style="flex-grow: 1;"></div>
     </div>
-    <!-- RIGHT BLOCK: MATCHING COMPACT THREAT INDUCTION CHANNELS -->
     <div style="display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--border); padding-left: 8px;">
      <div style="color: var(--pink); font-family: monospace; font-size: 0.65rem; font-weight: bold; margin-bottom: 4px; border-bottom: 1px solid #0f0f1c;">[1:1 ACTING ATTACK CHANNEL]</div>
      <div class="scrollable-content" id="threats-switches-container" style="flex-grow: 1;"></div>
     </div>
    </div>
   </div>
-
   <!-- BOTTOM EMPIRICAL PRESETS SCENARIOS -->
   <div class="panel" style="flex-shrink: 0;">
    <h2>3 | Empirical Scenarios Panel (25-Module Matrix View)</h2>
@@ -153,11 +151,12 @@
     <button class="btn" onclick="loadScenario(22)">22. Identity Forge</button>
     <button class="btn" onclick="loadScenario(23)">23. Resource Block</button>
     <button class="btn" onclick="loadScenario(24)">24. Kinetic Threat</button>
-    <button class="btn" onclick="loadScenario(25).">25. Harmonic Opt</button>
+    <button class="btn" onclick="loadScenario(25)">25. Harmonic Opt</button>
    </div>
   </div>
  </div>
- <!-- RIGHT QUADRANT COLLOCATED LAYOUTS -->
+
+ <!-- RIGHT QUADRANT SYSTEM VECTOR LAYERS -->
  <div class="column">
   <!-- REPOSITIONS PARAMETER CONTROLS DIRECTLY ABOVE SVG GRID -->
   <div class="panel" style="flex-shrink: 0;">
@@ -208,9 +207,20 @@
      <path id="fibonacci-spiral-track" fill="none" stroke="rgba(255, 0, 170, 0.4)" stroke-width="1.8" style="display: none;" />
      <path id="timeline-path" fill="none" stroke="#121222" stroke-width="1.5" />
      <g id="timeline-ticks"></g>
-     <!-- THE MISSING OVERLAP RAYTRACE LAYER (GHOST GREEN POLYGON) -->
+     
+     <!-- PERMANENT IMMUTABLE RIGHTS ENCLOSURES (Visible Across All Geometric Timelines) -->
+     <!-- OUTER SHIELD: HUMAN RIGHTS ENCLOSURE -->
+     <polygon id="permanent-human-rights-shield" points="200,30 350,170 200,310 50,170" fill="none" stroke="rgba(0, 255, 170, 0.25)" stroke-width="1.2" stroke-dasharray="4,4" />
+     <text x="210" y="42" fill="rgba(0, 255, 170, 0.4)" style="font-family: monospace; font-size: 6px; letter-spacing: 1px;">[ SHIELD A: HUMAN RIGHTS ENCLOSURE ]</text>
+     
+     <!-- INNER BOX: BASIC RIGHTS ENCLOSURE -->
+     <rect id="permanent-basic-rights-box" x="90" y="60" width="220" height="220" fill="none" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1" stroke-dasharray="3,5" rx="4" />
+     <text x="96" y="72" fill="rgba(0, 240, 255, 0.35)" style="font-family: monospace; font-size: 6px; letter-spacing: 1px;">[ SHIELD B: BASIC RIGHTS BOX ]</text>
+
+     <!-- THE GHOST TRACE OVERLAP RENDER LAYER -->
      <polygon id="trace-geo-core" points="0,0 0,0 0,0" fill="rgba(0, 255, 170, 0.04)" stroke="#00ffaa" stroke-width="1.8" stroke-dasharray="4,3" filter="url(#neon-glow-trace)" style="display: none; pointer-events: none;" />
-     <!-- MAIN APP MATRIX GRAPHICS -->
+     
+     <!-- DYNAMIC VARIABLE SYSTEM SHAPES -->
      <polygon id="geo-shields" points="200,40 340,170 200,300 60,170" fill="rgba(0, 255, 170, 0.02)" stroke="#00ffaa" stroke-width="1.2" stroke-dasharray="3" />
      <polygon id="geo-core" points="200,100 270,220 130,220" fill="rgba(0, 240, 255, 0.08)" stroke="#00f0ff" stroke-width="1.8" />
      <circle id="node-existence" cx="200" cy="100" r="4" fill="#fff" stroke="#ff00aa" stroke-width="1.5" />
@@ -270,6 +280,7 @@
   </div>
  </div>
 </div>
+
 <script>
  // 1. UNIVERSAL VERIFIABLE BLUEPRINT: Integrated States, Threat Targets, and Survey Questions
  const BITS_CONFIG = {
@@ -369,7 +380,7 @@
  function toggleThreatBit(bit) { const el = document.getElementById(`threat-${bit.toString()}`); if (el) state_threat[bit] = el.checked; calculateMatrix(); }
  function toggleMetaViolation(bit) {
   const el = document.getElementById(`meta-${bit.toString()}`); if (!el) return;
-  state_meta[bit] = !el.checked; // Direct mathematical survey state inverter
+  state_meta[bit] = !el.checked;
   initSwitches(); calculateMatrix();
  }
 
@@ -408,6 +419,7 @@
    btn.innerText = "Compare Trace"; 
   }
  }
+
  function generateVaultString() {
   let binaryMeta = Object.keys(BITS_CONFIG).map(b => state_meta[parseInt(b)] ? "1" : "0").join("");
   let metaHex = parseInt(binaryMeta, 2).toString(16).toUpperCase();
@@ -482,7 +494,6 @@
    ticks.innerHTML += `<line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>`;
   }
  }
-
  function injectHexMarker() {
   const hexBox = document.getElementById('hex-input'); if (!hexBox) return; const hex = hexBox.value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
   if (hex.startsWith('0x') && hex.length >= 6) {
@@ -491,7 +502,6 @@
    label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
   }
  }
-
  // 7. REAL-TIME CALCULATION MATRIX ENGINE & AUTOMATED VALUE INJECTIONS
  function calculateMatrix() {
   const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
@@ -521,16 +531,15 @@
   let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95));
   const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
   const injPNode = document.getElementById('live-inject-p'); if (injPNode) injPNode.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
-  
   const injOrthoNode = document.getElementById('live-inject-ortho'); 
   if (injOrthoNode) {
    let b2Val = state_meta[2] ? 1 : 0;
    let b5Val = state_meta[5] ? 1 : 0;
-   injOrthoNode.innerHTML = `➔ [ B2(${b2Val}) • B5(${b5Val}) ] = <strong>${(b2Val === 1 && b5Val === 1) ? 1 : 0}</strong>`;
+   injOrthoNode.innerHTML = `➔ [ B2(${b2Val}) • B5(${b5Val}) ] = <strong>${(b2Val === 0 || b5Val === 0) ? 1 : 0}</strong>`;
   }
 
   if (orthoElement) {
-   if (state_meta[2] === false && state_meta[5] === false && state_threat[5] === true) { 
+   if (state_meta[5] === false && state_meta[21] === false && state_threat[5] === true) { 
     orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; 
     orthoElement.style.color = "var(--pink)"; 
    } else { 
@@ -553,7 +562,6 @@
    if (brokenCount > 0) { outBrk.style.color = 'var(--pink)'; if (lblBrk) lblBrk.style.color = 'var(--pink)'; } 
    else { outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; } 
   }
-
   const injectCanaryNode = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
   if (injectCanaryNode && canaryBox) {
    if (p_collapse >= poppertimeThreshold) {
@@ -569,7 +577,6 @@
     const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none';
    }
   }
-
   const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
   const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
   const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
