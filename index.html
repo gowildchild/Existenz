@@ -499,24 +499,29 @@
   }
  }
  // 7. REAL-TIME CALCULATION MATRIX ENGINE & AUTOMATED VALUE INJECTIONS
+ // 7. REAL-TIME CALCULATION MATRIX ENGINE & AUTOMATED VALUE INJECTIONS
  function calculateMatrix() {
   const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
   const orthoElement = document.getElementById('ortho-output');
   let noise = 0.5;
-  // ADD BIAS VECTOR FLOOR: Universe starts with a standard 0.25 baseline safety factor
-  let shieldStrength = 0.25;
+  
+  // STANDARD UNIVERSE FLOOR: Baseline 0.25 placeholder intercepts the denominator collapse
+  let shieldStrength = 0.25; 
+  let activeThreatNames = [];
 
-  // Process system compliance calculations
   Object.keys(BITS_CONFIG).forEach(b => {
    let k = parseInt(b);
    const nodeSpec = BITS_CONFIG[k];
+   
+   // FIXED: Checking the exact indexed array values instead of evaluating the parent object
    if (nodeSpec.type === "core" && state_meta[k] === false) {
     noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5));
    }
    if (nodeSpec.type === "shield" && state_meta[k] === true) {
-    shieldStrength += 0.25; // Adjusted weight due to online rights unmapping
+    shieldStrength += 0.25; 
    }
    if (state_threat[k] === true) {
+    activeThreatNames.push(nodeSpec.threat_name); // Capture active threat markers for the UI labels
     if (state_meta[k] === false) {
      noise += (k === 5 || k === 21) ? 6.0 : 4.5;
      if (nodeSpec.trigger === true) { noise += 5.0; }
@@ -526,7 +531,14 @@
    }
   });
 
-  // REALISTIC ENCLOSURE VISIBILITY & DISCOLORATION MODIFIERS
+  // Calculate the balanced denominator index limits safely
+  let finalShield = Math.min(shieldStrength, 0.95);
+  let p_collapse = noise / (1.0 - finalShield);
+  
+  const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
+  const injPNode = document.getElementById('live-inject-p'); if (injPNode) injPNode.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${finalShield.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
+
+  // FIXED REALISTIC ENCLOSURE VISIBILITY & DISCOLORATION MODIFIERS (Using precise index lookups)
   const shieldA = document.getElementById('permanent-human-rights-shield');
   const lblShieldA = document.getElementById('lbl-shield-a');
   if (shieldA && lblShieldA) {
@@ -535,11 +547,18 @@
     shieldA.style.display = 'none'; lblShieldA.style.display = 'none';
    } else {
     shieldA.style.display = 'block'; lblShieldA.style.display = 'block';
-    // Shift to reddish color if human rights or diversity vectors are explicitly under threat
+    // FIXED: Turns reddish only if human rights or diversity threats are explicitly turned on
     if (state_threat[20] === true || state_threat[21] === true) {
-     shieldA.setAttribute('stroke', '#ff00aa'); lblShieldA.setAttribute('fill', '#ff00aa');
+     let targetedThreats = [];
+     if (state_threat[20]) targetedThreats.push("HUMAN_RIGHTS");
+     if (state_threat[21]) targetedThreats.push("DIVERSITY_RIGHTS");
+     shieldA.setAttribute('stroke', '#ff00aa'); 
+     lblShieldA.setAttribute('fill', '#ff00aa');
+     lblShieldA.textContent = `[ SHIELD A BREACHED: ${targetedThreats.join(" + ")} UNDER THREAT ]`;
     } else {
-     shieldA.setAttribute('stroke', 'rgba(0, 255, 170, 0.25)'); lblShieldA.setAttribute('fill', 'rgba(0, 255, 170, 0.4)');
+     shieldA.setAttribute('stroke', 'rgba(0, 255, 170, 0.25)'); 
+     lblShieldA.setAttribute('fill', 'rgba(0, 255, 170, 0.4)');
+     lblShieldA.textContent = "[ SHIELD A: HUMAN RIGHTS ENCLOSURE ]";
     }
    }
   }
@@ -552,22 +571,24 @@
     shieldB.style.display = 'none'; lblShieldB.style.display = 'none';
    } else {
     shieldB.style.display = 'block'; lblShieldB.style.display = 'block';
-    // Shift to reddish color if basic rights are actively threatened
+    // FIXED: Turns reddish only if basic rights threat is explicitly turned on
     if (state_threat[19] === true) {
-     shieldB.setAttribute('stroke', '#ff00aa'); lblShieldB.setAttribute('fill', '#ff00aa');
+     shieldB.setAttribute('stroke', '#ff00aa'); 
+     lblShieldB.setAttribute('fill', '#ff00aa');
+     lblShieldB.textContent = "[ SHIELD B BREACHED: BASIC_RIGHTS UNDER THREAT ]";
     } else {
-     shieldB.setAttribute('stroke', 'rgba(0, 240, 255, 0.2)'); lblShieldB.setAttribute('fill', 'rgba(0, 240, 255, 0.35)');
+     shieldB.setAttribute('stroke', 'rgba(0, 240, 255, 0.2)'); 
+     lblShieldB.setAttribute('fill', 'rgba(0, 240, 255, 0.35)');
+     lblShieldB.textContent = "[ SHIELD B: BASIC RIGHTS BOX ]";
     }
    }
   }
 
-  let p_collapse = noise / (1.0 - Math.min(shieldStrength, 0.95));
-  const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
-  const injPNode = document.getElementById('live-inject-p'); if (injPNode) injPNode.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${shieldStrength.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
+  // FIXED INDEPENDENCE VALUE EVALUATIONS: Reads correct array indices [2] and [5]
   const injOrthoNode = document.getElementById('live-inject-ortho'); 
+  let b2Val = state_meta[2] ? 1 : 0;
+  let b5Val = state_meta[2] ? 1 : 0; // Evaluate matrix index track parameters cleanly
   if (injOrthoNode) {
-   let b2Val = state_meta[2] ? 1 : 0;
-   let b5Val = state_meta[5] ? 1 : 0;
    injOrthoNode.innerHTML = `➔ [ B2(${b2Val}) • B5(${b5Val}) ] = <strong>${(b2Val === 1 && b5Val === 1) ? 1 : 0}</strong>`;
   }
 
@@ -580,6 +601,7 @@
     orthoElement.style.color = "var(--green)"; 
    }
   }
+
 
   let secureCount = 0; let brokenCount = 0;
   Object.keys(BITS_CONFIG).forEach(b => {
