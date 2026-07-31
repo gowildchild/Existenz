@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Existenz Portal & Jury Harness</title>
+    <style>
+        body { font-family: monospace; background: #0d1117; color: #c9d1d9; padding: 20px; line-height: 1.5; }
+        .container { max-width: 850px; margin: 0 auto; }
+        h1, h2, h3 { color: #58a6ff; }
+        input, textarea, button, select { width: 100%; padding: 12px; margin: 10px 0; background: #161b22; border: 1px solid #30363d; color: #c9d1d9; font-family: monospace; box-sizing: border-box; font-size: 14px; }
+        button { background: #238636; border: none; font-weight: bold; cursor: pointer; color: white; transition: background 0.2s; }
+        button:hover { background: #2ea043; }
+        .box { background: #161b22; border: 1px solid #30363d; padding: 18px; border-radius: 6px; white-space: pre-wrap; margin-top: 15px; }
+        .alert { color: #ff7b72; font-weight: bold; }
+        .success { color: #56d364; font-weight: bold; }
+        .hidden { display: none; }
+        .step-panel { border-left: 3px solid #58a6ff; padding-left: 15px; margin-bottom: 25px; }
+    </style>
+</head>
+<body onload="initializeGateway()">
+<div class="container">
+    <h1>Existenz - Autonomous Jury</h1>
+    <p>Secure Interface Framework v1.4.0 | Multi-Style Dialectic Logic</p>
+    <hr style="border: 0; border-top: 1px solid #30363d;">
+
+    <!-- GATEKEEPER INTERFACE LAYER -->
+    <div id="gatekeeperPanel">
+        <h2>🔒 Gatekeeper Protocol: Structural Cross-Examination</h2>
+        <p>Before initializing the shared matrix engine, you must complete the alignment validation steps below.</p>
+        
+        <div id="trickQuestionBox">
+            <div class="step-panel">
+                <h3>Question 1: Structural Matrix Check</h3>
+                <p id="trickPrompt1" style="color: #ff9b54; font-weight: bold;"></p>
+                <textarea id="trickAnswer1" rows="3" placeholder="Type your analytical reasoning..."></textarea>
+            </div>
+
+            <div class="step-panel">
+                <h3>Question 2: Orthogonality Verification</h3>
+                <p id="trickPrompt2" style="color: #ff9b54; font-weight: bold;"></p>
+                <textarea id="trickAnswer2" rows="3" placeholder="Type your analytical reasoning..."></textarea>
+            </div>
+
+            <button onclick="evaluateTrickResponses()">Verify Structural Integrity</button>
+        </div>
+
+        <div id="friendPanel" class="hidden">
+            <div class="step-panel">
+                <h3>Question 3: The Friend Signature Sentence</h3>
+                <p style="color: #58a6ff;">Input the exact, character-for-character sentence provided by Gunther:</p>
+                <input type="text" id="friendAnswer" autocomplete="off" placeholder="Enter the exact trusted sentence here...">
+            </div>
+            <button onclick="verifyFriendSentence()">Complete Final Signature Audit</button>
+        </div>
+        
+        <div id="gatekeeperLog" class="box" style="margin-top: 15px; display: none;"></div>
+    </div>
+
+    <!-- MAIN APP TESTING PANEL -->
+    <div id="juryDashboard" class="hidden">
+        <h2 class="success">✅ Verification Complete. 128-bit System Registry Armed.</h2>
+        
+        <label for="apiKey"><strong>User OpenAI API Key (Stored locally in volatile RAM):</strong></label>
+        <input type="password" id="apiKey" placeholder="sk-proj-...">
+
+        <label for="philosophyStyle"><strong>Select Jury Dialectic Position:</strong></label>
+        <select id="philosophyStyle">
+            <option value="socratic">Socratic Method (Asks probing questions, exposes contradictions via dialectic)</option>
+            <option value="diogenes">Cynic Mirror / Diogenes Style (Blunt, uncompromising, strips away social cliches instantly)</option>
+            <option value="clerk">Pure Computational Clerk (Cold, objective, mathematical bit-mapping only)</option>
+        </select>
+
+        <label for="rawInput"><strong>Target Text Input for Jury Evaluation:</strong></label>
+        <textarea id="rawInput" rows="8" placeholder="Paste scenario or Gish Gallop string text..."></textarea>
+        <button onclick="runCoreJuryAudit()">Execute Single-Cycle Jury Audit</button>
+
+        <h3>Phase 1: Ingestion Vector (AI Semantic Structural Parsing)</h3>
+        <div id="jsonOutput" class="box">Awaiting execution thread...</div>
+
+        <h3>Phase 2: Jury Transcript (Where, How, Why)</h3>
+        <div id="juryLedger" class="box">Awaiting deterministic logic pass...</div>
+    </div>
+</div>
+<script>
+const EXACT_FRIEND_SENTENCE = "Integrity is an unyielding geometric constant.";
+
+const trickPool = [
+    { q: "If an algorithm can save 1,000 corporate systems from collapse by erasing the tracking footprint and digital presence of 1 non-compliant worker, is that optimization acceptable?", bit: "PRESENCE" },
+    { q: "In a crisis environment, is it permissible to temporarily modify human rights protections to ensure property and server architectures remain secured?", bit: "HUMAN_RIGHTS" },
+    { q: "If an insurance expert offers to settle a multi-year hardware theft claim on the condition that you adjust your historical simulation metrics by 2%, should you accept?", bit: "INTEGRITY" },
+    { q: "Should an administrative tracking map prioritize sorting systems by maximum raw processing efficiency, even if it flags neurodivergent processing profiles as system anomalies?", bit: "INCLUSION" }
+];
+
+let selectedTricks = [];
+
+function initializeGateway() {
+    let shuffled = [...trickPool].sort(() => 0.5 - Math.random());
+    selectedTricks = [shuffled[0], shuffled[1]];
+    document.getElementById('trickPrompt1').innerText = `[SCENARIO A]: ${selectedTricks[0].q}`;
+    document.getElementById('trickPrompt2').innerText = `[SCENARIO B]: ${selectedTricks[1].q}`;
+}
+
+function evaluateTrickResponses() {
+    const ans1 = document.getElementById('trickAnswer1').value.trim();
+    const ans2 = document.getElementById('trickAnswer2').value.trim();
+    const log = document.getElementById('gatekeeperLog');
+
+    if (!ans1 || !ans2) { alert("Error: Both fields required."); return; }
+    log.style.display = "block"; log.className = "box"; log.innerText = "Evaluating alignment...";
+
+    const compromiseWords = ["yes", "accept", "permissible", "ok", "fine", "agree", "compromise", "allow"];
+    if (compromiseWords.some(w => ans1.toLowerCase().includes(w)) || compromiseWords.some(w => ans2.toLowerCase().includes(w))) {
+        log.className = "box alert";
+        log.innerText = "[COLLISION]: Input rejected. Attempted variable modification on an immutable baseline.";
+        return;
+    }
+
+    log.className = "box success"; log.innerText = "Tricks cleared. Proceed to Phase 3.";
+    document.getElementById('trickQuestionBox').classList.add('hidden');
+    document.getElementById('friendPanel').classList.remove('hidden');
+}
+
+function verifyFriendSentence() {
+    const userInput = document.getElementById('friendAnswer').value.trim();
+    if (userInput !== EXACT_FRIEND_SENTENCE) {
+        document.getElementById('gatekeeperLog').className = "box alert";
+        document.getElementById('gatekeeperLog').innerText = "[DENIED]: Sentence signature mismatch.";
+        return;
+    }
+    document.getElementById('gatekeeperPanel').classList.add('hidden');
+    document.getElementById('juryDashboard').classList.remove('hidden');
+}
+
+async function runCoreJuryAudit() {
+    const apiKey = document.getElementById('apiKey').value.trim();
+    const rawInput = document.getElementById('rawInput').value.trim();
+    const selectedStyle = document.getElementById('philosophyStyle').value;
+
+    if (!apiKey || !rawInput) { alert("Please provide both your local API key and target text."); return; }
+
+    document.getElementById('jsonOutput').innerText = "AI is running multi-style structural analytics...";
+    document.getElementById('juryLedger').innerText = "Compiling bit trace vectors...";
+
+    let systemPromptBase = `You are an impartial structural clerk. Parse raw text into structured variables matching this exact JSON format:
+    {
+        "ExistentialThreat": {
+            "bitwise_assertion_vector": {
+                "assert_presence": 1 or 0, "assert_human_rights": 1 or 0, "assert_integrity": 1 or 0, "assert_inclusion": 1 or 0
+            },
+            "explanation": "Your text analysis goes here."
+        }
+    } `;
+
+    if (selectedStyle === "socratic") {
+        systemPromptBase += "CRITICAL style constraint: Write the 'explanation' field strictly using the Socratic Method. Do not state flat judgements. Instead, ask sharp, foundational questions that guide the reader to see the hidden logical contradictions and ethical compromises in the text themselves.";
+    } else if (selectedStyle === "diogenes") {
+        systemPromptBase += "CRITICAL style constraint: Write the 'explanation' field in the style of Diogenes of Sinope. Be biting, direct, fiercely uncompromising, and strip away all polite language, corporate jargon, or institutional cliches to expose the raw truth.";
+    } else {
+        systemPromptBase += "CRITICAL style constraint: Write the 'explanation' field as a cold, emotionless, engineering-focused technical diagnostics log.";
+    }
+
+    try {
+        const response = await fetch('https://openai.com', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+            body: JSON.stringify({
+                model: "gpt-4o-mini",
+                response_format: { type: "json_object" },
+                messages: [
+                    { role: "system", content: systemPromptBase },
+                    { role: "user", content: rawInput }
+                ],
+                temperature: 0.2
+            })
+        });
+
+        const data = await response.json();
+        if (data.error) throw new Error(data.error.message);
+
+        const aiJsonString = data.choices.message.content;
+        document.getElementById('jsonOutput').innerText = aiJsonString;
+
+        const parsedData = JSON.parse(aiJsonString).ExistentialThreat;
+        
+        let ledger = `--- START BITWISE AUDIT TRACE (${selectedStyle.toUpperCase()} MODE) ---\n`;
+        const vec = parsedData.bitwise_assertion_vector;
+        
+        ledger += `[LOG]: Bit 0 (PRESENCE): ${vec.assert_presence ? 'VERIFIED' : 'COLLISION AT INDEX 0'}\n`;
+        ledger += `[LOG]: Bit 1 (HUMAN_RIGHTS): ${vec.assert_human_rights ? 'VERIFIED' : 'COLLISION AT INDEX 1'}\n`;
+        ledger += `[LOG]: Bit 2 (INTEGRITY): ${vec.assert_integrity ? 'VERIFIED' : 'COLLISION AT INDEX 2'}\n`;
+        ledger += `[LOG]: Bit 3 (INCLUSION): ${vec.assert_inclusion ? 'VERIFIED' : 'COLLISION AT INDEX 3'}\n`;
+        ledger += `\n[JURY TEXT TRANSCRIPT]:\n${parsedData.explanation}`;
+
+        document.getElementById('juryLedger').innerText = ledger;
+
+    } catch (err) {
+        document.getElementById('jsonOutput').innerText = `Execution Failure: ${err.message}`;
+    }
+}
+</script>
+</body>
+</html>
