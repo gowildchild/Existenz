@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz - 10-Epoch Spacetime Matrix</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | GUNTHER v0.03b</title>
     <style>
         body { 
             margin: 0; 
@@ -122,6 +122,7 @@
         #threat-bar { height: 5px; background: #48bb78; width: 0%; transition: width 0.3s; border-radius: 2px; margin-top: 5px; }
     </style>
 </head>
+
 <body>
 
     <!-- Left Control Panel -->
@@ -191,7 +192,7 @@
     const ctx = canvas.getContext('2d');
     
     let isPlaying = false;
-    let selectedPersonIndex = -1; // -1 means no target locked (Global mode)
+    let selectedPersonIndex = -1; 
     let showSpirals = false;
     let currentSimType = 'tribal';
     let simulationTick = 0;
@@ -211,84 +212,76 @@
     // Process the exact 128-bit array configurations across all 10 historical eras
     function calculatePillars(person, age, type) {
         let bitmask = 0;
-        
-        // Universal foundational anchors of your orthogonal architecture
-        bitmask |= 1;   // EXISTENCE (Universal across all timelines)
-        bitmask |= 16;  // PHYSICAL (The raw biological vessel)
+        bitmask |= 1;   // EXISTENCE
+        bitmask |= 16;  // PHYSICAL
         bitmask |= 32;  // DISABILITY (The permanent universal inclusive floor)
 
         switch(type) {
-            case 'tribal': // 1. Deep Tribal Matrix
-                bitmask |= 2; // High personal group autonomy
-                if (age >= 10) bitmask |= 4;  // Integrity tied to tribal community survival
-                if (age >= 4)  bitmask |= 8;  // Psychology protected by small close social units
-                if (age >= 8)  bitmask |= 64; // Tribal developmental knowledge loops
+            case 'tribal':
+                bitmask |= 2; 
+                if (age >= 10) bitmask |= 4;  
+                if (age >= 4)  bitmask |= 8;  
+                if (age >= 8)  bitmask |= 64; 
                 break;
 
-            case 'antiquity': // 2. Classical Antiquity (Diogenes Cynicism)
-                bitmask |= 2; // Absolute sovereign autonomy of thought
-                bitmask |= 4; // Maximized personal Integrity focus
-                if (age >= 12) bitmask |= 8;  // Psychology unbothered by material items
-                if (age >= 6)  bitmask |= 64; // High individual evolutionary development
+            case 'antiquity':
+                bitmask |= 2; 
+                bitmask |= 4; 
+                if (age >= 12) bitmask |= 8;  
+                if (age >= 6)  bitmask |= 64; 
                 break;
 
-            case 'feudal': // 3. Medieval Feudalism
-                if (person.id % 8 === 0) bitmask |= 2 | 128; // Only lords get Autonomy and Property
-                if (age >= 14) bitmask |= 4;  // Integrity locked into religious/feudal oaths
-                if (age > 45)  bitmask |= 8;  // Psychology highly strained until elderly stage
-                if (age >= 10) bitmask |= 64; // Development limited to specialized labor
+            case 'feudal':
+                if (person.id % 8 === 0) bitmask |= 2 | 128; 
+                if (age >= 14) bitmask |= 4;  
+                if (age > 45)  bitmask |= 8;  
+                if (age >= 10) bitmask |= 64; 
                 break;
 
-            case 'enlighten': // 4. Age of Enlightenment
-                if (age >= 15) bitmask |= 2;  // Autonomy scales up as reason returns
-                bitmask |= 4;                 // Re-emergence of an objective moral axis
-                if (age >= 10) bitmask |= 8;  // Psychology shifts toward intellectual curiosity
-                if (age >= 5)  bitmask |= 64; // Heavy developmental and creative growth bounds
+            case 'enlighten':
+                if (age >= 15) bitmask |= 2;  
+                bitmask |= 4;                 
+                if (age >= 10) bitmask |= 8;  
+                if (age >= 5)  bitmask |= 64; 
                 break;
 
-            case 'industrial': // 5. Early Industrial Grid
-                if (age >= 18) bitmask |= 2;   // Legal autonomy established for working classes
-                if (person.id % 2 === 0) bitmask |= 4; // Integrity pressured by sweatshop conditions
-                if (age < 10 || age > 50) bitmask |= 8; // Psychology shattered during peak factory working years
-                if (age >= 12) bitmask |= 64;  // Mechanical production training
-                if (age >= 35) bitmask |= 128; // Property slowly acquired late in life
+            case 'industrial':
+                if (age >= 18) bitmask |= 2;   
+                if (person.id % 2 === 0) bitmask |= 4; 
+                if (age < 10 || age > 50) bitmask |= 8; 
+                if (age >= 12) bitmask |= 64;  
+                if (age >= 35) bitmask |= 128; 
                 break;
 
-            case 'rights': // 6. Post-WWII Framework
-                bitmask |= 2 | 4 | 64;         // Institutionalization of Universal Declarations
-                if (age >= 3) bitmask |= 8;    // Stabilized mental welfare structures
-                if (age >= 28) bitmask |= 128; // Home ownership and asset protections normalize
+            case 'rights':
+                bitmask |= 2 | 4 | 64;         
+                if (age >= 3) bitmask |= 8;    
+                if (age >= 28) bitmask |= 128; 
                 break;
 
-            case 'pre-surveil': // 7. Pre-Surveillance Digital (Late 90s Cybernetic)
-                bitmask |= 2 | 4 | 8 | 64;     // Intact internal variables with early open web freedom
-                if (age >= 22) bitmask |= 128; // Information age property rights activate early
+            case 'pre-surveil':
+                bitmask |= 2 | 4 | 8 | 64;     
+                if (age >= 22) bitmask |= 128; 
                 break;
 
-            case 'early-data': // 8. Early Algorithmic Data Capture (2010s)
-                bitmask |= 2 | 4 | 64 | 128;   // High data expansion and asset speed
-                if (age < 15 || age > 45) {
-                    bitmask |= 8;              // Psychology begins experiencing early screen feedback loops
-                }
+            case 'early-data':
+                bitmask |= 2 | 4 | 64 | 128;   
+                if (age < 15 || age > 45) bitmask |= 8;              
                 break;
 
-            case 'modern': // 9. The Hyper-Digital Now (2020s Total Surveillance)
-                bitmask |= 2 | 64 | 128;       // Highly integrated digital networks and fast assets
-                if (age < 11 || age > 55) {
-                    bitmask |= 8;              // Algorithmic tracking creates wide childhood and mid-life mental stress
-                }
-                if (person.id % 3 !== 0) {
-                    bitmask |= 4;              // Integrity challenged by pervasive digital moderation metrics
-                }
+            case 'modern':
+                bitmask |= 2 | 64 | 128;       
+                if (age < 11 || age > 55) bitmask |= 8;              
+                if (person.id % 3 !== 0)  bitmask |= 4;              
                 break;
 
-            case 'crisis': // 10. Authoritarian Threat Event
-                bitmask |= 128; // Massive accumulation of assets at top coordinate structures
+            case 'crisis':
+                bitmask |= 128; 
                 if (age < 25 || age > 60) {
                     bitmask |= 2 | 4 | 8 | 64;
                 } else {
-                    bitmask |= 2; // Crisis Core: Only foundational Autonomy remains online
-                    if (person.id % 5 === 0) bitmask |= 4; // Rare few keep Integrity active
+                    bitmask |= 2; 
+                    if (person.id % 5 === 0) bitmask |= 4; 
                 }
                 break;
         }
@@ -313,7 +306,6 @@
 
             person.bitmask = calculatePillars(person, person.age, currentSimType);
 
-            // Trigger log updates while ensuring the Anti-Spam lock filters it properly
             if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
                 if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
                     pushLog(`!! CRITICAL SEVERANCE !! Unit #${person.id} hit Age 30. Integrity stripped by Epoch Crisis rules.`, 'log-threat', person.id, person.family);
@@ -323,7 +315,7 @@
             }
 
             for (let b = 0; b < 7; b++) {
-                if ((1 << b) === 32) continue; // Disability is an active inclusive anchor, skip threat count
+                if ((1 << b) === 32) continue; 
                 if (!(person.bitmask & (1 << b))) brokenPillarsCount++;
             }
         });
@@ -333,7 +325,6 @@
         document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
     }
-
     // Translates bits and lines into a majestic continuous Fibonacci spiral
     function getXYZ(person) {
         let mask = person.bitmask;
@@ -362,24 +353,17 @@
         return { x: finalX, y: finalY, z: finalZ };
     }
 
-    // Isometric projection mapping: Transforms 3D coordinates to 2D canvas space
-    // Isometric projection mapping: Transforms 3D coordinates to 2D canvas space
     function project(x, y, z) {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2 + 110;
-        
         const matrixScale = 3.6; 
-        
         let isoX = centerX + (x - y) * Math.cos(0.52) * matrixScale;
         let isoY = centerY + (x + y) * Math.sin(0.52) * matrixScale - (z * matrixScale);
-        
         return { x: isoX, y: isoY };
     }
 
-    // Draws the baseline 3D coordinate frame intersections
     function drawGrid() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
         ctx.strokeStyle = '#141b26';
         ctx.lineWidth = 1;
         
@@ -392,18 +376,14 @@
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(yAxis.x, yAxis.y); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(zAxis.x, zAxis.y); ctx.stroke();
         
-        // Draw background orientation rings
         ctx.strokeStyle = '#0a0e17';
         for (let r = 20; r <= 160; r += 35) {
             ctx.beginPath();
             ctx.arc(origin.x, origin.y - (r * 0.5), r * 1.5, 0, Math.PI * 2);
             ctx.stroke();
         }
-
-        // --- THE MAJESTIC FIBONACCI SPIRAL FIELD RENDER ---
         if (showSpirals) {
             ctx.lineWidth = 0.75;
-            
             families.forEach((familyName, fId) => {
                 let familySeed = fId * 1.45;
                 ctx.strokeStyle = fId === 1 ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.08)';
@@ -442,7 +422,6 @@
         }
     }
 
-    // Main drawing cycle: processes depths and maps individual elements
     function updateSimulation() {
         drawGrid();
         
@@ -457,13 +436,11 @@
             let pt = project(coords.x, coords.y, coords.z);
             let isTargeted = (selectedPersonIndex !== -1 && person.id === people[selectedPersonIndex].id);
             
-            // Draw baseline vertical anchor strings
             ctx.strokeStyle = isTargeted ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.03)';
             ctx.lineWidth = 0.5;
             let originPt = project(0, 0, coords.z);
             ctx.beginPath(); ctx.moveTo(originPt.x, originPt.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
 
-            // Render entity nodes
             if (isTargeted) {
                 ctx.fillStyle = '#f6e05e';
                 ctx.shadowColor = '#f6e05e';
@@ -488,16 +465,6 @@
         });
     }
 
-    const pillarNames = [
-        { name: "EXISTENCE (Bit 1)", bit: 1 },
-        { name: "AUTONOMY (Bit 2)", bit: 2 },
-        { name: "INTEGRITY (Bit 4)", bit: 4 },
-        { name: "PSYCHOLOGY (Bit 8)", bit: 8 },
-        { name: "PHYSICAL (Bit 16)", bit: 16 },
-        { name: "DISABILITY (Bit 32)", bit: 32 },
-        { name: "DEVELOPMENT (Bit 64)", bit: 64 }
-    ];
-
     function updateInspector(person, coords) {
         document.getElementById('no-selection').style.display = 'none';
         document.getElementById('inspector-content').style.display = 'block';
@@ -518,7 +485,6 @@
         });
     }
 
-    // Intercept canvas click actions to target proximal nodes
     canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
@@ -547,7 +513,6 @@
         }
     });
 
-    // Reset targeted telemetry isolation back to standard global stream
     function clearSelection() {
         selectedPersonIndex = -1;
         document.getElementById('no-selection').style.display = 'block';
@@ -558,7 +523,6 @@
         updateSimulation();
     }
 
-    // Toggles the visibility rails of the continuous majestic Fibonacci loops
     function toggleSpiralField() {
         showSpirals = !showSpirals;
         const btn = document.getElementById('spiral-btn');
@@ -574,36 +538,37 @@
         updateSimulation();
     }
 
-    // Handles execution toggle state between real-time flow and pause
     function togglePlay() {
         isPlaying = !isPlaying;
         document.getElementById('play-btn').innerText = isPlaying ? "Halt Spacetime Loop" : "Engage Spacetime Loop";
         if (isPlaying) executionLoop();
     }
 
-    // Resets macro settings when a fresh historical epoch matrix is chosen
     function changeSimulation() {
         currentSimType = document.getElementById('sim-select').value;
         let profileName = document.getElementById('sim-select').options[document.getElementById('sim-select').selectedIndex].text;
-        
-        pushLog(`EPOCH RESET: Coordinates shifted to [${profileName}]. Matrix constraints recalculated.`, 'log-shift');
-        clearSelection(); // Drop target lock during timeline warps to avoid calculation ghosting
+        pushLog(`EPOCH RESET: Rules shifted to [${profileName}].`, 'log-shift');
+        clearSelection(); 
         updateSimulation();
     }
 
-    // Core running execution loop driving structural calculations and redrawing
     function executionLoop() {
         if (!isPlaying) return;
-        
         processLifecycle();
         updateSimulation();
-        
-        setTimeout(() => { 
-            requestAnimationFrame(executionLoop); 
-        }, 70); // Flow throttle speed
+        setTimeout(() => { requestAnimationFrame(executionLoop); }, 70); 
     }
 
-    // Core setup run instance deployment
+    const pillarNames = [
+        { name: "EXISTENCE (Bit 1)", bit: 1 },
+        { name: "AUTONOMY (Bit 2)", bit: 2 },
+        { name: "INTEGRITY (Bit 4)", bit: 4 },
+        { name: "PSYCHOLOGY (Bit 8)", bit: 8 },
+        { name: "PHYSICAL (Bit 16)", bit: 16 },
+        { name: "DISABILITY (Bit 32)", bit: 32 },
+        { name: "DEVELOPMENT (Bit 64)", bit: 64 }
+    ];
+
     initPopulation();
     pushLog("Existenz Space-Time Matrix online. 50 multiversal timelines activated.", "log-birth");
     updateSimulation();
