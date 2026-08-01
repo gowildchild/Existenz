@@ -289,16 +289,17 @@
   3: { name: "PSYCHOLOGY", type: "core", trigger: true, threat_name: "THREAT_PSYCHOLOGY", desc: "Targeted psychological pressure or mental stress on family lifelines", question: "Are you experiencing cognitive distress?" },
   4: { name: "PHYSICAL", type: "core", trigger: true, threat_name: "THREAT_PHYSICAL", desc: "Violation of physical body vessel boundaries or family safety perimeters", question: "Have your physical body vessel bounds been crossed?" },
   5: { name: "DISABILITY", type: "core", trigger: true, threat_name: "THREAT_ABLEISM", desc: "Active systemic exclusion, erasure, or community isolation of atypical family members", question: "Are you systemically excluded from community belonging or subjected to ableism?" },
+  6: { name: "DEVELOPMENT", type: "core", trigger: true, threat_name: "THREAT_DEVELOPMENT", desc: "Threats to human development with political reasons", question: "Is development being hindered by any reason?" },
   7: { name: "PROPERTY", type: "core", trigger: false, threat_name: "THREAT_PROPERTY", desc: "Unauthorized asset extraction, lockouts, or local drive theft", question: "Are your personal asset drives unsafe?" },
   8: { name: "PRESENCE", type: "core", trigger: false, threat_name: "THREAT_PRESENCE", desc: "Illegal geolocation trace, spatial stalking, or network tracking footprint", question: "Are you subjected to unauthorized data tracking?" },
-  19: { name: "BASIC_RIGHTS", type: "shield", trigger: false, threat_name: "THREAT_BASIC_RIGHTS", desc: "Constitutional protection strip targeting base primitive survival", question: "Are basic survival protections stripped away?" },
-  20: { name: "HUMAN_RIGHTS", type: "shield", trigger: false, threat_name: "THREAT_HUMAN_RIGHTS", desc: "Civil human rights shield teardown via institutional overreach", question: "Have civil human rights shields failed to protect you?" },
-  21: { name: "DIVERSITY_RIGHTS", type: "shield", trigger: true, threat_name: "THREAT_DIVERSITY_RIGHTS", desc: "Systemic ableistic exploitation targeting diversity safeguards", question: "Are diversity protective frameworks missing?" }
+  20: { name: "BASIC_RIGHTS", type: "shield", trigger: false, threat_name: "THREAT_BASIC_RIGHTS", desc: "Constitutional protection strip targeting base primitive survival", question: "Are basic survival protections stripped away?" },
+  22: { name: "DIVERSITY_RIGHTS", type: "shield", trigger: true, threat_name: "THREAT_DIVERSITY_RIGHTS", desc: "Systemic (ableistic) exploitation targeting diversity safeguards", question: "Are diversity protective frameworks missing?" },
+  24: { name: "HUMAN_RIGHTS", type: "shield", trigger: false, threat_name: "THREAT_HUMAN_RIGHTS", desc: "Civil human rights shield teardown via institutional overreach", question: "Have civil human rights shields failed to protect you?" }
  };
 
  // Active Register System Matrix Status Configuration Tracks
- let state_meta = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 7: true, 8: true, 19: true, 20: true, 21: true };
- let state_threat = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 7: false, 8: false, 19: false, 20: false, 21: false };
+ let state_meta = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 6: true, 7: true, 8: true, 20: true, 22: true, 24: true };
+ let state_threat = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 6: false, 7: false, 8: false, 20: false, 22: false, 24: false };
  let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null; let currentViewMode = 'topology';
  let hasChangedYet = false;
 
@@ -542,15 +543,15 @@
   const lblShieldA = document.getElementById('lbl-shield-a');
   if (shieldA && lblShieldA) {
    // Hide completely if HUMAN_RIGHTS (B20) or DIVERSITY_RIGHTS (B21) are deactivated
-   if (state_meta[20] === false || state_meta[21] === false) {
+   if (state_meta[20] === false || state_meta[22] === false) {
     shieldA.style.display = 'none'; lblShieldA.style.display = 'none';
    } else {
     shieldA.style.display = 'block'; lblShieldA.style.display = 'block';
     // FIXED: Turns reddish only if human rights or diversity threats are explicitly turned on
-    if (state_threat[20] === true || state_threat[21] === true) {
+    if (state_threat[20] === true || state_threat[22] === true) {
      let targetedThreats = [];
      if (state_threat[20]) targetedThreats.push("HUMAN_RIGHTS");
-     if (state_threat[21]) targetedThreats.push("DIVERSITY_RIGHTS");
+     if (state_threat[22]) targetedThreats.push("DIVERSITY_RIGHTS");
      shieldA.setAttribute('stroke', '#ff00aa'); 
      lblShieldA.setAttribute('fill', '#ff00aa');
      lblShieldA.textContent = `[ SHIELD A BREACHED: ${targetedThreats.join(" + ")} UNDER THREAT ]`;
@@ -566,12 +567,12 @@
   const lblShieldB = document.getElementById('lbl-shield-b');
   if (shieldB && lblShieldB) {
    // Hide completely if BASIC_RIGHTS (B19) is deactivated
-   if (state_meta[19] === false) {
+   if (state_meta[24] === false) {
     shieldB.style.display = 'none'; lblShieldB.style.display = 'none';
    } else {
     shieldB.style.display = 'block'; lblShieldB.style.display = 'block';
     // FIXED: Turns reddish only if basic rights threat is explicitly turned on
-    if (state_threat[19] === true) {
+    if (state_threat[24] === true) {
      shieldB.setAttribute('stroke', '#ff00aa'); 
      lblShieldB.setAttribute('fill', '#ff00aa');
      lblShieldB.textContent = "[ SHIELD B BREACHED: BASIC_RIGHTS UNDER THREAT ]";
@@ -659,7 +660,7 @@
     nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y);
     nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y);
     nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y);
-    let sh_size = (state_meta[19] && state_meta[20]) ? 100 : ((state_meta[19] || state_meta[20]) ? 55 : 0); 
+    let sh_size = (state_meta[20] && state_meta[24]) ? 100 : ((state_meta[20] || state_meta[24]) ? 55 : 0); 
     gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
     if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
    }
@@ -702,31 +703,31 @@
  function loadScenario(id) {
   triggerStateChange();
   const scenarios = {
-   1: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   2: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
-   3: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:false, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   4: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   5: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:false, 7:true, 8:true, 19:false, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
-   6: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   7: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
-   8: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   9: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
-   10: { m: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
-   11: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   12: { m: {0:true, 1:true, 2:true, 3:true, 4:false, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   13: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   14: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   15: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
-   16: { m: {0:true, 1:true, 2:false, 3:false, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   17: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   18: { m: {0:false, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   19: { m: {0:true, 1:true, 2:false, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 7:false, 8:false, 19:false, 20:false, 21:true} },
-   20: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:true, 7:true, 8:true, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   21: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:true, 8:false, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   22: { m: {0:true, 1:false, 2:false, 3:true, 4:true, 5:false, 7:true, 8:true, 19:true, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   23: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 7:false, 8:false, 19:true, 20:false, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   24: { m: {0:false, 1:true, 2:true, 3:true, 4:false, 5:false, 7:true, 8:true, 19:false, 20:false, 21:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} },
-   25: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 7:true, 8:true, 19:true, 20:true, 21:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 7:false, 8:false, 19:false, 20:false, 21:false} }
+   1: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:true, 6:false, 7:true, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   2: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:true, 8:true, 20:true, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   3: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:false, 7:false, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   4: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:false, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   5: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:false, 6:false, 7:true, 8:true, 20:false, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   6: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   7: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:false, 8:false, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   8: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   9: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:false, 7:true, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   10: { m: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 24:false, 20:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 24:false, 20:false, 22:true} },
+   11: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:false, 7:true, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   12: { m: {0:true, 1:true, 2:true, 3:true, 4:false, 5:false, 6:false, 7:false, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   13: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:true, 8:false, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   14: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:false, 7:false, 8:false, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   15: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:false, 6:false, 7:true, 8:false, 20:true, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   16: { m: {0:true, 1:true, 2:false, 3:false, 4:true, 5:false, 6:true, 7:true, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   17: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:false, 7:false, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   18: { m: {0:false, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:false, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   20: { m: {0:true, 1:true, 2:false, 3:true, 4:true, 5:false, 6:false, 7:true, 8:false, 20:true, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   20: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:true, 6:false, 7:true, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   22: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:true, 8:false, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   22: { m: {0:true, 1:false, 2:false, 3:true, 4:true, 5:false, 6:false, 7:true, 8:true, 20:true, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   23: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:false, 8:false, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   24: { m: {0:false, 1:true, 2:true, 3:true, 4:false, 5:false, 6:false, 7:true, 8:true, 20:false, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 24:false, 20:false, 22:false} },
+   25: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} }
   };
   const selected = scenarios[id];
   if (selected) {
