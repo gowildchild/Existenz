@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Existenz - 128-Bit Lifetime Matrix</title>
+    <style>
+        body { 
+            margin: 0; 
+            background: #0d0f12; 
+            color: #e2e8f0; 
+            font-family: 'Courier New', monospace; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+        #sidebar { 
+            width: 340px; 
+            background: #151922; 
+            padding: 24px; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 24px; 
+            border-right: 1px solid #2d3748; 
+            z-index: 10;
+        }
+        #canvas-container { 
+            flex-grow: 1; 
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #080a0f;
+        }
+        canvas { 
+            background: #080a0f; 
+            box-shadow: inset 0 0 120px rgba(0,0,0,0.9); 
+            cursor: pointer;
+        }
+        #inspect-panel { 
+            width: 360px; 
+            background: #151922; 
+            padding: 24px; 
+            box-sizing: border-box; 
+            border-left: 1px solid #2d3748; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+            overflow-y: auto;
+            z-index: 10;
+        }
+        .btn { 
+            background: #3182ce; 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            border-radius: 4px; 
+            font-family: monospace;
+            transition: background 0.2s ease;
+        }
+        .btn:hover { 
+            background: #2b6cb0; 
+        }
+        select { 
+            background: #2d3748; 
+            color: white; 
+            padding: 10px; 
+            border: 1px solid #4a5568; 
+            border-radius: 4px; 
+            font-family: monospace;
+            width: 100%;
+        }
+        .pillar { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 8px 12px; 
+            border-radius: 4px; 
+            font-size: 11px; 
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .active { 
+            background: rgba(72, 187, 120, 0.15); 
+            color: #48bb78; 
+            border-left: 4px solid #48bb78; 
+        }
+        .inactive { 
+            background: rgba(229, 62, 62, 0.15); 
+            color: #f56565; 
+            border-left: 4px solid #f56565; 
+        }
+        .slider-wrapper {
+            background: #1a202c;
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid #2d3748;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin-top: 12px;
+            accent-color: #3182ce;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Left Control Panel -->
+    <div id="sidebar">
+        <h2 style="margin: 0; color: #63b3ed; font-size: 20px; letter-spacing: 1px;">EXISTENZ</h2>
+        <div style="font-size: 12px; color: #a0aec0; margin-top: -15px;">128-Bit Orthogonal Lifetimes</div>
+        
+        <div>
+            <label for="sim-select" style="font-size: 12px; color: #a0aec0; display:block; margin-bottom: 8px;">Select Population Profile:</label>
+            <select id="sim-select" onchange="changeSimulation()">
+                <option value="baseline">The Baseline Society</option>
+                <option value="diogenes">The Diogenes / Cynic Path</option>
+                <option value="crisis">Human Rights Crisis / Autocracy</option>
+            </select>
+        </div>
+        
+        <div class="slider-wrapper">
+            <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                <span>Time Axis (Age):</span>
+                <span id="age-display" style="color: #ecc94b; font-weight: bold;">0</span>
+            </div>
+            <input type="range" id="age-slider" min="0" max="80" value="0">
+        </div>
+        
+        <button class="btn" id="play-btn" onclick="togglePlay()">Auto-Advance Lifetime</button>
+        <p style="font-size: 11px; color: #718096; line-height: 1.5; margin: 0;">Notice how nodes quantum leap along rigid coordinate grids. The math strips out messy approximations, leaving only structural alignment.</p>
+    </div>
+
+    <!-- Center 3D Space Canvas -->
+    <div id="canvas-container">
+        <canvas id="simCanvas" width="750" height="750"></canvas>
+    </div>
+
+    <!-- Right Pillar Inspector -->
+    <div id="inspect-panel">
+        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #cbd5e0; letter-spacing: 0.5px;">GRID INSPECTOR</h3>
+        <p id="no-selection" style="color: #718096; font-size: 12px; line-height: 1.4;">Click any moving entity inside the coordinate grid system to isolate its live 128-bit array state.</p>
+        <div id="inspector-content" style="display: none;">
+            <div style="font-size: 18px; margin-bottom: 6px; font-weight: bold; color: #63b3ed;" id="ins-name">Person #--</div>
+            <div style="margin-bottom: 20px; font-size: 13px; color: #a0aec0;">Coordinates: <span id="ins-coords" style="color: #ecc94b;">X:0, Y:0, Z:0</span></div>
+            
+            <h4 style="margin: 0 0 12px 0; font-size: 13px; color: #cbd5e0; border-bottom: 1px solid #2d3748; padding-bottom: 6px;">7 Active Pillars Matrix</h4>
+            <div id="pillars-list" style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- Dynamically populated via script -->
+            </div>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const ageSlider = document.getElementById('age-slider');
+    const ageDisplay = document.getElementById('age-display');
+    
+    let currentAge = 0;
+    let isPlaying = false;
+    let selectedPersonIndex = 0;
+    let currentSimType = 'baseline';
+    
+    // Instantiate 50 individuals with organic structural variance 
+    // This spreads them beautifully along the orthogonal corridors
+    const people = Array.from({ length: 50 }, (_, i) => ({
+        id: i + 1,
+        varianceX: (Math.sin(i * 1.7) * 4) + (Math.cos(i * 2.3) * 2),
+        varianceY: (Math.cos(i * 1.9) * 1.5) + (Math.sin(i * 0.7) * 0.5),
+        varianceZ: (Math.sin(i * 2.9) * 3)
+    }));
+
+    // Calculate active 128-bit array state according to profile and timeline
+    function calculatePillars(person, age, type) {
+        let bitmask = 0;
+        
+        if (type === 'baseline') {
+            bitmask |= 1;  // EXISTENCE (Always active)
+            bitmask |= 16; // PHYSICAL (Vessel online)
+            
+            if (age >= 0) bitmask |= 2;  // AUTONOMY
+            if (age >= 0) bitmask |= 4;  // INTEGRITY
+            if (age >= 2) bitmask |= 8;  // PSYCHOLOGY (Cognitive stabilization)
+            if (age >= 6) bitmask |= 64; // DEVELOPMENT (Intellectual scaling)
+            
+            // Late-stage physical decay: Nature's checks and balances
+            if (age >= 60 && person.id % 2 === 0) {
+                bitmask |= 32; // DISABILITY bit flips on for 50% of the population
+            }
+        } 
+        else if (type === 'diogenes') {
+            bitmask |= 1;  // EXISTENCE
+            bitmask |= 2;  // AUTONOMY (Absolute sovereignty)
+            bitmask |= 4;  // INTEGRITY (Maximized baseline factor)
+            bitmask |= 8;  // PSYCHOLOGY (Untouched internal peace)
+            bitmask |= 64; // DEVELOPMENT
+            
+            // Diogenes rejects the Material/Physical conventions
+            if (age < 75) {
+                bitmask |= 16; // PHYSICAL body vessel remains intact
+            }
+            if (age > 35 && person.id % 3 === 0) {
+                bitmask |= 32; // DISABILITY integrated as part of the natural spectrum
+            }
+        } 
+        else if (type === 'crisis') {
+            bitmask |= 1;  // EXISTENCE
+            bitmask |= 16; // PHYSICAL
+            
+            // A systemic structural collapse occurs between age 30 and 55
+            if (age < 30 || age > 55) {
+                bitmask |= 2 | 4 | 8 | 64; // Standard systemic configuration
+            } else {
+                // Crisis State: Rights stripped away by external forces
+                bitmask |= 2; // Only fundamental Autonomy remains to weather the crisis
+                if (person.id % 4 === 0) bitmask |= 4; // Only a rare few preserve Integrity
+            }
+        }
+        return bitmask;
+    }
+
+    // Convert bitmask states to exact Cartesian coordinates
+    function getXYZ(bitmask, person) {
+        let x = 0;
+        let y = 0;
+        let z = 0;
+        
+        // X Axis: Physical & Legal Ground Baseline
+        if (bitmask & 1)  x += 1;
+        if (bitmask & 16) x += 16;
+        
+        // Y Axis: Internal Moral & Cognitive Drivers
+        if (bitmask & 2)  y += 2;
+        if (bitmask & 4)  y += 4;
+        if (bitmask & 8)  y += 8;
+        
+        // Z Axis: Systemic Human Footprint & Impact
+        if (bitmask & 32) z += 32;
+        if (bitmask & 64) z += 64;
+        
+        // Return pure positions layered with structural entity variance
+        return { 
+            x: x + person.varianceX, 
+            y: y + person.varianceY, 
+            z: z + person.varianceZ 
+        };
+    }
+
+    // Isometric projection engine to map 3D onto a 2D screen Canvas
+    function project(x, y, z) {
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2 + 80;
+        
+        // Scale values to fit within canvas borders comfortably
+        const scale = 5.2; 
+        
+        // 3D Matrix Transform equations
+        let isoX = centerX + (x - y) * Math.cos(0.46) * scale;
+        let isoY = centerY + (x + y) * Math.sin(0.46) * scale - (z * scale);
+        
+        return { x: isoX, y: isoY };
+    }
+
+    // Renders the background grid intersections
+    function drawGrid() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.strokeStyle = '#232a36';
+        ctx.lineWidth = 1;
+        
+        // Render 3D coordinate guide lines
+        let origin = project(0, 0, 0);
+        let xAxis = project(150, 0, 0);
+        let yAxis = project(0, 25, 0);
+        let zAxis = project(0, 0, 130);
+        
+        ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(xAxis.x, xAxis.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(yAxis.x, yAxis.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(zAxis.x, zAxis.y); ctx.stroke();
+    }
+
+    // Refresh layout, compute and project data coordinates
+    function updateSimulation() {
+        drawGrid();
+        
+        people.forEach((person, index) => {
+            let bitmask = calculatePillars(person, currentAge, currentSimType);
+            let coords = getXYZ(bitmask, person);
+            let pt = project(coords.x, coords.y, coords.z);
+            
+            // Highlight selected node
+            if (index === selectedPersonIndex) {
+                ctx.fillStyle = '#f6e05e';
+                ctx.shadowColor = '#f6e05e';
+                ctx.shadowBlur = 15;
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 8, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0; 
+                updateInspector(person, bitmask, coords);
+            } else {
+                // Color nodes dynamically during systemic crisis profiles
+                if (currentSimType === 'crisis' && currentAge >= 30 && currentAge <= 55) {
+                    ctx.fillStyle = (bitmask & 4) ? '#fc8181' : '#e53e3e';
+                } else {
+                    ctx.fillStyle = '#4299e1';
+                }
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2); ctx.fill();
+            }
+        });
+    }
+
+    const pillarNames = [
+        { name: "EXISTENCE (Bit 1)", bit: 1 },
+        { name: "AUTONOMY (Bit 2)", bit: 2 },
+        { name: "INTEGRITY (Bit 4)", bit: 4 },
+        { name: "PSYCHOLOGY (Bit 8)", bit: 8 },
+        { name: "PHYSICAL (Bit 16)", bit: 16 },
+        { name: "DISABILITY (Bit 32)", bit: 32 },
+        { name: "DEVELOPMENT (Bit 64)", bit: 64 }
+    ];
+
+    // Inject data statuses directly into inspection dashboard panel
+    function updateInspector(person, bitmask, coords) {
+        document.getElementById('no-selection').style.display = 'none';
+        document.getElementById('inspector-content').style.display = 'block';
+        document.getElementById('ins-name').innerText = `Individual #${person.id}`;
+        document.getElementById('ins-coords').innerText = `X: ${Math.round(coords.x)}, Y: ${Math.round(coords.y)}, Z: ${Math.round(coords.z)}`;
+        
+        const list = document.getElementById('pillars-list');
+        list.innerHTML = '';
+        
+        pillarNames.forEach(p => {
+            const isActive = (bitmask & p.bit) !== 0;
+            const div = document.createElement('div');
+            div.className = `pillar ${isActive ? 'active' : 'inactive'}`;
+            div.innerHTML = `<span>${p.name}</span><span>${isActive ? 'INTACT' : 'STRIPPED'}</span>`;
+            list.appendChild(div);
+        });
+    }
+
+    // Intercept clicks to calculate proximal nodes
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+        
+        let closestIndex = 0;
+        let minDist = 99999;
+        
+        people.forEach((person, index) => {
+            let bitmask = calculatePillars(person, currentAge, currentSimType);
+            let coords = getXYZ(bitmask, person);
+            let pt = project(coords.x, coords.y, coords.z);
+            let dist = Math.hypot(pt.x - clickX, pt.y - clickY);
+            if (dist < minDist) {
+                minDist = dist;
+                closestIndex = index;
+            }
+        });
+        
+        if (minDist < 30) { 
+            selectedPersonIndex = closestIndex;
+            updateSimulation();
+        }
+    });
+
+    ageSlider.addEventListener('input', (e) => {
+        currentAge = parseInt(e.target.value);
+        ageDisplay.innerText = currentAge;
+        updateSimulation();
+    });
+
+    function changeSimulation() {
+        currentSimType = document.getElementById('sim-select').value;
+        updateSimulation();
+    }
+
+    function togglePlay() {
+        isPlaying = !isPlaying;
+        document.getElementById('play-btn').innerText = isPlaying ? "Pause Timeline" : "Auto-Advance Lifetime";
+        if (isPlaying) executionLoop();
+    }
+
+    function executionLoop() {
+        if (!isPlaying) return;
+        currentAge = (currentAge + 1) % 81;
+        ageSlider.value = currentAge;
+        ageDisplay.innerText = currentAge;
+        updateSimulation();
+        setTimeout(() => { requestAnimationFrame(executionLoop); }, 200);
+    }
+
+    // Run core engine instance
+    updateSimulation();
+</script>
+</body>
+</html>
