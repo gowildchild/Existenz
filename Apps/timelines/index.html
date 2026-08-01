@@ -363,6 +363,7 @@
     }
 
     // Isometric projection mapping: Transforms 3D coordinates to 2D canvas space
+    // Isometric projection mapping: Transforms 3D coordinates to 2D canvas space
     function project(x, y, z) {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2 + 110;
@@ -400,22 +401,18 @@
         }
 
         // --- THE MAJESTIC FIBONACCI SPIRAL FIELD RENDER ---
-        // If activated, this projects the continuous evolutionary rails onto the grid
         if (showSpirals) {
             ctx.lineWidth = 0.75;
             
-            // Generate a sample preview rail for each of our 5 family lineage configurations
             families.forEach((familyName, fId) => {
                 let familySeed = fId * 1.45;
                 ctx.strokeStyle = fId === 1 ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.08)';
                 ctx.beginPath();
                 
-                // Track a theoretical lifespan trajectory step-by-step to draw a clean arc curve
                 for (let testAge = 0; testAge <= 80; testAge += 1) {
-                    // Generate a simulated stable bitmask state for the curve blueprint
                     let testMask = 1 | 16 | 32 | 2 | 4 | 8 | 64; 
                     if (currentSimType === 'crisis' && testAge >= 25 && testAge <= 60) {
-                        testMask = 1 | 16 | 32 | 2; // Collapse the math matrix bounds for the crisis spiral shape
+                        testMask = 1 | 16 | 32 | 2; 
                     }
                     
                     let spaceExpansionFactor = 1.0;
@@ -430,7 +427,7 @@
 
                     const goldenRatio = 1.61803398875;
                     let continuousRadius = Math.log(testAge + 1) * goldenRatio * 5.2 * spaceExpansionFactor * (internalMoralForce * 0.4);
-                    let spiralTheta = 0 + (testAge * 0.065) + familySeed; // Baseline path theta without individual random variables
+                    let spiralTheta = 0 + (testAge * 0.065) + familySeed; 
 
                     let sX = continuousRadius * Math.cos(spiralTheta);
                     let sY = continuousRadius * Math.sin(spiralTheta);
@@ -480,7 +477,7 @@
                 } else if (currentSimType === 'diogenes' || currentSimType === 'antiquity') {
                     ctx.fillStyle = '#48bb78'; 
                 } else if (currentSimType === 'modern') {
-                    ctx.fillStyle = (person.bitmask & 8) ? '#4299e1' : '#ed8936'; // Orange flags algorithmic psychic distress
+                    ctx.fillStyle = (person.bitmask & 8) ? '#4299e1' : '#ed8936'; 
                 } else {
                     ctx.fillStyle = '#3182ce'; 
                 }
@@ -520,6 +517,7 @@
             list.appendChild(div);
         });
     }
+
     // Intercept canvas click actions to target proximal nodes
     canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
