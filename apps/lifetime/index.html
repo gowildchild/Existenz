@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz - 128-Bit Lifetime Matrix</title>
+    <title>Existenz - Spacetime Generation Matrix</title>
     <style>
         body { 
             margin: 0; 
-            background: #0d0f12; 
+            background: #06080c; 
             color: #e2e8f0; 
             font-family: 'Courier New', monospace; 
             display: flex; 
@@ -15,14 +15,14 @@
             overflow: hidden; 
         }
         #sidebar { 
-            width: 340px; 
-            background: #151922; 
-            padding: 24px; 
+            width: 320px; 
+            background: #0b0e14; 
+            padding: 20px; 
             box-sizing: border-box; 
             display: flex; 
             flex-direction: column; 
-            gap: 24px; 
-            border-right: 1px solid #2d3748; 
+            gap: 20px; 
+            border-right: 1px solid #1a2233; 
             z-index: 10;
         }
         #canvas-container { 
@@ -31,44 +31,72 @@
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            background: #080a0f;
+            background: #030508;
         }
         canvas { 
-            background: #080a0f; 
-            box-shadow: inset 0 0 120px rgba(0,0,0,0.9); 
+            background: #030508; 
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.95); 
             cursor: pointer;
         }
+        #right-panel {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #1a2233;
+            background: #0b0e14;
+            height: 100%;
+        }
         #inspect-panel { 
-            width: 360px; 
-            background: #151922; 
-            padding: 24px; 
+            height: 50%;
+            padding: 20px; 
             box-sizing: border-box; 
-            border-left: 1px solid #2d3748; 
             display: flex; 
             flex-direction: column; 
-            gap: 16px; 
+            gap: 12px; 
             overflow-y: auto;
-            z-index: 10;
+            border-bottom: 1px solid #1a2233;
         }
+        #matrix-log {
+            height: 50%;
+            padding: 20px;
+            box-sizing: border-box;
+            background: #07090d;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #log-stream {
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 11px;
+            color: #4a5568;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 4px;
+            padding-right: 5px;
+        }
+        .log-entry { padding: 4px 6px; border-radius: 2px; border-left: 2px solid #2d3748; background: rgba(255,255,255,0.01); }
+        .log-threat { border-left-color: #e53e3e; color: #fc8181; background: rgba(229,62,62,0.05); }
+        .log-birth { border-left-color: #3182ce; color: #63b3ed; }
+        .log-shift { border-left-color: #ecc94b; color: #f6e05e; }
+        
         .btn { 
-            background: #3182ce; 
+            background: #2b6cb0; 
             color: white; 
             border: none; 
-            padding: 12px; 
+            padding: 10px; 
             cursor: pointer; 
             font-weight: bold; 
             border-radius: 4px; 
             font-family: monospace;
-            transition: background 0.2s ease;
         }
-        .btn:hover { 
-            background: #2b6cb0; 
-        }
+        .btn:hover { background: #2c5282; }
         select { 
-            background: #2d3748; 
+            background: #1a202c; 
             color: white; 
-            padding: 10px; 
-            border: 1px solid #4a5568; 
+            padding: 8px; 
+            border: 1px solid #2d3748; 
             border-radius: 4px; 
             font-family: monospace;
             width: 100%;
@@ -76,32 +104,26 @@
         .pillar { 
             display: flex; 
             justify-content: space-between; 
-            padding: 8px 12px; 
-            border-radius: 4px; 
+            padding: 6px 10px; 
+            border-radius: 3px; 
             font-size: 11px; 
-            font-weight: bold;
-            letter-spacing: 0.5px;
         }
-        .active { 
-            background: rgba(72, 187, 120, 0.15); 
-            color: #48bb78; 
-            border-left: 4px solid #48bb78; 
-        }
-        .inactive { 
-            background: rgba(229, 62, 62, 0.15); 
-            color: #f56565; 
-            border-left: 4px solid #f56565; 
-        }
-        .slider-wrapper {
+        .active { background: rgba(72, 187, 120, 0.12); color: #48bb78; border-left: 3px solid #48bb78; }
+        .inactive { background: rgba(229, 62, 62, 0.12); color: #f56565; border-left: 3px solid #f56565; }
+        
+        .threat-meter {
             background: #1a202c;
-            padding: 16px;
-            border-radius: 6px;
             border: 1px solid #2d3748;
+            padding: 12px;
+            border-radius: 4px;
         }
-        input[type="range"] {
-            width: 100%;
-            margin-top: 12px;
-            accent-color: #3182ce;
+        #threat-bar {
+            height: 6px;
+            background: #48bb78;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+            border-radius: 3px;
+            margin-top: 6px;
         }
     </style>
 </head>
@@ -109,204 +131,320 @@
 
     <!-- Left Control Panel -->
     <div id="sidebar">
-        <h2 style="margin: 0; color: #63b3ed; font-size: 20px; letter-spacing: 1px;">EXISTENZ</h2>
-        <div style="font-size: 12px; color: #a0aec0; margin-top: -15px;">128-Bit Orthogonal Lifetimes</div>
+        <h2 style="margin: 0; color: #63b3ed; font-size: 18px; letter-spacing: 1px;">EXISTENZ MATRIX</h2>
         
         <div>
-            <label for="sim-select" style="font-size: 12px; color: #a0aec0; display:block; margin-bottom: 8px;">Select Population Profile:</label>
+            <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 6px;">Global Matrix State:</label>
             <select id="sim-select" onchange="changeSimulation()">
-                <option value="baseline">The Baseline Society</option>
-                <option value="diogenes">The Diogenes / Cynic Path</option>
-                <option value="crisis">Human Rights Crisis / Autocracy</option>
+                <option value="baseline">Harmonic Framework</option>
+                <option value="diogenes">Cynic Autonomy Waves</option>
+                <option value="crisis">Systemic Rights Severance</option>
             </select>
         </div>
-        
-        <div class="slider-wrapper">
-            <div style="display: flex; justify-content: space-between; font-size: 13px;">
-                <span>Time Axis (Age):</span>
-                <span id="age-display" style="color: #ecc94b; font-weight: bold;">0</span>
+
+        <div class="threat-meter">
+            <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span>ExistenzThreat Vector:</span>
+                <span id="threat-pct" style="font-weight:bold; color:#48bb78;">0%</span>
             </div>
-            <input type="range" id="age-slider" min="0" max="80" value="0">
+            <div style="background:#2d3748; height:6px; border-radius:3px;"><div id="threat-bar"></div></div>
         </div>
         
-        <button class="btn" id="play-btn" onclick="togglePlay()">Auto-Advance Lifetime</button>
-        <p style="font-size: 11px; color: #718096; line-height: 1.5; margin: 0;">Notice how nodes quantum leap along rigid coordinate grids. The math strips out messy approximations, leaving only structural alignment.</p>
+        <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
+        <p style="font-size: 11px; color: #4a5568; line-height: 1.4; margin: 0;">Multi-generational dynamic curves. Families share baseline coordinates while their individual timelines scale outward along Fibonacci vectors.</p>
     </div>
 
-    <!-- Center 3D Space Canvas -->
+    <!-- Center Coordinate Field -->
     <div id="canvas-container">
         <canvas id="simCanvas" width="750" height="750"></canvas>
     </div>
 
-    <!-- Right Pillar Inspector -->
-    <div id="inspect-panel">
-        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #cbd5e0; letter-spacing: 0.5px;">GRID INSPECTOR</h3>
-        <p id="no-selection" style="color: #718096; font-size: 12px; line-height: 1.4;">Click any moving entity inside the coordinate grid system to isolate its live 128-bit array state.</p>
-        <div id="inspector-content" style="display: none;">
-            <div style="font-size: 18px; margin-bottom: 6px; font-weight: bold; color: #63b3ed;" id="ins-name">Person #--</div>
-            <div style="margin-bottom: 20px; font-size: 13px; color: #a0aec0;">Coordinates: <span id="ins-coords" style="color: #ecc94b;">X:0, Y:0, Z:0</span></div>
-            
-            <h4 style="margin: 0 0 12px 0; font-size: 13px; color: #cbd5e0; border-bottom: 1px solid #2d3748; padding-bottom: 6px;">7 Active Pillars Matrix</h4>
-            <div id="pillars-list" style="display: flex; flex-direction: column; gap: 8px;">
-                <!-- Dynamically populated via script -->
+    <!-- Right Unified Panels -->
+    <div id="right-panel">
+        <!-- Top Half: Unit Inspector -->
+        <div id="inspect-panel">
+            <h3 style="margin: 0; font-size: 14px; color: #a0aec0;">MATRIX UNIT FIELD</h3>
+            <p id="no-selection" style="color: #4a5568; font-size: 11px; margin: 0;">Select an active vector node to target code telemetry data.</p>
+            <div id="inspector-content" style="display: none;">
+                <div style="font-size: 15px; font-weight: bold; color: #63b3ed;" id="ins-name">Individual #--</div>
+                <div style="font-size: 11px; color: #718096; margin-bottom: 10px;">Lineage Vector: <span id="ins-family" style="color:#9f7aea;">Alpha</span> | Age: <span id="ins-age" style="color:#ecc94b;">0</span></div>
+                <div style="margin-bottom: 12px; font-size: 12px; color: #cbd5e0;">Matrix: <span id="ins-coords" style="color: #ecc94b;">X:0, Y:0, Z:0</span></div>
+                <div id="pillars-list" style="display: flex; flex-direction: column; gap: 6px;"></div>
             </div>
+        </div>
+
+        <!-- Bottom Half: The Spacetime Matrix Log -->
+        <div id="matrix-log">
+            <h3 style="margin: 0; font-size: 13px; color: #a0aec0; letter-spacing: 0.5px; border-bottom: 1px solid #1a2233; padding-bottom: 6px;">SPACETIME LOG TELEMETRY</h3>
+            <div id="log-stream"></div>
         </div>
     </div>
 
 <script>
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
-    const ageSlider = document.getElementById('age-slider');
-    const ageDisplay = document.getElementById('age-display');
     
-    let currentAge = 0;
     let isPlaying = false;
     let selectedPersonIndex = 0;
     let currentSimType = 'baseline';
+    let simulationTick = 0;
+    let existenzThreatLevel = 0;
     
-    // Instantiate 50 individuals with organic structural variance 
-    // This spreads them beautifully along the orthogonal corridors
-    const people = Array.from({ length: 50 }, (_, i) => ({
-        id: i + 1,
-        varianceX: (Math.sin(i * 1.7) * 4) + (Math.cos(i * 2.3) * 2),
-        varianceY: (Math.cos(i * 1.9) * 1.5) + (Math.sin(i * 0.7) * 0.5),
-        varianceZ: (Math.sin(i * 2.9) * 3)
-    }));
+    const families = ["Alpha Lineage", "Beta Cluster", "Gamma Node", "Delta Branch", "Epsilon Matrix"];
+    let people = [];
 
-    // Calculate active 128-bit array state according to profile and timeline
-    function calculatePillars(person, age, type) {
-        let bitmask = 0;
-        
-        if (type === 'baseline') {
-            bitmask |= 1;  // EXISTENCE (Always active)
-            bitmask |= 16; // PHYSICAL (Vessel online)
-            
-            if (age >= 0) bitmask |= 2;  // AUTONOMY
-            if (age >= 0) bitmask |= 4;  // INTEGRITY
-            if (age >= 2) bitmask |= 8;  // PSYCHOLOGY (Cognitive stabilization)
-            if (age >= 6) bitmask |= 64; // DEVELOPMENT (Intellectual scaling)
-            
-            // Late-stage physical decay: Nature's checks and balances
-            if (age >= 60 && person.id % 2 === 0) {
-                bitmask |= 32; // DISABILITY bit flips on for 50% of the population
-            }
-        } 
-        else if (type === 'diogenes') {
-            bitmask |= 1;  // EXISTENCE
-            bitmask |= 2;  // AUTONOMY (Absolute sovereignty)
-            bitmask |= 4;  // INTEGRITY (Maximized baseline factor)
-            bitmask |= 8;  // PSYCHOLOGY (Untouched internal peace)
-            bitmask |= 64; // DEVELOPMENT
-            
-            // Diogenes rejects the Material/Physical conventions
-            if (age < 75) {
-                bitmask |= 16; // PHYSICAL body vessel remains intact
-            }
-            if (age > 35 && person.id % 3 === 0) {
-                bitmask |= 32; // DISABILITY integrated as part of the natural spectrum
-            }
-        } 
-        else if (type === 'crisis') {
-            bitmask |= 1;  // EXISTENCE
-            bitmask |= 16; // PHYSICAL
-            
-            // A systemic structural collapse occurs between age 30 and 55
-            if (age < 30 || age > 55) {
-                bitmask |= 2 | 4 | 8 | 64; // Standard systemic configuration
-            } else {
-                // Crisis State: Rights stripped away by external forces
-                bitmask |= 2; // Only fundamental Autonomy remains to weather the crisis
-                if (person.id % 4 === 0) bitmask |= 4; // Only a rare few preserve Integrity
-            }
+    // Initialize 50 individuals spread organically across generations (ages 0 to 80)
+    function initPopulation() {
+        people = [];
+        for (let i = 0; i < 50; i++) {
+            let assignedAge = Math.floor(Math.random() * 80);
+            let familyId = Math.floor(Math.random() * families.length);
+            people.push({
+                id: i + 1,
+                age: assignedAge,
+                family: families[familyId],
+                familySeed: familyId * 1.25, // Creates shared lineage spatial centers
+                individualTheta: Math.random() * Math.PI * 2, // Unique angle offset in space
+                bitmask: 0,
+                lastBitmask: 0
+            });
         }
-        return bitmask;
     }
 
-    // Convert bitmask states to exact Cartesian coordinates
-    function getXYZ(bitmask, person) {
-        let x = 0;
-        let y = 0;
-        let z = 0;
+    // Append telemetry events directly into the right-hand panel log stream
+    function pushLog(text, type = '') {
+        const stream = document.getElementById('log-stream');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
         
-        // X Axis: Physical & Legal Ground Baseline
-        if (bitmask & 1)  x += 1;
-        if (bitmask & 16) x += 16;
+        let timestamp = new Date().toLocaleTimeString().split(' ')[0];
+        entry.innerHTML = `[${timestamp}] ${text}`;
+        stream.appendChild(entry);
         
-        // Y Axis: Internal Moral & Cognitive Drivers
-        if (bitmask & 2)  y += 2;
-        if (bitmask & 4)  y += 4;
-        if (bitmask & 8)  y += 8;
+        // Auto-scroll to keep newest logs visible
+        stream.scrollTop = stream.scrollHeight;
         
-        // Z Axis: Systemic Human Footprint & Impact
-        if (bitmask & 32) z += 32;
-        if (bitmask & 64) z += 64;
-        
-        // Return pure positions layered with structural entity variance
-        return { 
-            x: x + person.varianceX, 
-            y: y + person.varianceY, 
-            z: z + person.varianceZ 
-        };
+        // Keep log from growing infinitely in browser memory
+        if (stream.children.length > 40) {
+            stream.removeChild(stream.firstChild);
+        }
     }
 
-    // Isometric projection engine to map 3D onto a 2D screen Canvas
+    // Evaluate structural integrity and manage lifecycle transitions
+    function processLifecycle() {
+        simulationTick++;
+        let totalThreats = 0;
+        let brokenPillarsCount = 0;
+        let totalCheckedPillars = 50 * 7;
+
+        people.forEach((person) => {
+            person.lastBitmask = person.bitmask;
+            
+            // Age ticks forward smoothly over spacetime loops
+            person.age += 0.5;
+            
+            // Dynamic Lifecycle: Rebirth event when an individual reaches life capacity limits
+            if (person.age > 80) {
+                let oldFamily = person.family;
+                person.age = 0; // Reborn as new generational infant
+                person.individualTheta = Math.random() * Math.PI * 2;
+                person.lastBitmask = 0;
+                pushLog(`Generation Cycle: Unit #${person.id} born into ${person.family}.`, 'log-birth');
+            }
+
+            // Calculate active bits
+            let mask = 0;
+            mask |= 1;   // EXISTENCE (Universal)
+            mask |= 16;  // PHYSICAL (Universal vessel)
+            mask |= 32;  // DISABILITY (Universal anchor for structural inclusion)
+
+            if (currentSimType === 'baseline') {
+                if (person.age >= 0) mask |= 2;  // AUTONOMY
+                if (person.age >= 0) mask |= 4;  // INTEGRITY
+                if (person.age >= 2) mask |= 8;  // PSYCHOLOGY
+                if (person.age >= 6) mask |= 64; // DEVELOPMENT
+                
+                // Add minor random variables to keep timeline active
+                if (person.age > 40 && (Math.sin(person.id + simulationTick * 0.05) > 0.8)) {
+                    mask |= 128; // PROPERTY bit transitions active
+                }
+            } 
+            else if (currentSimType === 'diogenes') {
+                mask |= 2;  // AUTONOMY
+                mask |= 4;  // INTEGRITY (Maximal foundational focus)
+                mask |= 8;  // PSYCHOLOGY
+                mask |= 64; // DEVELOPMENT
+                if (person.age >= 75) mask &= ~16; // Discards physical frame at end of cycle
+            } 
+            else if (currentSimType === 'crisis') {
+                mask |= 128; // Artificially high property focus
+                if (person.age < 25 || person.age > 60) {
+                    mask |= 2 | 4 | 8 | 64; 
+                } else {
+                    // Core rights systemic isolation event
+                    mask |= 2; // Only autonomy to resist remains online
+                    if (person.id % 5 === 0) mask |= 4; // Minimal preservation of integrity
+                }
+            }
+
+            person.bitmask = mask;
+
+            // Track any state changes for logging
+            if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
+                pushLog(`Unit #${person.id} (${person.family}) experienced a bit-shift coordinate leap.`, 'log-shift');
+            }
+
+            // Calculate active threat signatures
+            for (let b = 0; b < 7; b++) {
+                let checkingBit = 1 << b;
+                if (checkingBit === 32) continue; // Disability is an inclusive anchor, never a threat vector
+                if (!(person.bitmask & checkingBit)) {
+                    brokenPillarsCount++;
+                }
+            }
+        });
+
+        // Compute and display global threat percentages
+        existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
+        const bar = document.getElementById('threat-bar');
+        const text = document.getElementById('threat-pct');
+        
+        text.innerText = `${existenzThreatLevel}%`;
+        bar.style.width = `${existenzThreatLevel}%`;
+        
+        if (existenzThreatLevel > 35) {
+            bar.style.backgroundColor = '#e53e3e';
+            if (simulationTick % 15 === 0) {
+                pushLog(`CRITICAL: Global ExistenzThreat Vector elevated at ${existenzThreatLevel}%! Systemic fracture detected.`, 'log-threat');
+            }
+        } else if (existenzThreatLevel > 15) {
+            bar.style.backgroundColor = '#ecc94b';
+        } else {
+            bar.style.backgroundColor = '#48bb78';
+        }
+    }
+
+    // Maps structural bits into elegant logarithmic Fibonacci geometric vectors
+    function getXYZ(person) {
+        let x = 0, y = 0, z = 0;
+        let mask = person.bitmask;
+
+        if (mask & 1)   x += 5;
+        if (mask & 16)  x += 25;
+        if (mask & 128) x += 40;
+
+        if (mask & 2)   y += 5;
+        if (mask & 4)   y += 10;
+        if (mask & 8)   y += 15;
+
+        if (mask & 32)  z += 20; // The structural floor of inclusion
+        if (mask & 64)  z += 35;
+
+        // --- THE GOLDEN FIBONACCI SPIRAL TRANSFORM ---
+        // Converts linear age vectors into natural logarithmic spacetime spirals
+        const goldenRatio = 1.61803398875;
+        
+        // Logarithmic radius scaling derived from the golden ratio over age steps
+        let fibonacciRadius = Math.log(person.age + 1) * goldenRatio * 6;
+        
+        // Evolution angle: Shared lineage seed + Individual spiral path over time
+        let spiralTheta = person.individualTheta + (person.age * 0.08) + person.familySeed;
+
+        // Infuse the structural bit values into the organic physical timeline path
+        let finalX = x + (fibonacciRadius * Math.cos(spiralTheta));
+        let finalY = y + (fibonacciRadius * Math.sin(spiralTheta));
+        let finalZ = z + (person.age * 0.6); // Spacetime height continuum axis
+
+        return { x: finalX, y: finalY, z: finalZ };
+    }
+    // Isometric projection mapping: Transforms 3D coordinates to 2D canvas space
     function project(x, y, z) {
         const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2 + 80;
+        const centerY = canvas.height / 2 + 110;
         
-        // Scale values to fit within canvas borders comfortably
-        const scale = 5.2; 
+        // Scale factor to map space variables cleanly inside canvas dimensions
+        const matrixScale = 3.6; 
         
-        // 3D Matrix Transform equations
-        let isoX = centerX + (x - y) * Math.cos(0.46) * scale;
-        let isoY = centerY + (x + y) * Math.sin(0.46) * scale - (z * scale);
+        // 3D Cartesian-to-Isometric Matrix Transformation equations
+        let isoX = centerX + (x - y) * Math.cos(0.52) * matrixScale;
+        let isoY = centerY + (x + y) * Math.sin(0.52) * matrixScale - (z * matrixScale);
         
         return { x: isoX, y: isoY };
     }
 
-    // Renders the background grid intersections
+    // Draws the baseline 3D coordinate frame intersections
     function drawGrid() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        ctx.strokeStyle = '#232a36';
+        ctx.strokeStyle = '#161f30';
         ctx.lineWidth = 1;
         
-        // Render 3D coordinate guide lines
+        // Render foundational orthogonal structural reference axes
         let origin = project(0, 0, 0);
-        let xAxis = project(150, 0, 0);
-        let yAxis = project(0, 25, 0);
-        let zAxis = project(0, 0, 130);
+        let xAxis = project(180, 0, 0);
+        let yAxis = project(0, 40, 0);
+        let zAxis = project(0, 0, 160);
         
+        // Draw X Axis (Identity/Physical)
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(xAxis.x, xAxis.y); ctx.stroke();
+        // Draw Y Axis (Moral/Cognitive Drivers)
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(yAxis.x, yAxis.y); ctx.stroke();
+        // Draw Z Axis (Spacetime Continuum Height)
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(zAxis.x, zAxis.y); ctx.stroke();
+        
+        // Draw faint concentric structural guide rings to emphasize the Fibonacci field
+        ctx.strokeStyle = '#0d1522';
+        for (let r = 20; r <= 160; r += 35) {
+            ctx.beginPath();
+            ctx.arc(origin.x, origin.y - (r * 0.5), r * 1.5, 0, Math.PI * 2);
+            ctx.stroke();
+        }
     }
 
-    // Refresh layout, compute and project data coordinates
+    // Main drawing cycle: Processes coordinates, handles rendering, tracks lines
     function updateSimulation() {
         drawGrid();
         
-        people.forEach((person, index) => {
-            let bitmask = calculatePillars(person, currentAge, currentSimType);
-            let coords = getXYZ(bitmask, person);
+        // Sort individuals by their physical depth position so closer nodes render on top
+        let sortedPopulation = [...people].sort((a, b) => {
+            let posA = getXYZ(a);
+            let posB = getXYZ(b);
+            return (posA.x + posA.y) - (posB.x + posB.y);
+        });
+
+        sortedPopulation.forEach((person) => {
+            let coords = getXYZ(person);
             let pt = project(coords.x, coords.y, coords.z);
+            let isTargeted = (person.id === people[selectedPersonIndex].id);
             
-            // Highlight selected node
-            if (index === selectedPersonIndex) {
+            // Render translucent interconnectivity strings to show family lineage groupings
+            ctx.strokeStyle = isTargeted ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.04)';
+            ctx.lineWidth = 0.5;
+            let originPt = project(0, 0, coords.z);
+            ctx.bneginPath; ctx.moveTo(originPt.x, originPt.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
+
+            // Render entity nodes
+            if (isTargeted) {
+                // Focus ring on active selection
                 ctx.fillStyle = '#f6e05e';
                 ctx.shadowColor = '#f6e05e';
-                ctx.shadowBlur = 15;
-                ctx.beginPath(); ctx.arc(pt.x, pt.y, 8, 0, Math.PI * 2); ctx.fill();
-                ctx.shadowBlur = 0; 
-                updateInspector(person, bitmask, coords);
+                ctx.shadowBlur = 12;
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 7, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0; // Clear blur layer
+                updateInspector(person, coords);
             } else {
-                // Color nodes dynamically during systemic crisis profiles
-                if (currentSimType === 'crisis' && currentAge >= 30 && currentAge <= 55) {
-                    ctx.fillStyle = (bitmask & 4) ? '#fc8181' : '#e53e3e';
+                // Node coloring adjusts dynamically to represent systemic distress profiles
+                if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 60) {
+                    ctx.fillStyle = (person.bitmask & 4) ? '#fc8181' : '#e53e3e'; // Broken elements flash amber/red
+                } else if (currentSimType === 'diogenes') {
+                    ctx.fillStyle = '#48bb78'; // Cynic fields glow green
                 } else {
-                    ctx.fillStyle = '#4299e1';
+                    ctx.fillStyle = '#3182ce'; // Baseline society fields default to blue
                 }
-                ctx.beginPath(); ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2); ctx.fill();
+                
+                // Visual node size mirrors age scale properties (younger are smaller)
+                let radius = 2.5 + (person.age * 0.05);
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
             }
         });
     }
@@ -321,18 +459,20 @@
         { name: "DEVELOPMENT (Bit 64)", bit: 64 }
     ];
 
-    // Inject data statuses directly into inspection dashboard panel
-    function updateInspector(person, bitmask, coords) {
+    // Push data telemetry values into the dashboard layout panel matrix
+    function updateInspector(person, coords) {
         document.getElementById('no-selection').style.display = 'none';
         document.getElementById('inspector-content').style.display = 'block';
         document.getElementById('ins-name').innerText = `Individual #${person.id}`;
-        document.getElementById('ins-coords').innerText = `X: ${Math.round(coords.x)}, Y: ${Math.round(coords.y)}, Z: ${Math.round(coords.z)}`;
+        document.getElementById('ins-family').innerText = person.family;
+        document.getElementById('ins-age').innerText = Math.floor(person.age);
+        document.getElementById('ins-coords').innerText = `X:${Math.round(coords.x)}, Y:${Math.round(coords.y)}, Z:${Math.round(coords.z)}`;
         
         const list = document.getElementById('pillars-list');
         list.innerHTML = '';
         
         pillarNames.forEach(p => {
-            const isActive = (bitmask & p.bit) !== 0;
+            const isActive = (person.bitmask & p.bit) !== 0;
             const div = document.createElement('div');
             div.className = `pillar ${isActive ? 'active' : 'inactive'}`;
             div.innerHTML = `<span>${p.name}</span><span>${isActive ? 'INTACT' : 'STRIPPED'}</span>`;
@@ -350,8 +490,7 @@
         let minDist = 99999;
         
         people.forEach((person, index) => {
-            let bitmask = calculatePillars(person, currentAge, currentSimType);
-            let coords = getXYZ(bitmask, person);
+            let coords = getXYZ(person);
             let pt = project(coords.x, coords.y, coords.z);
             let dist = Math.hypot(pt.x - clickX, pt.y - clickY);
             if (dist < minDist) {
@@ -366,33 +505,37 @@
         }
     });
 
-    ageSlider.addEventListener('input', (e) => {
-        currentAge = parseInt(e.target.value);
-        ageDisplay.innerText = currentAge;
-        updateSimulation();
-    });
-
-    function changeSimulation() {
-        currentSimType = document.getElementById('sim-select').value;
-        updateSimulation();
-    }
-
+    // Handles toggle state between active execution and freeze-frame
     function togglePlay() {
         isPlaying = !isPlaying;
-        document.getElementById('play-btn').innerText = isPlaying ? "Pause Timeline" : "Auto-Advance Lifetime";
+        document.getElementById('play-btn').innerText = isPlaying ? "Halt Spacetime Loop" : "Engage Spacetime Loop";
         if (isPlaying) executionLoop();
     }
 
-    function executionLoop() {
-        if (!isPlaying) return;
-        currentAge = (currentAge + 1) % 81;
-        ageSlider.value = currentAge;
-        ageDisplay.innerText = currentAge;
+    // Swaps global environments and records event to log stream
+    function changeSimulation() {
+        currentSimType = document.getElementById('sim-select').value;
+        let profileName = document.getElementById('sim-select').options[document.getElementById('sim-select').selectedIndex].text;
+        pushLog(`ENVIRONMENT SHIFT: Switched framework rules to [${profileName}].`, 'log-shift');
         updateSimulation();
-        setTimeout(() => { requestAnimationFrame(executionLoop); }, 200);
     }
 
-    // Run core engine instance
+    // Continuous timeline loop driving lifecycle processing and canvas redrawing
+    function executionLoop() {
+        if (!isPlaying) return;
+        
+        processLifecycle();
+        updateSimulation();
+        
+        // Loop runs continuously using requestAnimationFrame
+        setTimeout(() => { 
+            requestAnimationFrame(executionLoop); 
+        }, 60); // Controls flow speed of generation cycles
+    }
+
+    // Initial system load deployment
+    initPopulation();
+    pushLog("Existenz Core initialized. 50 individuals loaded across timeline.", "log-birth");
     updateSimulation();
 </script>
 </body>
