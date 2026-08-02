@@ -494,11 +494,13 @@
             let pt = project(coords.x, coords.y, coords.z);
             let isTargeted = (selectedPersonIndex !== -1 && person.id === people[selectedPersonIndex].id);
             
+            // Draw baseline vertical anchor strings to emphasize 3D space placement
             ctx.strokeStyle = isTargeted ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.03)';
             ctx.lineWidth = 0.5;
             let originPt = project(0, 0, coords.z);
             ctx.beginPath(); ctx.moveTo(originPt.x, originPt.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
 
+            // Render entity nodes
             if (isTargeted) {
                 ctx.fillStyle = '#f6e05e';
                 ctx.shadowColor = '#f6e05e';
@@ -507,6 +509,7 @@
                 ctx.shadowBlur = 0; 
                 updateInspector(person, coords);
             } else {
+                // Color mapping rules based on active epoch characteristics
                 if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 60) {
                     ctx.fillStyle = (person.bitmask & 4) ? '#fc8181' : '#e53e3e';
                 } else if (currentSimType === 'diogenes' || currentSimType === 'antiquity') {
@@ -517,8 +520,9 @@
                     ctx.fillStyle = '#3182ce'; 
                 }
                 
+                // Scale physical node radius dynamically with lifecycle age acceleration
                 let radius = 2.5 + (person.age * 0.05);
-                ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); fill();
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
             }
         });
     }
@@ -542,6 +546,7 @@
             list.appendChild(div);
         });
     }
+
 
     canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
