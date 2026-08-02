@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.9860Beta</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timeline v0.992B</title>
     <style>
         body { 
             margin: 0; 
@@ -450,8 +450,7 @@
         let totalCheckedPillars = people.length * 9; 
         
         let victimCount = 0;
-        // CORRECTED: Array initialized with 7 zeros to prevent syntax compile crashes
-        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+        let bitFailureCounts =[0, 0, 0, 0, 0, 0, 0, 0, 0]; 
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
@@ -476,12 +475,15 @@
 
             let individualIsVictim = false;
 
-            for (let b = 0; b < 7; b++) {
+            // Updated pass to fully track all 9 expanded framework coordinates cleanly
+            for (let b = 0; b < 9; b++) {
                 if ((1 << b) === 32) continue; 
                 
                 if (!(person.bitmask & (1 << b))) {
                     brokenPillarsCount++;
-                    bitFailureCounts[b]++; 
+                    if (b < bitFailureCounts.length) {
+                        bitFailureCounts[b]++;
+                    }
                     individualIsVictim = true;
                 }
             }
@@ -495,18 +497,10 @@
         document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
 
-        // Update the dynamic metric counters in the sidebar elements
         if (document.getElementById('victim-count')) {
             document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
         }
 
-        // Update the dynamic metric counters in the sidebar elements
-        if (document.getElementById('victim-count')) {
-            document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
-        }
-
-        // --- EXPANDED 9-BIT ARCHITECTURAL ACCUMULATOR ---
-        // Map all 9 bits to their text descriptors and corresponding raw failure totals
         const bitBlueprints = [
             { name: "EXISTENCE (1)",   count: 0, bit: 1 },
             { name: "AUTONOMY (2)",    count: 0, bit: 2 },
@@ -575,42 +569,36 @@
 
     function getXYZ(person) {
         let mask = person.bitmask;
+        let age = person.age;
         let x = 0;
         let y = 0;
         let z = 0;
-
-        // --- X-AXIS: PROPERTY & PHYSICAL REALITY ---
-        if (mask & 1)   x += 5;   // EXISTENCE (You, alive, with a body)
-        if (mask & 16)  x += 20;  // PHYSICAL (The biological vessel)
-        if (mask & 128) x += 40;  // PROPERTY (Material Assets and Income Protection)
-
-        // --- Y-AXIS: INTERNAL DRIVE & CHOICE ---
-        if (mask & 2)   y += 5;   // AUTONOMY (The Sovereign Right to Choose)
-        if (mask & 4)   y += 10;  // INTEGRITY (The Moral Axis of Personal Choice)
-        if (mask & 8)   y += 15;  // PSYCHOLOGY (Cognitive Internal State / Mental Peace)
-
-        // --- Z-AXIS: EVOLUTIONARY GROWTH & SPACETIME CONTUNUUM ---
-        if (mask & 32)  z += 15;  // DISABILITY (The permanent universal inclusive floor)
-        if (mask & 64)  z += 25;  // DEVELOPMENT (Evolutionary, Intellectual, and Creative Growth)
-        if (mask & 256) z += 50;  // PRESENCE (Real-Time Spacetime Footprint)
-
-        // --- THE MAJESTIC CONTINUOUS FIBONACCI LIFELINE CURVE ---
-        const goldenRatio = 1.61803398875;
         
-        // Pure logarithmic radius tracking your spatial timeline layout
-        let continuousRadius = Math.log(person.age + 1) * goldenRatio * 8.5; 
-        let spiralTheta = person.individualTheta + (person.age * 0.065) + person.familySeed;
+        let growthScale = Math.min(age / 12, 1);
+        const goldenRatio = 1.61803398875;
+        let continuousRadius = Math.log(age + 1) * goldenRatio * 8.5;
+        let spiralTheta = 0 + (age * 0.065) + person.familySeed;
 
-        // Map the entities directly along the unbroken geometric trajectory
-        let finalX = x + (continuousRadius * Math.cos(spiralTheta));
-        let finalY = y + (continuousRadius * Math.sin(spiralTheta));
-        let finalZ = z + (person.age * 0.9); // Grounded spacetime height progression
+        if (mask & 1) x += 5;
+        if (mask & 16) x += 20;
+        if (mask & 128) x += 20; 
+        x += continuousRadius * Math.cos(spiralTheta);
 
-        return { x: finalX, y: finalY, z: finalZ };
+        if (mask & 2) y += 5;
+        if (mask & 4) y += 10;
+        if (mask & 8) y += 15;
+        if (mask & 128) y += 20; 
+        y += continuousRadius * Math.sin(spiralTheta);
+
+        if (mask & 32) z += 15;
+        if (mask & 64) z += 25;
+        
+        return {
+            x: (x * growthScale),
+            y: (y * growthScale),
+            z: (z * growthScale) + (age * 0.9)
+        };
     }
-
-
-
 
     function project(x, y, z) {
         const centerX = canvas.width / 2;
@@ -649,10 +637,8 @@
                 ctx.beginPath();
                 
                 for (let testAge = 0; testAge <= 80; testAge += 1) {
-                    let testMask = 1 | 16 | 32 | 2 | 4 | 8 | 64; 
-                    if (currentSimType === 'crisis' && testAge >= 25 && testAge <= 60) {
-                        testMask = 1 | 16 | 32 | 2; 
-                    }
+                    // Use a pristine fully active architectural layout for smooth spatial rails
+                    let testMask = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128;
                     
                     let spaceExpansionFactor = 1.0;
                     if (testMask & 1) spaceExpansionFactor *= 1.1;
@@ -665,11 +651,12 @@
                     if (testMask & 8) internalMoralForce += 1.5;
 
                     const goldenRatio = 1.61803398875;
-                    let continuousRadius = Math.log(testAge + 1) * goldenRatio * 8.5; // Aligned scaling constant
+                    let continuousRadius = Math.log(testAge + 1) * goldenRatio * 8.5; 
                     let spiralTheta = 0 + (testAge * 0.065) + familySeed; 
-                    let sX = ((testMask & 1) ? 5 : 0) + ((testMask & 16) ? 20 : 0) + (continuousRadius * Math.cos(spiralTheta));
-                    let sY = ((testMask & 2) ? 5 : 0) + ((testMask & 4) ? 10 : 0) + ((testMask & 8) ? 15 : 0) + (continuousRadius * Math.sin(spiralTheta));
-                    let sZ = ((testMask & 32) ? 15 : 0) + ((testMask & 64) ? 25 : 0) + (testAge * 0.9); // Aligned to getXYZ coordinate weight and progression rate
+                    let growthScale = Math.min(testAge / 12, 1);
+                    let sX = (((testMask & 1) ? 5 : 0) + ((testMask & 16) ? 20 : 0) + ((testMask & 128) ? 20 : 0) + (continuousRadius * Math.cos(spiralTheta))) * growthScale;
+                    let sY = (((testMask & 2) ? 5 : 0) + ((testMask & 4) ? 10 : 0) + ((testMask & 8) ? 15 : 0) + ((testMask & 128) ? 20 : 0) + (continuousRadius * Math.sin(spiralTheta))) * growthScale;
+                    let sZ = (((testMask & 32) ? 15 : 0) + ((testMask & 64) ? 25 : 0)) * growthScale + (testAge * 0.9);
 
 
                     let pt = project(sX, sY, sZ);
@@ -680,6 +667,7 @@
             });
         }
     }
+
 
     function updateSimulation() {
         drawGrid();
