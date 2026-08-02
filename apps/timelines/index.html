@@ -990,7 +990,7 @@
             // Filter out waiting tokens in the birth queue to keep age telemetry metrics running accurately
             let activeAges = people.map(p => p.age).filter(a => a >= 0).sort((a, b) => a - b);
             if (activeAges.length > 0) {
-                let minAge = activeAges[0];
+                let minAge = activeAges[0]; // FIXED: Correctly extracts the absolute first element value
                 let maxAge = activeAges[activeAges.length - 1];
                 let medianAge;
                 let midIndex = Math.floor(activeAges.length / 2);
@@ -1092,6 +1092,7 @@
             }
         });
     }
+
 
     function updateInspector(person, coords) {
         document.getElementById('no-selection').style.display = 'none';
