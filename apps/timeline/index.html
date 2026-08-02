@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | v0.980GAMMA</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.982GAMMA</title>
     <style>
         body { 
             margin: 0; 
-            background: #040609; 
-            color: #e2e8f0; 
+            background: #030305; 
+            color: #ffffff; 
             font-family: 'Courier New', monospace; 
             display: flex; 
             height: 100vh; 
@@ -16,13 +16,13 @@
         }
         #sidebar { 
             width: 330px; 
-            background: #0a0d14; 
+            background: #09090f; 
             padding: 20px; 
             box-sizing: border-box; 
             display: flex; 
             flex-direction: column; 
             gap: 18px; 
-            border-right: 1px solid #141b29; 
+            border-right: 1px solid #141424; 
             z-index: 10;
         }
         #canvas-container { 
@@ -31,11 +31,11 @@
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            background: #020305;
+            background: #030305;
             height: 100vh;
         }
         canvas { 
-            background: #020305; 
+            background: #030305; 
             box-shadow: inset 0 0 150px rgba(0,0,0,0.98); 
             cursor: pointer;
             display: block;
@@ -44,8 +44,8 @@
             width: 420px;
             display: flex;
             flex-direction: column;
-            border-left: 1px solid #141b29;
-            background: #0a0d14;
+            border-left: 1px solid #141424;
+            background: #09090f;
             height: 100%;
         }
         #inspect-panel { 
@@ -56,13 +56,13 @@
             flex-direction: column; 
             gap: 10px; 
             overflow-y: auto;
-            border-bottom: 1px solid #141b29;
+            border-bottom: 1px solid #141424;
         }
         #matrix-log {
             height: 55%;
             padding: 20px;
             box-sizing: border-box;
-            background: #05070a;
+            background: #030305;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -71,7 +71,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #141b29;
+            border-bottom: 1px solid #141424;
             padding-bottom: 6px;
         }
         #log-stream {
@@ -110,57 +110,43 @@
             background: rgba(159,122,234,0.03); 
         }
         .btn { 
-            background: #2b6cb0; 
+            background: #0f0f1b; 
             color: white; 
-            border: none; 
+            border: 1px solid #00f0ff; 
             padding: 10px; 
             cursor: pointer; 
             font-weight: bold; 
             border-radius: 4px; 
             font-family: monospace;
             font-size: 12px;
+            transition: 0.1s;
         }
         .btn:hover { 
-            background: #2c5282; 
+            background: #00f0ff;
+            color: black;
+            font-weight: bold;
         }
         .btn-toggle { 
-            background: #2d3748; 
-            border: 1px solid #4a5568; 
+            background: #0f0f1b; 
+            border: 1px solid #00f0ff; 
         }
         .btn-toggle.active-mode { 
-            background: #b7791f; 
-            border-color: #d69e2e; 
+            background: #ff00aa !important; 
+            border-color: #ffffff !important; 
         }
         select { 
-            background: #121620; 
-            color: #e2e8f0; 
+            background: #030305; 
+            color: #ffffff; 
             padding: 8px; 
-            border: 1px solid #1a2233; 
+            border: 1px solid #141424; 
             border-radius: 4px; 
             font-family: monospace;
             width: 100%;
             font-size: 11px;
         }
-        .pillar { 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 5px 8px; 
-            border-radius: 3px; 
-            font-size: 11px; 
-        }
-        .active { 
-            background: rgba(72, 187, 120, 0.1); 
-            color: #48bb78; 
-            border-left: 3px solid #48bb78; 
-        }
-        .inactive { 
-            background: rgba(229, 62, 62, 0.1); 
-            color: #f56565; 
-            border-left: 3px solid #f56565; 
-        }
         .threat-meter { 
-            background: #121620; 
-            border: 1px solid #1a2233; 
+            background: #09090f; 
+            border: 1px solid #141424; 
             padding: 10px; 
             border-radius: 4px; 
         }
