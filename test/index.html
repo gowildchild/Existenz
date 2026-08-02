@@ -726,16 +726,14 @@
                     fatalityHistoryWindow.shift(); // Evicts oldest historical data slice to avoid calculation locks
                 }
 
-                let livingUnits = people.filter(p => p.age >= 0);
-                let deceivedUnits = livingUnits.filter(p => p.isIntolerant);
-                let currentIntoleranceRate = livingUnits.length > 0 ? (deceivedUnits.length / livingUnits.length) : 0;
+                // FIXED: Redundant local array filters stripped to rely purely on peak hoisted tracking data
 
                 person.age = -1.0; 
                 person.bitmask = 0;
                 person.birthCountdown = 0;
                 person.permanentScars = 0;
 
-                if (!rationalDefenseActive && Math.random() < currentIntoleranceRate) {
+                if (!isCurrentToleranceUnlimited && Math.random() < currentIntoleranceRate) {
                     person.isIntolerant = true; 
                 } else {
                     person.isIntolerant = false; 
@@ -796,7 +794,153 @@
                 }
             }
 
+    function processLifecycle() {
+        let livingUnits = people.filter(p => p.age >= 0);
+        let deceivedUnits = livingUnits.filter(p => p.isIntolerant);
+        currentIntoleranceRate = livingUnits.length > 0 ? (deceivedUnits.length / livingUnits.length) : 0;
+        currentSpreadPercentage = livingUnits.length > 0 ? Math.round((deceivedUnits.length / livingUnits.length) * 100) : 0;
+        simulationTick++;
+        let brokenPillarsCount = 0;
+        let totalCheckedPillars = people.length * 9; 
+        
+        let victimCount = 0;
+        let bitFailureCounts =; 
+
+        people.forEach((person) => {
+            person.lastBitmask = person.bitmask;
+            
+            // FIXED: Hoisted from lower loop scopes to eliminate early reference allocation crashes
+            let isCurrentToleranceUnlimited = (toleranceMode === 1 || (toleranceMode === 2 && typeof autoTriggeredUnlimited !== 'undefined' && autoTriggeredUnlimited));
+
+            // Handle active waiting queue for stochastic randomized birth spacing
+            if (person.age < 0) {
+                // If countdown is not yet set, initialize it with an isolated stochastic frame delay
+                if (person.birthCountdown === undefined || person.birthCountdown <= 0) {
+                    // Generates an isolated spacing buffer between 30 and 150 frames
+                    person.birthCountdown = 30 + Math.random() * 120;
+                }
+                
+                // Decrement the frame register continuously based on the temporal speed warp multiplier
+                person.birthCountdown -= 1.0 * currentSpeedMultiplier;
+                
+                // Node is held in absolute ghost state until its unique frame countdown expires cleanly
+                if (person.birthCountdown <= 0) {
+                    person.age = 0.0;
+                    person.individualTheta = Math.random() * Math.PI * 2;
+                    person.lastBitmask = 0;
+                    pushLog(`Unit #${person.id} reborn into ${person.family} after isolated frame delay cooldown.`, 'log-birth', person.id, person.family);
+                } else {
+                    person.bitmask = 0; // Maintain absolute ghost state while in the birth queue
+                    return;
+                }
+            } else {
+                // Refine step increments to 0.1 to let nodes spend more frame ticks inside the newborn window
+                person.age += 0.1 * currentSpeedMultiplier;
+            }
+            
+            let naturalDemiseTriggered = false;
+            let currentEraCeiling = 80;
+            
+            if (currentSimType === 'tribal')     currentEraCeiling = 35;
+            if (currentSimType === 'antiquity')  currentEraCeiling = 40;
+            if (currentSimType === 'feudal')     currentEraCeiling = 30;
+            if (currentSimType === 'industrial') currentEraCeiling = 45;
+            if (currentSimType === 'rights')     currentEraCeiling = 65;
+
+            if (person.age >= currentEraCeiling) {
+                let checkFactor = (person.age - currentEraCeiling) / (80 - currentEraCeiling + 1);
+                if (Math.random() < checkFactor || person.age >= 80) {
+                    naturalDemiseTriggered = true;
+                }
+            }
+
+            if (naturalDemiseTriggered) {
+                if (typeof globalTotalCompletions === 'undefined') {
+                    globalTotalCompletions = 0;
+                }
+                globalTotalCompletions++;
+
+                let wasCompromised = false;
+                for (let b = 0; b < 9; b++) {
+                    if ((1 << b) === 32) continue;
+                    if (person.bitmask > 0 && !(person.bitmask & (1 << b))) {
+                        wasCompromised = true;
+                    }
+                }
+                
+                // FIXED: Log the structural damage state as a binary entry in the rolling history window
+                fatalityHistoryWindow.push(wasCompromised ? 1 : 0);
+                
+                // Restrict array payload capacity precisely to the last 100 generational wave completions
+                if (fatalityHistoryWindow.length > 100) {
+                    fatalityHistoryWindow.shift(); // Evicts oldest historical data slice to avoid calculation locks
+                }
+
+                person.age = -1.0; 
+                person.bitmask = 0;
+                person.birthCountdown = 0;
+                person.permanentScars = 0;
+
+                if (!isCurrentToleranceUnlimited && Math.random() < currentIntoleranceRate) {
+                    person.isIntolerant = true; 
+                } else {
+                    person.isIntolerant = false; 
+                }
+
+                pushLog(`Unit #${person.id} completed lifecycle. Entering birth flux queue.`, 'log-shift', person.id, person.family);
+                return;
+            }
+
+            // --- UNIVERSAL POPEPRIAN SPATIAL TRANSMISSION MESH ---
+            if (isCurrentToleranceUnlimited && person.age >= 0) {
+                const totalDeceived = people.filter(p => p.age >= 0 && p.isIntolerant).length;
+                if (totalDeceived === 0 && person.id === 42) {
+                    person.isIntolerant = true;
+                    pushLog('Ideological strain mutation observed inside active population matrix.', 'log-threat');
+                }
+
+                if (person.isIntolerant) {
+                    people.forEach((neighbor) => {
+                        if (neighbor.age >= 0 && !neighbor.isIntolerant) {
+                            let dx = (person.individualTheta ? Math.cos(person.individualTheta) : 0) - (neighbor.individualTheta ? Math.cos(neighbor.individualTheta) : 0);
+                            let dy = (person.individualTheta ? Math.sin(person.individualTheta) : 0) - (neighbor.individualTheta ? Math.sin(neighbor.individualTheta) : 0);
+                            let distance = Math.hypot(dx, dy) * 100;
+
+                            if (distance < 25) {
+                                // Maintains your 0.2% slow sociological friction conversion probability
+                                if (Math.random() < 0.002 * currentSpeedMultiplier) {
+                                    neighbor.isIntolerant = true;
+                                    pushLog(`Unit #${neighbor.id} converted via spatial footprint.`, 'log-threat');
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    const activeAggressors = people.filter(p => p.age >= 0 && p.isIntolerant);
+                    activeAggressors.forEach((aggressor) => {
+                        let dx = (person.individualTheta ? Math.cos(person.individualTheta) : 0) - (aggressor.individualTheta ? Math.cos(aggressor.individualTheta) : 0);
+                        let dy = (person.individualTheta ? Math.sin(person.individualTheta) : 0) - (aggressor.individualTheta ? Math.sin(aggressor.individualTheta) : 0);
+                        let distance = Math.hypot(dx, dy) * 100;
+
+                        if (distance < 25) {
+                            person.bitmask &= ~4;  // Strips INTEGRITY
+                            person.bitmask &= ~16; // Strips PHYSICAL safety net
+                        }
+                    });
+                }
+            }
+
+            person.bitmask = calculatePillars(person, person.age, currentSimType);
+
+            if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
+                if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
+                    pushLog(`!! CRITICAL SEVERANCE !! Unit #${person.id} hit Age 30. Integrity stripped by Epoch Crisis rules.`, 'log-threat', person.id, person.family);
+                } else {
+                    pushLog(`Unit #${person.id} bit-shift recorded across spacetime.`, 'log-shift', person.id, person.family);
+                }
+            }
             let individualIsVictim = false;
+            
             for (let b = 0; b < 9; b++) {
                 if ((1 << b) === 32) continue; 
                 if (!(person.bitmask & (1 << b))) {
@@ -808,7 +952,6 @@
             if (individualIsVictim) { victimCount++; }
         });
 
-
         existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
         document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
@@ -819,7 +962,6 @@
         let weightedTotalPopulation = people.length * currentScaleMultiplier;
 
         if (document.getElementById('victim-count')) {
-            
             document.getElementById('victim-count').innerText = `${weightedVictims.toLocaleString()} / ${weightedTotalPopulation.toLocaleString()}`;
         }
 
@@ -878,6 +1020,15 @@
                 if (document.getElementById('tolerance-pct')) {
                     document.getElementById('tolerance-pct').innerText = "0%";
                 }
+            }
+        }
+
+        // FIXED: Automated Threshold Lock evaluation injected safely outside the loop pass
+        if (toleranceMode === 2) {
+            if (existenzThreatLevel >= 35) {
+                autoTriggeredUnlimited = true;
+            } else {
+                autoTriggeredUnlimited = false;
             }
         }
 
@@ -952,6 +1103,7 @@
             });
         }
     }
+
 
 
 
@@ -1384,6 +1536,8 @@
 
         // MODE 0: LIMITED TOLERANCE
         if (toleranceMode === 0) {
+            autoTriggeredUnlimited = false;
+            rationalDefenseActive = true;
             btn.style.background = 'rgba(72, 187, 120, 0.2)';
             btn.style.borderColor = '#48bb78';
             btn.style.color = '#48bb78';
@@ -1391,7 +1545,6 @@
             
             // Popper Theoretical Purge: Actively cleanses indoctrination (deceived) from nodes on defensive boundaries
             people.forEach(p => p.isIntolerant = false);
-            
             if (document.getElementById('tolerance-count')) document.getElementById('tolerance-count').innerText = "";
             if (document.getElementById('tolerance-pct')) document.getElementById('tolerance-pct').innerText = "0%";
             if (alertOverlay) {
@@ -1401,18 +1554,26 @@
             }
             pushLog('Popperian limit active: Defensive mode engaged. Intolerant strain wiped.', 'log-lock');
         } 
-        
         // MODE 1: UNLIMITED TOLERANCE
         else if (toleranceMode === 1) {
+            autoTriggeredUnlimited = true;
+            rationalDefenseActive = false;
             btn.style.background = 'rgba(229, 62, 62, 0.2)';
             btn.style.borderColor = '#e53e3e';
             btn.style.color = '#fc8181';
             btn.innerText = '[UNLIMITED] TOLERANCE';
-            pushLog('Popperian limit dropped: Society vulnerable under UNLIMITED tolerance.', 'log-threat');
+            
+            // Frame 1 Instantiation: Instantly inject ideological strain to unblock tracking mechanics
+            const targetNode = people.find(p => p.id === 42);
+            if (targetNode) {
+                targetNode.isIntolerant = true;
+            }
+            pushLog('Popperian limit dropped: Manual override active. Target Node #42 tracked.', 'log-threat');
         } 
-        
         // MODE 2: AUTO TOLERANCE
         else if (toleranceMode === 2) {
+            autoTriggeredUnlimited = false;
+            rationalDefenseActive = false;
             btn.style.background = 'rgba(0, 240, 255, 0.15)';
             btn.style.borderColor = '#00f0ff';
             btn.style.color = '#00f0ff';
