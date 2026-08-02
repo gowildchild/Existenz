@@ -578,64 +578,77 @@
 
 
 
+    // Maps your 9 architectural bits cleanly along your pure, uncompressed timeline attributes
     function getXYZ(person) {
         let mask = person.bitmask;
+        
+        // Pure Cartesian coordinates matching your structural parameters exactly
         let x = 0;
         let y = 0;
         let z = 0;
 
-        // --- X-AXIS: MATERIAL SECURITY TOOLS ---
-        if (mask & 1)   x += 5;   // EXISTENCE
-        if (mask & 16)  x += 20;  // PHYSICAL
-        if (mask & 128) x += 40;  // PROPERTY (Merely tools, but physically grounding)
+        // X-Axis (Material & Bio Reality)
+        if (mask & 1)   x += 5;   
+        if (mask & 16)  x += 20;  
+        if (mask & 128) x += 40;  
 
-        // --- Y-AXIS: MORAL AND COGNITIVE INTERNAL DRIVE ---
-        if (mask & 2)   y += 5;   // AUTONOMY
-        if (mask & 4)   y += 10;  // INTEGRITY
-        if (mask & 8)   y += 15;  // PSYCHOLOGY
+        // Y-Axis (Internal Drive & Choice Matrix)
+        if (mask & 2)   y += 5;   
+        if (mask & 4)   y += 10;  
+        if (mask & 8)   y += 15;  
 
-        // --- Z-AXIS: SYSTEMIC HUMAN FOOTPRINT (THE LEVEL OF BEING) ---
-        // Completely decoupled from linear age loops to stop the unnatural top swarming!
-        if (mask & 32)  z += 15;  // DISABILITY (The permanent universal structural floor)
-        if (mask & 64)  z += 30;  // DEVELOPMENT
-        if (mask & 256) z += 45;  // PRESENCE
+        // Z-Axis (Evolutionary Growth Continuum)
+        if (mask & 32)  z += 15;  
+        // DEVELOPMENT and PRESENCE now scale linearly with age step progression 
+        // to prevent the sudden spatial teleportation burst lines!
+        if (mask & 64)  z += (person.age * 0.4);  
+        if (mask & 256) z += (person.age * 0.8);  
 
-        // --- PURE LOGARITHMIC FIBONACCI SPACE-TIME SPIRAL ---
-        const goldenRatio = 1.61803398875;
-        
-        // Age dictates the radius width of horizontal expansion, not vertical height velocity
-        let continuousRadius = Math.log(person.age + 1) * goldenRatio * 12.0; 
-        let spiralTheta = person.individualTheta + (person.age * 0.065) + person.familySeed;
-
-        let finalX = x + (continuousRadius * Math.cos(spiralTheta));
-        let finalY = y + (continuousRadius * Math.sin(spiralTheta));
-        let finalZ = z; // Stays firmly locked to the tier of your active pillars!
-
-        return { x: finalX, y: finalY, z: finalZ };
+        return { x: x, y: y, z: z };
     }
 
-
-
-
-
-    function project(x, y, z) {
+    // RELATIVISTIC PROJECTION MATRIX: Time and bits warp the literal space framework on screen
+    function project(x, y, z, personAge, personBitmask) {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2 + 110;
         const matrixScale = 3.6; 
-        let isoX = centerX + (x - y) * Math.cos(0.52) * matrixScale;
-        let isoY = centerY + (x + y) * Math.sin(0.52) * matrixScale - (z * matrixScale);
+
+        // --- THE PLATONIC SPACETIME CURVATURE VECTOR ---
+        const goldenRatio = 1.61803398875;
+        
+        // Your continuous timeline trajectory (Age) generates the raw angular velocity
+        let spiralTheta = (personAge * 0.065);
+        // If a person's PSYCHOLOGY (8) or INTEGRITY (4) is crushed, the space fabric tightens
+        let internalMoralCurvature = (personBitmask & 4 && personBitmask & 8) ? 1.0 : 0.65;
+        
+        // Logarithmic radius calculation curves the screen space around the center origin
+        let spaceWarpRadius = Math.log(personAge + 1) * goldenRatio * 16.0 * internalMoralCurvature;
+
+        // Apply non-linear Fibonacci transformations directly into the viewport engine
+        // Your core coordinates (x, y) now sit on an active, bending cosmic fabric
+        let curvedX = x + (spaceWarpRadius * Math.cos(spiralTheta));
+        let curvedY = y + (spaceWarpRadius * Math.sin(spiralTheta));
+        
+        // The total vertical coordinate sits firmly on the structure of the active pillars (z)
+        let curvedZ = z;
+
+        // Final 3D Isometric Mapping using the curved space properties
+        let isoX = centerX + (curvedX - curvedY) * Math.cos(0.52) * matrixScale;
+        let isoY = centerY + (curvedX + curvedY) * Math.sin(0.52) * matrixScale - (curvedZ * matrixScale);
+        
         return { x: isoX, y: isoY };
     }
+
 
     function drawGrid() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.strokeStyle = '#141b26';
         ctx.lineWidth = 1;
         
-        let origin = project(0, 0, 0);
-        let xAxis = project(180, 0, 0);
-        let yAxis = project(0, 40, 0);
-        let zAxis = project(0, 0, 160);
+        let origin = project(0, 0, 0, 0, 0);
+        let xAxis = project(180, 0, 0, 0, 0);
+        let yAxis = project(0, 40, 0, 0, 0);
+        let zAxis = project(0, 0, 160, 0, 0);
         
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(xAxis.x, xAxis.y); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(yAxis.x, yAxis.y); ctx.stroke();
@@ -660,36 +673,48 @@
                         testMask = 1 | 16 | 32 | 2; 
                     }
                     
-                    let spaceExpansionFactor = 1.0;
-                    if (testMask & 1)   spaceExpansionFactor *= 1.1;
-                    if (testMask & 16)  spaceExpansionFactor *= 1.25;
-                    if (testMask & 128) spaceExpansionFactor *= 1.4;
+                    let x = 0;
+                    let y = 0;
+                    let z = 0;
 
-                    let internalMoralForce = 1.0;
-                    if (testMask & 2)   internalMoralForce += 0.5;
-                    if (testMask & 4)   internalMoralForce += 1.0;
-                    if (testMask & 8)   internalMoralForce += 1.5;
+                    // X-Axis (Material Security Tools Mapping)
+                    if (testMask & 1)   x += 5;   
+                    if (testMask & 16)  x += 20;  
+                    if (testMask & 128) x += 40;  
 
+                    // Y-Axis (Internal Moral/Cognitive Drivers Mapping)
+                    if (testMask & 2)   y += 5;   
+                    if (testMask & 4)   y += 10;  
+                    if (testMask & 8)   y += 15;  
+
+                    // Z-Axis (Evolutionary Growth Continuum Mapping)
+                    if (testMask & 32)  z += 15;  
+                    if (testMask & 64)  z += (testAge * 0.4);  
+                    if (testMask & 256) z += (testAge * 0.8);  
+
+                    // --- THE GOLDEN RATIO SPIRAL RESTORED ---
                     const goldenRatio = 1.61803398875;
-                    let continuousRadius = Math.log(testAge + 1) * goldenRatio * 5.2 * spaceExpansionFactor * (internalMoralForce * 0.4);
-                    let spiralTheta = 0 + (testAge * 0.065) + familySeed; 
+                    let continuousRadius = Math.log(testAge + 1) * goldenRatio * 8.5;
+                    let spiralTheta = (testAge * 0.065) + familySeed;
 
-                    let sX = continuousRadius * Math.cos(spiralTheta);
-                    let sY = continuousRadius * Math.sin(spiralTheta);
-                    let sZ = ((testMask & 32) ? 25 : 0) + ((testMask & 64) ? 20 : 0) + (testAge * 0.75);
+                    let sX = x + (continuousRadius * Math.cos(spiralTheta));
+                    let sY = y + (continuousRadius * Math.sin(spiralTheta));
+                    let sZ = z;
 
-                    let pt = project(sX, sY, sZ);
+                    // Pass the complete coordinates to the space-warping project engine
+                    let pt = project(sX, sY, sZ, testAge, testMask);
                     if (testAge === 0) ctx.moveTo(pt.x, pt.y);
                     else ctx.lineTo(pt.x, pt.y);
                 }
                 ctx.stroke();
             });
         }
-    }
+
 
     function updateSimulation() {
         drawGrid();
         
+        // --- MACRO SCALING: SMOOTH AGGREGATE FLOW MAPPING (10k - 1M) ---
         // --- MACRO SCALING: SMOOTH AGGREGATE FLOW MAPPING (10k - 1M) ---
         if (currentPopulationScale >= 10000) {
             ctx.lineWidth = 1;
@@ -715,25 +740,35 @@
                         let testMask = calculatePillars({ id: j }, testAge, currentSimType);
                         if (testMask === 0) continue; 
 
-                        let spaceExpansionFactor = 1.0;
-                        if (testMask & 1)   spaceExpansionFactor *= 1.1;
-                        if (testMask & 16)  spaceExpansionFactor *= 1.25;
-                        if (testMask & 128) spaceExpansionFactor *= 1.4;
+                        let x = 0;
+                        let y = 0;
+                        let z = 0;
 
-                        let internalMoralForce = 1.0;
-                        if (testMask & 2)   internalMoralForce += 0.5;
-                        if (testMask & 4)   internalMoralForce += 1.0;
-                        if (testMask & 8)   internalMoralForce += 1.5;
+                        // X-Axis
+                        if (testMask & 1)   x += 5;   
+                        if (testMask & 16)  x += 20;  
+                        if (testMask & 128) x += 40;  
 
+                        // Y-Axis
+                        if (testMask & 2)   y += 5;   
+                        if (testMask & 4)   y += 10;  
+                        if (testMask & 8)   y += 15;  
+
+                        // Z-Axis
+                        if (testMask & 32)  z += 15;  
+                        if (testMask & 64)  z += (testAge * 0.4);  
+                        if (testMask & 256) z += (testAge * 0.8);  
+
+                        // --- THE GOLDEN RATIO SPIRAL RESTORED ---
                         const goldenRatio = 1.61803398875;
-                        let continuousRadius = Math.log(testAge + 1) * goldenRatio * 12.0;
+                        let continuousRadius = Math.log(testAge + 1) * goldenRatio * 8.5;
                         let spiralTheta = customThetaOffset + (testAge * 0.065) + familySeed;
 
-                        let sX = (testMask & 1 ? 5 : 0) + (testMask & 16 ? 20 : 0) + (testMask & 128 ? 40 : 0) + (continuousRadius * Math.cos(spiralTheta));
-                        let sY = (testMask & 2 ? 5 : 0) + (testMask & 4 ? 10 : 0) + (testMask & 8 ? 15 : 0) + (continuousRadius * Math.sin(spiralTheta));
-                        let sZ = ((testMask & 32) ? 15 : 0) + ((testMask & 64) ? 30 : 0) + ((testMask & 256) ? 45 : 0);
+                        let sX = x + (continuousRadius * Math.cos(spiralTheta));
+                        let sY = y + (continuousRadius * Math.sin(spiralTheta));
+                        let sZ = z;
 
-                        let pt = project(sX, sY, sZ);
+                        let pt = project(sX, sY, sZ, testAge, testMask);
                         if (testAge === 0) ctx.moveTo(pt.x, pt.y);
                         else ctx.lineTo(pt.x, pt.y);
                     }
@@ -742,6 +777,7 @@
             });
             return; 
         }
+
 
         // --- DISCRETE INDIVIDUAL MODE (SCALE 100 - 1,000 UNITS) ---
         let sortedPopulation = [...people].sort((a, b) => {
@@ -833,7 +869,7 @@
         people.forEach((person, index) => {
             if (person.bitmask === 0) return;
             let coords = getXYZ(person);
-            let pt = project(coords.x, coords.y, coords.z);
+            let pt = project(coords.x, coords.y, coords.z, person.age, person.bitmask);
             let dist = Math.hypot(pt.x - clickX, pt.y - clickY);
             if (dist < minDist) {
                 minDist = dist;
