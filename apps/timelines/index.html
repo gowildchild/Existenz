@@ -292,10 +292,21 @@
         people = [];
         let allocatedArraySize = currentPopulationScale > 1000 ? 500 : currentPopulationScale;
 
-        for (let i = 0; i  35) {
-            stream.removeChild(stream.firstChild);
+        for (let i = 0; i < allocatedArraySize; i++) {
+            let assignedAge = Math.floor(Math.random() * 80);
+            let familyId = Math.floor(Math.random() * families.length);
+            people.push({
+                id: i + 1,
+                age: assignedAge,
+                family: families[familyId],
+                familySeed: familyId * 1.45, 
+                individualTheta: Math.random() * Math.PI * 2, 
+                bitmask: 0,
+                lastBitmask: 0
+            });
         }
     }
+    
     function calculatePillars(person, age, type) {
         let bitmask = 0;
         bitmask |= 1;   // EXISTENCE
