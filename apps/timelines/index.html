@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.996B</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.997</title>
     <style>
         body { 
             margin: 0; 
@@ -15,7 +15,7 @@
             overflow: hidden; 
         }        
         #sidebar { 
-            width: 330px; 
+            width: 360px; /* Enhanced slightly to shield data monitor rows comfortably */
             background: #09090f; 
             padding: 20px; 
             box-sizing: border-box; 
@@ -54,23 +54,26 @@
             height: 100%;
         }
         #inspect-panel { 
-            height: 45%;
-            padding: 20px; 
+            /* Fully optimized to nest as a crisp dark telemetry container in the sidebar */
+            background: #0c0c14;
+            border: 1px solid #141424;
+            padding: 14px; 
             box-sizing: border-box; 
             display: flex; 
             flex-direction: column; 
             gap: 10px; 
-            overflow-y: auto;
-            border-bottom: 1px solid #141424;
+            border-radius: 4px;
+            margin-top: 5px;
         }
         #matrix-log {
-            height: 55%;
+            height: 100%; /* Expands the terminal chatter log cleanly to full vertical panel space */
             padding: 20px;
             box-sizing: border-box;
             background: #030305;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            overflow: hidden;
         }
         #log-header-zone {
             display: flex;
@@ -532,23 +535,26 @@
                 bitmask |= (1 << 20) | (1 << 24); // Protect native adult shields
                 break;
 
-            case 'pre-surveil': // Late 90s Cybernetic Optimism (CORRECTED RANGE BOUNDARIES)
-                bitmask |= 2 | 4 | 64;         
-                if (age >= 5)  bitmask |= 8;   // Psychology intact across the early, non-predatory open web
-                if (age >= 22) bitmask |= 128; // Early digital asset layers scale cleanly without flashing off
+              case 'pre-surveil': // Late 90s Cybernetic Optimism (CORRECTED RANGE BOUNDARIES)
+                bitmask |= 2 | 4; // Core autonomy and integrity online
+                if (age >= 5 && person.id % 6 !== 0) bitmask |= 8; // Psychology intact with a light 16% localized digital isolation stress factor
+                if (person.id % 8 !== 0) bitmask |= 64; // Open web development accessible to 87.5% of the infrastructure framework
+                if (age >= 22 && person.id % 12 !== 0) bitmask |= 128; // Early digital assets layer scale with minor 8% network volatility ripples
                 break;
-
+                
             case 'early-data': // 2010s Silicon Boom Expansion
                 bitmask |= 2 | 4 | 64 | 128;   // Rapid expansion of tools and asset access
-                if (age < 12 || age > 45) {
-                    bitmask |= 8;              // Psychology begins fracturing under initial screen loop cycles
+                // Fix: Grant psychological baseline universally, then compromise it under screen loops
+                if (age >= 12 && age <= 45) {
+                    bitmask |= 8; 
                 }
                 break;
 
             case 'modern': // The Hyper-Digital Now (2020s Panopticon)
                 bitmask |= 2 | 64 | 128;       // Pervasive connectivity and instant material tools online
-                if (age < 11 || age > 55) {
-                    bitmask |= 8;              // Pervasive feedback algorithms trap psychology in critical years
+                // Fix: Grant psychological baseline safely only outside targeted algorithmic bracket windows
+                if (age >= 11 && age <= 55) {
+                    bitmask |= 8;              
                 }
                 if (person.id % 3 !== 0) {
                     bitmask |= 4;              // Personal integrity drops under systematic digital moderation metrics
@@ -1013,9 +1019,6 @@
             }
         });
     }
-
-
-
 
     function updateInspector(person, coords) {
         document.getElementById('no-selection').style.display = 'none';
