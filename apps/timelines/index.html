@@ -388,9 +388,10 @@
     let isPlaying = false;
     let selectedPersonIndex = -1; 
     let showSpirals = true;
-    let currentSimType = 'tribal';
+    let currentSimType = 'rights';
     let simulationTick = 0;
     let existenzThreatLevel = 0;
+    let globalSystemicFatalities = 0;
     let currentPopulationScale = 100;
     let currentScaleMultiplier = 1;
     let currentSpeedMultiplier = 1.0;
@@ -613,7 +614,7 @@
         let totalCheckedPillars = people.length * 9; 
         
         let victimCount = 0;
-        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+        let bitFailureCounts =; 
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
@@ -651,6 +652,18 @@
             }
 
             if (naturalDemiseTriggered) {
+                // Evaluate bitmask before clearing state to identify systemic rights fatalities
+                let wasCompromised = false;
+                for (let b = 0; b < 9; b++) {
+                    if ((1 << b) === 32) continue; // Exclude orthogonal disability baseline
+                    if (person.bitmask > 0 && !(person.bitmask & (1 << b))) {
+                        wasCompromised = true;
+                    }
+                }
+                if (wasCompromised) {
+                    globalSystemicFatalities++;
+                }
+
                 // Shift to a negative state to initialize the randomized stochastic birth spacing queue
                 person.age = -1.0; 
                 person.bitmask = 0;
@@ -693,6 +706,14 @@
 
         if (document.getElementById('victim-count')) {
             document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
+        }
+
+        if (document.getElementById('severed-rights-count')) {
+            document.getElementById('severed-rights-count').innerText = `${victimCount} / ${people.length}`;
+        }
+
+        if (document.getElementById('systemic-death-count')) {
+            document.getElementById('systemic-death-count').innerText = globalSystemicFatalities.toString();
         }
 
         const bitBlueprints = [
@@ -749,6 +770,7 @@
             });
         }
     }
+
 
 
 
