@@ -405,6 +405,7 @@
     let existenzThreatLevel = 0;
     let globalSystemicFatalities = 0;
     let globalTotalCompletions = 0;
+    let autoTriggeredUnlimited = false;
     // 0 = LIMITED, 1 = UNLIMITED, 2 = AUTO
     let toleranceMode = 2; 
     let rationalDefenseActive = true; 
@@ -647,6 +648,10 @@
 
 
     function processLifecycle() {
+        let livingUnits = people.filter(p => p.age >= 0);
+        let deceivedUnits = livingUnits.filter(p => p.isIntolerant);
+        currentIntoleranceRate = livingUnits.length > 0 ? (deceivedUnits.length / livingUnits.length) : 0;
+        currentSpreadPercentage = livingUnits.length > 0 ? Math.round((deceivedUnits.length / livingUnits.length) * 100) : 0;
         simulationTick++;
         let brokenPillarsCount = 0;
         let totalCheckedPillars = people.length * 9; 
@@ -814,6 +819,7 @@
         let weightedTotalPopulation = people.length * currentScaleMultiplier;
 
         if (document.getElementById('victim-count')) {
+            
             document.getElementById('victim-count').innerText = `${weightedVictims.toLocaleString()} / ${weightedTotalPopulation.toLocaleString()}`;
         }
 
@@ -841,10 +847,8 @@
             if (!rationalDefenseActive) {
                 toleranceRow.style.display = 'flex'; 
                 
-                let livingUnits = people.filter(p => p.age >= 0);
-                let deceivedUnits = livingUnits.filter(p => p.isIntolerant);
                 let rawDeceivedCount = deceivedUnits.length * currentScaleMultiplier;
-                let spreadPct = livingUnits.length > 0 ? Math.round((deceivedUnits.length / livingUnits.length) * 100) : 0;
+                let spreadPct = currentSpreadPercentage;
 
                 if (document.getElementById('tolerance-count')) {
                     document.getElementById('tolerance-count').innerText = `[${rawDeceivedCount.toLocaleString()}]`;
@@ -889,9 +893,6 @@
             { name: "PRESENCE (256)",  count: 0, bit: 256 }
         ];
 
-        let livingUnitsForVectors = people.filter(p => p.age >= 0);
-        let deceivedUnitsForVectors = livingUnitsForVectors.filter(p => p.isIntolerant);
-        let currentSpreadPercentage = livingUnitsForVectors.length > 0 ? Math.round((deceivedUnitsForVectors.length / livingUnitsForVectors.length) * 100) : 0;
         let isCivilizationOverthrown = (!rationalDefenseActive && currentSpreadPercentage >= 51);
 
         people.forEach((person) => {
@@ -1489,6 +1490,7 @@
         globalSystemicFatalities = 0;
         globalTotalCompletions = 0; 
         fatalityHistoryWindow = [];
+        autoTriggeredUnlimited = false;
 
         // Instantly push the reset baselines to the active dashboard UI text spans
         if (document.getElementById('systemic-death-count')) {
