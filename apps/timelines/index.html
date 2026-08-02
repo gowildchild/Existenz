@@ -817,9 +817,14 @@
         setTimeout(() => { requestAnimationFrame(executionLoop); }, 70); 
     }
 
-    initPopulation();
-    pushLog("Existenz Space-Time Matrix online. 50 multiversal timelines activated.", "log-birth");
-    updateSimulation();
+    window.addEventListener('load', () => {
+        initPopulation();
+        
+        // Safely executes now that pushLog is fully defined in the global memory space
+        pushLog("Existenz Space-Time Matrix online. 50 multiversal timelines activated.", "log-birth");
+        
+        updateSimulation();
+    });
 </script>
 </body>
 </html>
