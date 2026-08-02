@@ -204,6 +204,18 @@
             </div>
             <div style="background:#1a2233; height:5px; border-radius:2px;"><div id="threat-bar"></div></div>
         </div>
+
+        <div class="threat-meter" style="margin-top: 10px;">
+            <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC METRICS</div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px;">
+                <span>Total Active Victims:</span>
+                <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 50</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span>Primary Stress Vector:</span>
+                <span id="top-flipped-bit" style="font-weight:bold; color:#ecc94b; font-size: 10px;">NONE</span>
+            </div>
+        </div>
         
         <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
         <button class="btn btn-toggle" id="spiral-btn" onclick="toggleSpiralField()">Show Majestic Spirals</button>
@@ -386,7 +398,11 @@
     function processLifecycle() {
         simulationTick++;
         let brokenPillarsCount = 0;
-        let totalCheckedPillars = 50 * 7;
+        let totalCheckedPillars = people.length * 7; // Dynamically adapts to population scales (50, 100, 1000)
+        
+        let victimCount = 0;
+        // Array matching indices 0-6 to track exactly which bits are stripped the most
+        let bitFailureCounts =; 
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
@@ -409,17 +425,54 @@
                 }
             }
 
+            let individualIsVictim = false;
             for (let b = 0; b < 7; b++) {
-                if ((1 << b) === 32) continue; 
-                if (!(person.bitmask & (1 << b))) brokenPillarsCount++;
+                if ((1 << b) === 32) continue; // Skip DISABILITY (32) as it is your permanent inclusive anchor
+                
+                if (!(person.bitmask & (1 << b))) {
+                    brokenPillarsCount++;
+                    bitFailureCounts[b]++; // Record which specific pillar is broken
+                    individualIsVictim = true;
+                }
+            }
+            if (individualIsVictim) {
+                victimCount++;
             }
         });
 
+        // Calculate global threat vector percentages
         existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
         document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
+
+        // --- UPDATE DYNAMIC VICTIM AND BIT-FLIP SIDEBAR UI ---
+        document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
+
+        // Find which pillar index has the highest failure/flip accumulation rate
+        let maxFailures = 0;
+        let worstBitIndex = -1;
+        for (let i = 0; i < bitFailureCounts.length; i++) {
+            if (bitFailureCounts[i] > maxFailures) {
+                maxFailures = bitFailureCounts[i];
+                worstBitIndex = i;
+            }
+        }
+
+        const bitLabels = [
+            "EXISTENCE (1)",
+            "AUTONOMY (2)",
+            "INTEGRITY (4)",
+            "PSYCHOLOGY (8)",
+            "PHYSICAL (16)",
+            "DISABILITY (32)",
+            "DEVELOPMENT (64)"
+        ];
+
+        let topVectorText = worstBitIndex !== -1 && maxFailures > 0 ? bitLabels[worstBitIndex] : "NONE (STABLE)";
+        document.getElementById('top-flipped-bit').innerText = topVectorText;
     }
+
     // Maps the 9 architectural bits directly into your exact Platonic coordinates
     // Maps the 9 architectural bits directly onto your pure, wide-sweeping Fibonacci orbits
     // Maps the 9 architectural bits directly onto your pure, grounded coordinate matrix
