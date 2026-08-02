@@ -1398,6 +1398,10 @@
         globalSystemicFatalities = 0;
         globalTotalCompletions = 0; // Clears cumulative lifecycles to drop generational counter
 
+        // FIXED: Explicitly purges the extremist infection state from every node on the grid
+        people.forEach((person) => {
+            person.isExtremist = false;
+        });
         // Instantly push the reset baselines to the active dashboard UI text spans
         if (document.getElementById('systemic-death-count')) {
             document.getElementById('systemic-death-count').innerText = "0 / 100";
@@ -1409,10 +1413,12 @@
             document.getElementById('tolerance-count').innerText = "[0]";
         }
         if (document.getElementById('tolerance-pct')) {
-            document.getElementById('tolerance-pct').innerText = "0%";
+            document.getElementById('tolerance-pct').innerText = "0%"; // Wipes Poppertime index data synchronously
         }
+        
         pushLog("Systemic telemetry tracking logs flushed and reset to zero vector.", "log-shift");
     }
+
     
     function executionLoop() {
         if (!isPlaying) return;
