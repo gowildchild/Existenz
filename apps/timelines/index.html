@@ -320,76 +320,96 @@
     
     function calculatePillars(person, age, type) {
         let bitmask = 0;
-        bitmask |= 1;   
-        bitmask |= 16;  
-        bitmask |= 32;  
+        
+        // --- THE UNBROKEN PLATONIC BASELINE ---
+        bitmask |= 1;   // EXISTENCE (Always alive while in the matrix)
+        bitmask |= 32;  // DISABILITY (The permanent universal inclusive floor)
+
+        // --- PROGRESSIVE MORTALITY & PRESENCE MECHANIC ---
+        // Historical lifespan scaling. If you exceed the era's medical threshold, 
+        // your PHYSICAL and PRESENCE bits collapse to 0 (Natural Death).
+        let lifeExpectancy = 80; 
+        if (type === 'tribal')     lifeExpectancy = 35;
+        if (type === 'antiquity')  lifeExpectancy = 40;
+        if (type === 'feudal')     lifeExpectancy = 30;
+        if (type === 'industrial') lifeExpectancy = 45;
+        if (type === 'rights')     lifeExpectancy = 65;
+
+        if (age < lifeExpectancy) {
+            bitmask |= 16;  // PHYSICAL vessel stays online
+            bitmask |= 256; // PRESENCE: Real-Time Spacetime Footprint active
+        } else {
+            // Unit has naturally deceased. Spacetime footprint returns to 0.
+            return bitmask; 
+        }
 
         switch(type) {
             case 'tribal':
-                bitmask |= 2; 
-                if (age >= 10) bitmask |= 4;  
-                if (age >= 4)  bitmask |= 8;  
-                if (age >= 8)  bitmask |= 64; 
+                bitmask |= 2; // Tribal autonomy high
+                if (age >= 12) bitmask |= 4 | 8; // Integrity and peace inside close clan bonds
                 break;
 
-            case 'antiquity':
-                bitmask |= 2; 
-                bitmask |= 4; 
-                if (age >= 12) bitmask |= 8;  
-                if (age >= 6)  bitmask |= 64; 
+            case 'antiquity': // Diogenes Era
+                bitmask |= 2; // Absolute sovereign autonomy to choose
+                bitmask |= 4; // High moral axis of personal choice
+                if (age >= 15) bitmask |= 8 | 64; // Philosophical psychology and development
                 break;
 
             case 'feudal':
-                if (person.id % 8 === 0) bitmask |= 2 | 128; 
-                if (age >= 14) bitmask |= 4;  
-                if (age > 45)  bitmask |= 8;  
-                if (age >= 10) bitmask |= 64; 
+                if (person.id % 10 === 0) bitmask |= 2 | 128; // Only 10% Lords hold Autonomy & Property
+                if (age >= 14) bitmask |= 4; // Integrity bound to strict external oaths
                 break;
 
             case 'enlighten':
-                if (age >= 15) bitmask |= 2;  
-                bitmask |= 4;                 
-                if (age >= 10) bitmask |= 8;  
-                if (age >= 5)  bitmask |= 64; 
+                if (age >= 21) bitmask |= 2; // Autonomy returns via reason
+                bitmask |= 4; // Absolute focus on human rights foundations
+                if (age >= 7) bitmask |= 64; // Evolutionary creative growth expands
                 break;
 
             case 'industrial':
-                if (age >= 18) bitmask |= 2;   
-                if (person.id % 2 === 0) bitmask |= 4; 
-                if (age < 10 || age > 50) bitmask |= 8; 
-                if (age >= 12) bitmask |= 64;  
-                if (age >= 35) bitmask |= 128; 
-                break;
-
-            case 'rights':
-                bitmask |= 2 | 4 | 64;         
-                if (age >= 3) bitmask |= 8;    
-                if (age >= 28) bitmask |= 128; 
-                break;
-
-            case 'pre-surveil':
-                bitmask |= 2 | 4 | 8 | 64;     
-                if (age >= 22) bitmask |= 128; 
-                break;
-
-            case 'early-data':
-                bitmask |= 2 | 4 | 64 | 128;   
-                if (age < 15 || age > 45) bitmask |= 8;              
-                break;
-
-            case 'modern':
-                bitmask |= 2 | 64 | 128;       
-                if (age < 11 || age > 55) bitmask |= 8;              
-                if (person.id % 3 !== 0)  bitmask |= 4;              
-                break;
-
-            case 'crisis':
-                bitmask |= 128; 
-                if (age < 25 || age > 60) {
-                    bitmask |= 2 | 4 | 8 | 64;
+                // The Industrial Paradox: Policy was harsh, but structures lasted longer
+                if (age >= 16) bitmask |= 2; // Legal labor autonomy exists
+                if (age >= 35) bitmask |= 128; // Property accumulated via industrial labor
+                // --- THE INDUSTRIAL TOLL ---
+                if (age > 10 && age < 40) {
+                    // Peak working years strip mental peace and development
                 } else {
-                    bitmask |= 2; 
-                    if (person.id % 5 === 0) bitmask |= 4; 
+                    bitmask |= 8 | 64; 
+                }
+                break;
+
+            case 'rights': // Post-WWII Universal Declarations
+                bitmask |= 2 | 4 | 64; // Institutional global protections online
+                if (age >= 5)  bitmask |= 8;   // Modern mental healthcare architectures
+                if (age >= 25) bitmask |= 128; // Institutional wealth protections
+                break;
+
+            case 'pre-surveil': // Late 90s Cybernetic Optimism
+                bitmask |= 2 | 4 | 8 | 64; 
+                if (age >= 20) bitmask |= 128; // Early digital assets asset layers activate
+                break;
+
+            case 'early-data': // 2010s Silicon Boom
+                bitmask |= 2 | 4 | 64 | 128; 
+                if (age < 12 || age > 45) bitmask |= 8; // Screen time loops chip away at Psychology
+                break;
+
+            case 'modern': // The Hyper-Digital Now
+                bitmask |= 2 | 64 | 128; 
+                if (age < 11 || age > 50) bitmask |= 8; // Constant surveillance fractures Psychology
+                if (person.id % 4 !== 0)  bitmask |= 4; // Algorithmic pressures challenge personal Integrity
+                break;
+
+            case 'crisis': // The Systemic Collapse / Paradox of Tolerance Limit
+                // Autocracy exploits property systems to control life
+                bitmask |= 128; 
+                if (age < 20 || age > 65) {
+                    bitmask |= 2 | 4 | 8 | 64; // Safe zones only for the non-productive layers
+                } else {
+                    // --- THE REPRESSION MATRIX ---
+                    // Severe rights severance targeting active, free-thinking generations
+                    if (person.id % 5 === 0) bitmask |= 2; // Only 20% retain true Autonomy
+                    if (person.id % 8 === 0) bitmask |= 4; // Integrity is systematically criminalized
                 }
                 break;
         }
