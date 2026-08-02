@@ -596,8 +596,18 @@
                 }
                 break;
         }
+
+        // --- PROGRESSIVE SYSTEMIC ATTRITION SCARRING FOR ERAS 8, 9, 10 ---
+        // Intercepts active state steps to ensure structural trauma stays permanently broken for life
+        if (type === 'early-data' || type === 'modern' || type === 'crisis') {
+            if (person.bitmask && person.bitmask !== 0 && person.lastBitmask !== 0) {
+                bitmask &= person.bitmask;
+            }
+        }
+
         return bitmask;
     }
+
 
 
     function processLifecycle() {
