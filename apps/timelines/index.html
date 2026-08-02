@@ -1832,15 +1832,49 @@
 
     function cycleToleranceMode() {
         // Explicit sequence routing map: Auto (2) leads directly to Limited (0)
-        const transitionSequence = { 2: 2, 1: 1, 0: 0 };
-        toleranceMode = transitionSequence[toleranceMode];
+        // const transitionSequence = { 2: 2, 1: 1, 0: 0 };
+        // toleranceMode = transitionSequence[toleranceMode];
+        if (typeof autoTriggeredUnlimited !== 'undefined') {
+            autoTriggeredUnlimited = false;
+        }
         
+        // FIXED: Re-mapped to cycle backwards: 2 (Auto/A) -> 1 (ON) -> 0 (OFF)
+        if (toleranceMode === 2) {
+            toleranceMode = 1; // Move from Auto (A) to ON (1)
+        } else if (toleranceMode === 1) {
+            toleranceMode = 0; // Move from ON (1) to OFF (0)
+        } else {
+            toleranceMode = 2; // Cycle from OFF (0) back to Auto (A)
+        }        
         const btn = document.getElementById('defense-toggle-btn');
         const alertOverlay = document.getElementById('collapse-alert-overlay');
         if (!btn) return;
 
         // MODE 0: LIMITED TOLERANCE
-        if (toleranceMode === 0) {
+        if (toleranceMode === 2) {
+            autoTriggeredUnlimited = false;
+            rationalDefenseActive = false;
+            btn.style.background = 'rgba(0, 240, 255, 0.15)';
+            btn.style.borderColor = '#00f0ff';
+            btn.style.color = '#00f0ff';
+            btn.innerText = 'PARADOX A';
+            pushLog('Automated Popper Interceptor: Boundary gates will trip automatically at 35% systemic stress.', 'log-lock');
+        }  else if (toleranceMode === 1) {
+            autoTriggeredUnlimited = true;
+            rationalDefenseActive = false;
+            btn.style.background = 'rgba(229, 62, 62, 0.2)';
+            btn.style.borderColor = '#e53e3e';
+            btn.style.color = '#fc8181';
+            btn.innerText = 'PARADOX 1';
+            
+            // Frame 1 Instantiation: Instantly inject ideological strain to unblock tracking mechanics
+            const targetNode = people.find(p => p.id === 42);
+            if (targetNode) {
+                targetNode.isIntolerant = true;
+            }
+            pushLog('Popperian limit dropped: Manual override active. Target Node #42 tracked.', 'log-threat');
+        }       
+        else if (toleranceMode === 0) {
             autoTriggeredUnlimited = false;
             rationalDefenseActive = true;
             btn.style.background = 'rgba(72, 187, 120, 0.2)';
@@ -1859,32 +1893,9 @@
             }
             pushLog('Popperian limit active: Defensive mode engaged. Intolerant strain wiped.', 'log-lock');
         } 
-        // MODE 1: UNLIMITED TOLERANCE
-        else if (toleranceMode === 1) {
-            autoTriggeredUnlimited = true;
-            rationalDefenseActive = false;
-            btn.style.background = 'rgba(229, 62, 62, 0.2)';
-            btn.style.borderColor = '#e53e3e';
-            btn.style.color = '#fc8181';
-            btn.innerText = 'PARADOX 1';
-            
-            // Frame 1 Instantiation: Instantly inject ideological strain to unblock tracking mechanics
-            const targetNode = people.find(p => p.id === 42);
-            if (targetNode) {
-                targetNode.isIntolerant = true;
-            }
-            pushLog('Popperian limit dropped: Manual override active. Target Node #42 tracked.', 'log-threat');
-        } 
-        // MODE 2: AUTO TOLERANCE
-        else if (toleranceMode === 2) {
-            autoTriggeredUnlimited = false;
-            rationalDefenseActive = false;
-            btn.style.background = 'rgba(0, 240, 255, 0.15)';
-            btn.style.borderColor = '#00f0ff';
-            btn.style.color = '#00f0ff';
-            btn.innerText = 'PARADOX A';
-            pushLog('Automated Popper Interceptor: Boundary gates will trip automatically at 35% systemic stress.', 'log-lock');
-        }
+
+        drawGrid();
+        updateSimulation();
     }
 
     function changeSimulation() {
