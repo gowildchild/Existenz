@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.099b</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.100b</title>
     <style>
         body { 
             margin: 0; 
@@ -312,17 +312,7 @@
         bitmask |= 1;   // EXISTENCE
         bitmask |= 32;  // DISABILITY (The permanent universal inclusive floor)
 
-        let lifeExpectancy = 80; 
-        if (type === 'tribal')     lifeExpectancy = 35;
-        if (type === 'antiquity')  lifeExpectancy = 40;
-        if (type === 'feudal')     lifeExpectancy = 30;
-        if (type === 'industrial') lifeExpectancy = 45;
-        if (type === 'rights')     lifeExpectancy = 65;
-
-        if (age >= lifeExpectancy) {
-            return 0; 
-        }
-
+        // RESTORED: Hard-coded lifespan caps removed to let your dynamic processLifecycle engine govern biological attrition fluidly!
         bitmask |= 16;  // PHYSICAL
         bitmask |= 256; // PRESENCE
 
@@ -366,7 +356,7 @@
                 bitmask |= 2 | 4 | 64;         
                 if (age >= 3)  bitmask |= 8;   
                 if (age >= 28) bitmask |= 128; 
-                bitmask |= (1 << 20) | (1 << 24); // SHIELD_HUMAN_RIGHTS & SHIELD_BASIC_RIGHTS
+                bitmask |= 1048576 | 2097152; // SHIELD_HUMAN_RIGHTS & SHIELD_BASIC_RIGHTS direct integers
                 break;
 
             case 'pre-surveil':
@@ -398,6 +388,7 @@
         }
         return bitmask;
     }
+
     function processLifecycle() {
         simulationTick++;
         let brokenPillarsCount = 0;
@@ -448,24 +439,24 @@
                 if (coreDamage & (1 << b)) unshieldedStressCount++;
             }
             
-            // DYNAMIC VELOCITY ENGINE: Stripped rights break the body. 
-            let lifecycleVelocity = 0.5 + (unshieldedStressCount * 1.8);
-            person.age += lifecycleVelocity;
+            // RESTORED: Time ticks forward smoothly and continuously to protect the Fibonacci tracking
+            person.age += 0.5;
 
-            // DYNAMIC MAX CEILING: Base maximum lifespans adapt fluidly to the era structures
+            // DYNAMIC ATTENTION LIMITS: Core structural policy caps determine life span
             let maxNaturalAge = 80;
             if (currentSimType === 'tribal')       maxNaturalAge = 35;
             if (currentSimType === 'antiquity')    maxNaturalAge = 40;
             if (currentSimType === 'feudal')       maxNaturalAge = 32;
             if (currentSimType === 'industrial')   maxNaturalAge = 48;
             if (currentSimType === 'rights')       maxNaturalAge = 75;
-            if (currentSimType === 'pre-surveil')  maxNaturalAge = 82; // Early cyber optimism expands cap
+            if (currentSimType === 'pre-surveil')  maxNaturalAge = 82; 
             if (currentSimType === 'early-data')   maxNaturalAge = 84;
-            if (currentSimType === 'modern')       maxNaturalAge = 88; // Modern medical shields push past 80
+            if (currentSimType === 'modern')       maxNaturalAge = 88; 
 
-            // Apply systemic unshielded stress compression over the era base cap
-            if (unshieldedStressCount >= 3)      maxNaturalAge = Math.min(maxNaturalAge, 35);
-            else if (unshieldedStressCount >= 1) maxNaturalAge = Math.min(maxNaturalAge, 55);
+            // SYSTEMIC DEPRIVATION TOLL: Unshielded stress actively lowers the life cap dynamically
+            // This cuts life short without causing sudden explosive coordinate leaps
+            if (unshieldedStressCount >= 3)      maxNaturalAge = Math.min(maxNaturalAge, 30);
+            else if (unshieldedStressCount >= 1) maxNaturalAge = Math.min(maxNaturalAge, 48);
 
             if (person.age >= maxNaturalAge) {
                 person.bitmask = 0; // Natural lifecycle dissolution or premature attrition collapse
@@ -473,9 +464,7 @@
             }
 
             person.bitmask = person.bitmask & ~coreDamage;
-
             if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
-
                 if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
                     pushLog(`!! CRITICAL SEVERANCE !! Unit #${person.id} hit Age 30. Integrity stripped.`, 'log-threat', person.id, person.family);
                 } else {
