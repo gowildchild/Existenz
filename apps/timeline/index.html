@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | v0.91b</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | v0.92b</title>
     <style>
         body { 
             margin: 0; 
@@ -671,6 +671,15 @@
         });
 
         sortedPopulation.forEach((person) => {
+            // FIXED: If the unit is dead, render them immediately as a grey ghost and skip further processing
+            if (person.bitmask === 0) {
+                ctx.fillStyle = '#718096'; // GREY: Transitionary death phase
+                // Project them cleanly at their last computed vertical altitude step before recycling
+                let pt = project(0, 0, (person.age * 0.8)); 
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 2.5, 0, Math.PI * 2); ctx.fill();
+                return;
+            }
+
             let coords = getXYZ(person);
             let pt = project(coords.x, coords.y, coords.z);
             let isTargeted = (selectedPersonIndex !== -1 && person.id === people[selectedPersonIndex].id);
@@ -690,15 +699,15 @@
                 ctx.shadowBlur = 0; 
                 updateInspector(person, coords);
             } else {
-                // Color mapping rules based on active epoch characteristics
-                if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 60) {
-                    ctx.fillStyle = (person.bitmask & 4) ? '#fc8181' : '#e53e3e';
-                } else if (currentSimType === 'diogenes' || currentSimType === 'antiquity') {
-                    ctx.fillStyle = '#48bb78'; 
-                } else if (currentSimType === 'modern') {
-                    ctx.fillStyle = (person.bitmask & 8) ? '#4299e1' : '#ed8936'; 
+                // VISUAL STATE FILTERS: Neonatal initialization and dynamic structural threat mapping
+                if (person.age <= 1.0) {
+                    ctx.fillStyle = '#ffffff'; // WHITE: Newborn unit initialization window
+                } else if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
+                    ctx.fillStyle = '#e53e3e'; // RED: Foundational failure (Existence, Autonomy, Integrity)
+                } else if (!(person.bitmask & 8) || (!(person.bitmask & 64) && person.age >= 8) || (!(person.bitmask & 128) && person.age >= 35) || !(person.bitmask & 256)) {
+                    ctx.fillStyle = '#ed8936'; // ORANGE: High-tier structural compromise warning
                 } else {
-                    ctx.fillStyle = '#3182ce'; 
+                    ctx.fillStyle = '#48bb78'; // LIGHT GREEN: Completely intact and secure footprint
                 }
                 
                 // Scale physical node radius dynamically with lifecycle age acceleration
@@ -707,6 +716,7 @@
             }
         });
     }
+
 
     function updateInspector(person, coords) {
         document.getElementById('no-selection').style.display = 'none';
