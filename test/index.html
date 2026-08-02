@@ -708,7 +708,8 @@
                 let wasCompromised = false;
                 for (let b = 0; b < 9; b++) {
                     if ((1 << b) === 32) continue;
-                    if (person.bitmask > 0 && !(person.bitmask & (1 << b))) {
+                    // FIXED: If the bit is 0, the right is compromised. If it is 1, it is safe.
+                    if ((person.bitmask & (1 << b)) === 0) {
                         wasCompromised = true;
                     }
                 }
@@ -892,7 +893,8 @@
             }
 
             bitBlueprints.forEach((blueprint) => {
-                if (!(person.bitmask & blueprint.bit)) {
+                // FIXED: Increments the tracker ONLY when the specific human rights bit evaluates to 0 (compromised)
+                if ((person.bitmask & blueprint.bit) === 0) {
                     blueprint.count++;
                 }
             });
