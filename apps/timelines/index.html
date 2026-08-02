@@ -975,7 +975,10 @@
         let closestIndex = -1;
         let minDist = 99999;
         
-        people.forEach((person, index) => {
+        // Cache population state locally to prevent rendering race condition locks
+        const staticPopulationSample = [...people];
+        
+        staticPopulationSample.forEach((person, index) => {
             let coords = getXYZ(person);
             let pt = project(coords.x, coords.y, coords.z);
             let dist = Math.hypot(pt.x - clickX, pt.y - clickY);
@@ -985,14 +988,20 @@
             }
         });
         
-        // Dynamically scale your clickable selection radius relative to your viewport zoom factor
-        let adaptiveThreshold = 30 / canvasZoomFactor;
-        if (minDist < adaptiveThreshold) { 
+        // Calibrated targeting threshold buffer scaled for 14ms high-refresh matrix inputs
+        let adaptiveThreshold = 45 / canvasZoomFactor;
+        if (minDist < adaptiveThreshold && closestIndex !== -1) { 
             selectedPersonIndex = closestIndex;
             let lockedPerson = people[selectedPersonIndex];
-            document.getElementById('log-filter-status').innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
-            document.getElementById('log-filter-status').style.color = '#9f7aea';
+            
+            // Safe DOM execution pass
+            const statusEl = document.getElementById('log-filter-status');
+            if (statusEl) {
+                statusEl.innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
+                statusEl.style.color = '#9f7aea';
+            }
             pushLog(`TELEMETRY LOCK ENGAGED: Isolating data strings for Individual #${lockedPerson.id} and the ${lockedPerson.family}.`, 'log-lock');
+            drawGrid();
             updateSimulation();
         }
     });
