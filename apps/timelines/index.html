@@ -640,7 +640,6 @@
         }
 
 
-        // --- DISCRETE INDIVIDUAL MODE (SCALE 100 - 1,000 UNITS) ---
         let sortedPopulation = [...people].sort((a, b) => {
             let posA = getXYZ(a);
             let posB = getXYZ(b);
@@ -654,12 +653,13 @@
             let pt = project(coords.x, coords.y, coords.z, person.age, person.bitmask);
             let isTargeted = (selectedPersonIndex !== -1 && person.id === people[selectedPersonIndex].id);
             
-            ctx.strokeStyle = isTargeted ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.03)';
-            ctx.lineWidth = 0.5;
-            let originPt = project(0, 0, coords.z, person.age, person.bitmask);
-            ctx.beginPath(); ctx.moveTo(originPt.x, originPt.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
-
+            // REMOVED: The center-spine anchor lines that were causing the exploding fireworks layout circles
             if (isTargeted) {
+                ctx.strokeStyle = 'rgba(159, 122, 234, 0.4)';
+                ctx.lineWidth = 1;
+                // Draw a small localized ground ring or tracking halo instead of a massive spine anchor
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 12, 0, Math.PI * 2); ctx.stroke();
+                
                 ctx.fillStyle = '#f6e05e';
                 ctx.shadowColor = '#f6e05e';
                 ctx.shadowBlur = 12;
@@ -682,6 +682,7 @@
             }
         });
     }
+
 
     function updateInspector(person, coords) {
         document.getElementById('no-selection').style.display = 'none';
