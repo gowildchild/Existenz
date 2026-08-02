@@ -375,7 +375,7 @@
             </div>
             <div id="instigator-panel-wrapper" style="display: none; margin-bottom: 12px; color: #8e8eaf;">
                 <!-- Section Title Header: Clear, readable, and safely stacked -->
-                <div style="font-size: 10px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">Radicalization:</div>
+                <div style="font-size: 10px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; margin-top: 8px; border-top: 1px solid #1a2233; padding-top: 4px;letter-spacing: 0.5px;">Radicalization:</div>
                 
                 <!-- Target Container: Rows append here and use their own inner flex alignment -->
                 <div id="top-instigators-list" style="font-size: 11px;">
@@ -1196,39 +1196,44 @@
             let calculatedLevel = currentFatalities >= 75 ? 4 : (currentFatalities >= 60 ? 3 : (currentFatalities >= 30 ? 2 : 1));
 
             activeInstigators.forEach((node) => {
-                // Dynamically fetch coordinates assigned during the frame calculation pass
-                let targetX = node.screenX || (node.pt ? node.pt.x : null);
-                let targetY = node.screenY || (node.pt ? node.pt.y : null);
+                // FIXED: Reconstruct the exact structural 3D spiral vector matrix coordinates live
+                let radiusMatrix = 35 + node.age * (canvasZoomFactor * 2.5);
+                let sX = Math.cos(node.individualTheta) * radiusMatrix;
+                let sY = Math.sin(node.individualTheta) * radiusMatrix;
+                let sZ = node.age * 0.9; // Synchronized perfectly with your standard vertical biological decay line step
 
-                if (targetX && targetY) {
-                    ctx.save();
+                // Flatten the 3D vectors into real-time 2D pixel coordinates using your native projection routine
+                let pt = typeof project === 'function' ? project(sX, sY, sZ) : null;
 
-                    // 1. FORCE THE SPHERE: Solid Hot Pink inner core ball stamped explicitly onto the grid plane
+                if (pt && typeof pt.x === 'number' && typeof pt.y === 'number') {
+                    ctx.save(); // Locks styles to shield rest of layout tracks
+
+                    // 1. FORCE THE CORE BALL: Stamped explicitly as a solid Hot Pink sphere over the grid plane
                     ctx.beginPath();
-                    ctx.arc(targetX, targetY, 5 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.arc(pt.x, pt.y, 5 * canvasZoomFactor, 0, Math.PI * 2);
                     ctx.fillStyle = '#ff1493'; 
                     ctx.fill();
                     ctx.closePath();
 
-                    // 2. FORCE RING 1: Core bounding tracking circle
+                    // 2. FORCE RING 1: Core bounding tracking circle around the pink sphere
                     ctx.beginPath();
-                    ctx.arc(targetX, targetY, 12 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.arc(pt.x, pt.y, 12 * canvasZoomFactor, 0, Math.PI * 2);
                     ctx.strokeStyle = '#ff1493'; 
                     ctx.lineWidth = 2;
                     ctx.stroke();
                     ctx.closePath();
 
-                    // 3. FORCE RING 2: Concentric threat layer tracking line for Level 4 elements
+                    // 3. FORCE RING 2 (LEVEL 4): Secondary concentric threat boundary ring
                     if (calculatedLevel === 4) {
                         ctx.beginPath();
-                        ctx.arc(targetX, targetY, 20 * canvasZoomFactor, 0, Math.PI * 2);
+                        ctx.arc(pt.x, pt.y, 20 * canvasZoomFactor, 0, Math.PI * 2);
                         ctx.strokeStyle = 'rgba(255, 20, 147, 0.4)'; 
                         ctx.lineWidth = 1.5;
                         ctx.stroke();
                         ctx.closePath();
                     }
 
-                    ctx.restore();
+                    ctx.restore(); // Restores clean baseline graphics state parameters
                 }
             });
         }        
