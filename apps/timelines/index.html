@@ -321,13 +321,11 @@
     function calculatePillars(person, age, type) {
         let bitmask = 0;
         
-        // --- THE UNBROKEN PLATONIC BASELINE ---
-        bitmask |= 1;   // EXISTENCE (Always alive while in the matrix)
-        bitmask |= 32;  // DISABILITY (The permanent universal inclusive floor)
+        // --- UNIVERSAL ARCHITECTURAL CONSTANTS ---
+        bitmask |= 1;   // EXISTENCE
+        bitmask |= 32;  // DISABILITY (The permanent universal floor holding up the framework)
 
-        // --- PROGRESSIVE MORTALITY & PRESENCE MECHANIC ---
-        // Historical lifespan scaling. If you exceed the era's medical threshold, 
-        // your PHYSICAL and PRESENCE bits collapse to 0 (Natural Death).
+        // --- HISTORICAL LIFESPAN BOUNDARIES (MORTALITY CAP) ---
         let lifeExpectancy = 80; 
         if (type === 'tribal')     lifeExpectancy = 35;
         if (type === 'antiquity')  lifeExpectancy = 40;
@@ -335,86 +333,92 @@
         if (type === 'industrial') lifeExpectancy = 45;
         if (type === 'rights')     lifeExpectancy = 65;
 
-        if (age < lifeExpectancy) {
-            bitmask |= 16;  // PHYSICAL vessel stays online
-            bitmask |= 256; // PRESENCE: Real-Time Spacetime Footprint active
-        } else {
-            // Unit has naturally deceased. Spacetime footprint returns to 0.
-            return bitmask; 
+        // If the individual passes the era threshold, they dissolve out of the space-time field completely
+        if (age >= lifeExpectancy) {
+            return 0; // Return a completely blank bitmask to signify standard systemic mortality
         }
+
+        bitmask |= 16;  // PHYSICAL (Vessel remains active while alive)
+        bitmask |= 256; // PRESENCE (Real-time footprint remains active while alive)
 
         switch(type) {
             case 'tribal':
-                bitmask |= 2; // Tribal autonomy high
-                if (age >= 12) bitmask |= 4 | 8; // Integrity and peace inside close clan bonds
+                bitmask |= 2; // Tribal group autonomy
+                if (age >= 10) bitmask |= 4;  // Integrity inside clan survival
+                if (age >= 4)  bitmask |= 8;  // Psychology protected by proximal bands
+                if (age >= 8)  bitmask |= 64; // Tribal developmental knowledge
                 break;
 
-            case 'antiquity': // Diogenes Era
-                bitmask |= 2; // Absolute sovereign autonomy to choose
-                bitmask |= 4; // High moral axis of personal choice
-                if (age >= 15) bitmask |= 8 | 64; // Philosophical psychology and development
+            case 'antiquity': // Diogenes / Cynic Era
+                bitmask |= 2; // Absolute sovereign autonomy of choice
+                bitmask |= 4; // High moral axis of choice
+                if (age >= 12) bitmask |= 8;  // Internal peace unbothered by external assets
+                if (age >= 6)  bitmask |= 64; // High individual evolutionary development
                 break;
 
             case 'feudal':
-                if (person.id % 10 === 0) bitmask |= 2 | 128; // Only 10% Lords hold Autonomy & Property
-                if (age >= 14) bitmask |= 4; // Integrity bound to strict external oaths
+                if (person.id % 8 === 0) bitmask |= 2 | 128; // Only lords hold Autonomy & Property
+                if (age >= 14) bitmask |= 4;  // Integrity restricted to strict serf/lord oaths
+                if (age >= 10) bitmask |= 64; // Development limited to serf production
                 break;
 
             case 'enlighten':
-                if (age >= 21) bitmask |= 2; // Autonomy returns via reason
-                bitmask |= 4; // Absolute focus on human rights foundations
-                if (age >= 7) bitmask |= 64; // Evolutionary creative growth expands
+                if (age >= 15) bitmask |= 2;  // Autonomy scales back upward as reason maps out
+                bitmask |= 4;                 // Objective human morality axis re-emerges
+                if (age >= 10) bitmask |= 8;  // Psychology shifts to intellectual curiosity
+                if (age >= 5)  bitmask |= 64; // Massive developmental and creative growth bounds
                 break;
 
             case 'industrial':
-                // The Industrial Paradox: Policy was harsh, but structures lasted longer
-                if (age >= 16) bitmask |= 2; // Legal labor autonomy exists
-                if (age >= 35) bitmask |= 128; // Property accumulated via industrial labor
-                // --- THE INDUSTRIAL TOLL ---
-                if (age > 10 && age < 40) {
-                    // Peak working years strip mental peace and development
-                } else {
-                    bitmask |= 8 | 64; 
+                if (age >= 18) bitmask |= 2;   // Legal autonomy granted for factory labor classes
+                if (person.id % 2 === 0) bitmask |= 4; // Integrity strained heavily by factory environments
+                if (age < 12 || age > 48) bitmask |= 8; // Psychology only intact outside child labor and elder breakdown
+                if (age >= 12) bitmask |= 64;  // Industrial production training
+                if (age >= 35) bitmask |= 128; // Assets accumulated late in life
+                break;
+
+            case 'rights': // Post-WWII Institutional Framework
+                bitmask |= 2 | 4 | 64;         // Universal Declaration architectures online
+                if (age >= 3)  bitmask |= 8;   // Modern mental healthcare tracking
+                if (age >= 28) bitmask |= 128; // Standard asset and home ownership protection metrics
+                break;
+
+            case 'pre-surveil': // Late 90s Cybernetic Optimism (CORRECTED RANGE BOUNDARIES)
+                bitmask |= 2 | 4 | 64;         
+                if (age >= 5)  bitmask |= 8;   // Psychology intact across the early, non-predatory open web
+                if (age >= 22) bitmask |= 128; // Early digital asset layers scale cleanly without flashing off
+                break;
+
+            case 'early-data': // 2010s Silicon Boom Expansion
+                bitmask |= 2 | 4 | 64 | 128;   // Rapid expansion of tools and asset access
+                if (age < 12 || age > 45) {
+                    bitmask |= 8;              // Psychology begins fracturing under initial screen loop cycles
                 }
                 break;
 
-            case 'rights': // Post-WWII Universal Declarations
-                bitmask |= 2 | 4 | 64; // Institutional global protections online
-                if (age >= 5)  bitmask |= 8;   // Modern mental healthcare architectures
-                if (age >= 25) bitmask |= 128; // Institutional wealth protections
+            case 'modern': // The Hyper-Digital Now (2020s Panopticon)
+                bitmask |= 2 | 64 | 128;       // Pervasive connectivity and instant material tools online
+                if (age < 11 || age > 55) {
+                    bitmask |= 8;              // Pervasive feedback algorithms trap psychology in critical years
+                }
+                if (person.id % 3 !== 0) {
+                    bitmask |= 4;              // Personal integrity drops under systematic digital moderation metrics
+                }
                 break;
 
-            case 'pre-surveil': // Late 90s Cybernetic Optimism
-                bitmask |= 2 | 4 | 8 | 64; 
-                if (age >= 20) bitmask |= 128; // Early digital assets asset layers activate
-                break;
-
-            case 'early-data': // 2010s Silicon Boom
-                bitmask |= 2 | 4 | 64 | 128; 
-                if (age < 12 || age > 45) bitmask |= 8; // Screen time loops chip away at Psychology
-                break;
-
-            case 'modern': // The Hyper-Digital Now
-                bitmask |= 2 | 64 | 128; 
-                if (age < 11 || age > 50) bitmask |= 8; // Constant surveillance fractures Psychology
-                if (person.id % 4 !== 0)  bitmask |= 4; // Algorithmic pressures challenge personal Integrity
-                break;
-
-            case 'crisis': // The Systemic Collapse / Paradox of Tolerance Limit
-                // Autocracy exploits property systems to control life
-                bitmask |= 128; 
-                if (age < 20 || age > 65) {
-                    bitmask |= 2 | 4 | 8 | 64; // Safe zones only for the non-productive layers
+            case 'crisis': // Systemic Rights Severance / Authoritarian Threat Limit
+                bitmask |= 128; // Total centralization of resource asset matrices at the top
+                if (age < 25 || age > 60) {
+                    bitmask |= 2 | 4 | 8 | 64; // Safe zones restricted only to dependent layers
                 } else {
-                    // --- THE REPRESSION MATRIX ---
-                    // Severe rights severance targeting active, free-thinking generations
-                    if (person.id % 5 === 0) bitmask |= 2; // Only 20% retain true Autonomy
-                    if (person.id % 8 === 0) bitmask |= 4; // Integrity is systematically criminalized
+                    bitmask |= 2; // Critical limit: Only raw internal Autonomy remains to resist
+                    if (person.id % 5 === 0) bitmask |= 4; // Rare 20% guard their hidden Integrity core
                 }
                 break;
         }
         return bitmask;
     }
+
 
 
     function processLifecycle() {
@@ -424,7 +428,7 @@
         
         let victimCount = 0;
         // CORRECTED: Array initialized with 7 zeros to prevent syntax compile crashes
-        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0]; 
+        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
@@ -493,6 +497,11 @@
 
         // Loop through the population to compute counts for all 9 architectural states
         people.forEach((person) => {
+            // FIXED: If a person has naturally deceased, do not process them as an active victim
+            if (person.bitmask === 0) {
+                return; // Skip this person and jump to the next one
+            }
+
             bitBlueprints.forEach((blueprint) => {
                 // If a bit is NOT active, increment the structural failure record tally
                 if (!(person.bitmask & blueprint.bit)) {
