@@ -395,6 +395,7 @@
     let existenzThreatLevel = 0;
     let globalSystemicFatalities = 0;
     let globalTotalCompletions = 0;
+    let rationalDefenseActive = false;
     let currentPopulationScale = 100;
     let currentScaleMultiplier = 1;
     let currentSpeedMultiplier = 1.0;
@@ -1340,6 +1341,9 @@
         } 
         if (document.getElementById('generations-count')) {
             document.getElementById('generations-count').innerText = "0";
+        }
+        if (document.getElementById('tolerance-pct')) {
+            document.getElementById('tolerance-pct').innerText = "0%"; // Fixed: Wipes Poppertime index data synchronously
         }
         pushLog("Systemic telemetry tracking logs flushed and reset to zero vector.", "log-shift");
     }
