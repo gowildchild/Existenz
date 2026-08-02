@@ -1430,6 +1430,12 @@
             btn.innerText = '[AUTO] TOLERANCE';
             pushLog('Automated Popper Interceptor: Boundary gates will trip automatically at 35% systemic stress.', 'log-lock');
         }
+
+        // FIXED: Forces an instant canvas repaint and telemetry dashboard recalculation down the pipeline
+        // This ensures fields snap into view immediately on clicks even if the timeline simulation loop is paused!
+        if (typeof updateSimulation === 'function') {
+            updateSimulation();
+        }
     }
 
     function changeSimulation() {
