@@ -197,10 +197,7 @@ class ExistentialMeta(IntFlag):
     SHIELD_DISCRIMINATION_RIGHTS = 1 << 22 # 8388608 Shield B3 (Systemic)
     SHIELD_BASIC_RIGHTS          = 1 << 24 # 2097152 Shield B (Institutional)
     # The acquired micro-structural SHIELDS
-    SHIELD_EXPLOITATION_RIGHTS   = 1 << 25 # 33554432 Shield C2 (Anti-Exploitation)
     SHIELD_AQUIRED_RIGHTS        = 1 << 26 # 67108864 Shield D (Acquired by alliance)
-    # Forensic and Trust Shields
-    SHIELD_FORENSIC_RIGHTS       = 1 << 28 # 268435456 Shield D2 (Immutable records)
     SHIELD_AQUIRED_TRUST         = 1 << 30 # 1073741824 Shield E (Human Action)
 
 class ExistentialThreatMeta(IntFlag):
