@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.083</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.084</title>
     <style>
         body { 
             margin: 0; 
@@ -491,7 +491,6 @@
         activeStressVectors.sort((a, b) => b.count - a.count);
         let topFiveVectors = activeStressVectors.slice(0, 5);
 
-        const vectorsContainer = document.getElementById('top-vectors-list');
         if (vectorsContainer) {
             vectorsContainer.innerHTML = '';
             topFiveVectors.forEach((vector, rank) => {
@@ -499,7 +498,6 @@
                 vectorRow.style.display = 'flex';
                 vectorRow.style.justifyContent = 'space-between';
                 vectorRow.style.padding = '2px 4px';
-                
                 if (vector.count > 0) {
                     vectorRow.style.color = rank === 0 ? '#fc8181' : (rank < 3 ? '#f6ad55' : '#ecc94b');
                 } else {
@@ -510,8 +508,7 @@
             });
         }
     }
-    
-    // RESTORED: Pure 3D coordinates calculation where Z dictates absolute height and age dictates radius
+
     function getXYZ(person) {
         let mask = person.bitmask;
         let x = 0;
@@ -540,7 +537,7 @@
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2 + 130;
         const matrixScaleXY = 3.6; 
-        const matrixScaleZ = 4.2; 
+        const matrixScaleZ = 3.8; 
 
         let currentAge = personAge || 0;
         let currentMask = personBitmask || 0;
@@ -549,12 +546,13 @@
         let spiralTheta = (currentAge * 0.065);
         let internalMoralCurvature = (currentMask & 4 && currentMask & 8) ? 1.0 : 0.65;
         
-        let spaceWarpRadius = Math.log(currentAge + 1) * goldenRatio * 22.0 * internalMoralCurvature;
+        // Time radius acts directly over horizontal coordinates as an un-rotated width expansion scalar
+        let spaceWarpRadius = Math.log(currentAge + 1) * goldenRatio * 8.5;
         
-        let scaleFactor = (currentAge / 80.0) + 1.0;
-        let curvedX = (x * scaleFactor) + (spaceWarpRadius * Math.cos(spiralTheta));
-        let curvedY = (y * scaleFactor) + (spaceWarpRadius * Math.sin(spiralTheta));
-        let curvedZ = z + (currentAge * 2.5); 
+        // Apply the continuous Fibonacci rotation velocity directly onto the vertical altitude plane
+        let curvedX = x + (spaceWarpRadius * Math.cos(spiralTheta));
+        let curvedY = y + (spaceWarpRadius * Math.sin(spiralTheta));
+        let curvedZ = z + ((currentAge * 2.5) * internalMoralCurvature); 
 
         let isoX = centerX + (curvedX - curvedY) * Math.cos(0.52) * matrixScaleXY;
         let isoY = centerY + (curvedX + curvedY) * Math.sin(0.52) * matrixScaleXY - (curvedZ * matrixScaleZ);
