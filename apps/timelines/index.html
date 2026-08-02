@@ -13,7 +13,7 @@
             display: flex; 
             height: 100vh; 
             overflow: hidden; 
-        }
+        }        
         #sidebar { 
             width: 330px; 
             background: #09090f; 
@@ -179,6 +179,48 @@
             color: #ff00aa; 
             border-left: 3px solid #ff00aa; 
         }        
+        
+        /* Mobile and Tablet Fluid Adaptation Layout Settings Placement */
+        @media (max-width: 1024px) {
+            body {
+                display: grid !important;
+                grid-template-areas: 
+                    "canvas"
+                    "sidebar"
+                    "rightpanel";
+                grid-template-rows: auto auto auto;
+                overflow-y: auto;
+                height: auto;
+            }
+            #canvas-container {
+                grid-area: canvas;
+                width: 100%;
+                height: 55dvh !important; 
+            }
+            #sidebar {
+                grid-area: sidebar;
+                width: 100% !important;
+                height: auto !important;
+                border-right: none !important;
+                border-bottom: 1px solid #141424;
+            }
+            #right-panel {
+                grid-area: rightpanel;
+                width: 100% !important;
+                height: auto !important;
+                border-left: none !important;
+            }
+        }
+        
+        @media (max-width: 1024px) and (orientation: landscape) {
+            body {
+                display: flex !important;
+                flex-direction: column;
+            }
+            #canvas-container {
+                height: 85dvh !important; 
+            }
+        }        
     </style>
 </head>
 
@@ -326,7 +368,7 @@
     let currentPopulationScale = 100;
     let currentScaleMultiplier = 1;
     let currentSpeedMultiplier = 1.0;
-    let canvasZoomFactor = 1.0;  
+    let canvasZoomFactor = 1.5;  
     let currentBirthProbability = 0.05;
     
     const families = ["Alpha Lineage", "Beta Cluster", "Gamma Node", "Delta Branch", "Epsilon Matrix"];
@@ -1100,12 +1142,12 @@
     }    
     
     function resetCameraZoom() {
-        canvasZoomFactor = 1.0;
+        canvasZoomFactor = 1.5;
         
         // Restore your exact baseline layout string format on mouse clicks
         const zoomBtn = document.getElementById('zoom-tracker-btn');
         if (zoomBtn) {
-            zoomBtn.innerText = "100% ZOOM [RESET]";
+            zoomBtn.innerText = "150% ZOOM [RESET]";
         }
         
         pushLog("Viewport camera matrix returned to 1:1 baseline focus.", 'log-shift');
