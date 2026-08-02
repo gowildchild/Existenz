@@ -328,8 +328,14 @@
             <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
                 150% ZOOM [RESET]
             </button>
-            <button id="defense-toggle-btn" onclick="toggleRationalDefense()" style="background: rgba(72, 187, 120, 0.2); color: #48bb78; border: 1px solid #48bb78; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
-                [NORMAL] TOLERANCE
+            <button id="ltd-btn" onclick="setToleranceMode(0)" style="background: rgba(72, 187, 120, 0.2); color: #48bb78; border: 1px solid #48bb78; padding: 6px 10px; font-family: 'Courier New', monospace; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; white-space: nowrap; transition: 0.1s;">
+                [LIMITED] TOLERANCE
+            </button>
+            <button id="unltd-btn" onclick="setToleranceMode(1)" style="background: rgba(15, 15, 25, 0.6); color: #a0aec0; border: 1px solid #141424; padding: 6px 10px; font-family: 'Courier New', monospace; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; white-space: nowrap; transition: 0.1s;">
+                [UNLIMITED] TOLERANCE
+            </button>
+            <button id="auto-btn" onclick="setToleranceMode(2)" style="background: rgba(15, 15, 25, 0.6); color: #a0aec0; border: 1px solid #141424; padding: 6px 10px; font-family: 'Courier New', monospace; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; white-space: nowrap; transition: 0.1s;">
+                [AUTO] TOLERANCE
             </button>
         </div>
         <canvas id="simCanvas" width="750" height="750"></canvas>
@@ -405,7 +411,10 @@
     let existenzThreatLevel = 0;
     let globalSystemicFatalities = 0;
     let globalTotalCompletions = 0;
-    let rationalDefenseActive = true;
+    // 0 = LIMITED, 1 = UNLIMITED, 2 = AUTO
+    let toleranceMode = 0; 
+    let rationalDefenseActive = true; 
+    let fatalityHistoryWindow = [];
     let currentPopulationScale = 100;
     let currentScaleMultiplier = 1;
     let currentSpeedMultiplier = 1.0;
@@ -705,26 +714,43 @@
 
                 let wasCompromised = false;
                 for (let b = 0; b < 9; b++) {
-                    if ((1 << b) === 32) continue; 
+                    if ((1 << b) === 32) continue;
                     if (person.bitmask > 0 && !(person.bitmask & (1 << b))) {
                         wasCompromised = true;
                     }
                 }
-                if (wasCompromised) {
-                    globalSystemicFatalities++;
+                
+                // FIXED: Log the structural damage state as a binary entry in the rolling history window
+                fatalityHistoryWindow.push(wasCompromised ? 1 : 0);
+                
+                // Restrict array payload capacity precisely to the last 100 generational wave completions
+                if (fatalityHistoryWindow.length > 100) {
+                    fatalityHistoryWindow.shift(); // Evicts oldest historical data slice to avoid calculation locks
                 }
+
+                let livingUnits = people.filter(p => p.age >= 0);
+                let infectedUnits = livingUnits.filter(p => p.isExtremist);
+                let currentSocietalInfectionRate = livingUnits.length > 0 ? (infectedUnits.length / livingUnits.length) : 0;
 
                 person.age = -1.0; 
                 person.bitmask = 0;
-                person.birthCountdown = 0; 
-                person.permanentScars = 0; 
-                person.isExtremist = false; // Clears infection flag for fresh node generation
+                person.birthCountdown = 0;
+                person.permanentScars = 0;
+
+                if (!rationalDefenseActive && Math.random() < currentSocietalInfectionRate) {
+                    person.isExtremist = true; 
+                } else {
+                    person.isExtremist = false; 
+                }
+
                 pushLog(`Unit #${person.id} completed lifecycle. Entering birth flux queue.`, 'log-shift', person.id, person.family);
                 return;
             }
 
             // --- UNIVERSAL POPEPRIAN SPATIAL TRANSMISSION MESH ---
-            if (!rationalDefenseActive && person.age >= 0) {
+            let isCurrentToleranceUnlimited = (toleranceMode === 1 || (toleranceMode === 2 && typeof autoTriggeredUnlimited !== 'undefined' && autoTriggeredUnlimited));
+
+            if (isCurrentToleranceUnlimited && person.age >= 0) {
                 const totalInfected = people.filter(p => p.age >= 0 && p.isExtremist).length;
                 if (totalInfected === 0 && person.id === 42) {
                     person.isExtremist = true;
@@ -739,7 +765,7 @@
                             let distance = Math.hypot(dx, dy) * 100;
 
                             if (distance < 25) {
-                            // 0.002 introduces slow sociological grid friction (0.2% conversion rate per frame)
+                                // Maintains your 0.2% slow sociological friction conversion probability
                                 if (Math.random() < 0.002 * currentSpeedMultiplier) {
                                     neighbor.isExtremist = true;
                                     pushLog(`Unit #${neighbor.id} converted via spatial footprint.`, 'log-threat');
@@ -799,11 +825,12 @@
         }
 
         if (document.getElementById('systemic-death-count')) {
-            let fatalityRate = 0;
-            if (typeof globalTotalCompletions !== 'undefined' && globalTotalCompletions > 0) {
-                fatalityRate = Math.round((globalSystemicFatalities / globalTotalCompletions) * 100);
-            }
-            document.getElementById('systemic-death-count').innerText = `${fatalityRate} / 100`;
+            // FIXED: Dynamically computes the mathematical sum of the active 100-cell history queue
+            let rollingFatalitiesCount = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
+            let displayDenominator = fatalityHistoryWindow.length > 0 ? fatalityHistoryWindow.length : 100;
+            
+            // Outputs a realistic, shifting telemetry string that moves dynamically between eras
+            document.getElementById('systemic-death-count').innerText = `${rollingFatalitiesCount} / ${displayDenominator}`;
         }
 
         if (document.getElementById('generations-count')) {
@@ -1352,36 +1379,64 @@
         if (isPlaying) executionLoop();
     }
 
-    function toggleRationalDefense() {
-        rationalDefenseActive = !rationalDefenseActive;
-        const btn = document.getElementById('defense-toggle-btn');
-        if (btn) {
-            if (rationalDefenseActive) {
-                btn.style.background = 'rgba(72, 187, 120, 0.2)';
-                btn.style.borderColor = '#48bb78';
-                btn.style.color = '#48bb78';
-                btn.innerText = '[NORMAL] TOLERANCE';
-                
-                people.forEach((person) => {
-                    person.isExtremist = false;
-                });
-
-                if (document.getElementById('tolerance-count')) document.getElementById('tolerance-count').innerText = "";
-                if (document.getElementById('tolerance-pct')) document.getElementById('tolerance-pct').innerText = "0%";
-                
-                // Safety override: Instantly force conceal the warning overlay banner when resetting back to stable normal boundaries
-                if (document.getElementById('collapse-alert-overlay')) {
-                    document.getElementById('collapse-alert-overlay').style.display = 'none';
-                }
-
-                pushLog('Popperian limit active: Society defends its boundaries. Intolerant strain neutralized and reset.', 'log-lock');
-            } else {
-                btn.style.background = 'rgba(229, 62, 62, 0.2)';
-                btn.style.borderColor = '#e53e3e';
-                btn.style.color = '#fc8181';
-                btn.innerText = '[UNLIMITED] TOLERANCE';
-                pushLog('Popperian limit dropped: Society vulnerable to unlimited ideological subversion.', 'log-threat');
+    function setToleranceMode(mode) {
+        toleranceMode = mode;
+        
+        const ltd = document.getElementById('ltd-btn');
+        const unltd = document.getElementById('unltd-btn');
+        const auto = document.getElementById('auto-btn');
+        const alertOverlay = document.getElementById('collapse-alert-overlay');
+        
+        // Reset all buttons to native dimmed layout profile
+        [ltd, unltd, auto].forEach(b => {
+            if (b) {
+                b.style.background = 'rgba(15, 15, 25, 0.6)';
+                b.style.borderColor = '#141424';
+                b.style.color = '#a0aec0';
             }
+        });
+        
+        // Make sure the static text states are fully restored
+        if (ltd) ltd.innerText = '[LIMITED] TOLERANCE';
+        if (unltd) unltd.innerText = '[UNLIMITED] TOLERANCE';
+        if (auto) auto.innerText = '[AUTO] TOLERANCE';
+        
+        if (mode === 0) {
+            if (ltd) {
+                ltd.style.background = 'rgba(72, 187, 120, 0.2)';
+                ltd.style.borderColor = '#48bb78';
+                ltd.style.color = '#48bb78';
+            }
+            
+            // Popper Theoretical Purge: Actively cleanses infection from nodes on defensive boundaries
+            people.forEach(p => p.isExtremist = false);
+            
+            if (document.getElementById('tolerance-count')) document.getElementById('tolerance-count').innerText = "";
+            if (document.getElementById('tolerance-pct')) document.getElementById('tolerance-pct').innerText = "0%";
+            if (alertOverlay) {
+                alertOverlay.style.opacity = "0";
+                alertOverlay.style.visibility = "hidden";
+                alertOverlay.classList.remove('active-alarm');
+            }
+            pushLog('Popperian limit active: Defensive mode engaged. Intolerant strain wiped.', 'log-lock');
+        } 
+        
+        else if (mode === 1) {
+            if (unltd) {
+                unltd.style.background = 'rgba(229, 62, 62, 0.2)';
+                unltd.style.borderColor = '#e53e3e';
+                unltd.style.color = '#fc8181';
+            }
+            pushLog('Popperian limit dropped: Society vulnerable under UNLIMITED tolerance.', 'log-threat');
+        } 
+        
+        else if (mode === 2) {
+            if (auto) {
+                auto.style.background = 'rgba(0, 240, 255, 0.15)';
+                auto.style.borderColor = '#00f0ff';
+                auto.style.color = '#00f0ff';
+            }
+            pushLog('Automated Popper Interceptor: Boundary gates will trip automatically at 35% systemic stress.', 'log-lock');
         }
     }
 
@@ -1452,7 +1507,8 @@
 
     function resetFatalityTally() {
         globalSystemicFatalities = 0;
-        globalTotalCompletions = 0; // Clears cumulative lifecycles to drop generational counter
+        globalTotalCompletions = 0; 
+        fatalityHistoryWindow = [];
 
         // Instantly push the reset baselines to the active dashboard UI text spans
         if (document.getElementById('systemic-death-count')) {
