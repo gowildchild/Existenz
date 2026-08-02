@@ -328,13 +328,7 @@
             <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
                 150% ZOOM [RESET]
             </button>
-            <button id="ltd-btn" onclick="setToleranceMode(0)" style="background: rgba(72, 187, 120, 0.2); color: #48bb78; border: 1px solid #48bb78; padding: 6px 10px; font-family: 'Courier New', monospace; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; white-space: nowrap; transition: 0.1s;">
-                [LIMITED] TOLERANCE
-            </button>
-            <button id="unltd-btn" onclick="setToleranceMode(1)" style="background: rgba(15, 15, 25, 0.6); color: #a0aec0; border: 1px solid #141424; padding: 6px 10px; font-family: 'Courier New', monospace; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; white-space: nowrap; transition: 0.1s;">
-                [UNLIMITED] TOLERANCE
-            </button>
-            <button id="auto-btn" onclick="setToleranceMode(2)" style="background: rgba(15, 15, 25, 0.6); color: #a0aec0; border: 1px solid #141424; padding: 6px 10px; font-family: 'Courier New', monospace; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; white-space: nowrap; transition: 0.1s;">
+            <button id="defense-toggle-btn" onclick="cycleToleranceMode()" style="background: rgba(0, 240, 255, 0.15); color: #00f0ff; border: 1px solid #00f0ff; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
                 [AUTO] TOLERANCE
             </button>
         </div>
@@ -412,7 +406,7 @@
     let globalSystemicFatalities = 0;
     let globalTotalCompletions = 0;
     // 0 = LIMITED, 1 = UNLIMITED, 2 = AUTO
-    let toleranceMode = 0; 
+    let toleranceMode = 2; 
     let rationalDefenseActive = true; 
     let fatalityHistoryWindow = [];
     let currentPopulationScale = 100;
@@ -1379,34 +1373,21 @@
         if (isPlaying) executionLoop();
     }
 
-    function setToleranceMode(mode) {
-        toleranceMode = mode;
+    function cycleToleranceMode() {
+        // Explicit sequence routing map: Auto (2) leads directly to Limited (0)
+        const transitionSequence = { 2: 0, 0: 1, 1: 2 };
+        toleranceMode = transitionSequence[toleranceMode];
         
-        const ltd = document.getElementById('ltd-btn');
-        const unltd = document.getElementById('unltd-btn');
-        const auto = document.getElementById('auto-btn');
+        const btn = document.getElementById('defense-toggle-btn');
         const alertOverlay = document.getElementById('collapse-alert-overlay');
-        
-        // Reset all buttons to native dimmed layout profile
-        [ltd, unltd, auto].forEach(b => {
-            if (b) {
-                b.style.background = 'rgba(15, 15, 25, 0.6)';
-                b.style.borderColor = '#141424';
-                b.style.color = '#a0aec0';
-            }
-        });
-        
-        // Make sure the static text states are fully restored
-        if (ltd) ltd.innerText = '[LIMITED] TOLERANCE';
-        if (unltd) unltd.innerText = '[UNLIMITED] TOLERANCE';
-        if (auto) auto.innerText = '[AUTO] TOLERANCE';
-        
-        if (mode === 0) {
-            if (ltd) {
-                ltd.style.background = 'rgba(72, 187, 120, 0.2)';
-                ltd.style.borderColor = '#48bb78';
-                ltd.style.color = '#48bb78';
-            }
+        if (!btn) return;
+
+        // MODE 0: LIMITED TOLERANCE
+        if (toleranceMode === 0) {
+            btn.style.background = 'rgba(72, 187, 120, 0.2)';
+            btn.style.borderColor = '#48bb78';
+            btn.style.color = '#48bb78';
+            btn.innerText = '[LIMITED] TOLERANCE';
             
             // Popper Theoretical Purge: Actively cleanses infection from nodes on defensive boundaries
             people.forEach(p => p.isExtremist = false);
@@ -1421,21 +1402,21 @@
             pushLog('Popperian limit active: Defensive mode engaged. Intolerant strain wiped.', 'log-lock');
         } 
         
-        else if (mode === 1) {
-            if (unltd) {
-                unltd.style.background = 'rgba(229, 62, 62, 0.2)';
-                unltd.style.borderColor = '#e53e3e';
-                unltd.style.color = '#fc8181';
-            }
+        // MODE 1: UNLIMITED TOLERANCE
+        else if (toleranceMode === 1) {
+            btn.style.background = 'rgba(229, 62, 62, 0.2)';
+            btn.style.borderColor = '#e53e3e';
+            btn.style.color = '#fc8181';
+            btn.innerText = '[UNLIMITED] TOLERANCE';
             pushLog('Popperian limit dropped: Society vulnerable under UNLIMITED tolerance.', 'log-threat');
         } 
         
-        else if (mode === 2) {
-            if (auto) {
-                auto.style.background = 'rgba(0, 240, 255, 0.15)';
-                auto.style.borderColor = '#00f0ff';
-                auto.style.color = '#00f0ff';
-            }
+        // MODE 2: AUTO TOLERANCE
+        else if (toleranceMode === 2) {
+            btn.style.background = 'rgba(0, 240, 255, 0.15)';
+            btn.style.borderColor = '#00f0ff';
+            btn.style.color = '#00f0ff';
+            btn.innerText = '[AUTO] TOLERANCE';
             pushLog('Automated Popper Interceptor: Boundary gates will trip automatically at 35% systemic stress.', 'log-lock');
         }
     }
