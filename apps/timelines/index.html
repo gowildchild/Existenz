@@ -389,8 +389,8 @@
         
 
 <script>
-    const canvas = document.getElementById('simCanvas');
-    const ctx = canvas.getContext('2d');
+    let canvas; // Declared globally but initialized inside load listener to prevent null freezes
+    let ctx;
     
     let isPlaying = false;
     let selectedPersonIndex = -1; 
@@ -1263,21 +1263,27 @@
         }, 14 / currentSpeedMultiplier); 
     }
 
-window.addEventListener('load', () => {
-    initPopulation();
-    const spiralBtn = document.getElementById('spiral-btn');
-    if (spiralBtn) {
-        spiralBtn.classList.add('active-mode');
-        spiralBtn.innerText = "Hide Majestic Spirals";
-    }
-    pushLog(`Existenz Space-Time Matrix online. ${currentPopulationScale} multiversal timelines activated.`, "log-birth");
-    // Run the viewport scale sequence before the initial frame draw to align pointer click bounds instantly
-    if (typeof autoScaleViewportResolution === 'function') {
-        autoScaleViewportResolution();
-    } else {
-        updateSimulation();
-    }
-});
+    window.addEventListener('load', () => {
+        // Securely bind elements once DOM trees are completely generated in browser memory
+        canvas = document.getElementById('simCanvas');
+        if (canvas) ctx = canvas.getContext('2d');
+
+        initPopulation();
+        
+        const spiralBtn = document.getElementById('spiral-btn');
+        if (spiralBtn) {
+            spiralBtn.classList.add('active-mode');
+            spiralBtn.innerText = "Hide Majestic Spirals";
+        }
+        pushLog(`Existenz Space-Time Matrix online. ${currentPopulationScale} multiversal timelines activated.`, "log-birth");
+        
+        // Invoke high-DPI scaling directly on verified elements to map coordinates smoothly
+        if (typeof autoScaleViewportResolution === 'function') {
+            autoScaleViewportResolution();
+        } else {
+            updateSimulation();
+        }
+    });
 
 </script>
 </body>
