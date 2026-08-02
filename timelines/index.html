@@ -750,12 +750,14 @@
 
             if (isCurrentToleranceUnlimited && person.age >= 0) {
                 const totalInfected = people.filter(p => p.age >= 0 && p.isExtremist).length;
+                
                 if (totalInfected === 0 && person.id === 42 && simulationTick > 1) {
                     person.isExtremist = true;
                     pushLog('Ideological strain mutation observed inside active population matrix.', 'log-threat');
                 }
 
-                if (person.isExtremist) {
+                // FIXED: Added historical lastBitmask check to freeze neighbor conversion until the next frame tick
+                if (person.isExtremist && person.lastBitmask !== 0) {
                     people.forEach((neighbor) => {
                         if (neighbor.age >= 0 && !neighbor.isExtremist) {
                             let dx = (person.individualTheta ? Math.cos(person.individualTheta) : 0) - (neighbor.individualTheta ? Math.cos(neighbor.individualTheta) : 0);
