@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.999b</title>
     <style>
+        @keyframes blinkerAlert {
+            0% { opacity: 1.0; box-shadow: 0 0 20px rgba(255, 0, 85, 0.6); }
+            50% { opacity: 0.2; box-shadow: 0 0 4px rgba(255, 0, 85, 0.1); }
+            100% { opacity: 1.0; box-shadow: 0 0 20px rgba(255, 0, 85, 0.6); }
+        }
         body { 
             margin: 0; 
             background: #030305; 
@@ -324,7 +329,7 @@
                 150% ZOOM [RESET]
             </button>
             <button id="defense-toggle-btn" onclick="toggleRationalDefense()" style="background: rgba(72, 187, 120, 0.2); color: #48bb78; border: 1px solid #48bb78; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
-                TOLERANCE [LTD]
+                [NORMAL] TOLERANCE
             </button>
         </div>
         <canvas id="simCanvas" width="750" height="750"></canvas>
@@ -810,9 +815,12 @@
         }
 
         const toleranceRow = document.getElementById('tolerance-metric-row');
+        const alertOverlay = document.getElementById('collapse-alert-overlay');
+        
         if (toleranceRow) {
             if (!rationalDefenseActive) {
                 toleranceRow.style.display = 'flex'; 
+                
                 let livingUnits = people.filter(p => p.age >= 0);
                 let infectedUnits = livingUnits.filter(p => p.isExtremist);
                 let rawInfectedCount = infectedUnits.length * currentScaleMultiplier;
@@ -824,8 +832,22 @@
                 if (document.getElementById('tolerance-pct')) {
                     document.getElementById('tolerance-pct').innerText = `${spreadPct}%`;
                 }
+
+                // --- CRITICAL TIPPING POINT COLLAPSE MONITOR INTERCEPTOR ---
+                // Triggers the blinking warning window overlay the exact frame tick it hits or breaks past 25%
+                if (alertOverlay) {
+                    if (spreadPct >= 25) {
+                        alertOverlay.style.display = 'block';
+                    } else {
+                        alertOverlay.style.display = 'none';
+                    }
+                }
             } else {
                 toleranceRow.style.display = 'none';
+                if (alertOverlay) {
+                    alertOverlay.style.display = 'none';
+                }
+                
                 if (document.getElementById('tolerance-count')) {
                     document.getElementById('tolerance-count').innerText = "[0]";
                 }
@@ -1317,19 +1339,18 @@
                 btn.style.background = 'rgba(72, 187, 120, 0.2)';
                 btn.style.borderColor = '#48bb78';
                 btn.style.color = '#48bb78';
-                btn.innerText = 'TOLERANCE [LTD]';
+                btn.innerText = '[NORMAL] TOLERANCE';
                 
-                // POPPER THEORETICAL RESET: Actively purges the extremist contagion loop from all living nodes
                 people.forEach((person) => {
                     person.isExtremist = false;
                 });
 
-                // Instantly zero out the Poppertime display telemetry values
-                if (document.getElementById('tolerance-count')) {
-                    document.getElementById('tolerance-count').innerText = "";
-                }
-                if (document.getElementById('tolerance-pct')) {
-                    document.getElementById('tolerance-pct').innerText = "0%";
+                if (document.getElementById('tolerance-count')) document.getElementById('tolerance-count').innerText = "";
+                if (document.getElementById('tolerance-pct')) document.getElementById('tolerance-pct').innerText = "0%";
+                
+                // Safety override: Instantly force conceal the warning overlay banner when resetting back to stable normal boundaries
+                if (document.getElementById('collapse-alert-overlay')) {
+                    document.getElementById('collapse-alert-overlay').style.display = 'none';
                 }
 
                 pushLog('Popperian limit active: Society defends its boundaries. Intolerant strain neutralized and reset.', 'log-lock');
@@ -1337,7 +1358,7 @@
                 btn.style.background = 'rgba(229, 62, 62, 0.2)';
                 btn.style.borderColor = '#e53e3e';
                 btn.style.color = '#fc8181';
-                btn.innerText = 'TOLERANCE [UNLTD]';
+                btn.innerText = '[UNLIMITED] TOLERANCE';
                 pushLog('Popperian limit dropped: Society vulnerable to unlimited ideological subversion.', 'log-threat');
             }
         }
@@ -1419,6 +1440,9 @@
         if (document.getElementById('generations-count')) {
             document.getElementById('generations-count').innerText = "0";
         }
+        if (document.getElementById('collapse-alert-overlay')) {
+            document.getElementById('collapse-alert-overlay').style.display = 'none';
+        }        
         pushLog("Historical telemetry tracking scoreboards flushed to zero vector.", "log-shift");
     }    
     
