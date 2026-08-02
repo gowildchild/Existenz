@@ -322,6 +322,9 @@
         <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; z-index: 20; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px);">
             150% ZOOM [RESET]
         </button>
+        <button id="defense-toggle-btn" onclick="toggleRationalDefense()" style="background: rgba(229, 62, 62, 0.2); color: #fc8181; border: 1px solid #e53e3e; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px);">
+            TOLERANCE [UNLTD]
+        </button>        
         <canvas id="simCanvas" width="750" height="750"></canvas>
     </div>
 
@@ -343,16 +346,20 @@
             </div>
             <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px; color: #fc8181;">
                 <span>Systemic Attrition Fatalities:</span>
+                <span id="systemic-death-count" style="font-weight:bold;">0 / 100</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px; color: #8e8eaf;">
+                <span>Generations Passed:</span>
                 <div>
-                    <span id="systemic-death-count" style="font-weight:bold; margin-right: 8px;">0 / 100</span>
+                    <span id="generations-count" style="font-weight:bold; margin-right: 8px; color: #ffffff;">0</span>
+                    <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
                 </div>
             </div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px; color: #8e8eaf;">
-                <span>Generations Passed:</span>
-                <span id="generations-count" style="font-weight:bold; color:#ffffff;">0</span>
-                <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
+            <div id="tolerance-metric-row" style="display:none; justify-content:space-between; font-size:11px; margin-bottom: 12px; color: #ff00aa;">
+                <span>Poppertime:</span>
+                <span id="tolerance-pct" style="font-weight:bold;">0%</span>
             </div>
-            <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
+            <div id="vector-header-label" style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
             <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
                 <!-- Dynamically populated -->
             </div>
@@ -1099,7 +1106,9 @@
             } else {
                 let baseColorRGB = "72, 187, 120"; 
                 
-                if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
+                if (currentSimType === 'tolerance-paradox' && person.isExtremist) {
+                    baseColorRGB = "255, 0, 170"; // Sharp Neon Accent Pink for active intolerant carriers
+                } else if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
                     baseColorRGB = "229, 62, 62";  
                 } else if (!(person.bitmask & 8) || (!(person.bitmask & 64) && person.age >= 8) || (!(person.bitmask & 128) && person.age >= 35) || !(person.bitmask & 256)) {
                     baseColorRGB = "237, 137, 54"; 
@@ -1117,7 +1126,8 @@
                     ctx.fillStyle = `rgb(${baseColorRGB})`;
                 }
                 
-                let radius = 2.5 + (person.age * 0.05);
+                let isCarrier = (currentSimType === 'tolerance-paradox' && person.isExtremist);
+                let radius = (isCarrier ? 4.0 : 2.5) + (person.age * 0.05);
                 ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
             }
         });
@@ -1234,13 +1244,50 @@
         if (isPlaying) executionLoop();
     }
 
+    function toggleRationalDefense() {
+        rationalDefenseActive = !rationalDefenseActive;
+        const btn = document.getElementById('defense-toggle-btn');
+        if (btn) {
+            if (rationalDefenseActive) {
+                btn.style.background = 'rgba(72, 187, 120, 0.2)';
+                btn.style.borderColor = '#48bb78';
+                btn.style.color = '#48bb78';
+                btn.innerText = 'TOLERANCE [LTD]';
+                pushLog('Popperian limit active: Society defends its boundaries against raw intolerance.', 'log-lock');
+            } else {
+                btn.style.background = 'rgba(229, 62, 62, 0.2)';
+                btn.style.borderColor = '#e53e3e';
+                btn.style.color = '#fc8181';
+                btn.innerText = 'TOLERANCE [UNLTD]';
+                pushLog('Popperian limit dropped: Society vulnerable to unlimited ideological subversion.', 'log-threat');
+            }
+        }
+    }    
+
     function changeSimulation() {
         currentSimType = document.getElementById('sim-select').value;
         let profileName = document.getElementById('sim-select').options[document.getElementById('sim-select').selectedIndex].text;
-        pushLog(`EPOCH RESET: Rules shifted to [${profileName}].`, 'log-shift');
+        pushLog(`%cEPOCH RESET: Rules shifted to [${profileName}].`, 'color: #00f0ff; font-weight: bold;');
+        
+        // CRUCIAL RE-SEED PATCH FOR ERA 11 INTEGRITY
+        // Flushes past generational scarring states and forces clean historical vectors
+        people.forEach((person) => {
+            person.isExtremist = false;  // Purges all historical virus traces completely
+            person.permanentScars = 0;   // Wipes previous physical/psychological scars
+            person.lastBitmask = 0;      // Breaks old bit states to force fresh engine evaluations
+        });
+
+        // Patient Zero Injection Vector
+        // If entering Era 11, seeding a target node breaks structural deadlock instantly
+        if (currentSimType === 'tolerance-paradox' && people.length > 0) {
+            people[0].isExtremist = true; 
+            pushLog('Ideological strain tracking active. Patient Zero injected at Vector Node #1.', 'log-threat');
+        }
+
         clearSelection(); 
         updateSimulation();
     }
+
 
     function changeScaleMultiplier() {
         currentScaleMultiplier = parseFloat(document.getElementById('scale-select').value);
