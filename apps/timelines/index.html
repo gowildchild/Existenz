@@ -398,11 +398,11 @@
     function processLifecycle() {
         simulationTick++;
         let brokenPillarsCount = 0;
-        let totalCheckedPillars = people.length * 7; // Dynamically adapts to population scales (50, 100, 1000)
+        let totalCheckedPillars = people.length * 7; 
         
         let victimCount = 0;
-        // Array matching indices 0-6 to track exactly which bits are stripped the most
-        let bitFailureCounts =; 
+        // CORRECTED: Array initialized with 7 zeros to prevent syntax compile crashes
+        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0]; 
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
@@ -427,11 +427,11 @@
 
             let individualIsVictim = false;
             for (let b = 0; b < 7; b++) {
-                if ((1 << b) === 32) continue; // Skip DISABILITY (32) as it is your permanent inclusive anchor
+                if ((1 << b) === 32) continue; 
                 
                 if (!(person.bitmask & (1 << b))) {
                     brokenPillarsCount++;
-                    bitFailureCounts[b]++; // Record which specific pillar is broken
+                    bitFailureCounts[b]++; 
                     individualIsVictim = true;
                 }
             }
@@ -440,16 +440,16 @@
             }
         });
 
-        // Calculate global threat vector percentages
         existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
         document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
 
-        // --- UPDATE DYNAMIC VICTIM AND BIT-FLIP SIDEBAR UI ---
-        document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
+        // Update the dynamic metric counters in the sidebar elements
+        if (document.getElementById('victim-count')) {
+            document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
+        }
 
-        // Find which pillar index has the highest failure/flip accumulation rate
         let maxFailures = 0;
         let worstBitIndex = -1;
         for (let i = 0; i < bitFailureCounts.length; i++) {
@@ -469,9 +469,12 @@
             "DEVELOPMENT (64)"
         ];
 
-        let topVectorText = worstBitIndex !== -1 && maxFailures > 0 ? bitLabels[worstBitIndex] : "NONE (STABLE)";
-        document.getElementById('top-flipped-bit').innerText = topVectorText;
+        if (document.getElementById('top-flipped-bit')) {
+            let topVectorText = worstBitIndex !== -1 && maxFailures > 0 ? bitLabels[worstBitIndex] : "NONE (STABLE)";
+            document.getElementById('top-flipped-bit').innerText = topVectorText;
+        }
     }
+
 
     // Maps the 9 architectural bits directly into your exact Platonic coordinates
     // Maps the 9 architectural bits directly onto your pure, wide-sweeping Fibonacci orbits
