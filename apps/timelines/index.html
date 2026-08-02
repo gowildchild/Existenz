@@ -389,8 +389,8 @@
         
 
 <script>
-    let canvas; // Declared globally but initialized inside load listener to prevent null freezes
-    let ctx;
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
     
     let isPlaying = false;
     let selectedPersonIndex = -1; 
@@ -629,25 +629,22 @@
             // Handle individual randomized cooldown timers to completely eliminate birth explosions
             if (person.age < 0) {
                 if (typeof person.birthDelayTicks === 'undefined' || person.birthDelayTicks === null) {
-                    // Assign a completely separate custom frame delay between 10 and 180 ticks upon demise
                     person.birthDelayTicks = Math.floor(Math.random() * 170) + 10;
                 }
                 
-                // Scale the tracking decrement step relative to your temporal warp factor
                 person.birthDelayTicks -= 1 * currentSpeedMultiplier;
                 
                 if (person.birthDelayTicks <= 0) {
                     person.age = 0.0;
-                    person.birthDelayTicks = null; // Clear active timer registration slot
+                    person.birthDelayTicks = null; 
                     person.individualTheta = Math.random() * Math.PI * 2;
                     person.lastBitmask = 0;
                     pushLog(`Unit #${person.id} reborn into ${person.family} after isolated flux delay.`, 'log-birth', person.id, person.family);
                 } else {
-                    person.bitmask = 0; // Maintain absolute ghost state while in the birth queue
+                    person.bitmask = 0; 
                     return;
                 }
             } else {
-                // Refine step increments to 0.1 to let nodes spend more frame ticks inside the newborn window
                 person.age += 0.1 * currentSpeedMultiplier;
             }
             
@@ -791,6 +788,7 @@
             });
         }
     }
+
 
 
 
