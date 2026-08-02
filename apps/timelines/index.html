@@ -923,6 +923,18 @@
         updateSimulation();
     }
 
+    function changeScaleMultiplier() {
+        currentScaleMultiplier = parseFloat(document.getElementById('scale-select').value);
+        pushLog(`Continuum scale matrix expanded to [${currentScaleMultiplier}x].`, 'log-shift');
+        drawGrid();
+        updateSimulation();
+    }
+
+    function changeSimulationSpeed() {
+        currentSpeedMultiplier = parseFloat(document.getElementById('speed-select').value);
+        pushLog(`Temporal frequency pacing shifted to [${currentSpeedMultiplier}x].`, 'log-shift');
+    }
+    
     function executionLoop() {
         if (!isPlaying) return;
         processLifecycle();
