@@ -912,21 +912,24 @@
         
         // --- REAL-TIME AGE MATRIX CALCULATOR ---
         if (people.length > 0) {
-            let activeAges = people.map(p => p.age).sort((a, b) => a - b);
-            let minAge = activeAges[0];
-            let maxAge = activeAges[activeAges.length - 1];
-            let medianAge;
-            let midIndex = Math.floor(activeAges.length / 2);
-            
-            if (activeAges.length % 2 === 0) {
-                medianAge = (activeAges[midIndex - 1] + activeAges[midIndex]) / 2;
-            } else {
-                medianAge = activeAges[midIndex];
+            // Filter out waiting tokens in the birth queue to keep age telemetry metrics running accurately
+            let activeAges = people.map(p => p.age).filter(a => a >= 0).sort((a, b) => a - b);
+            if (activeAges.length > 0) {
+                let minAge = activeAges[0];
+                let maxAge = activeAges[activeAges.length - 1];
+                let medianAge;
+                let midIndex = Math.floor(activeAges.length / 2);
+                
+                if (activeAges.length % 2 === 0) {
+                    medianAge = (activeAges[midIndex - 1] + activeAges[midIndex]) / 2;
+                } else {
+                    medianAge = activeAges[midIndex];
+                }
+                
+                if (document.getElementById('meta-age-min')) document.getElementById('meta-age-min').innerText = minAge.toFixed(1);
+                if (document.getElementById('meta-age-med')) document.getElementById('meta-age-med').innerText = medianAge.toFixed(1);
+                if (document.getElementById('meta-age-max')) document.getElementById('meta-age-max').innerText = maxAge.toFixed(1);
             }
-            
-            if (document.getElementById('meta-age-min')) document.getElementById('meta-age-min').innerText = minAge.toFixed(1);
-            if (document.getElementById('meta-age-med')) document.getElementById('meta-age-med').innerText = medianAge.toFixed(1);
-            if (document.getElementById('meta-age-max')) document.getElementById('meta-age-max').innerText = maxAge.toFixed(1);
         }
 
         let sortedPopulation = [...people].sort((a, b) => {
@@ -936,7 +939,8 @@
         });
 
         sortedPopulation.forEach((person) => {
-            let isTargeted = (selectedPersonIndex !== -1 && person.id === people[selectedPersonIndex].id);
+            // Check selection lock using unique object ID parity instead of array position references
+            let isTargeted = (typeof selectedPersonId !== 'undefined' && person.id === selectedPersonId);
             
             // FIXED: Automatically maps framework scale layers across ghost transitions to avoid layout drift
             if (person.bitmask === 0) {
@@ -1016,6 +1020,7 @@
 
 
 
+
     function updateInspector(person, coords) {
         document.getElementById('no-selection').style.display = 'none';
         document.getElementById('inspector-content').style.display = 'block';
@@ -1039,46 +1044,37 @@
 
     canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
-        
-        // Extract display pixel density ratios to match internal buffer dimensions
         const dpr = window.devicePixelRatio || 1;
-        
-        // Multiply screen inputs by devicePixelRatio to align cursor hits with drawing bounds
         const clickX = (e.clientX - rect.left) * dpr;
         const clickY = (e.clientY - rect.top) * dpr;
         
-        let closestIndex = -1;
+        let closestId = -1;
         let minDist = 99999;
-        
-        // Cache population state locally to prevent rendering race condition locks
         const staticPopulationSample = [...people];
         
-        staticPopulationSample.forEach((person, index) => {
+        staticPopulationSample.forEach((person) => {
             let coords = getXYZ(person);
             let pt = project(coords.x, coords.y, coords.z);
             let dist = Math.hypot(pt.x - clickX, pt.y - clickY);
             if (dist < minDist) {
                 minDist = dist;
-                closestIndex = index;
+                closestId = person.id; // Store unique ID instead of array index
             }
         });
         
-        // Threshold buffer calibrated for scaled pixel layouts
         let adaptiveThreshold = (45 * dpr) / canvasZoomFactor;
-        if (minDist < adaptiveThreshold && closestIndex !== -1) { 
-            selectedPersonIndex = closestIndex;
-            let lockedPerson = people[selectedPersonIndex];
+        if (minDist < adaptiveThreshold && closestId !== -1) { 
+            selectedPersonId = closestId; // Save to permanent global identifier state
+            let lockedPerson = people.find(p => p.id === selectedPersonId);
             
-            // Safe DOM execution pass
-            const statusEl = document.getElementById('log-filter-status');
-            if (statusEl) {
-                statusEl.innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
-                statusEl.style.color = '#9f7aea';
+            if (lockedPerson) {
+                const statusEl = document.getElementById('log-filter-status');
+                if (statusEl) {
+                    statusEl.innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
+                    statusEl.style.color = '#9f7aea';
+                }
+                pushLog(`TELEMETRY LOCK ENGAGED: Isolating data strings for Individual #${lockedPerson.id} and the ${lockedPerson.family}.`, 'log-lock');
             }
-            
-            pushLog(`TELEMETRY LOCK ENGAGED: Isolating data strings for Individual #${lockedPerson.id} and the ${lockedPerson.family}.`, 'log-lock');
-            
-            // Force an immediate isolated frame refresh to override processing drift
             drawGrid();
             updateSimulation();
         }
@@ -1087,7 +1083,7 @@
 
 
     function clearSelection() {
-        selectedPersonIndex = -1;
+        selectedPersonId = -1; // Reset unique global ID tracking state
         document.getElementById('no-selection').style.display = 'block';
         document.getElementById('inspector-content').style.display = 'none';
         document.getElementById('log-filter-status').innerText = `FILTER: GLOBAL`;
@@ -1095,6 +1091,7 @@
         pushLog("TELEMETRY UNLOCKED: Global telemetry chatter stream restored.", "log-shift");
         updateSimulation();
     }
+
 
     function toggleSpiralField() {
         showSpirals = !showSpirals;
