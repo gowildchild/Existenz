@@ -833,10 +833,10 @@
                     document.getElementById('tolerance-pct').innerText = `${spreadPct}%`;
                 }
 
-                // --- CRITICAL TIPPING POINT COLLAPSE MONITOR INTERCEPTOR ---
-                // Triggers the blinking warning window overlay the exact frame tick it hits or breaks past 25%
+                // --- MAJORITY TAKEOVER COLLAPSE MONITOR INTERCEPTOR ---
+                // Triggers the blinking warning window overlay the exact frame tick it hits or breaks past 51%
                 if (alertOverlay) {
-                    if (spreadPct >= 25) {
+                    if (spreadPct >= 51) {
                         alertOverlay.style.display = 'block';
                     } else {
                         alertOverlay.style.display = 'none';
@@ -849,7 +849,7 @@
                 }
                 
                 if (document.getElementById('tolerance-count')) {
-                    document.getElementById('tolerance-count').innerText = "[0]";
+                    document.getElementById('tolerance-count').innerText = "";
                 }
                 if (document.getElementById('tolerance-pct')) {
                     document.getElementById('tolerance-pct').innerText = "0%";
@@ -869,6 +869,11 @@
             { name: "PRESENCE (256)",  count: 0, bit: 256 }
         ];
 
+        let livingUnitsForVectors = people.filter(p => p.age >= 0);
+        let infectedUnitsForVectors = livingUnitsForVectors.filter(p => p.isExtremist);
+        let currentSpreadPercentage = livingUnitsForVectors.length > 0 ? Math.round((infectedUnitsForVectors.length / livingUnitsForVectors.length) * 100) : 0;
+        let isCivilizationOverthrown = (!rationalDefenseActive && currentSpreadPercentage >= 51);
+
         people.forEach((person) => {
             if (person.bitmask === 0) {
                 return; 
@@ -881,9 +886,20 @@
             });
         });
 
+        // --- SYSTEMIC STRESS VECTOR INTERCEPTOR ---
+        // If intolerance hits a 51% institutional majority, overwrite rights deprivation tallies to show global subversion
+        if (isCivilizationOverthrown) {
+            bitBlueprints.forEach((blueprint) => {
+                if (blueprint.bit === 2 || blueprint.bit === 4) {
+                    blueprint.count = people.length; // Forcefully pins Autonomy and Integrity metrics to 100% saturation
+                }
+            });
+        }
+
         let activeStressVectors = bitBlueprints.filter(item => item.bit !== 32);
         activeStressVectors.sort((a, b) => b.count - a.count);
         let topFiveVectors = activeStressVectors.slice(0, 5);
+
         const vectorsContainer = document.getElementById('top-vectors-list');
         if (vectorsContainer) {
             vectorsContainer.innerHTML = ''; 
@@ -895,7 +911,12 @@
                 vectorRow.style.padding = '2px 4px';
                 vectorRow.style.borderRadius = '2px';
                 
-                if (vector.count > 0) {
+                if (isCivilizationOverthrown && (vector.bit === 2 || vector.bit === 4)) {
+                    // Terminal Collapse Highlight: Blinks the overthrown metrics in sharp white-on-crimson
+                    vectorRow.style.color = '#ffffff';
+                    vectorRow.style.background = '#e53e3e';
+                    vectorRow.style.fontWeight = 'bold';
+                } else if (vector.count > 0) {
                     vectorRow.style.color = rank === 0 ? '#fc8181' : (rank < 3 ? '#f6ad55' : '#ecc94b');
                     vectorRow.style.background = 'rgba(255,255,255,0.01)';
                 } else {
@@ -904,7 +925,7 @@
 
                 vectorRow.innerHTML = `
                     <span>${rank + 1}. ${vector.name}</span>
-                    <span style="font-weight: bold;">${vector.count * currentScaleMultiplier}</span>
+                    <span style="font-weight: bold;">${(vector.count * currentScaleMultiplier).toLocaleString()}</span>
                 `;
                 vectorsContainer.appendChild(vectorRow);
             });
