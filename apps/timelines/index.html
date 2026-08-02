@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.981GAMMA</title>
+    <style>
+        body { 
+            margin: 0; 
+            background: #030305; 
+            color: #ffffff; 
+            font-family: 'Courier New', monospace; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+        #sidebar { 
+            width: 330px; 
+            background: #09090f; 
+            padding: 20px; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 18px; 
+            border-right: 1px solid #141424; 
+            z-index: 10;
+        }
+        #canvas-container { 
+            flex-grow: 1; 
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #030305;
+            height: 100vh;
+        }
+        canvas { 
+            background: #030305; 
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.98); 
+            cursor: pointer;
+            display: block;
+        }
+        #right-panel {
+            width: 420px;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #141424;
+            background: #09090f;
+            height: 100%;
+        }
+        #inspect-panel { 
+            height: 45%;
+            padding: 20px; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            overflow-y: auto;
+            border-bottom: 1px solid #141424;
+        }
+        #matrix-log {
+            height: 55%;
+            padding: 20px;
+            box-sizing: border-box;
+            background: #030305;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #log-header-zone {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #141424;
+            padding-bottom: 6px;
+        }
+        #log-stream {
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 11px;
+            color: #4a5568;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 4px;
+            padding-right: 5px;
+        }
+        .log-entry { 
+            padding: 4px 6px; 
+            border-radius: 2px; 
+            border-left: 2px solid #2d3748; 
+            background: rgba(255,255,255,0.01); 
+        }
+        .log-threat { 
+            border-left-color: #e53e3e; 
+            color: #fc8181; 
+            background: rgba(229,62,62,0.04); 
+        }
+        .log-birth { 
+            border-left-color: #3182ce; 
+            color: #63b3ed; 
+        }
+        .log-shift { 
+            border-left-color: #ecc94b; 
+            color: #f6e05e; 
+        }
+        .log-lock { 
+            border-left-color: #9f7aea; 
+            color: #b794f4; 
+            background: rgba(159,122,234,0.03); 
+        }
+        .btn { 
+            background: #0f0f1b; 
+            color: white; 
+            border: 1px solid #00f0ff; 
+            padding: 10px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            border-radius: 4px; 
+            font-family: monospace;
+            font-size: 12px;
+            transition: 0.1s;
+        }
+        .btn:hover { 
+            background: #00f0ff;
+            color: black;
+            font-weight: bold;
+        }
+        .btn-toggle { 
+            background: #0f0f1b; 
+            border: 1px solid #00f0ff; 
+        }
+        .btn-toggle.active-mode { 
+            background: #ff00aa !important; 
+            border-color: #ffffff !important; 
+        }
+        select { 
+            background: #030305; 
+            color: #ffffff; 
+            padding: 8px; 
+            border: 1px solid #141424; 
+            border-radius: 4px; 
+            font-family: monospace;
+            width: 100%;
+            font-size: 11px;
+        }
+        .threat-meter { 
+            background: #09090f; 
+            border: 1px solid #141424; 
+            padding: 10px; 
+            border-radius: 4px; 
+        }
+        #threat-bar { 
+            height: 5px; 
+            background: #48bb78; 
+            width: 0%; 
+            transition: width 0.3s; 
+            border-radius: 2px; 
+            margin-top: 5px; 
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Left Control Panel -->
+    <div id="sidebar">
+        <h2 style="margin: 0; color: #63b3ed; font-size: 16px; letter-spacing: 1px;">EXISTENZ CHRONOS</h2>
+        
+        <div>
+            <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 5px;">Spacetime Era Vector:</label>
+            <select id="sim-select" onchange="changeSimulation()">
+                <option value="tribal">1. Deep Tribal Matrix (Pre-State Sovereignty)</option>
+                <option value="antiquity">2. Classical Antiquity (400 BC - Diogenes Cynicism)</option>
+                <option value="feudal">3. Medieval Feudalism (Stratified Subservience)</option>
+                <option value="enlighten">4. Age of Enlightenment (Re-emergence of Reason)</option>
+                <option value="industrial">5. Early Industrial Grid (Labor Optimization)</option>
+                <option value="rights">6. Post-WWII Framework (Universal Declaration Era)</option>
+                <option value="pre-surveil">7. Pre-Surveillance Digital (Late 90s Cybernetic Optimism)</option>
+                <option value="early-data">8. Early Algorithmic Data Capture (2010s Silicon Boom)</option>
+                <option value="modern">9. The Hyper-Digital Now (2020s Total Surveillance)</option>
+                <option value="crisis">10. Authoritarian Threat Event (Systemic Severance)</option>
+            </select>
+        </div>
+
+        <div class="threat-meter">
+            <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span>ExistenzThreat Vector:</span>
+                <span id="threat-pct" style="font-weight:bold; color:#48bb78;">0%</span>
+            </div>
+            <div style="background:#1a2233; height:5px; border-radius:2px;"><div id="threat-bar"></div></div>
+        </div>
+
+        <div class="threat-meter" style="margin-top: 10px;">
+            <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC METRICS</div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px;">
+                <span>Total Active Victims:</span>
+                <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
+            </div>
+            
+            <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
+            <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
+                <!-- Dynamically populated and sorted via script -->
+            </div>
+        </div>
+
+        
+        <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
+        <button class="btn btn-toggle" id="spiral-btn" onclick="toggleSpiralField()">Show Majestic Spirals</button>
+    </div>
+
+    <!-- Center Coordinate Field -->
+    <div id="canvas-container">
+        <canvas id="simCanvas" width="750" height="750"></canvas>
+    </div>
+
+    <!-- Right Panels -->
+    <div id="right-panel">
+        <div id="inspect-panel">
+            <h3 style="margin: 0; font-size: 13px; color: #a0aec0;">MATRIX MONITOR</h3>
+            <p id="no-selection" style="color: #4a5568; font-size: 11px; margin: 0;">Isolate an entity on the grid to filter and reduce telemetry chatter.</p>
+            <div id="inspector-content" style="display: none;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size: 14px; font-weight: bold; color: #63b3ed;" id="ins-name">Individual #--</div>
+                    <button class="btn" style="padding:2px 6px; font-size:10px; background:#4a5568;" onclick="clearSelection()">Clear Lock</button>
+                </div>
+                <div style="font-size: 11px; color: #718096; margin: 4px 0 8px 0;">Lineage: <span id="ins-family" style="color:#9f7aea;">Alpha</span> | Age: <span id="ins-age" style="color:#ecc94b;">0</span></div>
+                <div style="margin-bottom: 10px; font-size: 12px; color: #cbd5e0;">Coordinates: <span id="ins-coords" style="color: #ecc94b;">X:0, Y:0, Z:0</span></div>
+                <div id="pillars-list" style="display: flex; flex-direction: column; gap: 5px;"></div>
+            </div>
+        </div>
+
+        <div id="matrix-log">
+            <div id="log-header-zone">
+                <h3 style="margin:0; font-size:12px; color:#a0aec0; letter-spacing:0.5px;">LOG TELEMETRY</h3>
+                <span id="log-filter-status" style="font-size:10px; color:#4a5568; background:#121620; padding:2px 6px; border-radius:3px;">FILTER: GLOBAL</span>
+            </div>
+            <div id="log-stream"></div>
+        </div>
+    </div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let isPlaying = false;
+    let selectedPersonIndex = -1; 
+    let showSpirals = true;
+    let currentSimType = 'tribal';
+    let simulationTick = 0;
+    let existenzThreatLevel = 0;
+    let currentPopulationScale = 100;
+    
+    const families = ["Alpha Lineage", "Beta Cluster", "Gamma Node", "Delta Branch", "Epsilon Matrix"];
+    let people = [];
+
+    const pillarNames = [
+        { name: "EXISTENCE (Bit 1)", bit: 1 },
+        { name: "AUTONOMY (Bit 2)", bit: 2 },
+        { name: "INTEGRITY (Bit 4)", bit: 4 },
+        { name: "PSYCHOLOGY (Bit 8)", bit: 8 },
+        { name: "PHYSICAL (Bit 16)", bit: 16 },
+        { name: "DISABILITY (Bit 32)", bit: 32 },
+        { name: "DEVELOPMENT (Bit 64)", bit: 64 }
+    ];
+
+    function pushLog(text, type = '', entityId = null, entityFamily = null) {
+        if (selectedPersonIndex !== -1) {
+            let lockedPerson = people[selectedPersonIndex];
+            if (entityId !== null && entityId !== lockedPerson.id && entityFamily !== lockedPerson.family) {
+                return; 
+            }
+        }
+
+        const stream = document.getElementById('log-stream');
+        if (!stream) return;
+        
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        
+        let timestamp = new Date().toLocaleTimeString().split(' ');
+        entry.innerHTML = `[${timestamp}] ${text}`;
+        stream.appendChild(entry);
+        
+        stream.scrollTop = stream.scrollHeight;
+        if (stream.children.length > 35) {
+            stream.removeChild(stream.firstChild);
+        }
+    }
+    
+    function initPopulation() {
+        people = [];
+        for (let i = 0; i < 100; i++) {
+            let assignedAge = Math.floor(Math.random() * 80);
+            let familyId = Math.floor(Math.random() * families.length);
+            people.push({
+                id: i + 1,
+                age: assignedAge,
+                family: families[familyId],
+                familySeed: familyId * 1.45, 
+                individualTheta: Math.random() * Math.PI * 2, 
+                bitmask: 0,
+                lastBitmask: 0
+            });
+        }
+    }
+    
+    function calculatePillars(person, age, type) {
+        let bitmask = 0;
+        
+        // --- UNIVERSAL ARCHITECTURAL CONSTANTS ---
+        bitmask |= 1;   // EXISTENCE
+        bitmask |= 32;  // DISABILITY (The permanent universal floor holding up the framework)
+
+        // --- HISTORICAL LIFESPAN BOUNDARIES (MORTALITY CAP) ---
+        let lifeExpectancy = 80; 
+        if (type === 'tribal')     lifeExpectancy = 35;
+        if (type === 'antiquity')  lifeExpectancy = 40;
+        if (type === 'feudal')     lifeExpectancy = 30;
+        if (type === 'industrial') lifeExpectancy = 45;
+        if (type === 'rights')     lifeExpectancy = 65;
+
+        // If the individual passes the era threshold, they dissolve out of the space-time field completely
+        if (age >= lifeExpectancy) {
+            return 0; // Return a completely blank bitmask to signify standard systemic mortality
+        }
+
+        bitmask |= 16;  // PHYSICAL (Vessel remains active while alive)
+        bitmask |= 256; // PRESENCE (Real-time footprint remains active while alive)
+
+        // --- CHILDHOOD PURITY OVERRIDE MATRIX ---
+        // Children under 12 are born fundamentally uncorrupted. 
+        // Core moral, cognitive, and development pillars are fully intact at birth.
+        if (age < 9) {
+            bitmask |= 2;  // AUTONOMY
+            bitmask |= 4;  // INTEGRITY
+            bitmask |= 8;  // PSYCHOLOGY
+            bitmask |= 64; // DEVELOPMENT
+            
+            // Provide human-rights eras with their protective defensive shields early
+            if (type === 'rights') {
+                bitmask |= (1 << 20) | (1 << 24); // SHIELD_HUMAN_RIGHTS & SHIELD_BASIC_RIGHTS
+            }
+            return bitmask; // Bypasses harsh adult historical compromises for kids under 12
+        }
+
+        switch(type) {
+            case 'tribal':
+                bitmask |= 2; // Tribal group autonomy
+                if (age >= 10) bitmask |= 4;  // Integrity inside clan survival
+                if (age >= 4)  bitmask |= 8;  // Psychology protected by proximal bands
+                if (age >= 8)  bitmask |= 64; // Tribal developmental knowledge
+                break;
+
+            case 'antiquity': // Diogenes / Cynic Era
+                bitmask |= 2; // Absolute sovereign autonomy of choice
+                bitmask |= 4; // High moral axis of choice
+                if (age >= 12) bitmask |= 8;  // Internal peace unbothered by external assets
+                if (age >= 6)  bitmask |= 64; // High individual evolutionary development
+                break;
+
+            case 'feudal':
+                if (person.id % 8 === 0) bitmask |= 2 | 128; // Only lords hold Autonomy & Property
+                if (age >= 14) bitmask |= 4;  // Integrity restricted to strict serf/lord oaths
+                if (age >= 10) bitmask |= 64; // Development limited to serf production
+                break;
+
+            case 'enlighten':
+                if (age >= 15) bitmask |= 2;  // Autonomy scales back upward as reason maps out
+                bitmask |= 4;                 // Objective human morality axis re-emerges
+                if (age >= 10) bitmask |= 8;  // Psychology shifts to intellectual curiosity
+                if (age >= 5)  bitmask |= 64; // Massive developmental and creative growth bounds
+                break;
+
+            case 'industrial':
+                if (age >= 18) bitmask |= 2;   // Legal autonomy granted for factory labor classes
+                if (person.id % 2 === 0) bitmask |= 4; // Integrity strained heavily by factory environments
+                if (age < 12 || age > 48) bitmask |= 8; // Psychology only intact outside child labor and elder breakdown
+                if (age >= 12) bitmask |= 64;  // Industrial production training
+                if (age >= 35) bitmask |= 128; // Assets accumulated late in life
+                break;
+
+            case 'rights': // Post-WWII Institutional Framework
+                bitmask |= 2 | 4 | 64;         // Universal Declaration architectures online
+                if (age >= 3)  bitmask |= 8;   // Modern mental healthcare tracking
+                if (age >= 28) bitmask |= 128; // Standard asset and home ownership protection metrics
+                bitmask |= (1 << 20) | (1 << 24); // Protect native adult shields
+                break;
+
+            case 'pre-surveil': // Late 90s Cybernetic Optimism (CORRECTED RANGE BOUNDARIES)
+                bitmask |= 2 | 4 | 64;         
+                if (age >= 5)  bitmask |= 8;   // Psychology intact across the early, non-predatory open web
+                if (age >= 22) bitmask |= 128; // Early digital asset layers scale cleanly without flashing off
+                break;
+
+            case 'early-data': // 2010s Silicon Boom Expansion
+                bitmask |= 2 | 4 | 64 | 128;   // Rapid expansion of tools and asset access
+                if (age < 12 || age > 45) {
+                    bitmask |= 8;              // Psychology begins fracturing under initial screen loop cycles
+                }
+                break;
+
+            case 'modern': // The Hyper-Digital Now (2020s Panopticon)
+                bitmask |= 2 | 64 | 128;       // Pervasive connectivity and instant material tools online
+                if (age < 11 || age > 55) {
+                    bitmask |= 8;              // Pervasive feedback algorithms trap psychology in critical years
+                }
+                if (person.id % 3 !== 0) {
+                    bitmask |= 4;              // Personal integrity drops under systematic digital moderation metrics
+                }
+                break;
+
+            case 'crisis': // Systemic Rights Severance / Authoritarian Threat Limit
+                bitmask |= 128; // Total centralization of resource asset matrices at the top
+                if (age < 25 || age > 60) {
+                    bitmask |= 2 | 4 | 8 | 64; // Safe zones restricted only to dependent layers
+                } else {
+                    bitmask |= 2; // Critical limit: Only raw internal Autonomy remains to resist
+                    if (person.id % 5 === 0) bitmask |= 4; // Rare 20% guard their hidden Integrity core
+                }
+                break;
+        }
+        return bitmask;
+    }
+
+
+
+
+    function processLifecycle() {
+        simulationTick++;
+        let brokenPillarsCount = 0;
+        let totalCheckedPillars = people.length * 9; 
+        
+        let victimCount = 0;
+        // CORRECTED: Array initialized with 7 zeros to prevent syntax compile crashes
+        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+
+        people.forEach((person) => {
+            person.lastBitmask = person.bitmask;
+            person.age += 0.5;
+            
+            if (person.age > 80) {
+                person.age = 0; 
+                person.individualTheta = Math.random() * Math.PI * 2;
+                person.lastBitmask = 0;
+                pushLog(`Unit #${person.id} reborn into ${person.family}.`, 'log-birth', person.id, person.family);
+            }
+
+            person.bitmask = calculatePillars(person, person.age, currentSimType);
+
+            if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
+                if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
+                    pushLog(`!! CRITICAL SEVERANCE !! Unit #${person.id} hit Age 30. Integrity stripped by Epoch Crisis rules.`, 'log-threat', person.id, person.family);
+                } else {
+                    pushLog(`Unit #${person.id} bit-shift recorded across spacetime.`, 'log-shift', person.id, person.family);
+                }
+            }
+
+            let individualIsVictim = false;
+
+            for (let b = 0; b < 7; b++) {
+                if ((1 << b) === 32) continue; 
+                
+                if (!(person.bitmask & (1 << b))) {
+                    brokenPillarsCount++;
+                    bitFailureCounts[b]++; 
+                    individualIsVictim = true;
+                }
+            }
+            if (individualIsVictim) {
+                victimCount++;
+            }
+        });
+
+        existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
+        document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
+        document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
+        document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
+
+        // Update the dynamic metric counters in the sidebar elements
+        if (document.getElementById('victim-count')) {
+            document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
+        }
+
+        // Update the dynamic metric counters in the sidebar elements
+        if (document.getElementById('victim-count')) {
+            document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
+        }
+
+        // --- EXPANDED 9-BIT ARCHITECTURAL ACCUMULATOR ---
+        // Map all 9 bits to their text descriptors and corresponding raw failure totals
+        const bitBlueprints = [
+            { name: "EXISTENCE (1)",   count: 0, bit: 1 },
+            { name: "AUTONOMY (2)",    count: 0, bit: 2 },
+            { name: "INTEGRITY (4)",   count: 0, bit: 4 },
+            { name: "PSYCHOLOGY (8)",  count: 0, bit: 8 },
+            { name: "PHYSICAL (16)",   count: 0, bit: 16 },
+            { name: "DISABILITY (32)", count: 0, bit: 32 },
+            { name: "DEVELOPMENT (64)",count: 0, bit: 64 },
+            { name: "PROPERTY (128)",  count: 0, bit: 128 },
+            { name: "PRESENCE (256)",  count: 0, bit: 256 }
+        ];
+
+        // Loop through the population to compute counts for all 9 architectural states
+        people.forEach((person) => {
+            // FIXED: If a person has naturally deceased, do not process them as an active victim
+            if (person.bitmask === 0) {
+                return; // Skip this person and jump to the next one
+            }
+
+            bitBlueprints.forEach((blueprint) => {
+                // If a bit is NOT active, increment the structural failure record tally
+                if (!(person.bitmask & blueprint.bit)) {
+                    blueprint.count++;
+                }
+            });
+        });
+
+        // Filter out DISABILITY (32) since it is your permanent inclusive anchor floor
+        let activeStressVectors = bitBlueprints.filter(item => item.bit !== 32);
+
+        // Sort vectors dynamically in descending order based on total affected counts
+        activeStressVectors.sort((a, b) => b.count - a.count);
+
+        // Extract the Top 5 most critically damaged vectors
+        let topFiveVectors = activeStressVectors.slice(0, 5);
+
+        // Target the sidebar element layout wrapper
+        const vectorsContainer = document.getElementById('top-vectors-list');
+        if (vectorsContainer) {
+            vectorsContainer.innerHTML = ''; // Wipe stale layout data strings
+            
+            topFiveVectors.forEach((vector, rank) => {
+                const vectorRow = document.createElement('div');
+                vectorRow.style.display = 'flex';
+                vectorRow.style.justifyContent = 'space-between';
+                vectorRow.style.padding = '2px 4px';
+                vectorRow.style.borderRadius = '2px';
+                
+                // Color-code rows based on severe impact steps
+                if (vector.count > 0) {
+                    vectorRow.style.color = rank === 0 ? '#fc8181' : (rank < 3 ? '#f6ad55' : '#ecc94b');
+                    vectorRow.style.background = 'rgba(255,255,255,0.01)';
+                } else {
+                    vectorRow.style.color = '#4a5568'; // Muted color if a vector has zero victims
+                }
+
+                // Render descriptive alignment
+                vectorRow.innerHTML = `
+                    <span>${rank + 1}. ${vector.name}</span>
+                    <span style="font-weight: bold;">${vector.count}</span>
+                `;
+                vectorsContainer.appendChild(vectorRow);
+            });
+        }
+    }
+
+    function getXYZ(person) {
+        let mask = person.bitmask;
+        let x = 0;
+        let y = 0;
+        let z = 0;
+
+        // --- X-AXIS: PROPERTY & PHYSICAL REALITY ---
+        if (mask & 1)   x += 5;   // EXISTENCE (You, alive, with a body)
+        if (mask & 16)  x += 20;  // PHYSICAL (The biological vessel)
+        if (mask & 128) x += 40;  // PROPERTY (Material Assets and Income Protection)
+
+        // --- Y-AXIS: INTERNAL DRIVE & CHOICE ---
+        if (mask & 2)   y += 5;   // AUTONOMY (The Sovereign Right to Choose)
+        if (mask & 4)   y += 10;  // INTEGRITY (The Moral Axis of Personal Choice)
+        if (mask & 8)   y += 15;  // PSYCHOLOGY (Cognitive Internal State / Mental Peace)
+
+        // --- Z-AXIS: EVOLUTIONARY GROWTH & SPACETIME CONTUNUUM ---
+        if (mask & 32)  z += 15;  // DISABILITY (The permanent universal inclusive floor)
+        if (mask & 64)  z += 25;  // DEVELOPMENT (Evolutionary, Intellectual, and Creative Growth)
+        if (mask & 256) z += 50;  // PRESENCE (Real-Time Spacetime Footprint)
+
+        // --- THE MAJESTIC CONTINUOUS FIBONACCI LIFELINE CURVE ---
+        const goldenRatio = 1.61803398875;
+        
+        // Pure logarithmic radius tracking your spatial timeline layout
+        let continuousRadius = Math.log(person.age + 1) * goldenRatio * 8.5; 
+        let spiralTheta = person.individualTheta + (person.age * 0.065) + person.familySeed;
+
+        // Map the entities directly along the unbroken geometric trajectory
+        let finalX = x + (continuousRadius * Math.cos(spiralTheta));
+        let finalY = y + (continuousRadius * Math.sin(spiralTheta));
+        let finalZ = z + (person.age * 0.9); // Grounded spacetime height progression
+
+        return { x: finalX, y: finalY, z: finalZ };
+    }
+
+
+
+
+    function project(x, y, z) {
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2 + 110;
+        const matrixScale = 3.6; 
+        let isoX = centerX + (x - y) * Math.cos(0.52) * matrixScale;
+        let isoY = centerY + (x + y) * Math.sin(0.52) * matrixScale - (z * matrixScale);
+        return { x: isoX, y: isoY };
+    }
+
+    function drawGrid() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = '#141b26';
+        ctx.lineWidth = 1;
+        
+        let origin = project(0, 0, 0);
+        let xAxis = project(180, 0, 0);
+        let yAxis = project(0, 40, 0);
+        let zAxis = project(0, 0, 160);
+        
+        ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(xAxis.x, xAxis.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(yAxis.x, yAxis.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(zAxis.x, zAxis.y); ctx.stroke();
+        
+        ctx.strokeStyle = '#0a0e17';
+        for (let r = 20; r <= 160; r += 35) {
+            ctx.beginPath();
+            ctx.arc(origin.x, origin.y - (r * 0.5), r * 1.5, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        if (showSpirals) {
+            ctx.lineWidth = 0.75;
+            families.forEach((familyName, fId) => {
+                let familySeed = fId * 1.45;
+                ctx.strokeStyle = fId === 1 ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.08)';
+                ctx.beginPath();
+                
+                for (let testAge = 0; testAge <= 80; testAge += 1) {
+                    let testMask = 1 | 16 | 32 | 2 | 4 | 8 | 64; 
+                    if (currentSimType === 'crisis' && testAge >= 25 && testAge <= 60) {
+                        testMask = 1 | 16 | 32 | 2; 
+                    }
+                    
+                    let spaceExpansionFactor = 1.0;
+                    if (testMask & 1)   spaceExpansionFactor *= 1.1;
+                    if (testMask & 16)  spaceExpansionFactor *= 1.25;
+                    if (testMask & 128) spaceExpansionFactor *= 1.4;
+
+                    let internalMoralForce = 1.0;
+                    if (testMask & 2)   internalMoralForce += 0.5;
+                    if (testMask & 4)   internalMoralForce += 1.0;
+                    if (testMask & 8)   internalMoralForce += 1.5;
+
+                    const goldenRatio = 1.61803398875;
+                    let continuousRadius = Math.log(testAge + 1) * goldenRatio * 5.2 * spaceExpansionFactor * (internalMoralForce * 0.4);
+                    let spiralTheta = 0 + (testAge * 0.065) + familySeed; 
+
+                    let sX = continuousRadius * Math.cos(spiralTheta);
+                    let sY = continuousRadius * Math.sin(spiralTheta);
+                    let sZ = ((testMask & 32) ? 25 : 0) + ((testMask & 64) ? 20 : 0) + (testAge * 0.75);
+
+                    let pt = project(sX, sY, sZ);
+                    if (testAge === 0) ctx.moveTo(pt.x, pt.y);
+                    else ctx.lineTo(pt.x, pt.y);
+                }
+                ctx.stroke();
+            });
+        }
+    }
+
+    function updateSimulation() {
+        drawGrid();
+        
+        let sortedPopulation = [...people].sort((a, b) => {
+            let posA = getXYZ(a);
+            let posB = getXYZ(b);
+            return (posA.x + posA.y) - (posB.x + posB.y);
+        });
+
+        sortedPopulation.forEach((person) => {
+            // FIXED: Calculates the last horizontal coordinates before death to break the center spine stack
+            if (person.bitmask === 0) {
+                ctx.fillStyle = '#718096'; // GREY: Transitionary death phase
+                
+                const goldenRatio = 1.61803398875;
+                let deadRadius = Math.log(person.age + 1) * goldenRatio * 8.5;
+                let deadTheta = person.individualTheta + (person.age * 0.065) + person.familySeed;
+                
+                let ghostX = deadRadius * Math.cos(deadTheta);
+                let ghostY = deadRadius * Math.sin(deadTheta);
+                let ghostZ = person.age * 0.8;
+                
+                let pt = project(ghostX, ghostY, ghostZ);
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 2.5, 0, Math.PI * 2); ctx.fill();
+                return;
+            }
+
+            let coords = getXYZ(person);
+            let pt = project(coords.x, coords.y, coords.z);
+            let isTargeted = (selectedPersonIndex !== -1 && person.id === people[selectedPersonIndex].id);
+            
+            // Draw baseline vertical anchor strings to emphasize 3D space placement
+            ctx.strokeStyle = isTargeted ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.03)';
+            ctx.lineWidth = 0.5;
+            let originPt = project(0, 0, coords.z);
+            ctx.beginPath(); ctx.moveTo(originPt.x, originPt.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
+
+            // Render entity nodes
+            if (isTargeted) {
+                ctx.fillStyle = '#f6e05e';
+                ctx.shadowColor = '#f6e05e';
+                ctx.shadowBlur = 12;
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 7, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0; 
+                updateInspector(person, coords);
+            } else {
+                // Determine the target base health diagnostic color first
+                let baseColorRGB = "72, 187, 120"; // Default: LIGHT GREEN (#48bb78) Secure
+                
+                if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
+                    baseColorRGB = "229, 62, 62";  // RED (#e53e3e) Foundational Alert
+                } else if (!(person.bitmask & 8) || (!(person.bitmask & 64) && person.age >= 8) || (!(person.bitmask & 128) && person.age >= 35) || !(person.bitmask & 256)) {
+                    baseColorRGB = "237, 137, 54"; // ORANGE (#ed8936) High-tier Warning
+                }
+
+                // CONTINUOUS BLENDING MATRIX: Newborns fade from white (255,255,255) to their base status color
+                if (person.age <= 2.0) {
+                    // Blending ratio shifts from 1.0 (pure white) to 0.0 (pure status color) over 2 timeline cycles
+                    let blendRatio = Math.max(0, (2.0 - person.age) / 2.0);
+                    
+                    let targetRed   = Math.round((255 * blendRatio) + (parseInt(baseColorRGB.split(',')[0]) * (1 - blendRatio)));
+                    let targetGreen = Math.round((255 * blendRatio) + (parseInt(baseColorRGB.split(',')[1]) * (1 - blendRatio)));
+                    let targetBlue  = Math.round((255 * blendRatio) + (parseInt(baseColorRGB.split(',')[2]) * (1 - blendRatio)));
+                    
+                    ctx.fillStyle = `rgb(${targetRed}, ${targetGreen}, ${targetBlue})`;
+                } else {
+                    ctx.fillStyle = `rgb(${baseColorRGB})`;
+                }
+                
+                // Scale physical node radius dynamically with lifecycle age acceleration
+                let radius = 2.5 + (person.age * 0.05);
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
+            }
+        });
+    }
+
+
+
+    function updateInspector(person, coords) {
+        document.getElementById('no-selection').style.display = 'none';
+        document.getElementById('inspector-content').style.display = 'block';
+        document.getElementById('ins-name').innerText = `Individual #${person.id}`;
+        document.getElementById('ins-family').innerText = person.family;
+        document.getElementById('ins-age').innerText = Math.floor(person.age);
+        document.getElementById('ins-coords').innerText = `X:${Math.round(coords.x)}, Y:${Math.round(coords.y)}, Z:${Math.round(coords.z)}`;
+        
+        const list = document.getElementById('pillars-list');
+        list.innerHTML = '';
+        
+        pillarNames.forEach(p => {
+            const isActive = (person.bitmask & p.bit) !== 0;
+            const div = document.createElement('div');
+            div.className = `pillar ${isActive ? 'active' : 'inactive'}`;
+            div.innerHTML = `<span>${p.name}</span><span>${isActive ? 'INTACT' : 'STRIPPED'}</span>`;
+            list.appendChild(div);
+        });
+    }
+
+
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+        
+        let closestIndex = -1;
+        let minDist = 99999;
+        
+        people.forEach((person, index) => {
+            let coords = getXYZ(person);
+            let pt = project(coords.x, coords.y, coords.z);
+            let dist = Math.hypot(pt.x - clickX, pt.y - clickY);
+            if (dist < minDist) {
+                minDist = dist;
+                closestIndex = index;
+            }
+        });
+        
+        if (minDist < 30) { 
+            selectedPersonIndex = closestIndex;
+            let lockedPerson = people[selectedPersonIndex];
+            document.getElementById('log-filter-status').innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
+            document.getElementById('log-filter-status').style.color = '#9f7aea';
+            pushLog(`TELEMETRY LOCK ENGAGED: Isolating data strings for Individual #${lockedPerson.id} and the ${lockedPerson.family}.`, 'log-lock');
+            updateSimulation();
+        }
+    });
+
+    function clearSelection() {
+        selectedPersonIndex = -1;
+        document.getElementById('no-selection').style.display = 'block';
+        document.getElementById('inspector-content').style.display = 'none';
+        document.getElementById('log-filter-status').innerText = `FILTER: GLOBAL`;
+        document.getElementById('log-filter-status').style.color = '#4a5568';
+        pushLog("TELEMETRY UNLOCKED: Global telemetry chatter stream restored.", "log-shift");
+        updateSimulation();
+    }
+
+    function toggleSpiralField() {
+        showSpirals = !showSpirals;
+        const btn = document.getElementById('spiral-btn');
+        if (showSpirals) {
+            btn.classList.add('active-mode');
+            btn.innerText = "Hide Majestic Spirals";
+            pushLog("VISUALIZER MATRIX: Majestic structural Fibonacci rails projected onto grid.", "log-shift");
+        } else {
+            btn.classList.remove('active-mode');
+            btn.innerText = "Show Majestic Spirals";
+            pushLog("VISUALIZER MATRIX: Continuous geometric curves hidden.", "log-shift");
+        }
+        updateSimulation();
+    }
+
+    function togglePlay() {
+        isPlaying = !isPlaying;
+        document.getElementById('play-btn').innerText = isPlaying ? "Halt Spacetime Loop" : "Engage Spacetime Loop";
+        if (isPlaying) executionLoop();
+    }
+
+    function changeSimulation() {
+        currentSimType = document.getElementById('sim-select').value;
+        let profileName = document.getElementById('sim-select').options[document.getElementById('sim-select').selectedIndex].text;
+        pushLog(`EPOCH RESET: Rules shifted to [${profileName}].`, 'log-shift');
+        clearSelection(); 
+        updateSimulation();
+    }
+
+    function executionLoop() {
+        if (!isPlaying) return;
+        processLifecycle();
+        updateSimulation();
+        setTimeout(() => { requestAnimationFrame(executionLoop); }, 70); 
+    }
+
+window.addEventListener('load', () => {
+    initPopulation();
+    const spiralBtn = document.getElementById('spiral-btn');
+    if (spiralBtn) {
+        spiralBtn.classList.add('active-mode');
+        spiralBtn.innerText = "Hide Majestic Spirals";
+    }
+    pushLog(`Existenz Space-Time Matrix online. ${currentPopulationScale} multiversal timelines activated.`, "log-birth");
+    updateSimulation();
+});
+
+</script>
+</body>
+</html>
