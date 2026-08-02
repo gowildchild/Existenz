@@ -180,7 +180,7 @@ $$\mathcal{S}_{\text{state}} = \left( \mathcal{M}_{\text{exist}} \land \neg\left
 # Commercial use requires immediate written license and explicit payment.
 # ==========================================================================
 from enum import IntFlag
-class ExistentialMeta(IntFlag):
+class ExistentialCore(IntFlag):
     # The 7 Natural Human Pillars (The Foundational Coordinates) 
     EXISTENCE   = 1 << 0  # 1   You, alive, with a body
     AUTONOMY    = 1 << 1  # 2   The Sovereign Right to Choose
@@ -200,7 +200,7 @@ class ExistentialMeta(IntFlag):
     SHIELD_AQUIRED_RIGHTS        = 1 << 26 # 67108864 Shield D (Acquired by alliance)
     SHIELD_AQUIRED_TRUST         = 1 << 30 # 1073741824 Shield E (Human Action)
 
-class ExistentialThreatMeta(IntFlag):
+class ExistentialThreat(IntFlag):
     # 100% Mathematically Honest Threat Matrix (Flawless 1:1 Mirror Alignment)
     THREAT_EXISTENCE   = 1 << 0  # 1   direct life / mercenary violence
     THREAT_AUTONOMY    = 1 << 1  # 2   choice / administrative coercion
@@ -216,7 +216,7 @@ class ExistentialThreatMeta(IntFlag):
     TRIGGER_PREDATORY       = THREAT_PSYCHOLOGY | THREAT_AUTONOMY
     TRIGGER_SYSTEMSCRISIS  = THREAT_AUTONOMY | THREAT_PSYCHOLOGY | THREAT_PROPERTY
 
-class ExistentialRipples(IntFlag):
+class ExistentialRipple(IntFlag):
     # The Social Blast Radius Expanded in Clean Base-2 Symmetry
     INDIVIDUAL         = 1 << 0  # 1   The Micro Core / The Sovereign Human
     PARTNER            = 1 << 1  # 2   Secondary Core Alliance / The One 
