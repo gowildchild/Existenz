@@ -352,18 +352,27 @@
         people = [];
         for (let i = 0; i < 100; i++) {
             let assignedAge;
-            while (true) {
-                let u1 = Math.random();
-                let u2 = Math.random();
-                if (u1 === 0) u1 = 0.0001; 
-                let standardNormal = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(Math.PI * 2.0 * u2);
-                assignedAge = 36 + standardNormal * 16;
-                if (assignedAge >= 0 && assignedAge <= 80) {
-                    break;
+            
+            // Force exactly 10% of the population to initialize as true newborns/infants
+            if (i < 10) {
+                assignedAge = Math.random() * 2.0;
+            } else {
+                while (true) {
+                    let u1 = Math.random();
+                    let u2 = Math.random();
+                    if (u1 === 0) u1 = 0.0001; 
+                    let standardNormal = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(Math.PI * 2.0 * u2);
+                    assignedAge = 36 + standardNormal * 16;
+                    if (assignedAge >= 2.0 && assignedAge <= 80) {
+                        break;
+                    }
                 }
             }
-            assignedAge = Math.floor(assignedAge);
+            
+            // Allow precision decimals so entities spend smooth transitions inside the white color envelope
+            assignedAge = Math.round(assignedAge * 10) / 10;
             let familyId = Math.floor(Math.random() * families.length);
+            
             people.push({
                 id: i + 1,
                 age: assignedAge,
@@ -375,6 +384,7 @@
             });
         }
     }
+
 
     
     function calculatePillars(person, age, type) {
@@ -484,7 +494,7 @@
 
 
     function processLifecycle() {
-        simulationTick += 1 * currentSpeedMultiplier;
+        simulationTick++;
         let brokenPillarsCount = 0;
         let totalCheckedPillars = people.length * 9; 
         
@@ -493,9 +503,9 @@
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
-            person.age += 0.5 * currentSpeedMultiplier;
+            // Refine step increments to 0.1 to let nodes spend more frame ticks inside the newborn window
+            person.age += 0.1 * currentSpeedMultiplier;
             
-            // Core historical mortality threshold processor
             let naturalDemiseTriggered = false;
             let currentEraCeiling = 80;
             
@@ -505,7 +515,6 @@
             if (currentSimType === 'industrial') currentEraCeiling = 45;
             if (currentSimType === 'rights')     currentEraCeiling = 65;
 
-            // Apply soft stochastic probability curves once beyond nominal era horizons
             if (person.age >= currentEraCeiling) {
                 let checkFactor = (person.age - currentEraCeiling) / (80 - currentEraCeiling + 1);
                 if (Math.random() < checkFactor || person.age >= 80) {
@@ -514,7 +523,7 @@
             }
 
             if (naturalDemiseTriggered) {
-                person.age = 0; 
+                person.age = 0.0; 
                 person.individualTheta = Math.random() * Math.PI * 2;
                 person.lastBitmask = 0;
                 pushLog(`Unit #${person.id} reborn into ${person.family}.`, 'log-birth', person.id, person.family);
@@ -532,7 +541,6 @@
 
             let individualIsVictim = false;
 
-            // Updated pass to fully track all 9 expanded framework coordinates cleanly
             for (let b = 0; b < 9; b++) {
                 if ((1 << b) === 32) continue; 
                 
@@ -570,31 +578,22 @@
             { name: "PRESENCE (256)",  count: 0, bit: 256 }
         ];
 
-        // Loop through the population to compute counts for all 9 architectural states
         people.forEach((person) => {
-            // FIXED: If a person has naturally deceased, do not process them as an active victim
             if (person.bitmask === 0) {
                 return; 
             }
 
             bitBlueprints.forEach((blueprint) => {
-                // If a bit is NOT active, increment the structural failure record tally
                 if (!(person.bitmask & blueprint.bit)) {
                     blueprint.count++;
                 }
             });
         });
 
-        // Filter out DISABILITY (32) since it is your permanent inclusive anchor floor
         let activeStressVectors = bitBlueprints.filter(item => item.bit !== 32);
-
-        // Sort vectors dynamically in descending order based on total affected counts
         activeStressVectors.sort((a, b) => b.count - a.count);
-
-        // Extract the Top 5 most critically damaged vectors
         let topFiveVectors = activeStressVectors.slice(0, 5);
 
-        // Target the sidebar element layout wrapper
         const vectorsContainer = document.getElementById('top-vectors-list');
         if (vectorsContainer) {
             vectorsContainer.innerHTML = ''; 
@@ -621,6 +620,7 @@
             });
         }
     }
+
 
     function getXYZ(person) {
         let mask = person.bitmask;
