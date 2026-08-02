@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | v0.95b</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | v0.96b</title>
     <style>
         body { 
             margin: 0; 
@@ -671,7 +671,7 @@
         });
 
         sortedPopulation.forEach((person) => {
-            // FIXED: If the unit is dead, render them immediately as a grey ghost and skip further processing
+            // FIXED: Calculates the last horizontal coordinates before death to break the center spine stack
             if (person.bitmask === 0) {
                 ctx.fillStyle = '#718096'; // GREY: Transitionary death phase
                 
@@ -707,15 +707,27 @@
                 ctx.shadowBlur = 0; 
                 updateInspector(person, coords);
             } else {
-                // VISUAL STATE FILTERS: Neonatal initialization and dynamic structural threat mapping
-                if (person.age <= 1.0) {
-                    ctx.fillStyle = '#ffffff'; // WHITE: Newborn unit initialization window
-                } else if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
-                    ctx.fillStyle = '#e53e3e'; // RED: Foundational failure (Existence, Autonomy, Integrity)
+                // Determine the target base health diagnostic color first
+                let baseColorRGB = "72, 187, 120"; // Default: LIGHT GREEN (#48bb78) Secure
+                
+                if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
+                    baseColorRGB = "229, 62, 62";  // RED (#e53e3e) Foundational Alert
                 } else if (!(person.bitmask & 8) || (!(person.bitmask & 64) && person.age >= 8) || (!(person.bitmask & 128) && person.age >= 35) || !(person.bitmask & 256)) {
-                    ctx.fillStyle = '#ed8936'; // ORANGE: High-tier structural compromise warning
+                    baseColorRGB = "237, 137, 54"; // ORANGE (#ed8936) High-tier Warning
+                }
+
+                // CONTINUOUS BLENDING MATRIX: Newborns fade from white (255,255,255) to their base status color
+                if (person.age <= 2.0) {
+                    // Blending ratio shifts from 1.0 (pure white) to 0.0 (pure status color) over 2 timeline cycles
+                    let blendRatio = Math.max(0, (2.0 - person.age) / 2.0);
+                    
+                    let targetRed   = Math.round((255 * blendRatio) + (parseInt(baseColorRGB.split(',')[0]) * (1 - blendRatio)));
+                    let targetGreen = Math.round((255 * blendRatio) + (parseInt(baseColorRGB.split(',')[1]) * (1 - blendRatio)));
+                    let targetBlue  = Math.round((255 * blendRatio) + (parseInt(baseColorRGB.split(',')[2]) * (1 - blendRatio)));
+                    
+                    ctx.fillStyle = `rgb(${targetRed}, ${targetGreen}, ${targetBlue})`;
                 } else {
-                    ctx.fillStyle = '#48bb78'; // LIGHT GREEN: Completely intact and secure footprint
+                    ctx.fillStyle = `rgb(${baseColorRGB})`;
                 }
                 
                 // Scale physical node radius dynamically with lifecycle age acceleration
@@ -724,6 +736,7 @@
             }
         });
     }
+
 
 
     function updateInspector(person, coords) {
