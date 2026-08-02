@@ -179,7 +179,7 @@
 
     <!-- Left Control Panel -->
     <div id="sidebar">
-        <h2 style="margin: 0; color: #63b3ed; font-size: 16px; letter-spacing: 1px;">EXISTENZ TIMELINES v0.70</h2>
+        <h2 style="margin: 0; color: #63b3ed; font-size: 16px; letter-spacing: 1px;">EXISTENZ CHRONOS</h2>
         
         <div>
             <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 5px;">Spacetime Era Vector:</label>
@@ -196,6 +196,7 @@
                 <option value="crisis">10. Authoritarian Threat Event (Systemic Severance)</option>
             </select>
         </div>
+
         <div>
             <label for="scale-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 5px;">Population Scale Continuum:</label>
             <select id="scale-select" onchange="changePopulationScale()">
@@ -206,28 +207,27 @@
                 <option value="1000000">1,000,000 (Scale-Invariant Mass Spectrum)</option>
             </select>
         </div>
-        
+
         <div class="threat-meter">
             <div style="display:flex; justify-content:space-between; font-size:11px;">
-                <span>ExistenzThreat Vector:</span>
+                <span>Global Threat Vector:</span>
                 <span id="threat-pct" style="font-weight:bold; color:#48bb78;">0%</span>
             </div>
             <div style="background:#1a2233; height:5px; border-radius:2px;"><div id="threat-bar"></div></div>
         </div>
 
-        <div class="threat-meter" style="margin-top: 10px;">
+        <div class="threat-meter">
             <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC METRICS</div>
             <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px;">
                 <span>Total Active Victims:</span>
-                <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 50</span>
+                <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
             </div>
             
             <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
             <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
-                <!-- Dynamically populated and sorted via script -->
+                <!-- Populated Dynamically via Script -->
             </div>
         </div>
-
         
         <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
         <button class="btn btn-toggle" id="spiral-btn" onclick="toggleSpiralField()">Show Majestic Spirals</button>
@@ -273,10 +273,8 @@
     let currentSimType = 'tribal';
     let simulationTick = 0;
     let existenzThreatLevel = 0;
-    
-    // Core parameters to govern the macro density shifts cleanly
     let currentPopulationScale = 100; 
-
+    
     const families = ["Alpha Lineage", "Beta Cluster", "Gamma Node", "Delta Branch", "Epsilon Matrix"];
     let people = [];
 
@@ -290,58 +288,19 @@
         { name: "DEVELOPMENT (Bit 64)", bit: 64 }
     ];
 
-    function pushLog(text, type = '', entityId = null, entityFamily = null) {
-        if (selectedPersonIndex !== -1) {
-            let lockedPerson = people[selectedPersonIndex];
-            if (entityId !== null && entityId !== lockedPerson.id && entityFamily !== lockedPerson.family) {
-                return; 
-            }
-        }
+    function initPopulation() {
+        people = [];
+        let allocatedArraySize = currentPopulationScale > 1000 ? 500 : currentPopulationScale;
 
-        const stream = document.getElementById('log-stream');
-        if (!stream) return;
-        
-        const entry = document.createElement('div');
-        entry.className = `log-entry ${type}`;
-        
-        let timestamp = new Date().toLocaleTimeString().split(' ');
-        entry.innerHTML = `[${timestamp}] ${text}`;
-        stream.appendChild(entry);
-        
-        stream.scrollTop = stream.scrollHeight;
-        if (stream.children.length > 35) {
+        for (let i = 0; i  35) {
             stream.removeChild(stream.firstChild);
         }
     }
-    
-    function initPopulation() {
-        people = [];
-        // Protect memory speeds at high counts by capping statistical sampling arrays 
-        let allocatedArraySize = currentPopulationScale > 1000 ? 500 : currentPopulationScale;
-
-        for (let i = 0; i < allocatedArraySize; i++) {
-            let assignedAge = Math.floor(Math.random() * 80);
-            let familyId = Math.floor(Math.random() * families.length);
-            people.push({
-                id: i + 1,
-                age: assignedAge,
-                family: families[familyId],
-                familySeed: familyId * 1.45, 
-                individualTheta: Math.random() * Math.PI * 2, 
-                bitmask: 0,
-                lastBitmask: 0
-            });
-        }
-    }
-    
     function calculatePillars(person, age, type) {
         let bitmask = 0;
-        
-        // --- UNIVERSAL ARCHITECTURAL CONSTANTS ---
         bitmask |= 1;   // EXISTENCE
-        bitmask |= 32;  // DISABILITY (The permanent universal floor holding up the framework)
+        bitmask |= 32;  // DISABILITY (The permanent universal inclusive floor)
 
-        // --- HISTORICAL LIFESPAN BOUNDARIES (MORTALITY CAP) ---
         let lifeExpectancy = 80; 
         if (type === 'tribal')     lifeExpectancy = 35;
         if (type === 'antiquity')  lifeExpectancy = 40;
@@ -349,125 +308,111 @@
         if (type === 'industrial') lifeExpectancy = 45;
         if (type === 'rights')     lifeExpectancy = 65;
 
-        // If the individual passes the era threshold, they dissolve out of the space-time field completely
         if (age >= lifeExpectancy) {
-            return 0; // Return a completely blank bitmask to signify standard systemic mortality
+            return 0; 
         }
 
-        bitmask |= 16;  // PHYSICAL (Vessel remains active while alive)
-        bitmask |= 256; // PRESENCE (Real-time footprint remains active while alive)
+        bitmask |= 16;  // PHYSICAL
+        bitmask |= 256; // PRESENCE
 
         switch(type) {
             case 'tribal':
-                bitmask |= 2; // Tribal group autonomy
-                if (age >= 10) bitmask |= 4;  // Integrity inside clan survival
-                if (age >= 4)  bitmask |= 8;  // Psychology protected by proximal bands
-                if (age >= 8)  bitmask |= 64; // Tribal developmental knowledge
+                bitmask |= 2; 
+                if (age >= 10) bitmask |= 4;  
+                if (age >= 4)  bitmask |= 8;  
+                if (age >= 8)  bitmask |= 64; 
                 break;
 
-            case 'antiquity': // Diogenes / Cynic Era
-                bitmask |= 2; // Absolute sovereign autonomy of choice
-                bitmask |= 4; // High moral axis of choice
-                if (age >= 12) bitmask |= 8;  // Internal peace unbothered by external assets
-                if (age >= 6)  bitmask |= 64; // High individual evolutionary development
+            case 'antiquity':
+                bitmask |= 2; 
+                bitmask |= 4; 
+                if (age >= 12) bitmask |= 8;  
+                if (age >= 6)  bitmask |= 64; 
                 break;
 
             case 'feudal':
-                if (person.id % 8 === 0) bitmask |= 2 | 128; // Only lords hold Autonomy & Property
-                if (age >= 14) bitmask |= 4;  // Integrity restricted to strict serf/lord oaths
-                if (age >= 10) bitmask |= 64; // Development limited to serf production
+                if (person.id % 8 === 0) bitmask |= 2 | 128; 
+                if (age >= 14) bitmask |= 4;  
+                if (age >= 10) bitmask |= 64; 
                 break;
 
             case 'enlighten':
-                if (age >= 15) bitmask |= 2;  // Autonomy scales back upward as reason maps out
-                bitmask |= 4;                 // Objective human morality axis re-emerges
-                if (age >= 10) bitmask |= 8;  // Psychology shifts to intellectual curiosity
-                if (age >= 5)  bitmask |= 64; // Massive developmental and creative growth bounds
+                if (age >= 15) bitmask |= 2;  
+                bitmask |= 4;                 
+                if (age >= 10) bitmask |= 8;  
+                if (age >= 5)  bitmask |= 64; 
                 break;
 
             case 'industrial':
-                if (age >= 18) bitmask |= 2;   // Legal autonomy granted for factory labor classes
-                if (person.id % 2 === 0) bitmask |= 4; // Integrity strained heavily by factory environments
-                if (age < 12 || age > 48) bitmask |= 8; // Psychology only intact outside child labor and elder breakdown
-                if (age >= 12) bitmask |= 64;  // Industrial production training
-                if (age >= 35) bitmask |= 128; // Assets accumulated late in life
+                if (age >= 18) bitmask |= 2;   
+                if (person.id % 2 === 0) bitmask |= 4; 
+                if (age < 12 || age > 48) bitmask |= 8; 
+                if (age >= 12) bitmask |= 64;  
+                if (age >= 35) bitmask |= 128; 
                 break;
 
-            case 'rights': // Post-WWII Institutional Framework
-                bitmask |= 2 | 4 | 64;         // Universal Declaration architectures online
-                if (age >= 3)  bitmask |= 8;   // Modern mental healthcare tracking
-                if (age >= 28) bitmask |= 128; // Standard asset and home ownership protection metrics
-                break;
-
-            case 'pre-surveil': // Late 90s Cybernetic Optimism (CORRECTED RANGE BOUNDARIES)
+            case 'rights':
                 bitmask |= 2 | 4 | 64;         
-                if (age >= 5)  bitmask |= 8;   // Psychology intact across the early, non-predatory open web
-                if (age >= 22) bitmask |= 128; // Early digital asset layers scale cleanly without flashing off
+                if (age >= 3)  bitmask |= 8;   
+                if (age >= 28) bitmask |= 128; 
+                bitmask |= (1 << 20) | (1 << 24); // SHIELD_HUMAN_RIGHTS & SHIELD_BASIC_RIGHTS
                 break;
 
-            case 'early-data': // 2010s Silicon Boom Expansion
-                bitmask |= 2 | 4 | 64 | 128;   // Rapid expansion of tools and asset access
-                if (age < 12 || age > 45) {
-                    bitmask |= 8;              // Psychology begins fracturing under initial screen loop cycles
-                }
+            case 'pre-surveil':
+                bitmask |= 2 | 4 | 64;         
+                if (age >= 5)  bitmask |= 8;   
+                if (age >= 22) bitmask |= 128; 
                 break;
 
-            case 'modern': // The Hyper-Digital Now (2020s Panopticon)
-                bitmask |= 2 | 64 | 128;       // Pervasive connectivity and instant material tools online
-                if (age < 11 || age > 55) {
-                    bitmask |= 8;              // Pervasive feedback algorithms trap psychology in critical years
-                }
-                if (person.id % 3 !== 0) {
-                    bitmask |= 4;              // Personal integrity drops under systematic digital moderation metrics
-                }
+            case 'early-data':
+                bitmask |= 2 | 4 | 64 | 128;   
+                if (age < 12 || age > 45) bitmask |= 8;              
                 break;
 
-            case 'crisis': // Systemic Rights Severance / Authoritarian Threat Limit
-                bitmask |= 128; // Total centralization of resource asset matrices at the top
+            case 'modern':
+                bitmask |= 2 | 64 | 128;       
+                if (age < 11 || age > 55) bitmask |= 8;              
+                if (person.id % 3 !== 0)  bitmask |= 4;              
+                break;
+
+            case 'crisis':
+                bitmask |= 128; 
                 if (age < 25 || age > 60) {
-                    bitmask |= 2 | 4 | 8 | 64; // Safe zones restricted only to dependent layers
+                    bitmask |= 2 | 4 | 8 | 64;
                 } else {
-                    bitmask |= 2; // Critical limit: Only raw internal Autonomy remains to resist
-                    if (person.id % 5 === 0) bitmask |= 4; // Rare 20% guard their hidden Integrity core
+                    bitmask |= 2; 
+                    if (person.id % 5 === 0) bitmask |= 4; 
                 }
                 break;
         }
         return bitmask;
     }
-
-
-
     function processLifecycle() {
         simulationTick++;
         let brokenPillarsCount = 0;
         let totalCheckedPillars = people.length * 7; 
-        
         let victimCount = 0;
         
         const bitBlueprints = [
-            { name: "EXISTENCE (1)",   count: 0, bit: 1 },
-            { name: "AUTONOMY (2)",    count: 0, bit: 2 },
-            { name: "INTEGRITY (4)",   count: 0, bit: 4 },
-            { name: "PSYCHOLOGY (8)",  count: 0, bit: 8 },
-            { name: "PHYSICAL (16)",   count: 0, bit: 16 },
-            { name: "DISABILITY (32)", count: 0, bit: 32 },
-            { name: "DEVELOPMENT (64)",count: 0, bit: 64 },
-            { name: "PROPERTY (128)",  count: 0, bit: 128 },
-            { name: "PRESENCE (256)",  count: 0, bit: 256 }
+            { name: "EXISTENCE (1)",    count: 0, bit: 1 },
+            { name: "AUTONOMY (2)",     count: 0, bit: 2 },
+            { name: "INTEGRITY (4)",    count: 0, bit: 4 },
+            { name: "PSYCHOLOGY (8)",   count: 0, bit: 8 },
+            { name: "PHYSICAL (16)",    count: 0, bit: 16 },
+            { name: "DISABILITY (32)",  count: 0, bit: 32 },
+            { name: "DEVELOPMENT (64)", count: 0, bit: 64 },
+            { name: "PROPERTY (128)",   count: 0, bit: 128 },
+            { name: "PRESENCE (256)",   count: 0, bit: 256 }
         ];
 
-        // First step: Recompute and apply the real-time calculated bitmasks for the living
         people.forEach((person) => {
-            // Units process their basic structural layout based on their current age
             person.bitmask = calculatePillars(person, person.age, currentSimType);
         });
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
             
-            // Skip processing dead ancestral nodes (units that already dissolved)
             if (person.bitmask === 0) {
-                // Instantly cycle them back as a newborn generational infant
                 person.age = 0;
                 person.individualTheta = Math.random() * Math.PI * 2;
                 person.bitmask = calculatePillars(person, 0, currentSimType);
@@ -475,67 +420,52 @@
                 return;
             }
 
-            // --- THE EXISTENZTHREAT SYSTEMIC CALCULATION ---
-            // Calculate how many of the core protective pillars are stripped
-            let personalThreatVector = 0;
-            
-            if (!(person.bitmask & 2))   personalThreatVector += 1.5; // No Autonomy causes systemic friction
-            if (!(person.bitmask & 4))   personalThreatVector += 2.0; // Broken Integrity corrupts choice alignment
-            if (!(person.bitmask & 8))   personalThreatVector += 2.5; // Damaged Psychology causes accelerated mental/physical wear
-            if (!(person.bitmask & 64))  personalThreatVector += 1.0; // Stunted Development limits adaptation
-            if (!(person.bitmask & 128)) personalThreatVector += 2.0; // Missing Property leaves no baseline tool protection
-            
-            // Age ticks forward significantly faster if the individual is crushed by their environment
-            // Base aging step is 0.5 years. High ExistenzThreat accelerates this up to 5x faster!
-            let agingVelocity = 0.5 + (personalThreatVector * 0.4);
-            person.age += agingVelocity;
+            let activeThreat = 0;
+            if (currentSimType === 'feudal')       activeThreat |= 2 | 128; 
+            if (currentSimType === 'industrial')   activeThreat |= 8 | 64;  
+            if (currentSimType === 'crisis')       activeThreat |= 2 | 4 | 8 | 128; 
 
-            // Define the era's ideal biological maximum age boundary
-            let naturalCap = 80; 
-            if (currentSimType === 'tribal')     naturalCap = 35;
-            if (currentSimType === 'antiquity')  naturalCap = 40;
-            if (currentSimType === 'feudal')     naturalCap = 32;
-            if (currentSimType === 'industrial') naturalCap = 48;
-            if (currentSimType === 'rights')     naturalCap = 70;
+            if (person.bitmask & (1 << 20)) activeThreat &= ~4;   
+            if (person.bitmask & (1 << 24)) activeThreat &= ~2;   
+            if (person.bitmask & (1 << 26)) activeThreat &= ~128; 
+            if (person.bitmask & (1 << 30)) activeThreat &= ~8;   
 
-            // --- THE CRITICAL EXTINCTION CHECK ---
-            // If the accelerated aging outpaces natural caps, or if a severe right crash completely 
-            // strips them of basic structural requirements, the individual collapses.
-            if (person.age >= naturalCap || personalThreatVector > 7.0) {
-                if (person.age < naturalCap) {
-                    pushLog(`!! PREMATURE ATTRITION !! Unit #${person.id} (${person.family}) collapsed at Age ${Math.floor(person.age)} due to high ExistenzThreat.`, 'log-threat', person.id, person.family);
-                }
-                person.bitmask = 0; // Terminate active status bits. Unit collapses out of the field.
-                return; 
+            let coreDamage = activeThreat; 
+            let unshieldedStressCount = 0;
+            for (let b = 0; b <= 7; b++) {
+                if (coreDamage & (1 << b)) unshieldedStressCount++;
+            }
+            
+            let lifecycleVelocity = 0.5 + (unshieldedStressCount * 0.5);
+            person.age += lifecycleVelocity;
+
+            let maxNaturalAge = 80;
+            if (person.age >= maxNaturalAge) {
+                person.bitmask = 0; 
+                return;
             }
 
-            // Log standard structural changes
+            person.bitmask = person.bitmask & ~coreDamage;
+
             if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
                 if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
-                    pushLog(`!! CRITICAL SEVERANCE !! Unit #${person.id} hit Age 30. Integrity stripped by Epoch Crisis rules.`, 'log-threat', person.id, person.family);
+                    pushLog(`!! CRITICAL SEVERANCE !! Unit #${person.id} hit Age 30. Integrity stripped.`, 'log-threat', person.id, person.family);
                 } else {
                     pushLog(`Unit #${person.id} bit-shift recorded across spacetime.`, 'log-shift', person.id, person.family);
                 }
             }
 
-            // Accumulate leaderboard metrics for living units
             let individualIsVictim = false;
             bitBlueprints.forEach((blueprint) => {
                 if (!(person.bitmask & blueprint.bit)) {
                     blueprint.count++;
-                    if (blueprint.bit !== 32 && blueprint.bit !== 128 && blueprint.bit !== 256) {
-                        brokenPillarsCount++;
-                    }
+                    if (blueprint.bit !== 32) brokenPillarsCount++; 
                     individualIsVictim = true;
                 }
             });
-            
-            if (individualIsVictim) {
-                victimCount++;
-            }
+            if (individualIsVictim) victimCount++;
         });
 
-        // Calculate global threat dashboard metrics
         existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
         document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
@@ -545,7 +475,6 @@
             document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
         }
 
-        // Sort and populate the Top 5 scoreboard elements
         let activeStressVectors = bitBlueprints.filter(item => item.bit !== 32);
         activeStressVectors.sort((a, b) => b.count - a.count);
         let topFiveVectors = activeStressVectors.slice(0, 5);
@@ -558,87 +487,64 @@
                 vectorRow.style.display = 'flex';
                 vectorRow.style.justifyContent = 'space-between';
                 vectorRow.style.padding = '2px 4px';
-                vectorRow.style.borderRadius = '2px';
                 
                 if (vector.count > 0) {
                     vectorRow.style.color = rank === 0 ? '#fc8181' : (rank < 3 ? '#f6ad55' : '#ecc94b');
-                    vectorRow.style.background = 'rgba(255,255,255,0.01)';
                 } else {
                     vectorRow.style.color = '#4a5568';
                 }
-
-                vectorRow.innerHTML = `
-                    <span>${rank + 1}. ${vector.name}</span>
-                    <span style="font-weight: bold;">${vector.count}</span>
-                `;
+                vectorRow.innerHTML = `<span>${rank + 1}. ${vector.name}</span><span style="font-weight:bold;">${vector.count}</span>`;
                 vectorsContainer.appendChild(vectorRow);
             });
         }
     }
-
-
-
-    // Maps your 9 architectural bits cleanly along your pure, uncompressed timeline attributes
     function getXYZ(person) {
         let mask = person.bitmask;
-        
-        // Pure Cartesian coordinates matching your structural parameters exactly
         let x = 0;
         let y = 0;
         let z = 0;
 
-        // X-Axis (Material & Bio Reality)
+        // --- X-AXIS: MATERIAL SECURITY TOOLS ---
         if (mask & 1)   x += 5;   
         if (mask & 16)  x += 20;  
         if (mask & 128) x += 40;  
 
-        // Y-Axis (Internal Drive & Choice Matrix)
+        // --- Y-AXIS: INTERNAL MORAL/COGNITIVE DRIVERS ---
         if (mask & 2)   y += 5;   
         if (mask & 4)   y += 10;  
         if (mask & 8)   y += 15;  
 
-        // Z-Axis (Evolutionary Growth Continuum)
+        // --- Z-AXIS: EVOLUTIONARY GROWTH CONTINUUM ---
         if (mask & 32)  z += 15;  
-        // DEVELOPMENT and PRESENCE now scale linearly with age step progression 
-        // to prevent the sudden spatial teleportation burst lines!
         if (mask & 64)  z += (person.age * 0.4);  
         if (mask & 256) z += (person.age * 0.8);  
 
         return { x: x, y: y, z: z };
     }
 
-    // RELATIVISTIC PROJECTION MATRIX: Time and bits warp the literal space framework on screen
     function project(x, y, z, personAge, personBitmask) {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2 + 110;
         const matrixScale = 3.6; 
 
-        // --- THE PLATONIC SPACETIME CURVATURE VECTOR ---
+        // --- THE GOLDEN RATIO SPACETIME WARP Matrix ---
         const goldenRatio = 1.61803398875;
-        
-        // Your continuous timeline trajectory (Age) generates the raw angular velocity
         let spiralTheta = (personAge * 0.065);
-        // If a person's PSYCHOLOGY (8) or INTEGRITY (4) is crushed, the space fabric tightens
         let internalMoralCurvature = (personBitmask & 4 && personBitmask & 8) ? 1.0 : 0.65;
         
-        // Logarithmic radius calculation curves the screen space around the center origin
+        // Logarithmic radius calculation forces time to curve space organically
         let spaceWarpRadius = Math.log(personAge + 1) * goldenRatio * 16.0 * internalMoralCurvature;
 
-        // Apply non-linear Fibonacci transformations directly into the viewport engine
-        // Your core coordinates (x, y) now sit on an active, bending cosmic fabric
         let curvedX = x + (spaceWarpRadius * Math.cos(spiralTheta));
         let curvedY = y + (spaceWarpRadius * Math.sin(spiralTheta));
-        
-        // The total vertical coordinate sits firmly on the structure of the active pillars (z)
         let curvedZ = z;
 
-        // Final 3D Isometric Mapping using the curved space properties
+        // Final isometric projection mapping
         let isoX = centerX + (curvedX - curvedY) * Math.cos(0.52) * matrixScale;
         let isoY = centerY + (curvedX + curvedY) * Math.sin(0.52) * matrixScale - (curvedZ * matrixScale);
         
         return { x: isoX, y: isoY };
     }
-
 
     function drawGrid() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -646,9 +552,9 @@
         ctx.lineWidth = 1;
         
         let origin = project(0, 0, 0, 0, 0);
-        let xAxis = project(180, 0, 0, 0, 0);
-        let yAxis = project(0, 40, 0, 0, 0);
-        let zAxis = project(0, 0, 160, 0, 0);
+        let xAxis  = project(180, 0, 0, 0, 0);
+        let yAxis  = project(0, 40, 0, 0, 0);
+        let zAxis  = project(0, 0, 160, 0, 0);
         
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(xAxis.x, xAxis.y); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(yAxis.x, yAxis.y); ctx.stroke();
@@ -660,6 +566,7 @@
             ctx.arc(origin.x, origin.y - (r * 0.5), r * 1.5, 0, Math.PI * 2);
             ctx.stroke();
         }
+
         if (showSpirals) {
             ctx.lineWidth = 0.75;
             families.forEach((familyName, fId) => {
@@ -673,26 +580,17 @@
                         testMask = 1 | 16 | 32 | 2; 
                     }
                     
-                    let x = 0;
-                    let y = 0;
-                    let z = 0;
-
-                    // X-Axis (Material Security Tools Mapping)
+                    let x = 0; let y = 0; let z = 0;
                     if (testMask & 1)   x += 5;   
                     if (testMask & 16)  x += 20;  
                     if (testMask & 128) x += 40;  
-
-                    // Y-Axis (Internal Moral/Cognitive Drivers Mapping)
                     if (testMask & 2)   y += 5;   
                     if (testMask & 4)   y += 10;  
                     if (testMask & 8)   y += 15;  
-
-                    // Z-Axis (Evolutionary Growth Continuum Mapping)
                     if (testMask & 32)  z += 15;  
                     if (testMask & 64)  z += (testAge * 0.4);  
                     if (testMask & 256) z += (testAge * 0.8);  
 
-                    // --- THE GOLDEN RATIO SPIRAL RESTORED ---
                     const goldenRatio = 1.61803398875;
                     let continuousRadius = Math.log(testAge + 1) * goldenRatio * 8.5;
                     let spiralTheta = (testAge * 0.065) + familySeed;
@@ -701,7 +599,6 @@
                     let sY = y + (continuousRadius * Math.sin(spiralTheta));
                     let sZ = z;
 
-                    // Pass the complete coordinates to the space-warping project engine
                     let pt = project(sX, sY, sZ, testAge, testMask);
                     if (testAge === 0) ctx.moveTo(pt.x, pt.y);
                     else ctx.lineTo(pt.x, pt.y);
@@ -709,27 +606,16 @@
                 ctx.stroke();
             });
         }
-
-
+    }
     function updateSimulation() {
         drawGrid();
         
         // --- MACRO SCALING: SMOOTH AGGREGATE FLOW MAPPING (10k - 1M) ---
-        // --- MACRO SCALING: SMOOTH AGGREGATE FLOW MAPPING (10k - 1M) ---
         if (currentPopulationScale >= 10000) {
             ctx.lineWidth = 1;
-            
             families.forEach((familyName, fId) => {
                 let familySeed = fId * 1.45;
-                
-                if (currentSimType === 'crisis') {
-                    ctx.strokeStyle = 'rgba(229, 62, 62, 0.015)'; 
-                } else if (currentSimType === 'diogenes' || currentSimType === 'antiquity') {
-                    ctx.strokeStyle = 'rgba(72, 187, 120, 0.025)'; 
-                } else {
-                    ctx.strokeStyle = 'rgba(49, 130, 206, 0.02)';  
-                }
-
+                ctx.strokeStyle = currentSimType === 'crisis' ? 'rgba(229, 62, 62, 0.015)' : (currentSimType === 'antiquity' ? 'rgba(72, 187, 120, 0.025)' : 'rgba(49, 130, 206, 0.02)');
                 let densityLinesCount = currentPopulationScale === 10000 ? 50 : 180; 
                 
                 for (let j = 0; j < densityLinesCount; j++) {
@@ -740,26 +626,17 @@
                         let testMask = calculatePillars({ id: j }, testAge, currentSimType);
                         if (testMask === 0) continue; 
 
-                        let x = 0;
-                        let y = 0;
-                        let z = 0;
-
-                        // X-Axis
+                        let x = 0; let y = 0; let z = 0;
                         if (testMask & 1)   x += 5;   
                         if (testMask & 16)  x += 20;  
                         if (testMask & 128) x += 40;  
-
-                        // Y-Axis
                         if (testMask & 2)   y += 5;   
                         if (testMask & 4)   y += 10;  
                         if (testMask & 8)   y += 15;  
-
-                        // Z-Axis
                         if (testMask & 32)  z += 15;  
                         if (testMask & 64)  z += (testAge * 0.4);  
                         if (testMask & 256) z += (testAge * 0.8);  
 
-                        // --- THE GOLDEN RATIO SPIRAL RESTORED ---
                         const goldenRatio = 1.61803398875;
                         let continuousRadius = Math.log(testAge + 1) * goldenRatio * 8.5;
                         let spiralTheta = customThetaOffset + (testAge * 0.065) + familySeed;
@@ -778,7 +655,6 @@
             return; 
         }
 
-
         // --- DISCRETE INDIVIDUAL MODE (SCALE 100 - 1,000 UNITS) ---
         let sortedPopulation = [...people].sort((a, b) => {
             let posA = getXYZ(a);
@@ -790,12 +666,12 @@
             if (person.bitmask === 0) return; 
             
             let coords = getXYZ(person);
-            let pt = project(coords.x, coords.y, coords.z);
+            let pt = project(coords.x, coords.y, coords.z, person.age, person.bitmask);
             let isTargeted = (selectedPersonIndex !== -1 && person.id === people[selectedPersonIndex].id);
             
             ctx.strokeStyle = isTargeted ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.03)';
             ctx.lineWidth = 0.5;
-            let originPt = project(0, 0, coords.z);
+            let originPt = project(0, 0, coords.z, person.age, person.bitmask);
             ctx.beginPath(); ctx.moveTo(originPt.x, originPt.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
 
             if (isTargeted) {
@@ -841,18 +717,6 @@
             list.appendChild(div);
         });
     }
-
-
-    function changePopulationScale() {
-        currentPopulationScale = parseInt(document.getElementById('scale-select').value);
-        pushLog(`SCALE INTERCEPT: Universe metrics recalibrated to [${currentPopulationScale.toLocaleString()}] units.`, 'log-shift');
-        
-        clearSelection(); 
-        initPopulation(); 
-        updateSimulation();
-    }
-
-    // Inside your existing click event listener, ensure you lock out clicking at macro scales:
     canvas.addEventListener('click', (e) => {
         if (currentPopulationScale >= 10000) {
             pushLog("TELEMETRY LIMIT: Click selection deactivated inside dense macro vector fields.", "log-shift");
@@ -886,7 +750,6 @@
             updateSimulation();
         }
     });
-
 
     function clearSelection() {
         selectedPersonIndex = -1;
@@ -927,6 +790,14 @@
         updateSimulation();
     }
 
+    function changePopulationScale() {
+        currentPopulationScale = parseInt(document.getElementById('scale-select').value);
+        pushLog(`SCALE INTERCEPT: Universe metrics recalibrated to [${currentPopulationScale.toLocaleString()}] units.`, 'log-shift');
+        clearSelection(); 
+        initPopulation(); 
+        updateSimulation();
+    }
+
     function executionLoop() {
         if (!isPlaying) return;
         processLifecycle();
@@ -934,13 +805,9 @@
         setTimeout(() => { requestAnimationFrame(executionLoop); }, 70); 
     }
 
-window.addEventListener('load', () => {
     initPopulation();
     pushLog("Existenz Space-Time Matrix online. 50 multiversal timelines activated.", "log-birth");
     updateSimulation();
-});
-
 </script>
 </body>
 </html>
-
