@@ -726,8 +726,8 @@
                     }
                 }
 
-                let isPrematureFatality = wasCompromised && (person.age < currentEraCeiling);
-                fatalityHistoryWindow.push(isPrematureFatality ? 1 : 0);
+                // FIXED: Tracking array evaluates real-time structural compromises cleanly
+                fatalityHistoryWindow.push(wasCompromised ? 1 : 0);
                 
                 if (fatalityHistoryWindow.length > 100) {
                     fatalityHistoryWindow.shift();
@@ -804,7 +804,6 @@
             if (individualIsVictim) { victimCount++; }
         });
 
-        // Clear out the tracking flags from the previous engine tick across all entities
         people.forEach(p => p.isPinkInstigator = false);
         existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
         document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
@@ -946,10 +945,10 @@
                 vectorsContainer.appendChild(vectorRow);
             });
         }
-
         const instigatorPanel = document.getElementById('instigator-panel-wrapper');
         const instigatorContainer = document.getElementById('top-instigators-list');
         
+        // Grab active, living entities who match the extremist strain criteria
         let allDogmatists = people.filter(p => p.age >= 0 && p.isIntolerant);
 
         if (instigatorPanel && instigatorContainer) {
@@ -960,7 +959,7 @@
                 let visibleInstigators = allDogmatists.slice(0, 2);
                 
                 visibleInstigators.forEach((node, index) => {
-                    // Assign flag state into active memory block for canvas loops to intercept cleanly
+                    // Step A: Mark the active node object in memory so the canvas loops can read it anywhere
                     node.isPinkInstigator = true;
 
                     const instigatorRow = document.createElement('div');
@@ -969,6 +968,7 @@
                     instigatorRow.style.padding = '2px 4px';
                     instigatorRow.style.fontSize = '11px';
                     instigatorRow.style.color = '#fc8181';
+                    
                     instigatorRow.innerHTML = `
                         <span>${index + 1}. Dogmatic Instigator #${node.id}</span>
                         <span style="font-weight: bold; color: #e53e3e;">[LEVEL 1]</span>
@@ -976,10 +976,12 @@
                     instigatorContainer.appendChild(instigatorRow);
                 });
             } else {
+                // Completely collapses the panel structure from the layout tree when the count is 0
                 instigatorPanel.style.display = 'none';
             }
         }        
     }
+
 
 
     function getXYZ(person) {
