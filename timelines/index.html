@@ -1232,8 +1232,11 @@
             } else {
                 let baseColorRGB = "72, 187, 120"; 
                 
-                // FIXED: Checks the node's extremist state universally across all spacetime eras
-                if (!rationalDefenseActive && person.isExtremist) {
+                // FIXED: Evaluates if the system is currently running an active unlimited contagion wave
+                let runningInUnlimitedNow = (toleranceMode === 1 || (toleranceMode === 2 && typeof autoTriggeredUnlimited !== 'undefined' && autoTriggeredUnlimited));
+
+                // FIXED: Checks the node's extremist state universally using our new state tracking matrix
+                if (runningInUnlimitedNow && person.isExtremist) {
                     baseColorRGB = "255, 0, 170"; // Sharp Neon Accent Pink for active intolerant carriers
                 } else if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
                     baseColorRGB = "229, 62, 62";  
@@ -1253,13 +1256,14 @@
                     ctx.fillStyle = `rgb(${baseColorRGB})`;
                 }
                 
-                // FIXED: Automatically inflates the radius for active carriers across any active era
-                let isCarrier = (!rationalDefenseActive && person.isExtremist);
+                // FIXED: Replaces old boolean check with our structural running state rules
+                let isCarrier = (runningInUnlimitedNow && person.isExtremist);
                 let radius = (isCarrier ? 4.0 : 2.5) + (person.age * 0.05);
                 ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
             }
         });
     }
+
 
     function updateInspector(person, coords) {
         document.getElementById('no-selection').style.display = 'none';
