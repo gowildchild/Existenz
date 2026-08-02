@@ -1419,15 +1419,16 @@
             if (lockedPerson) {
                 const nameEl = document.getElementById('ins-name');
                 if (nameEl) {
-                    nameEl.innerText = `Individual #${lockedPerson.id}`;
-                    
-                    // If the selected node matches your active instigator parameters, flip it to pink/crimson accent
+                    // FIXED: Dynamically shifts both the title text layout and color accents natively
                     if (lockedPerson.age >= 12 && lockedPerson.isPinkInstigator) {
-                        nameEl.style.color = '#fc8181'; // Radicalized Instigator Color Accent
+                        nameEl.innerText = `Instigator #${lockedPerson.id}`;
+                        nameEl.style.color = '#ff1493'; // Sun-bleached Deep Shocking Pink accent matrix
                     } else {
-                        nameEl.style.color = '#63b3ed'; // Standard Baseline Blue Profile Color
+                        nameEl.innerText = `Individual #${lockedPerson.id}`;
+                        nameEl.style.color = '#63b3ed'; // Restores clean standard baseline blue profile
                     }
-                }                
+                }
+
                 const statusEl = document.getElementById('log-filter-status');
                 if (statusEl) {
                     statusEl.innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
