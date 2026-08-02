@@ -992,29 +992,6 @@
                         <span style="font-weight: bold; color: #e53e3e;">[LEVEL ${calculatedLevel}]</span>
                     `;
                     instigatorContainer.appendChild(instigatorRow);
-                    let targetX = node.screenX || (node.pt ? node.pt.x : null);
-                    let targetY = node.screenY || (node.pt ? node.pt.y : null);
-
-                    if (typeof ctx !== 'undefined' && targetX && targetY) {
-                        ctx.save(); // Locks styles to shield rest of layout tracks
-
-                        // 1. FORCE THE COLORED SPHERE: Paints a high-visibility solid Hot Pink core ball
-                        ctx.beginPath();
-                        ctx.arc(targetX, targetY, 5 * canvasZoomFactor, 0, Math.PI * 2);
-                        ctx.fillStyle = '#ff1493'; 
-                        ctx.fill();
-                        ctx.closePath();
-
-                        // 2. FORCE THE TARGET TRACKING CIRCLE: Paints the glowing outer concentric ring
-                        ctx.beginPath();
-                        ctx.arc(targetX, targetY, 12 * canvasZoomFactor, 0, Math.PI * 2);
-                        ctx.strokeStyle = '#ff1493'; 
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
-                        ctx.closePath();
-
-                        ctx.restore(); // Restores clean baseline graphics state parameters
-                    }
                 });
             } else {
                 // Completely collapses the panel structure from the layout tree when the count is 0
@@ -1212,6 +1189,50 @@
                 ctx.stroke();
             });
         }
+
+        if (typeof people !== 'undefined') {
+            let activeInstigators = people.filter(p => p.age >= 0 && p.isPinkInstigator);
+            let currentFatalities = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
+            let calculatedLevel = currentFatalities >= 75 ? 4 : (currentFatalities >= 60 ? 3 : (currentFatalities >= 30 ? 2 : 1));
+
+            activeInstigators.forEach((node) => {
+                // Dynamically fetch coordinates assigned during the frame calculation pass
+                let targetX = node.screenX || (node.pt ? node.pt.x : null);
+                let targetY = node.screenY || (node.pt ? node.pt.y : null);
+
+                if (targetX && targetY) {
+                    ctx.save();
+
+                    // 1. FORCE THE SPHERE: Solid Hot Pink inner core ball stamped explicitly onto the grid plane
+                    ctx.beginPath();
+                    ctx.arc(targetX, targetY, 5 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ff1493'; 
+                    ctx.fill();
+                    ctx.closePath();
+
+                    // 2. FORCE RING 1: Core bounding tracking circle
+                    ctx.beginPath();
+                    ctx.arc(targetX, targetY, 12 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#ff1493'; 
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    // 3. FORCE RING 2: Concentric threat layer tracking line for Level 4 elements
+                    if (calculatedLevel === 4) {
+                        ctx.beginPath();
+                        ctx.arc(targetX, targetY, 20 * canvasZoomFactor, 0, Math.PI * 2);
+                        ctx.strokeStyle = 'rgba(255, 20, 147, 0.4)'; 
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+                        ctx.closePath();
+                    }
+
+                    ctx.restore();
+                }
+            });
+        }        
+        
     }
 
     function updateSimulation() {
