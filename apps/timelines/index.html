@@ -323,10 +323,25 @@
                 <span>Total Active Victims:</span>
                 <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
             </div>
-            
             <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
             <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
                 <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Real-Time Structural Attrition Causality Tracking Data Pane with Integrated Reset Link -->
+        <div class="threat-meter" style="margin: 10px 20px 0 20px;">
+            <div style="font-size: 11px; color: #a0aec0; margin-bottom: 6px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC RIGHTS CAUSALITY</div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px; color: #f6ad55;">
+                <span>Severed Rights Layer:</span>
+                <span id="severed-rights-count" style="font-weight:bold;">0 / 100</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; color: #fc8181;">
+                <span>Systemic Attrition Fatalities:</span>
+                <div>
+                    <span id="systemic-death-count" style="font-weight:bold; margin-right: 8px;">0</span>
+                    <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
+                </div>
             </div>
         </div>
 
@@ -344,21 +359,14 @@
         </div>
 
         <!-- Optimized Lifespan Statistics Compact Tracking Box -->
-        <div style="margin: 15px 20px 0 20px; background: #09090f; border: 1px solid #141424; padding: 10px; border-radius: 4px; font-size: 11px;">
-            <div style="color: #00f0ff; font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px;">Lifespan Statistics:</div>
-            <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
-                <span>MIN:</span>
-                <span id="meta-age-min" style="color: #ffffff; font-weight: bold;">0.0</span>
+        <div style="margin: 10px 20px 0 20px; background: #0c0c14; border: 1px solid #141424; padding: 6px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div style="color: #00f0ff; font-weight: bold; white-space: nowrap;">Lifespan Statistics:</div>
+            <div style="display: flex; gap: 14px; color: #8e8eaf;">
+                <span>MIN: <span id="meta-age-min" style="color: #ffffff; font-weight: bold;">0.0</span></span>
+                <span>MED: <span id="meta-age-med" style="color: #ffffff; font-weight: bold;">0.0</span></span>
+                <span>MAX: <span id="meta-age-max" style="color: #ffffff; font-weight: bold;">0.0</span></span>
             </div>
-            <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
-                <span>MED:</span>
-                <span id="meta-age-med" style="color: #ffffff; font-weight: bold;">0.0</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
-                <span>MAX:</span>
-                <span id="meta-age-max" style="color: #ffffff; font-weight: bold;">0.0</span>
-            </div>
-        </div>        
+        </div>      
         <div id="matrix-log" style="flex-grow: 1; margin-top: 15px;">
             <div id="log-header-zone">
                 <h3 style="margin:0; font-size:12px; color:#a0aec0; letter-spacing:0.5px;">LOG TELEMETRY</h3>
@@ -397,18 +405,23 @@
     ];
 
     function pushLog(text, type = '', entityId = null, entityFamily = null) {
-        if (selectedPersonIndex !== -1) {
-            let lockedPerson = people[selectedPersonIndex];
-            if (entityId !== null && entityId !== lockedPerson.id && entityFamily !== lockedPerson.family) {
-                return; 
+        // Evaluate logs using the permanent unique ID state instead of the old array index reference
+        if (typeof selectedPersonId !== 'undefined' && selectedPersonId !== -1) {
+            let lockedPerson = people.find(p => p.id === selectedPersonId);
+            if (lockedPerson) {
+                // If a lock is active, completely block messages that don't belong to this individual or their family
+                if (entityId !== null && entityId !== lockedPerson.id && entityFamily !== lockedPerson.family) {
+                    return; 
+                }
             }
         }
 
         const stream = document.getElementById('log-stream');
         if (!stream) return;
-        
         const entry = document.createElement('div');
         entry.className = `log-entry ${type}`;
+        if (entityId !== null) entry.setAttribute('data-person-id', entityId);
+        if (entityFamily !== null) entry.setAttribute('data-person-family', entityFamily);
         
         let timestamp = new Date().toLocaleTimeString().split(' ');
         entry.innerHTML = `[${timestamp}] ${text}`;
@@ -1085,7 +1098,23 @@
                     statusEl.innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
                     statusEl.style.color = '#9f7aea';
                 }
-                pushLog(`TELEMETRY LOCK ENGAGED: Isolating data strings for Individual #${lockedPerson.id} and the ${lockedPerson.family}.`, 'log-lock');
+                
+                // Retrospectively filter logs current sitting in the terminal stream on lock engagement
+                const existingLogs = document.querySelectorAll('.log-entry');
+                existingLogs.forEach(log => {
+                    const logId = log.getAttribute('data-person-id');
+                    const logFamily = log.getAttribute('data-person-family');
+                    
+                    if (logId !== null || logFamily !== null) {
+                        if (parseInt(logId) === lockedPerson.id || logFamily === lockedPerson.family) {
+                            log.style.display = 'block';
+                        } else {
+                            log.style.display = 'none';
+                        }
+                    }
+                });
+
+                pushLog(`TELEMETRY LOCK ENGAGED: Isolating data strings for Individual #${lockedPerson.id} and the ${lockedPerson.family}.`, 'log-lock', lockedPerson.id, lockedPerson.family);
             }
             drawGrid();
             updateSimulation();
@@ -1095,11 +1124,13 @@
 
 
     function clearSelection() {
-        selectedPersonId = -1; // Reset unique global ID tracking state
+        selectedPersonId = -1;
         document.getElementById('no-selection').style.display = 'block';
         document.getElementById('inspector-content').style.display = 'none';
         document.getElementById('log-filter-status').innerText = `FILTER: GLOBAL`;
         document.getElementById('log-filter-status').style.color = '#4a5568';
+        const logs = document.querySelectorAll('.log-entry');
+        logs.forEach(log => log.style.display = 'block');
         pushLog("TELEMETRY UNLOCKED: Global telemetry chatter stream restored.", "log-shift");
         updateSimulation();
     }
@@ -1163,6 +1194,14 @@
         pushLog("Viewport camera matrix returned to 1:1 baseline focus.", 'log-shift');
         drawGrid();
         updateSimulation();
+    }
+
+    function resetFatalityTally() {
+        globalSystemicFatalities = 0;
+        if (document.getElementById('systemic-death-count')) {
+            document.getElementById('systemic-death-count').innerText = "0";
+        }
+        pushLog("CAUSALITY COUNTER RESET: Structural attrition records cleared.", "log-shift");
     }
     
     function executionLoop() {
