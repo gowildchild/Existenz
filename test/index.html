@@ -716,7 +716,8 @@
                         wasCompromised = true;
                     }
                 }
-                
+
+                let isPrematureFatality = wasCompromised && (person.age < currentEraCeiling);
                 fatalityHistoryWindow.push(wasCompromised ? 1 : 0);
                 
                 if (fatalityHistoryWindow.length > 100) {
