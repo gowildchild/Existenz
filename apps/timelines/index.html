@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.994B</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.995B</title>
     <style>
         body { 
             margin: 0; 
@@ -247,6 +247,21 @@
             </div>
         </div>
 
+        <div style="margin-top: 15px; background: #09090f; border: 1px solid #141424; padding: 10px; border-radius: 4px; font-size: 11px;">
+            <div style="color: #00f0ff; font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px;">EVALUATED AGE MATRIX</div>
+            <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
+                <span>Minimum Lifespan Node:</span>
+                <span id="meta-age-min" style="color: #ffffff; font-weight: bold;">0.0</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
+                <span>Median Spacetime Age:</span>
+                <span id="meta-age-med" style="color: #ffffff; font-weight: bold;">0.0</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
+                <span>Maximum Lifespan Node:</span>
+                <span id="meta-age-max" style="color: #ffffff; font-weight: bold;">0.0</span>
+            </div>
+        </div>        
         
         <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
         <button class="btn btn-toggle" id="spiral-btn" onclick="toggleSpiralField()">Show Majestic Spirals</button>
@@ -714,6 +729,25 @@
     function updateSimulation() {
         drawGrid();
         
+        // --- REAL-TIME AGE MATRIX CALCULATOR ---
+        if (people.length > 0) {
+            let activeAges = people.map(p => p.age).sort((a, b) => a - b);
+            let minAge = activeAges[0];
+            let maxAge = activeAges[activeAges.length - 1];
+            let medianAge;
+            let midIndex = Math.floor(activeAges.length / 2);
+            
+            if (activeAges.length % 2 === 0) {
+                medianAge = (activeAges[midIndex - 1] + activeAges[midIndex]) / 2;
+            } else {
+                medianAge = activeAges[midIndex];
+            }
+            
+            if (document.getElementById('meta-age-min')) document.getElementById('meta-age-min').innerText = minAge.toFixed(1);
+            if (document.getElementById('meta-age-med')) document.getElementById('meta-age-med').innerText = medianAge.toFixed(1);
+            if (document.getElementById('meta-age-max')) document.getElementById('meta-age-max').innerText = maxAge.toFixed(1);
+        }
+
         let sortedPopulation = [...people].sort((a, b) => {
             let posA = getXYZ(a);
             let posB = getXYZ(b);
@@ -721,10 +755,10 @@
         });
 
         sortedPopulation.forEach((person) => {
+            let isTargeted = (selectedPersonIndex !== -1 && person.id === people[selectedPersonIndex].id);
+            
             // FIXED: Automatically maps framework scale layers across ghost transitions to avoid layout drift
             if (person.bitmask === 0) {
-                ctx.fillStyle = '#718096'; 
-                
                 const goldenRatio = 1.61803398875;
                 let deadRadius = Math.log(person.age + 1) * goldenRatio * 8.5;
                 let deadTheta = person.individualTheta + (person.age * 0.065) + person.familySeed;
@@ -736,13 +770,29 @@
                 let ghostZ = person.age * 0.9; // Synchronized height step progression constant
                 
                 let pt = project(ghostX, ghostY, ghostZ);
-                ctx.beginPath(); ctx.arc(pt.x, pt.y, 2.5, 0, Math.PI * 2); ctx.fill();
+                
+                // Track dead people: Project a prominent targeting line if this dead node is selected
+                if (isTargeted) {
+                    ctx.strokeStyle = '#b7791f'; // Deep amber line to track selected dead node
+                    ctx.lineWidth = 1.5;
+                    let spinePt = project(0, 0, ghostZ);
+                    ctx.beginPath(); ctx.moveTo(spinePt.x, spinePt.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
+                    
+                    ctx.fillStyle = '#ff00aa'; // Highlight selected dead particle in Alert Pink
+                    ctx.shadowColor = '#ff00aa';
+                    ctx.shadowBlur = 14;
+                    ctx.beginPath(); ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2); ctx.fill();
+                    ctx.shadowBlur = 0;
+                    updateInspector(person, { x: ghostX, y: ghostY, z: ghostZ });
+                } else {
+                    ctx.fillStyle = '#718096'; // Standard GREY: Transitionary death phase
+                    ctx.beginPath(); ctx.arc(pt.x, pt.y, 2.5, 0, Math.PI * 2); ctx.fill();
+                }
                 return;
             }
 
             let coords = getXYZ(person);
             let pt = project(coords.x, coords.y, coords.z);
-            let isTargeted = (selectedPersonIndex !== -1 && person.id === people[selectedPersonIndex].id);
             
             ctx.strokeStyle = isTargeted ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.03)';
             ctx.lineWidth = 0.5;
@@ -877,9 +927,10 @@
         if (!isPlaying) return;
         processLifecycle();
         updateSimulation();
-        // Dynamically dilate frame processing intervals based on your custom speed state
-        let calibratedDelay = 70 / currentSpeedMultiplier;
-        setTimeout(() => { requestAnimationFrame(executionLoop); }, calibratedDelay); 
+        // Calculate the delay internally inside the scheduling container to read live structural values
+        setTimeout(() => { 
+            requestAnimationFrame(executionLoop); 
+        }, 70 / currentSpeedMultiplier); 
     }
 
 window.addEventListener('load', () => {
