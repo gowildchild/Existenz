@@ -511,48 +511,41 @@
         }
     }
     // FIXED: Fluid, continuous age scaling that eliminates concentric ring-wall fragmentation
+    // RESTORED: The original, scale-invariant math that natively prevents exploding circles
     function getXYZ(person) {
         let mask = person.bitmask;
         
-        // --- 1. CORE INTENSITY BLUEPRINT (BASE METRIC OFFSETS) ---
-        let xOffset = 0;
-        let yOffset = 0;
-        let zOffset = 0;
+        // --- 1. ESTABLISH THE FIX STRUCTURAL MULTIPLIERS ---
+        // Your bits determine stable coordinate multipliers, not instant additive jumps
+        let spaceExpansionFactor = 1.0;
+        if (mask & 1)   spaceExpansionFactor *= 1.1;   // EXISTENCE
+        if (mask & 16)  spaceExpansionFactor *= 1.25;  // PHYSICAL
+        if (mask & 128) spaceExpansionFactor *= 1.4;   // PROPERTY
 
-        // X-Axis Core Identity Structure
-        if (mask & 1)   xOffset += 2.0; 
-        if (mask & 16)  xOffset += 4.0; 
-        if (mask & 128) xOffset += 8.0; 
+        let internalMoralForce = 1.0;
+        if (mask & 2)   internalMoralForce += 0.5;     // AUTONOMY
+        if (mask & 4)   internalMoralForce += 1.0;     // INTEGRITY
+        if (mask & 8)   internalMoralForce += 1.5;     // PSYCHOLOGY
 
-        // Y-Axis Moral/Sovereign Alignment Structure
-        if (mask & 2)   yOffset += 2.0; 
-        if (mask & 4)   yOffset += 4.0; 
-        if (mask & 8)   yOffset += 6.0; 
-
-        // Z-Axis Evolutionary Continuum Structure
-        if (mask & 32)  zOffset += 3.0; // DISABILITY Universal Foundation
-        if (mask & 64)  zOffset += 5.0; 
-        if (mask & 256) zOffset += 10.0;
-
-        // --- 2. CONTINUOUS TIME GEOMETRY Matrix ---
+        // --- 2. UNBROKEN LOGARITHMIC FIBONACCI TRAJECTORY ---
         const goldenRatio = 1.61803398875;
-        let internalMoralCurvature = (mask & 4 && mask & 8) ? 1.0 : 0.65;
-
-        // Age must act as a perfectly continuous, non-integer scaling driver 
-        // to unfurl the space-time landscape without hard boundaries!
-        let ageFactor = person.age + 1;
-        let spiralRadius = Math.log(ageFactor) * goldenRatio * 18.0 * internalMoralCurvature;
+        
+        // Age scales the trajectory outward smoothly and continuously across all scales (50 to 1M)
+        let continuousRadius = Math.log(person.age + 1) * goldenRatio * 5.2 * spaceExpansionFactor * (internalMoralForce * 0.4);
         let spiralTheta = person.individualTheta + (person.age * 0.065) + person.familySeed;
 
-        // --- 3. CONIC VIEWPORT RE-ALIGNMENT ---
-        // Age fluidly expands the coordinates dynamically in all directions.
-        // This stops the sudden jumping burst-streaks and blends the segments cleanly.
-        let finalX = (xOffset * ageFactor * 0.15) + (spiralRadius * Math.cos(spiralTheta));
-        let finalY = (yOffset * ageFactor * 0.15) + (spiralRadius * Math.sin(spiralTheta));
-        let finalZ = (zOffset * 1.2) + (person.age * 1.8 * internalMoralCurvature);
+        // Calculate smooth horizontal positions completely free of integer gates
+        let finalX = continuousRadius * Math.cos(spiralTheta);
+        let finalY = continuousRadius * Math.sin(spiralTheta);
+        
+        // --- 3. GROUNDED ALTITUDE SPECTRUM ---
+        let structuralFloor = (mask & 32) ? 25 : 0;  // DISABILITY Universal Floor
+        let systemGrowth = (mask & 64) ? 20 : 0;     // DEVELOPMENT
+        let finalZ = structuralFloor + systemGrowth + (person.age * 0.75); // Continuous lifecycle climb
 
         return { x: finalX, y: finalY, z: finalZ };
     }
+
 
 
     // FIXED: Pure 3D Isometric Viewport Projection without secondary hidden distortions
