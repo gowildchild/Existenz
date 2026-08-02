@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.082</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.083</title>
     <style>
         body { 
             margin: 0; 
@@ -620,26 +620,19 @@
                 let familySeed = fId * 1.45;
                 ctx.strokeStyle = currentSimType === 'crisis' ? 'rgba(229, 62, 62, 0.015)' : (currentSimType === 'antiquity' ? 'rgba(72, 187, 120, 0.025)' : 'rgba(49, 130, 206, 0.02)');
                 let densityLinesCount = currentPopulationScale === 10000 ? 50 : 180; 
-                
+
                 for (let j = 0; j < densityLinesCount; j++) {
                     ctx.beginPath();
-                    
+                    let customThetaOffset = (j * (Math.PI * 2 / densityLinesCount));
+
                     for (let testAge = 0; testAge <= 80; testAge += 2) {
                         let testMask = calculatePillars({ id: j }, testAge, currentSimType);
                         if (testMask === 0) continue; 
 
-                        let x = 0; let y = 0; let z = 0;
-                        if (testMask & 1)   x += 5;   
-                        if (testMask & 16)  x += 20;  
-                        if (testMask & 128) x += 40;  
-                        if (testMask & 2)   y += 5;   
-                        if (testMask & 4)   y += 10;  
-                        if (testMask & 8)   y += 15;  
-                        if (testMask & 32)  z += 15;  
-                        if (testMask & 64)  z += (testAge * 0.4);  
-                        if (testMask & 256) z += (testAge * 0.8);  
+                        // FIXED: Uses the unified trajectory calculus to weave a seamless aggregate map
+                        let coords = getXYZ({ age: testAge, bitmask: testMask, individualTheta: customThetaOffset, familySeed: familySeed });
+                        let pt = project(coords.x, coords.y, coords.z, testAge, testMask);
 
-                        let pt = project(x, y, z, testAge, testMask);
                         if (testAge === 0) ctx.moveTo(pt.x, pt.y);
                         else ctx.lineTo(pt.x, pt.y);
                     }
