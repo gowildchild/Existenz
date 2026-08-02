@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.991B</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.992B</title>
     <style>
         body { 
             margin: 0; 
@@ -637,7 +637,8 @@
                 ctx.beginPath();
                 
                 for (let testAge = 0; testAge <= 80; testAge += 1) {
-                    let testMask = calculatePillars({ id: fId, family: familyName }, testAge, currentSimType);
+                    // Use a pristine fully active architectural layout for smooth spatial rails
+                    let testMask = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128;
                     
                     let spaceExpansionFactor = 1.0;
                     if (testMask & 1) spaceExpansionFactor *= 1.1;
