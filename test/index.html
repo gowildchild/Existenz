@@ -949,8 +949,9 @@
         const instigatorContainer = document.getElementById('top-instigators-list');
         
         // Grab active, living entities who match the extremist strain criteria
-        let allDogmatists = people.filter(p => p.age >= 0 && p.isIntolerant);
-
+        // let allDogmatists = people.filter(p => p.age >= 0 && p.isIntolerant);
+        let allDogmatists = people.filter(p => p.age >= 0); 
+        
         if (instigatorPanel && instigatorContainer) {
             if (allDogmatists.length > 0) {
                 instigatorPanel.style.display = 'block'; 
