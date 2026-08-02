@@ -656,7 +656,7 @@
         
         // Global stable arrays for this frame to prevent reference crashes downstream
         livingUnits = people.filter(p => p.age >= 0);
-        let infectedUnits = livingUnits.filter(p => p.isExtremist);
+        infectedUnits = livingUnits.filter(p => p.isExtremist);
         
         simulationTick++;
         let brokenPillarsCount = 0;
