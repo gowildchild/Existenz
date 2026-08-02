@@ -817,6 +817,31 @@
         setTimeout(() => { requestAnimationFrame(executionLoop); }, 70); 
     }
 
+    function pushLog(text, type = '', entityId = null, entityFamily = null) {
+        if (selectedPersonIndex !== -1) {
+            let lockedPerson = people[selectedPersonIndex];
+            if (entityId !== null && entityId !== lockedPerson.id && entityFamily !== lockedPerson.family) {
+                return; 
+            }
+        }
+
+        const stream = document.getElementById('log-stream');
+        if (!stream) return;
+        
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        
+        let timestamp = new Date().toLocaleTimeString().split(' ');
+        entry.innerHTML = `[${timestamp}] ${text}`;
+        stream.appendChild(entry);
+        
+        stream.scrollTop = stream.scrollHeight;
+        if (stream.children.length > 35) {
+            stream.removeChild(stream.firstChild);
+        }
+    }
+    
+    
     window.addEventListener('load', () => {
         initPopulation();
         
