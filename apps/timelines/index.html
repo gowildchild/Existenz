@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.081</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.082</title>
     <style>
         body { 
             margin: 0; 
@@ -592,31 +592,17 @@
                 let familySeed = fId * 1.45;
                 ctx.strokeStyle = fId === 1 ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.08)';
                 ctx.beginPath();
-                
+
                 for (let testAge = 0; testAge <= 80; testAge += 1) {
                     let testMask = 1 | 16 | 32 | 2 | 4 | 8 | 64; 
                     if (currentSimType === 'crisis' && testAge >= 25 && testAge <= 60) {
                         testMask = 1 | 16 | 32 | 2; 
                     }
-                    
-                    let x = 0; let y = 0; let z = 0;
-                    if (testMask & 1)   x += 5;   
-                    if (testMask & 16)  x += 20;  
-                    if (testMask & 128) x += 40;  
-                    if (testMask & 2)   y += 5;   
-                    if (testMask & 4)   y += 10;  
-                    if (testMask & 8)   y += 15;  
-                    if (testMask & 32)  z += 15;  
-                    if (testMask & 64)  z += (testAge * 0.4);  
-                    if (testMask & 256) z += (testAge * 0.8);  
 
-                    // Apply the unique family rotation seed right here to separate lineages across quadrants
-                    let pt = project(x, y, z, testAge, testMask);
-                    
-                    // Apply quadrant seed offset to the projected screen line points
-                    let radOffset = (testAge * 0.065) + familySeed;
-                    let continuousRadius = Math.log(testAge + 1) * 1.61803398875 * 16.0;
-                    
+                    // FIXED: Calls the structural tracking function using a mock object to trace pure lineage lines
+                    let coords = getXYZ({ age: testAge, bitmask: testMask, individualTheta: 0, familySeed: familySeed });
+                    let pt = project(coords.x, coords.y, coords.z, testAge, testMask);
+
                     if (testAge === 0) ctx.moveTo(pt.x, pt.y);
                     else ctx.lineTo(pt.x, pt.y);
                 }
