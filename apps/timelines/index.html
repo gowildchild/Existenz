@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.997B</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.999ALPHA</title>
     <style>
+        @keyframes blinkerAlert {
+            0% { opacity: 1.0; box-shadow: 0 0 20px rgba(255, 0, 85, 0.6); }
+            50% { opacity: 0.2; box-shadow: 0 0 4px rgba(255, 0, 85, 0.1); }
+            100% { opacity: 1.0; box-shadow: 0 0 20px rgba(255, 0, 85, 0.6); }
+        }
         body { 
             margin: 0; 
             background: #030305; 
@@ -255,10 +260,10 @@
                 <option value="feudal">3. Medieval Feudalism (Stratified Subservience)</option>
                 <option value="enlighten">4. Age of Enlightenment (Re-emergence of Reason)</option>
                 <option value="industrial">5. Early Industrial Grid (Labor Optimization)</option>
-                <option value="rights" selected>6. Post-WWII Framework (Universal Declaration Era)</option>
+                <option value="rights">6. Post-WWII Framework (Universal Declaration Era)</option>
                 <option value="pre-surveil">7. Pre-Surveillance Digital (Late 90s Cybernetic Optimism)</option>
                 <option value="early-data">8. Early Algorithmic Data Capture (2010s Silicon Boom)</option>
-                <option value="modern">9. The Hyper-Digital Now (2020s Total Surveillance)</option>
+                <option value="modern" selected>9. The Hyper-Digital Now (2020s Total Surveillance)</option>
                 <option value="crisis">10. Authoritarian Threat Event (Systemic Severance)</option>
             </select>
         </div>
@@ -318,10 +323,20 @@
     </div>
 
     <!-- Panel 2: Center Drawing Canvas (Desktop Center / Mobile Top) -->
-    <div id="canvas-container">
-        <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; z-index: 20; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px);">
-            150% ZOOM [RESET]
-        </button>
+    <div id="canvas-container" style="position: relative; flex-grow: 1; display: flex; align-items: center; justify-content: center; background: #030305; height: 100%;">
+        <div style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 20; width: max-content;">
+            <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
+                150% ZOOM [RESET]
+            </button>
+            <button id="defense-toggle-btn" onclick="cycleToleranceMode()" style="background: rgba(0, 240, 255, 0.15); color: #00f0ff; border: 1px solid #00f0ff; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
+                [AUTO] TOLERANCE
+            </button>
+            <div style="margin-bottom: 15px; padding: 6px; background: rgba(255,255,255,0.02); border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
+            <button id="canary-toggle-btn" onclick="toggleCanarySystem()" style="width: 100%; padding: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 3px; cursor: pointer; border: 1px solid #e53e3e; background: transparent; color: #e53e3e; transition: all 0.2s ease;">
+                Existenz Canary [0]
+            </button>
+            </div>            
+        </div>
         <canvas id="simCanvas" width="750" height="750"></canvas>
     </div>
 
@@ -336,26 +351,47 @@
         </div>
 
         <div class="threat-meter" style="margin: 10px 20px 0 20px;">
-            <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC METRICS</div>
+            <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">METRICS</div>
             <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px;">
                 <span>Total Active Victims (Severed Layer):</span>
                 <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
             </div>
             <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px; color: #fc8181;">
                 <span>Systemic Attrition Fatalities:</span>
+                <span id="systemic-death-count" style="font-weight:bold;">0 / 100</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px; color: #8e8eaf;">
+                <span>Generations Passed:</span>
                 <div>
-                    <span id="systemic-death-count" style="font-weight:bold; margin-right: 8px;">0 / 100</span>
+                    <span id="generations-count" style="font-weight:bold; margin-right: 8px; color: #ffffff;">0</span>
                     <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
                 </div>
             </div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px; color: #8e8eaf;">
-                <span>Generations Passed:</span>
-                <span id="generations-count" style="font-weight:bold; color:#ffffff;">0</span>
+            <div id="tolerance-metric-row" style="display:none; justify-content:space-between; font-size:11px; margin-bottom: 12px; color: #ff00aa;">
+                <span>Poppertime:</span>
+                <div>
+                    <span id="tolerance-count" style="font-weight:bold; margin-right: 4px;">[0]</span>
+                    <span id="tolerance-pct" style="font-weight:bold;">0%</span>
+                </div>
             </div>
-            <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
+            <div id="vector-header-label" style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
             <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
                 <!-- Dynamically populated -->
             </div>
+<!-- FIELD B: EXISTENZ CANARY DIAGNOSTIC PANEL (Bright Green Human Rights Accountability Interface) -->
+            <div id="canary-panel-wrapper" style="display: none; margin-bottom: 12px; color: #8e8eaf;">
+                <div style="font-size: 10px; color: #39ff14; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; margin-top: 8px; border-top: 1px solid #1a2233; padding-top: 4px;letter-spacing: 0.5px;">Existenz Canary:</div>
+                <div id="canary-alerts-list" style="font-size: 11px;"></div>
+            </div>            
+            <div id="instigator-panel-wrapper" style="display: none; margin-bottom: 12px; color: #8e8eaf;">
+                <!-- Section Title Header: Clear, readable, and safely stacked -->
+                <div style="font-size: 10px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; margin-top: 8px; border-top: 1px solid #1a2233; padding-top: 4px;letter-spacing: 0.5px;">Radicalization:</div>
+                
+                <!-- Target Container: Rows append here and use their own inner flex alignment -->
+                <div id="top-instigators-list" style="font-size: 11px;">
+                    <!-- Exactly 1 or 2 high-impact actors append here natively via script -->
+                </div>
+            </div>            
         </div>
 
         <!-- Optimized Lifespan Statistics Compact Tracking Box -->
@@ -371,11 +407,11 @@
             <div id="log-header-zone">
                 <h3 style="margin:0; font-size:12px; color:#a0aec0; letter-spacing:0.5px;">LOG TELEMETRY</h3>
                 <span id="log-filter-status" style="font-size:10px; color:#4a5568; background:#121620; padding:2px 6px; border-radius:3px;">FILTER: GLOBAL</span>
-            </div>
+                </div>
             <div id="log-stream"></div>
         </div>
-      </div> <!-- Cleanly closes #right-panel -->
-    </div> 
+    </div> <!-- Cleanly closes #right-panel -->
+</div>
 <script>
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
@@ -383,11 +419,17 @@
     let isPlaying = false;
     let selectedPersonIndex = -1; 
     let showSpirals = true;
-    let currentSimType = 'rights';
+    let currentSimType = 'algorithmic';
     let simulationTick = 0;
     let existenzThreatLevel = 0;
     let globalSystemicFatalities = 0;
     let globalTotalCompletions = 0;
+    let autoTriggeredUnlimited = false;
+    let isCanaryActive = false;
+    // 0 = LIMITED, 1 = UNLIMITED, 2 = AUTO
+    let toleranceMode = 2; 
+    let rationalDefenseActive = true; 
+    let fatalityHistoryWindow = [];
     let currentPopulationScale = 100;
     let currentScaleMultiplier = 1;
     let currentSpeedMultiplier = 1.0;
@@ -575,6 +617,16 @@
                 }
                 break;
 
+            case 'algorithmic': 
+                bitmask |= 2 | 64 | 128;       
+                if (age >= 11 && age <= 55) {
+                    bitmask |= 8;              
+                }
+                if (person.id % 3 !== 0) {
+                    bitmask |= 4;              
+                }
+                break;                
+
             case 'modern': 
                 bitmask |= 2 | 64 | 128;       
                 if (age >= 11 && age <= 55) {
@@ -598,26 +650,25 @@
 
         // --- REALISTIC PROBABILISTIC SCARRING FILTER ---
         if (type === 'early-data' || type === 'modern' || type === 'crisis') {
-            // Initialize a dedicated tracking register on the unit if it doesn't exist
             if (person.permanentScars === undefined) {
-                person.permanentScars = 0; 
+                person.permanentScars = 0;
             }
-
-            // Check if the current environmental era rules are actively stripping a bit right now
+            
+            // Loop through pillars to find current structural damage
             for (let b = 0; b < 9; b++) {
                 let bit = 1 << b;
-                if (bit === 32) continue; // Skip permanent disability floor
-
-                // If the era setup stripped the bit on this frame tick...
+                if (bit === 32) continue; // Skip permanent disability floor floor baseline
+                
+                // If a pillar is broken on this frame slice
                 if (!(bitmask & bit)) {
-                    // ...there is a rolling stochastic chance it becomes a permanent scar for this unit's lifecycle
-                    if (Math.random() < 0.02) { 
-                        person.permanentScars |= bit;
+                    // FIXED: Instead of auto-locking, give it a tiny 0.1% chance per frame to scar permanently
+                    // This lets nodes experience temporary stress without carrying a permanent injury forever
+                    if (Math.random() < 0.001) {
+                        person.permanentScars |= bit; 
                     }
                 }
             }
-
-            // Apply any accumulated scars directly back to the active bitmask
+            // Force genuinely accumulated damage back onto the active runtime matrix
             bitmask &= ~person.permanentScars;
         }
 
@@ -625,8 +676,11 @@
     }
 
 
-
     function processLifecycle() {
+        let livingUnits = people.filter(p => p.age >= 0);
+        let deceivedUnits = livingUnits.filter(p => p.isIntolerant);
+        currentIntoleranceRate = livingUnits.length > 0 ? (deceivedUnits.length / livingUnits.length) : 0;
+        currentSpreadPercentage = livingUnits.length > 0 ? Math.round((deceivedUnits.length / livingUnits.length) * 100) : 0;
         simulationTick++;
         let brokenPillarsCount = 0;
         let totalCheckedPillars = people.length * 9; 
@@ -637,77 +691,138 @@
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
             
-            // Handle active waiting queue for stochastic randomized birth spacing
+            let isCurrentToleranceUnlimited = (toleranceMode === 1 || (toleranceMode === 2 && typeof autoTriggeredUnlimited !== 'undefined' && autoTriggeredUnlimited));
+
             if (person.age < 0) {
-                // If countdown is not yet set, initialize it with an isolated stochastic frame delay
                 if (person.birthCountdown === undefined || person.birthCountdown <= 0) {
-                    // Generates an isolated spacing buffer between 30 and 150 frames
                     person.birthCountdown = 30 + Math.random() * 120;
                 }
                 
-                // Decrement the frame register continuously based on the temporal speed warp multiplier
                 person.birthCountdown -= 1.0 * currentSpeedMultiplier;
                 
-                // Node is held in absolute ghost state until its unique frame countdown expires cleanly
                 if (person.birthCountdown <= 0) {
                     person.age = 0.0;
                     person.individualTheta = Math.random() * Math.PI * 2;
                     person.lastBitmask = 0;
                     pushLog(`Unit #${person.id} reborn into ${person.family} after isolated frame delay cooldown.`, 'log-birth', person.id, person.family);
                 } else {
-                    person.bitmask = 0; // Maintain absolute ghost state while in the birth queue
+                    person.bitmask = 0;
                     return;
                 }
             } else {
-                // Refine step increments to 0.1 to let nodes spend more frame ticks inside the newborn window
                 person.age += 0.1 * currentSpeedMultiplier;
             }
             
-            let naturalDemiseTriggered = false;
-            let currentEraCeiling = 80;
-            
-            if (currentSimType === 'tribal')     currentEraCeiling = 35;
-            if (currentSimType === 'antiquity')  currentEraCeiling = 40;
-            if (currentSimType === 'feudal')     currentEraCeiling = 30;
-            if (currentSimType === 'industrial') currentEraCeiling = 45;
-            if (currentSimType === 'rights')     currentEraCeiling = 65;
+            person.bitmask = calculatePillars(person, person.age, currentSimType);
 
+            let naturalDemiseTriggered = false;
+            let currentEraCeiling = 95; 
+            
+            if (currentSimType === 'tribal')     currentEraCeiling = 38;
+            if (currentSimType === 'antiquity')  currentEraCeiling = 45;
+            if (currentSimType === 'feudal')     currentEraCeiling = 40;
+            if (currentSimType === 'industrial') currentEraCeiling = 68;
+            if (currentSimType === 'rights')     currentEraCeiling = 82; 
+            if (currentSimType === 'algorithmic') currentEraCeiling = 83; 
+            if (currentSimType === 'total-surveillance' || currentSimType === 'authoritarian') {
+                person.bitmask &= ~(1 << 22);
+                currentEraCeiling = 84; 
+            }
+            if (currentSimType === 'total-surveillance') {
+                // Direct terminal algorithmic discrimination wipes out Bit 32 for specific vulnerable units
+                if (person.id % 4 === 0) { // Automatically targets 25% of your population matrix as disabled units
+                    person.bitmask &= ~32; // Strips the THREAT_ABLEISM / DISABILITY protection pillar directly
+                }
+            } else if (currentSimType === 'authoritarian' && (person.bitmask & (1 << 22)) === 0) {
+                // Cascade Effect: If the shield is already broken, individual pillars strip much faster via ambient hostility
+                if (Math.random() < 0.05 * currentSpeedMultiplier) {
+                    person.bitmask &= ~32; 
+                }
+            }
+            
             if (person.age >= currentEraCeiling) {
-                let checkFactor = (person.age - currentEraCeiling) / (80 - currentEraCeiling + 1);
-                if (Math.random() < checkFactor || person.age >= 80) {
+                let checkFactor = (person.age - currentEraCeiling) / (110 - currentEraCeiling + 1);
+                if (Math.random() < checkFactor || person.age >= 110) {
                     naturalDemiseTriggered = true;
                 }
             }
 
             if (naturalDemiseTriggered) {
-                // Track total units completing their lifecycle historically to calculate rate per 100
                 if (typeof globalTotalCompletions === 'undefined') {
                     globalTotalCompletions = 0;
                 }
                 globalTotalCompletions++;
 
-                // Evaluate bitmask before clearing state to identify systemic rights fatalities
                 let wasCompromised = false;
                 for (let b = 0; b < 9; b++) {
-                    if ((1 << b) === 32) continue; // Exclude orthogonal disability baseline
-                    if (person.bitmask > 0 && !(person.bitmask & (1 << b))) {
+                    if ((1 << b) === 32) continue;
+                    if ((person.bitmask & (1 << b)) === 0) {
                         wasCompromised = true;
                     }
                 }
-                if (wasCompromised) {
-                    globalSystemicFatalities++;
+
+                // FIXED: Tracking array evaluates real-time structural compromises cleanly
+                fatalityHistoryWindow.push(wasCompromised ? 1 : 0);
+                
+                if (fatalityHistoryWindow.length > 100) {
+                    fatalityHistoryWindow.shift();
                 }
 
-                // Shift to a negative state to initialize the randomized stochastic birth spacing queue
                 person.age = -1.0; 
                 person.bitmask = 0;
-                person.birthCountdown = 0; 
-                person.permanentScars = 0; // Resets the structural scar register for the newborn node
+                person.birthCountdown = 0;
+                person.permanentScars = 0;
+
+                if (!isCurrentToleranceUnlimited && Math.random() < currentIntoleranceRate) {
+                    person.isIntolerant = true; 
+                } else {
+                    person.isIntolerant = false; 
+                }
+
                 pushLog(`Unit #${person.id} completed lifecycle. Entering birth flux queue.`, 'log-shift', person.id, person.family);
                 return;
             }
 
-            person.bitmask = calculatePillars(person, person.age, currentSimType);
+            const totalDeceived = people.filter(p => p.age >= 0 && p.isIntolerant).length;
+            if (totalDeceived === 0 && person.age >= 0) {
+                // Targets Node #42, or defaults to Node #0 if #42 is stuck inside the dead birth queue matrix
+                if (person.id === 42 || (person.id === 0 && !people.some(p => p.id === 42 && p.age >= 0))) {
+                    person.isIntolerant = true;
+                    pushLog('Ideological strain mutation observed inside active population matrix.', 'log-threat');
+                }
+            }
+
+            // Spatial mesh transmission loops execute normally beneath the seed layer
+            if (isCurrentToleranceUnlimited && person.age >= 0) {
+                if (person.isIntolerant) {
+                    people.forEach((neighbor) => {
+                        if (neighbor.age >= 0 && !neighbor.isIntolerant) {
+                            let dx = (person.individualTheta ? Math.cos(person.individualTheta) : 0) - (neighbor.individualTheta ? Math.cos(neighbor.individualTheta) : 0);
+                            let dy = (person.individualTheta ? Math.sin(person.individualTheta) : 0) - (neighbor.individualTheta ? Math.sin(neighbor.individualTheta) : 0);
+                            let distance = Math.hypot(dx, dy) * 100;
+
+                            if (distance < 25) {
+                                if (Math.random() < 0.002 * currentSpeedMultiplier) {
+                                    neighbor.isIntolerant = true;
+                                    pushLog(`Unit #${neighbor.id} converted via spatial footprint.`, 'log-threat');
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    const activeAggressors = people.filter(p => p.age >= 0 && p.isIntolerant);
+                    activeAggressors.forEach((aggressor) => {
+                        let dx = (person.individualTheta ? Math.cos(person.individualTheta) : 0) - (aggressor.individualTheta ? Math.cos(aggressor.individualTheta) : 0);
+                        let dy = (person.individualTheta ? Math.sin(person.individualTheta) : 0) - (aggressor.individualTheta ? Math.sin(aggressor.individualTheta) : 0);
+                        let distance = Math.hypot(dx, dy) * 100;
+
+                        if (distance < 25) {
+                            person.bitmask &= ~4;  
+                            person.bitmask &= ~16; 
+                        }
+                    });
+                }
+            }
 
             if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
                 if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
@@ -716,50 +831,93 @@
                     pushLog(`Unit #${person.id} bit-shift recorded across spacetime.`, 'log-shift', person.id, person.family);
                 }
             }
-
+            
             let individualIsVictim = false;
-
             for (let b = 0; b < 9; b++) {
                 if ((1 << b) === 32) continue; 
-                
                 if (!(person.bitmask & (1 << b))) {
                     brokenPillarsCount++;
-                    if (b < bitFailureCounts.length) {
-                        bitFailureCounts[b]++;
-                    }
+                    if (b < bitFailureCounts.length) { bitFailureCounts[b]++; }
                     individualIsVictim = true;
                 }
             }
-            if (individualIsVictim) {
-                victimCount++;
-            }
+            if (individualIsVictim) { victimCount++; }
         });
 
+
+        people.forEach(p => p.isPinkInstigator = false);
         existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
         document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
 
+        let weightedVictims = victimCount * currentScaleMultiplier;
+        let weightedTotalPopulation = people.length * currentScaleMultiplier;
+
         if (document.getElementById('victim-count')) {
-            document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
+            document.getElementById('victim-count').innerText = `${weightedVictims.toLocaleString()} / ${weightedTotalPopulation.toLocaleString()}`;
         }
 
         if (document.getElementById('systemic-death-count')) {
-            // Compute the historical normalized rate per 100 dynamically
-            let fatalityRate = 0;
-            if (typeof globalTotalCompletions !== 'undefined' && globalTotalCompletions > 0) {
-                fatalityRate = Math.round((globalSystemicFatalities / globalTotalCompletions) * 100);
-            }
-            document.getElementById('systemic-death-count').innerText = `${fatalityRate} / 100`;
+            let rollingFatalitiesCount = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
+            let displayDenominator = fatalityHistoryWindow.length > 0 ? fatalityHistoryWindow.length : 100;
+            document.getElementById('systemic-death-count').innerText = `${rollingFatalitiesCount} / ${displayDenominator}`;
         }
+
         if (document.getElementById('generations-count')) {
-            // Calculates generations passed based on overall population turnover cycles
             let generationsPassed = 0;
             if (typeof globalTotalCompletions !== 'undefined' && people.length > 0) {
                 generationsPassed = Math.floor(globalTotalCompletions / people.length);
             }
             document.getElementById('generations-count').innerText = generationsPassed.toString();
-        }        
+        }
+
+        const toleranceRow = document.getElementById('tolerance-metric-row');
+        const alertOverlay = document.getElementById('collapse-alert-overlay');
+        
+        if (toleranceRow) {
+            if (!rationalDefenseActive) {
+                toleranceRow.style.display = 'flex'; 
+                
+                let rawDeceivedCount = deceivedUnits.length * currentScaleMultiplier;
+                let spreadPct = currentSpreadPercentage;
+
+                if (document.getElementById('tolerance-count')) {
+                    document.getElementById('tolerance-count').innerText = `[${rawDeceivedCount.toLocaleString()}]`;
+                }
+                if (document.getElementById('tolerance-pct')) {
+                    document.getElementById('tolerance-pct').innerText = `${spreadPct}%`;
+                }
+
+                if (alertOverlay) {
+                    if (spreadPct >= 51) {
+                        alertOverlay.style.display = 'block';
+                    } else {
+                        alertOverlay.style.display = 'none';
+                    }
+                }
+            } else {
+                toleranceRow.style.display = 'none';
+                if (alertOverlay) {
+                    alertOverlay.style.display = 'none';
+                }
+                
+                if (document.getElementById('tolerance-count')) {
+                    document.getElementById('tolerance-count').innerText = "";
+                }
+                if (document.getElementById('tolerance-pct')) {
+                    document.getElementById('tolerance-pct').innerText = "0%";
+                }
+            }
+        }
+
+        if (toleranceMode === 2) {
+            if (existenzThreatLevel >= 35) {
+                autoTriggeredUnlimited = true;
+            } else {
+                autoTriggeredUnlimited = false;
+            }
+        }
 
         const bitBlueprints = [
             { name: "EXISTENCE (1)",   count: 0, bit: 1 },
@@ -773,17 +931,27 @@
             { name: "PRESENCE (256)",  count: 0, bit: 256 }
         ];
 
+        let isCivilizationOverthrown = (!rationalDefenseActive && currentSpreadPercentage >= 51);
+
         people.forEach((person) => {
             if (person.bitmask === 0) {
                 return; 
             }
 
             bitBlueprints.forEach((blueprint) => {
-                if (!(person.bitmask & blueprint.bit)) {
+                if ((person.bitmask & blueprint.bit) === 0) {
                     blueprint.count++;
                 }
             });
         });
+
+        if (isCivilizationOverthrown) {
+            bitBlueprints.forEach((blueprint) => {
+                if (blueprint.bit === 2 || blueprint.bit === 4) {
+                    blueprint.count = people.length;
+                }
+            });
+        }
 
         let activeStressVectors = bitBlueprints.filter(item => item.bit !== 32);
         activeStressVectors.sort((a, b) => b.count - a.count);
@@ -800,7 +968,11 @@
                 vectorRow.style.padding = '2px 4px';
                 vectorRow.style.borderRadius = '2px';
                 
-                if (vector.count > 0) {
+                if (isCivilizationOverthrown && (vector.bit === 2 || vector.bit === 4)) {
+                    vectorRow.style.color = '#ffffff';
+                    vectorRow.style.background = '#e53e3e';
+                    vectorRow.style.fontWeight = 'bold';
+                } else if (vector.count > 0) {
                     vectorRow.style.color = rank === 0 ? '#fc8181' : (rank < 3 ? '#f6ad55' : '#ecc94b');
                     vectorRow.style.background = 'rgba(255,255,255,0.01)';
                 } else {
@@ -809,14 +981,149 @@
 
                 vectorRow.innerHTML = `
                     <span>${rank + 1}. ${vector.name}</span>
-                    <span style="font-weight: bold;">${vector.count}</span>
+                    <span style="font-weight: bold;">${(vector.count * currentScaleMultiplier).toLocaleString()}</span>
                 `;
                 vectorsContainer.appendChild(vectorRow);
             });
         }
+        const instigatorPanel = document.getElementById('instigator-panel-wrapper');
+        const instigatorContainer = document.getElementById('top-instigators-list');
+        const canaryPanel = document.getElementById('canary-panel-wrapper');
+        const canaryContainer = document.getElementById('canary-alerts-list');
+        
+        // Grab active, living entities who match the extremist strain criteria
+        let allDogmatists = people.filter(p => p.age >= 12 && p.isIntolerant);
+
+        // Clear out and re-evaluate BOTH custom tracking flags across all entities on every frame pass
+        people.forEach((p) => {
+            p.isCanaryAlert = false;
+            p.isPinkInstigator = false; 
+        });
+
+        // FIXED: Resetting counters to EXACTLY 0 at the start of every frame tick to prevent runaway accumulation
+        let generalViolationsCount = 0;
+        let ableismViolationsCount = 0;
+
+        // Structural policy shield bitmasks
+        const SHIELD_HUMAN_RIGHTS          = 1 << 20; 
+        const SHIELD_DISCRIMINATION_RIGHTS = 1 << 22; 
+        const SHIELD_BASIC_RIGHTS          = 1 << 24; 
+
+        // Mapping your 1:1 Mathematically Honest Threat Matrix Enum Bits
+        const generalThreatBits = [1, 2, 4, 8, 16, 64, 128]; // Existence, Autonomy, Integrity, Psychology, Physical, Development, Property
+
+        // FIXED: Scan the global population matrix to check if ANY active shield bits have been systemically fractured
+        let shieldHumanRightsBroken = people.some(p => p.age >= 0 && (p.bitmask & SHIELD_HUMAN_RIGHTS) === 0);
+        let shieldBasicRightsBroken = people.some(p => p.age >= 0 && (p.bitmask & SHIELD_BASIC_RIGHTS) === 0);
+        let shieldDiscriminationBroken = people.some(p => p.age >= 0 && (p.bitmask & SHIELD_DISCRIMINATION_RIGHTS) === 0);
+
+        // Loop through the entire population matrix to tally up true, non-cumulative violations
+        people.forEach((p) => {
+            if (p.age >= 0) {
+                let nodeHasGeneralBroke = false;
+                let nodeHasAbleismBroke = ((p.bitmask & 32) === 0); // Active tracking for DISABILITY bit deprivation
+
+                // Tally general rights violations strictly if institutional protection shields have collapsed
+                if (shieldHumanRightsBroken || shieldBasicRightsBroken) {
+                    generalThreatBits.forEach((bitValue) => {
+                        if ((p.bitmask & bitValue) === 0) {
+                            nodeHasGeneralBroke = true;
+                            generalViolationsCount++; // Tracks raw, unmultiplied bit deprivations natively
+                        }
+                    });
+                }
+
+                // FIXED: Ableism only ticks up if the discrimination protection shield falls AND the unit specifically loses bit 32
+                if (shieldDiscriminationBroken && nodeHasAbleismBroke) {
+                    ableismViolationsCount++;
+                }
+
+                // Activate neon-green canvas halos exclusively when the master canary switch is ON
+                if (isCanaryActive) {
+                    if (shieldDiscriminationBroken && nodeHasAbleismBroke) {
+                        p.isCanaryAlert = true;
+                    }
+                    if ((shieldHumanRightsBroken || shieldBasicRightsBroken) && nodeHasGeneralBroke) {
+                        p.isCanaryAlert = true;
+                    }
+                }
+            }
+        });
+
+        // CHANNEL 1: EXTRA-STRICT INSTIGATOR SEPARATION LAYER (Popperian Extremists)
+        if (instigatorPanel && instigatorContainer) {
+            if (allDogmatists.length > 0) {
+                instigatorPanel.style.display = 'block'; 
+                instigatorContainer.innerHTML = '';
+                
+                let visibleInstigators = allDogmatists.slice(0, 2);
+                let currentFatalities = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
+                
+                visibleInstigators.forEach((node, index) => {
+                    node.isPinkInstigator = true;
+                    let calculatedLevel = currentFatalities >= 75 ? 4 : (currentFatalities >= 60 ? 3 : (currentFatalities >= 30 ? 2 : 1));
+
+                    const instigatorRow = document.createElement('div');
+                    instigatorRow.style.display = 'flex';
+                    instigatorRow.style.justifyContent = 'space-between';
+                    instigatorRow.style.padding = '2px 4px';
+                    instigatorRow.style.fontSize = '11px';
+                    instigatorRow.style.color = '#fc8181';
+                    
+                    let badgeColor = calculatedLevel === 4 ? 'color: #ffffff; background: #e53e3e; padding: 0 3px; border-radius: 2px; font-weight: bold;' : 'font-weight: bold; color: #e53e3e;';
+
+                    instigatorRow.innerHTML = `
+                        <span>${index + 1}. Dogmatic Instigator #${node.id}</span>
+                        <span style="${badgeColor}">[LEVEL ${calculatedLevel}]</span>
+                    `;
+                    instigatorContainer.appendChild(instigatorRow);
+                });
+            } else {
+                instigatorPanel.style.display = 'none';
+            }
+        }
+
+        // CHANNEL 2: INDEPENDENT CANARY ALERTS SEPARATION LAYER (Macro Shield Monitors with Dynamic Counts)
+        if (canaryPanel && canaryContainer) {
+            let hasAnyCanarySignal = isCanaryActive && (shieldHumanRightsBroken || shieldBasicRightsBroken || shieldDiscriminationBroken);
+            
+            if (hasAnyCanarySignal) {
+                canaryPanel.style.display = 'block';
+                canaryContainer.innerHTML = '';
+
+                // Block A: General Fundamental Rights Shield Violations with Counter
+                if (shieldHumanRightsBroken || shieldBasicRightsBroken) {
+                    let brokenLabel = (shieldHumanRightsBroken && shieldBasicRightsBroken) ? "HUMAN & BASIC" : (shieldHumanRightsBroken ? "HUMAN" : "BASIC");
+                    const humanRightsRow = document.createElement('div');
+                    humanRightsRow.style.padding = '2px 4px';
+                    humanRightsRow.style.fontSize = '11px';
+                    humanRightsRow.style.color = '#39ff14'; 
+                    humanRightsRow.style.fontWeight = 'bold';
+                    humanRightsRow.innerHTML = `⚠️ CANARY-RIGHTS: ${brokenLabel} [${generalViolationsCount}x]`;
+                    canaryContainer.appendChild(humanRightsRow);
+                }
+
+                // Block B: Special Designated Anti-Discrimination Shield Violations with Counter
+                if (shieldDiscriminationBroken) {
+                    const ableismRow = document.createElement('div');
+                    if (shieldHumanRightsBroken || shieldBasicRightsBroken) {
+                        ableismRow.style.borderTop = '1px dashed rgba(57, 255, 20, 0.15)';
+                        ableismRow.style.marginTop = '4px';
+                        ableismRow.style.paddingTop = '4px';
+                    }
+                    ableismRow.style.paddingLeft = '4px';
+                    ableismRow.style.paddingRight = '4px';
+                    ableismRow.style.fontSize = '11px';
+                    ableismRow.style.color = '#39ff14'; 
+                    ableismRow.style.fontWeight = 'bold';
+                    ableismRow.innerHTML = `♿ CANARY-ABLEISM: DISCRIMINATION! [${ableismViolationsCount}x]`;
+                    canaryContainer.appendChild(ableismRow);
+                }
+            } else {
+                canaryPanel.style.display = 'none';
+            }
+        }
     }
-
-
 
 
 
@@ -977,7 +1284,6 @@
                 ctx.beginPath();
                 
                 for (let testAge = 0; testAge <= 80; testAge += 1) {
-                    // Use a pristine fully active architectural layout for smooth spatial rails
                     let testMask = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128;
                     
                     let spaceExpansionFactor = 1.0;
@@ -999,7 +1305,6 @@
                     let sY = (((testMask & 2) ? 5 : 0) + ((testMask & 4) ? 10 : 0) + ((testMask & 8) ? 15 : 0) + ((testMask & 128) ? 20 : 0) + (continuousRadius * Math.sin(spiralTheta))) * growthScale * frameworkScale;
                     let sZ = ((((testMask & 32) ? 15 : 0) + ((testMask & 64) ? 25 : 0)) * growthScale * frameworkScale) + (testAge * 0.9);
 
-
                     let pt = project(sX, sY, sZ);
                     if (testAge === 0) ctx.moveTo(pt.x, pt.y);
                     else ctx.lineTo(pt.x, pt.y);
@@ -1007,7 +1312,87 @@
                 ctx.stroke();
             });
         }
+
+        if (typeof people !== 'undefined') {
+            let activeInstigators = people.filter(p => p.age >= 0 && p.isPinkInstigator);
+            let currentFatalities = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
+            let calculatedLevel = currentFatalities >= 75 ? 4 : (currentFatalities >= 60 ? 3 : (currentFatalities >= 30 ? 2 : 1));
+
+            // A: DRAW PINK POPPERIAN EXTRA-STRICT TARGET MATRIX 
+            activeInstigators.forEach((node) => {
+                let fId = families.indexOf(node.family);
+                if (fId === -1) fId = 0;
+                let familySeed = fId * 1.45;
+
+                const goldenRatio = 1.61803398875;
+                let continuousRadius = Math.log(node.age + 1) * goldenRatio * 8.5; 
+                let spiralTheta = 0 + (node.age * 0.065) + familySeed; 
+                let frameworkScale = 1 + Math.log10(currentScaleMultiplier);
+                let growthScale = Math.min(node.age / 12, 1);
+
+                let sX = (20 + 20 + (continuousRadius * Math.cos(spiralTheta))) * growthScale * frameworkScale;
+                let sY = (5 + 10 + 15 + 20 + (continuousRadius * Math.sin(spiralTheta))) * growthScale * frameworkScale;
+                let sZ = ((15 + 25) * growthScale * frameworkScale) + (node.age * 0.9);
+
+                let pt = typeof project === 'function' ? project(sX, sY, sZ) : null;
+
+                if (pt && typeof pt.x === 'number' && typeof pt.y === 'number') {
+                    ctx.save(); 
+
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 4 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ff1493'; // Deep Shocking Pink Sphere Core
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 10 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#ff1493'; 
+                    ctx.lineWidth = 1.75;
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    if (calculatedLevel > 2) {
+                        ctx.beginPath();
+                        ctx.arc(pt.x, pt.y, 18 * canvasZoomFactor, 0, Math.PI * 2);
+                        ctx.strokeStyle = 'rgba(255, 20, 147, 0.45)'; 
+                        ctx.lineWidth = 1.25;
+                        ctx.stroke();
+                        ctx.closePath();
+                    }
+
+                    ctx.restore(); 
+                }
+            });
+
+            // B: DRAW NEON GREEN EXISTENZ CANARY ALERT MATRIX (Direct screen-space extraction)
+            let canaryNodes = people.filter(p => p.age >= 0 && p.isCanaryAlert);
+            canaryNodes.forEach((node) => {
+                let targetX = node.screenX || (node.pt ? node.pt.x : null);
+                let targetY = node.screenY || (node.pt ? node.pt.y : null);
+
+                if (targetX && targetY) {
+                    ctx.save(); 
+
+                    ctx.beginPath();
+                    ctx.arc(targetX, targetY, 4 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.fillStyle = '#39ff14'; // Bright Neon Green Core Sphere
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(targetX, targetY, 10 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(57, 255, 20, 0.85)'; // Neon Green Protective Tracking Ring
+                    ctx.lineWidth = 1.75;
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.restore(); 
+                }
+            });
+        }        
     }
+
 
     function updateSimulation() {
         drawGrid();
@@ -1096,7 +1481,10 @@
             } else {
                 let baseColorRGB = "72, 187, 120"; 
                 
-                if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
+                // FIXED: Checks the node's Intolerant state universally across all spacetime eras
+                if (!rationalDefenseActive && person.isIntolerant) {
+                    baseColorRGB = "255, 0, 170"; // Sharp Neon Accent Pink for active intolerant carriers
+                } else if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
                     baseColorRGB = "229, 62, 62";  
                 } else if (!(person.bitmask & 8) || (!(person.bitmask & 64) && person.age >= 8) || (!(person.bitmask & 128) && person.age >= 35) || !(person.bitmask & 256)) {
                     baseColorRGB = "237, 137, 54"; 
@@ -1114,7 +1502,9 @@
                     ctx.fillStyle = `rgb(${baseColorRGB})`;
                 }
                 
-                let radius = 2.5 + (person.age * 0.05);
+                // FIXED: Automatically inflates the radius for active carriers across any active era
+                let isCarrier = (!rationalDefenseActive && person.isIntolerant);
+                let radius = (isCarrier ? 4.0 : 2.5) + (person.age * 0.05);
                 ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
             }
         });
@@ -1155,6 +1545,9 @@
             let coords = getXYZ(person);
             let pt = project(coords.x, coords.y, coords.z);
             let dist = Math.hypot(pt.x - clickX, pt.y - clickY);
+            if (person.age >= 12 && person.isPinkInstigator) {
+                dist = dist * 0.2; // Shrinks distance value mathematically to force a hit match
+            }            
             if (dist < minDist) {
                 minDist = dist;
                 closestId = person.id; // Store unique ID instead of array index
@@ -1167,6 +1560,18 @@
             let lockedPerson = people.find(p => p.id === selectedPersonId);
             
             if (lockedPerson) {
+                const nameEl = document.getElementById('ins-name');
+                if (nameEl) {
+                    // FIXED: Dynamically shifts both the title text layout and color accents natively
+                    if (lockedPerson.age >= 12 && lockedPerson.isPinkInstigator) {
+                        nameEl.innerText = `Instigator #${lockedPerson.id}`;
+                        nameEl.style.color = '#ff1493'; // Sun-bleached Deep Shocking Pink accent matrix
+                    } else {
+                        nameEl.innerText = `Individual #${lockedPerson.id}`;
+                        nameEl.style.color = '#63b3ed'; // Restores clean standard baseline blue profile
+                    }
+                }
+
                 const statusEl = document.getElementById('log-filter-status');
                 if (statusEl) {
                     statusEl.innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
@@ -1231,19 +1636,102 @@
         if (isPlaying) executionLoop();
     }
 
+    function cycleToleranceMode() {
+        // Explicit sequence routing map: Auto (2) leads directly to Limited (0)
+        const transitionSequence = { 2: 0, 0: 1, 1: 2 };
+        toleranceMode = transitionSequence[toleranceMode];
+        
+        const btn = document.getElementById('defense-toggle-btn');
+        const alertOverlay = document.getElementById('collapse-alert-overlay');
+        if (!btn) return;
+
+        // MODE 0: LIMITED TOLERANCE
+        if (toleranceMode === 0) {
+            autoTriggeredUnlimited = false;
+            rationalDefenseActive = true;
+            btn.style.background = 'rgba(72, 187, 120, 0.2)';
+            btn.style.borderColor = '#48bb78';
+            btn.style.color = '#48bb78';
+            btn.innerText = '[LIMITED] TOLERANCE';
+            
+            // Popper Theoretical Purge: Actively cleanses indoctrination (deceived) from nodes on defensive boundaries
+            people.forEach(p => p.isIntolerant = false);
+            if (document.getElementById('tolerance-count')) document.getElementById('tolerance-count').innerText = "";
+            if (document.getElementById('tolerance-pct')) document.getElementById('tolerance-pct').innerText = "0%";
+            if (alertOverlay) {
+                alertOverlay.style.opacity = "0";
+                alertOverlay.style.visibility = "hidden";
+                alertOverlay.classList.remove('active-alarm');
+            }
+            pushLog('Popperian limit active: Defensive mode engaged. Intolerant strain wiped.', 'log-lock');
+        } 
+        // MODE 1: UNLIMITED TOLERANCE
+        else if (toleranceMode === 1) {
+            autoTriggeredUnlimited = true;
+            rationalDefenseActive = false;
+            btn.style.background = 'rgba(229, 62, 62, 0.2)';
+            btn.style.borderColor = '#e53e3e';
+            btn.style.color = '#fc8181';
+            btn.innerText = '[UNLIMITED] TOLERANCE';
+            
+            // Frame 1 Instantiation: Instantly inject ideological strain to unblock tracking mechanics
+            const targetNode = people.find(p => p.id === 42);
+            if (targetNode) {
+                targetNode.isIntolerant = true;
+            }
+            pushLog('Popperian limit dropped: Manual override active. Target Node #42 tracked.', 'log-threat');
+        } 
+        // MODE 2: AUTO TOLERANCE
+        else if (toleranceMode === 2) {
+            autoTriggeredUnlimited = false;
+            rationalDefenseActive = false;
+            btn.style.background = 'rgba(0, 240, 255, 0.15)';
+            btn.style.borderColor = '#00f0ff';
+            btn.style.color = '#00f0ff';
+            btn.innerText = '[AUTO] TOLERANCE';
+            pushLog('Automated Popper Interceptor: Boundary gates will trip automatically at 35% systemic stress.', 'log-lock');
+        }
+    }
+
     function changeSimulation() {
         currentSimType = document.getElementById('sim-select').value;
         let profileName = document.getElementById('sim-select').options[document.getElementById('sim-select').selectedIndex].text;
-        pushLog(`EPOCH RESET: Rules shifted to [${profileName}].`, 'log-shift');
+        pushLog(`%c%cEPOCH RESET: Rules shifted to [${profileName}].`, 'color: #00f0ff; font-weight: bold;');
+        
+        // Flushes past generational scarring states and forces clean historical vectors
+        people.forEach((person) => {
+            person.isIntolerant = false;  // Purges all historical virus traces completely
+            person.permanentScars = 0;   // Wipes previous physical/psychological scars
+            person.lastBitmask = 0;      // Breaks old bit states to force fresh engine evaluations
+        });
+
+        // Patient Zero Universal Injection Vector
+        // FIXED: Explicitly assigns the ignition state to individual Node #0 instead of the parent array container
+        if (currentSimType === 'tolerance-paradox' && people.length > 0) {
+            people[0].isIntolerant = true; // Targets the first person node directly inside the collection loop
+            pushLog('Ideological strain tracking active. Patient Zero injected at Vector Node #1.', 'log-threat');
+        }
+
         clearSelection(); 
         updateSimulation();
     }
 
+
     function changeScaleMultiplier() {
         currentScaleMultiplier = parseFloat(document.getElementById('scale-select').value);
         pushLog(`Continuum scale matrix expanded to [${currentScaleMultiplier}x].`, 'log-shift');
+        
+        // Dynamic dashboard refresh to instantly catch scale value text transformations
+        if (document.getElementById('victim-count')) {
+            let displayedTotal = people.length * currentScaleMultiplier;
+            // The display text adjusts smoothly using your current loop results
+            document.getElementById('victim-count').innerText = `0 / ${displayedTotal.toLocaleString()}`;
+        }
+        
         drawGrid();
-        updateSimulation();
+        if (typeof updateSimulation === 'function') {
+            updateSimulation();
+        }
     }
 
     function changeSimulationSpeed() {
@@ -1272,7 +1760,9 @@
 
     function resetFatalityTally() {
         globalSystemicFatalities = 0;
-        globalTotalCompletions = 0; // Clears cumulative lifecycles to drop generational counter
+        globalTotalCompletions = 0; 
+        fatalityHistoryWindow = [];
+        autoTriggeredUnlimited = false;
 
         // Instantly push the reset baselines to the active dashboard UI text spans
         if (document.getElementById('systemic-death-count')) {
@@ -1281,8 +1771,40 @@
         if (document.getElementById('generations-count')) {
             document.getElementById('generations-count').innerText = "0";
         }
-        pushLog("Systemic telemetry tracking logs flushed and reset to zero vector.", "log-shift");
-    }
+        if (document.getElementById('collapse-alert-overlay')) {
+            document.getElementById('collapse-alert-overlay').style.display = 'none';
+        }        
+        pushLog("Historical telemetry tracking scoreboards flushed to zero vector.", "log-shift");
+    }    
+
+    function toggleCanarySystem() {
+        isCanaryActive = !isCanaryActive;
+        const btn = document.getElementById('canary-toggle-btn');
+        
+        if (btn) {
+            if (isCanaryActive) {
+                // System Enabled: Binary [1] turns on your protective canary gold profile
+                btn.innerText = "Existenz Canary [1]";
+                btn.style.background = "#ecc94b";
+                btn.style.color = "#1a202c";
+                btn.style.borderColor = "#ecc94b";
+                btn.style.boxShadow = "0 0 8px rgba(236, 201, 75, 0.3)";
+                pushLog("EXISTENZ CANARY INITIALIZED [STATE: 1]: Telemetry link active.", "log-shift");
+            } else {
+                // System Disabled: Reverts back to baseline state with the binary [0] flag
+                btn.innerText = "Existenz Canary [0]";
+                btn.style.background = "transparent";
+                btn.style.color = "#e53e3e";
+                btn.style.borderColor = "#e53e3e";
+                btn.style.boxShadow = "none";
+                pushLog("EXISTENZ CANARY DETACHED [STATE: 0]: Accountability metrics blinded.", "log-threat");
+            }
+        }
+        
+        // Force the graphics rendering engines to instantly repaint the screen state
+        drawGrid();
+        updateSimulation();
+    }    
     
     function executionLoop() {
         if (!isPlaying) return;
