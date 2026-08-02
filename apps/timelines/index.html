@@ -218,6 +218,16 @@
         </div>
 
         <div>
+            <label for="birth-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Birth Rate Flux Density:</label>
+            <select id="birth-select" onchange="changeBirthRateDensity()">
+                <option value="0.02">Low Fluid Attrition (2%)</option>
+                <option value="0.05" selected>Standard Equilibrium (5%)</option>
+                <option value="0.12">High Generational Spurt (12%)</option>
+                <option value="0.25">Hyper Exponential Boom (25%)</option>
+            </select>
+        </div>        
+        
+        <div>
             <label for="speed-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Temporal Speed Warp:</label>
             <select id="speed-select" onchange="changeSimulationSpeed()">
                 <option value="1.0" selected>1.0x Normal Chronos Speed</option>
@@ -316,7 +326,8 @@
     let currentPopulationScale = 100;
     let currentScaleMultiplier = 1;
     let currentSpeedMultiplier = 1.0;
-    let canvasZoomFactor = 1.0;     
+    let canvasZoomFactor = 1.0;  
+    let currentBirthProbability = 0.05;
     
     const families = ["Alpha Lineage", "Beta Cluster", "Gamma Node", "Delta Branch", "Epsilon Matrix"];
     let people = [];
@@ -525,12 +536,26 @@
         let totalCheckedPillars = people.length * 9; 
         
         let victimCount = 0;
-        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+        let bitFailureCounts =; 
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
-            // Refine step increments to 0.1 to let nodes spend more frame ticks inside the newborn window
-            person.age += 0.1 * currentSpeedMultiplier;
+            
+            // Handle active waiting queue for stochastic randomized birth spacing
+            if (person.age < 0) {
+                if (Math.random() < currentBirthProbability * currentSpeedMultiplier) {
+                    person.age = 0.0;
+                    person.individualTheta = Math.random() * Math.PI * 2;
+                    person.lastBitmask = 0;
+                    pushLog(`Unit #${person.id} reborn into ${person.family} after generational flux delay.`, 'log-birth', person.id, person.family);
+                } else {
+                    person.bitmask = 0; // Maintain absolute ghost state while in the birth queue
+                    return;
+                }
+            } else {
+                // Refine step increments to 0.1 to let nodes spend more frame ticks inside the newborn window
+                person.age += 0.1 * currentSpeedMultiplier;
+            }
             
             let naturalDemiseTriggered = false;
             let currentEraCeiling = 80;
@@ -549,10 +574,11 @@
             }
 
             if (naturalDemiseTriggered) {
-                person.age = 0.0; 
-                person.individualTheta = Math.random() * Math.PI * 2;
-                person.lastBitmask = 0;
-                pushLog(`Unit #${person.id} reborn into ${person.family}.`, 'log-birth', person.id, person.family);
+                // Shift to a negative state to initialize the randomized stochastic birth spacing queue
+                person.age = -1.0; 
+                person.bitmask = 0;
+                pushLog(`Unit #${person.id} completed lifecycle. Entering birth flux queue.`, 'log-shift', person.id, person.family);
+                return;
             }
 
             person.bitmask = calculatePillars(person, person.age, currentSimType);
@@ -646,6 +672,7 @@
             });
         }
     }
+
 
 
     function getXYZ(person) {
@@ -1066,6 +1093,11 @@
         currentSpeedMultiplier = parseFloat(document.getElementById('speed-select').value);
         pushLog(`Temporal frequency pacing shifted to [${currentSpeedMultiplier}x].`, 'log-shift');
     }
+
+    function changeBirthRateDensity() {
+        currentBirthProbability = parseFloat(document.getElementById('birth-select').value);
+        pushLog(`Generational birth flux density calibrated to [${currentBirthProbability * 100}%].`, 'log-shift');
+    }    
     
     function resetCameraZoom() {
         canvasZoomFactor = 1.0;
@@ -1099,7 +1131,12 @@ window.addEventListener('load', () => {
         spiralBtn.innerText = "Hide Majestic Spirals";
     }
     pushLog(`Existenz Space-Time Matrix online. ${currentPopulationScale} multiversal timelines activated.`, "log-birth");
-    updateSimulation();
+    // Run the viewport scale sequence before the initial frame draw to align pointer click bounds instantly
+    if (typeof autoScaleViewportResolution === 'function') {
+        autoScaleViewportResolution();
+    } else {
+        updateSimulation();
+    }
 });
 
 </script>
