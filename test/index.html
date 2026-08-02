@@ -1000,7 +1000,7 @@
                 let nodeHasAbleismBroke = ((p.bitmask & 32) === 0);
 
                 // Scan the general 1:1 threat matrix enum bits (Autonomy, Integrity, Physical, etc.)
-                const generalBits =;
+                const generalBits = [0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for (let i = 0; i < generalBits.length; i++) {
                     if ((p.bitmask & generalBits[i]) === 0) {
                         nodeHasGeneralBroke = true;
