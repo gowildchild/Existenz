@@ -735,7 +735,7 @@
                 person.birthCountdown = 0;
                 person.permanentScars = 0;
 
-                if (!rationalDefenseActive && Math.random() < currentSocietalInfectionRate) {
+                if (runningInUnlimitedNow && Math.random() < currentSocietalInfectionRate) {
                     person.isExtremist = true; 
                 } else {
                     person.isExtremist = false; 
@@ -749,9 +749,8 @@
             let isCurrentToleranceUnlimited = (toleranceMode === 1 || (toleranceMode === 2 && typeof autoTriggeredUnlimited !== 'undefined' && autoTriggeredUnlimited));
 
             if (isCurrentToleranceUnlimited && person.age >= 0) {
-                const totalInfected = people.filter(p => p.age >= 0 && p.isExtremist).length;
-                
-                if (totalInfected === 0 && person.id === 42 && simulationTick > 1) {
+                // FIXED: Evaluates against frozen frame array length to safely block the sequential loop domino crash
+                if (infectedUnits.length === 0 && person.id === 42 && simulationTick > 1) {
                     person.isExtremist = true;
                     pushLog('Ideological strain mutation observed inside active population matrix.', 'log-threat');
                 }
