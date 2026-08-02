@@ -1386,7 +1386,7 @@
         const zoomBtn = document.getElementById('zoom-tracker-btn');
         if (zoomBtn) {
             let displayPercent = Math.round(canvasZoomFactor * 100);
-            zoomBtn.innerText = `${displayPercent}% ZOOM [RESET]`;
+            zoomBtn.innerText = `ZOOM ${displayPercent}%`;
         }
         
 
@@ -1432,7 +1432,7 @@
                 const zoomBtn = document.getElementById('zoom-tracker-btn');
                 if (zoomBtn) {
                     let displayPercent = Math.round(canvasZoomFactor * 100);
-                    zoomBtn.innerText = `${displayPercent}% ZOOM [RESET]`;
+                    zoomBtn.innerText = `ZOOM ${displayPercent}%`;
                 }
 
                 // Instantly invoke viewport redraw requests to present smooth camera movements
