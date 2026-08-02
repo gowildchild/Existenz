@@ -1067,10 +1067,10 @@
         if (!isPlaying) return;
         processLifecycle();
         updateSimulation();
-        // Calculate the delay internally inside the scheduling container to read live structural values
+        // Calibrated from 70 down to 14ms to restore 1x baseline tempo with 0.1 precision steps
         setTimeout(() => { 
             requestAnimationFrame(executionLoop); 
-        }, 70 / currentSpeedMultiplier); 
+        }, 14 / currentSpeedMultiplier); 
     }
 
 window.addEventListener('load', () => {
