@@ -341,12 +341,16 @@
                 <span>Total Active Victims (Severed Layer):</span>
                 <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
             </div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px; color: #fc8181;">
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px; color: #fc8181;">
                 <span>Systemic Attrition Fatalities:</span>
                 <div>
                     <span id="systemic-death-count" style="font-weight:bold; margin-right: 8px;">0 / 100</span>
                     <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
                 </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px; color: #8e8eaf;">
+                <span>Generations Passed:</span>
+                <span id="generations-count" style="font-weight:bold; color:#ffffff;">0</span>
             </div>
             <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
             <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
@@ -748,6 +752,14 @@
             }
             document.getElementById('systemic-death-count').innerText = `${fatalityRate} / 100`;
         }
+        if (document.getElementById('generations-count')) {
+            // Calculates generations passed based on overall population turnover cycles
+            let generationsPassed = 0;
+            if (typeof globalTotalCompletions !== 'undefined' && people.length > 0) {
+                generationsPassed = Math.floor(globalTotalCompletions / people.length);
+            }
+            document.getElementById('generations-count').innerText = generationsPassed.toString();
+        }        
 
         const bitBlueprints = [
             { name: "EXISTENCE (1)",   count: 0, bit: 1 },
@@ -1260,10 +1272,16 @@
 
     function resetFatalityTally() {
         globalSystemicFatalities = 0;
+        globalTotalCompletions = 0; // Clears cumulative lifecycles to drop generational counter
+
+        // Instantly push the reset baselines to the active dashboard UI text spans
         if (document.getElementById('systemic-death-count')) {
-            document.getElementById('systemic-death-count').innerText = "0";
+            document.getElementById('systemic-death-count').innerText = "0 / 100";
+        } 
+        if (document.getElementById('generations-count')) {
+            document.getElementById('generations-count').innerText = "0";
         }
-        pushLog("CAUSALITY COUNTER RESET: Structural attrition records cleared.", "log-shift");
+        pushLog("Systemic telemetry tracking logs flushed and reset to zero vector.", "log-shift");
     }
     
     function executionLoop() {
