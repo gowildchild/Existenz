@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.102b</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.103b</title>
     <style>
         body { 
             margin: 0; 
@@ -392,9 +392,8 @@
     function processLifecycle() {
         simulationTick++;
         let brokenPillarsCount = 0;
-        // FIXED: Dynamically balances against the 8 active tracked pillars to prevent 100%+ arithmetic overflow
-        let totalCheckedPillars = people.length * 8; 
         let victimCount = 0;
+        let livingUnitsCount = 0;
         
         const bitBlueprints = [
             { name: "EXISTENCE (1)",    count: 0, bit: 1 },
@@ -408,30 +407,33 @@
             { name: "PRESENCE (256)",   count: 0, bit: 256 }
         ];
 
+        // 1. DYNAMIC REBIRTH INITIALIZATION LAYER
         people.forEach((person) => {
-            person.bitmask = calculatePillars(person, person.age, currentSimType);
-        });
-
-        people.forEach((person) => {
-            person.lastBitmask = person.bitmask;
-            
             if (person.bitmask === 0) {
                 person.age = 0;
                 person.individualTheta = Math.random() * Math.PI * 2;
                 person.bitmask = calculatePillars(person, 0, currentSimType);
                 pushLog(`Generation Cycle: Unit #${person.id} born into ${person.family}.`, 'log-birth', person.id, person.family);
-                return;
+            } else {
+                // Living units progress their base structural layouts cleanly over time
+                person.bitmask = calculatePillars(person, person.age, currentSimType);
             }
+        });
+
+        // 2. LOGICAL LIFECYCLE EVALUATION ENGINE
+        people.forEach((person) => {
+            person.lastBitmask = person.bitmask;
 
             let activeThreat = 0;
             if (currentSimType === 'feudal')       activeThreat |= 2 | 128; 
             if (currentSimType === 'industrial')   activeThreat |= 8 | 64;  
             if (currentSimType === 'crisis')       activeThreat |= 2 | 4 | 8 | 128; 
 
-            if (person.bitmask & (1 << 20)) activeThreat &= ~4;   
-            if (person.bitmask & (1 << 24)) activeThreat &= ~2;   
-            if (person.bitmask & (1 << 26)) activeThreat &= ~128; 
-            if (person.bitmask & (1 << 30)) activeThreat &= ~8;   
+            // Evaluate active policy firewall shields using reliable numeric flags
+            if (person.bitmask & 1048576)    activeThreat &= ~4;   // SHIELD_HUMAN_RIGHTS
+            if (person.bitmask & 2097152)    activeThreat &= ~2;   // SHIELD_BASIC_RIGHTS
+            if (person.bitmask & 67108864)   activeThreat &= ~128; // SHIELD_AQUIRED_RIGHTS
+            if (person.bitmask & 1073741824) activeThreat &= ~8;   // SHIELD_AQUIRED_TRUST
 
             let coreDamage = activeThreat; 
             let unshieldedStressCount = 0;
@@ -439,10 +441,10 @@
                 if (coreDamage & (1 << b)) unshieldedStressCount++;
             }
             
-            // RESTORED: Time ticks forward smoothly and continuously to protect the Fibonacci tracking
+            // Advance timeline clock smoothly by 0.5 to keep Fibonacci trajectories continuous
             person.age += 0.5;
 
-            // DYNAMIC ATTENTION LIMITS: Core structural policy caps determine life span
+            // Process dynamic lifespans based strictly on era criteria
             let maxNaturalAge = 80;
             if (currentSimType === 'tribal')       maxNaturalAge = 35;
             if (currentSimType === 'antiquity')    maxNaturalAge = 40;
@@ -453,17 +455,20 @@
             if (currentSimType === 'early-data')   maxNaturalAge = 84;
             if (currentSimType === 'modern')       maxNaturalAge = 88; 
 
-            // SYSTEMIC DEPRIVATION TOLL: Unshielded stress actively lowers the life cap dynamically
-            // This cuts life short without causing sudden explosive coordinate leaps
+            // Adaptive stress attenuation limits
             if (unshieldedStressCount >= 3)      maxNaturalAge = Math.min(maxNaturalAge, 30);
             else if (unshieldedStressCount >= 1) maxNaturalAge = Math.min(maxNaturalAge, 48);
 
+            // If the entity naturally or prematurely hits their cap, dissolve them to 0 and loop
             if (person.age >= maxNaturalAge) {
-                person.bitmask = 0; // Natural lifecycle dissolution or premature attrition collapse
+                person.bitmask = 0; 
                 return;
             }
 
+            // Apply unshielded structural threat damage directly to the remaining bitmask flags
             person.bitmask = person.bitmask & ~coreDamage;
+            livingUnitsCount++;
+
             if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
                 if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
                     pushLog(`!! CRITICAL SEVERANCE !! Unit #${person.id} hit Age 30. Integrity stripped.`, 'log-threat', person.id, person.family);
@@ -483,7 +488,10 @@
             if (individualIsVictim) victimCount++;
         });
 
-        existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
+        // 3. SCALE-INVARIANT COUNTER COMPILATION
+        let totalCheckedPillars = livingUnitsCount * 8;
+        existenzThreatLevel = totalCheckedPillars > 0 ? Math.round((brokenPillarsCount / totalCheckedPillars) * 100) : 0;
+        
         document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
@@ -514,6 +522,7 @@
             });
         }
     }
+
 
     function getXYZ(person) {
         let mask = person.bitmask;
