@@ -1832,7 +1832,7 @@
 
     function cycleToleranceMode() {
         // Explicit sequence routing map: Auto (2) leads directly to Limited (0)
-        const transitionSequence = { 2: 0, 0: 1, 1: 2 };
+        const transitionSequence = { 2: 0, 0: 2, 1: 1 };
         toleranceMode = transitionSequence[toleranceMode];
         
         const btn = document.getElementById('defense-toggle-btn');
