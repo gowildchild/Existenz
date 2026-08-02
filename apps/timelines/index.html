@@ -540,11 +540,18 @@
     
     function calculatePillars(person, age, type) {
         let bitmask = 0;
-        
+        // let bitmask = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256;
+
+        // BASELINE HEALTH / PEACEFUL ERAS: Keep protections fully intact
+        if (currentSimType === 'rights' || currentSimType === 'baseline') {
+            return bitmask;
+        }        
         // --- UNIVERSAL ARCHITECTURAL CONSTANTS ---
         bitmask |= 1;   // EXISTENCE
         bitmask |= 32;  // DISABILITY (The permanent universal floor holding up the framework)
-
+        bitmask |= 20;
+        bitmask |= 22;
+        bitmask |= 24;        
         bitmask |= 16;  // PHYSICAL (Vessel remains active while alive)
         bitmask |= 256; // PRESENCE (Real-time footprint remains active while alive)
 
@@ -673,7 +680,18 @@
             // Force genuinely accumulated damage back onto the active runtime matrix
             bitmask &= ~person.permanentScars;
         }
-
+        if (person.id % 4 === 0) {
+            if (currentSimType === 'total-surveillance') {
+                // Direct strike: Automatically strip the ABLEISM / DISABILITY (32) pillar entirely on Frame 1
+                bitmask &= ~32;
+            } else if (currentSimType === 'authoritarian') {
+                // Cascade strike: Ambient hostility strips bit 32 over time if shields are compromised
+                // Uses a steady aging check so nodes gradually break down as they move down the rails
+                if (age >= 15 || Math.random() < 0.1) {
+                    bitmask &= ~32;
+                }
+            }
+        }
         return bitmask;
     }
 
