@@ -529,9 +529,10 @@
                 break;
 
             case 'rights': // Post-WWII Institutional Framework
-                bitmask |= 2 | 4 | 64;         // Universal Declaration architectures online
-                if (age >= 3)  bitmask |= 8;   // Modern mental healthcare tracking
-                if (age >= 28) bitmask |= 128; // Standard asset and home ownership protection metrics
+                bitmask |= 2 | 4; // Universal Declaration architectures online
+                if (age >= 3 && person.id % 6 !== 0) bitmask |= 8; // Modern mental healthcare tracking with 16% variance stress
+                if (person.id % 12 !== 0) bitmask |= 64; // Development tracking with localized institutional blockages
+                if (age >= 28 && person.id % 4 !== 0) bitmask |= 128; // Standard asset and home ownership protection metrics with a 25% economic barrier hurdle
                 bitmask |= (1 << 20) | (1 << 24); // Protect native adult shields
                 break;
 
