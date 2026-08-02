@@ -362,6 +362,15 @@
                     <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
                 </div>
             </div>
+            <div id="instigator-panel-wrapper" style="display: none; margin-bottom: 12px; color: #8e8eaf;">
+                <!-- Section Title Header: Clear, readable, and safely stacked -->
+                <div style="color: #fc8181; font-size: 13px; font-weight: bold; margin-bottom: 6px;">Radicalization</div>
+                
+                <!-- Target Container: Rows append here and use their own inner flex alignment -->
+                <div id="top-instigators-list" style="font-size: 11px;">
+                    <!-- Exactly 1 or 2 high-impact actors append here natively via script -->
+                </div>
+            </div>
             <div id="tolerance-metric-row" style="display:none; justify-content:space-between; font-size:11px; margin-bottom: 12px; color: #ff00aa;">
                 <span>Poppertime:</span>
                 <div>
@@ -369,7 +378,6 @@
                     <span id="tolerance-pct" style="font-weight:bold;">0%</span>
                 </div>
             </div>
-            <div id="top-instigators-list"></div>
             <div id="vector-header-label" style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
             <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
                 <!-- Dynamically populated -->
@@ -657,7 +665,7 @@
         let totalCheckedPillars = people.length * 9; 
         
         let victimCount = 0;
-        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+        let bitFailureCounts =; 
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
@@ -687,17 +695,16 @@
             person.bitmask = calculatePillars(person, person.age, currentSimType);
 
             let naturalDemiseTriggered = false;
-            let currentEraCeiling = 95; // Shifted up to handle realistic modern standard distributions
+            let currentEraCeiling = 95; 
             
             if (currentSimType === 'tribal')     currentEraCeiling = 38;
             if (currentSimType === 'antiquity')  currentEraCeiling = 45;
             if (currentSimType === 'feudal')     currentEraCeiling = 40;
             if (currentSimType === 'industrial') currentEraCeiling = 68;
-            if (currentSimType === 'rights')     currentEraCeiling = 82; // Baseline standard exception distribution
+            if (currentSimType === 'rights')     currentEraCeiling = 82; 
             if (currentSimType === 'algorithmic') currentEraCeiling = 83; 
             if (currentSimType === 'total-surveillance') currentEraCeiling = 84; 
 
-            // FIXED: Expanded the maximum variance boundary to 110 for natural biological decay exceptions
             if (person.age >= currentEraCeiling) {
                 let checkFactor = (person.age - currentEraCeiling) / (110 - currentEraCeiling + 1);
                 if (Math.random() < checkFactor || person.age >= 110) {
@@ -714,14 +721,13 @@
                 let wasCompromised = false;
                 for (let b = 0; b < 9; b++) {
                     if ((1 << b) === 32) continue;
-                    // Properly evaluates fresh live bit masks right before cleanup routines execute
                     if ((person.bitmask & (1 << b)) === 0) {
                         wasCompromised = true;
                     }
                 }
 
                 let isPrematureFatality = wasCompromised && (person.age < currentEraCeiling);
-                fatalityHistoryWindow.push(wasCompromised ? 1 : 0);
+                fatalityHistoryWindow.push(isPrematureFatality ? 1 : 0);
                 
                 if (fatalityHistoryWindow.length > 100) {
                     fatalityHistoryWindow.shift();
@@ -798,12 +804,13 @@
             if (individualIsVictim) { victimCount++; }
         });
 
+        // Clear out the tracking flags from the previous engine tick across all entities
+        people.forEach(p => p.isPinkInstigator = false);
         existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
         document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
 
-        // Dynamically scale current active totals up based on the continuum multiplier selection
         let weightedVictims = victimCount * currentScaleMultiplier;
         let weightedTotalPopulation = people.length * currentScaleMultiplier;
 
@@ -812,11 +819,8 @@
         }
 
         if (document.getElementById('systemic-death-count')) {
-            // FIXED: Dynamically computes the mathematical sum of the active 100-cell history queue
             let rollingFatalitiesCount = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
             let displayDenominator = fatalityHistoryWindow.length > 0 ? fatalityHistoryWindow.length : 100;
-            
-            // Outputs a realistic, shifting telemetry string that moves dynamically between eras
             document.getElementById('systemic-death-count').innerText = `${rollingFatalitiesCount} / ${displayDenominator}`;
         }
 
@@ -845,8 +849,6 @@
                     document.getElementById('tolerance-pct').innerText = `${spreadPct}%`;
                 }
 
-                // --- MAJORITY TAKEOVER COLLAPSE MONITOR INTERCEPTOR ---
-                // Triggers the blinking warning window overlay the exact frame tick it hits or breaks past 51%
                 if (alertOverlay) {
                     if (spreadPct >= 51) {
                         alertOverlay.style.display = 'block';
@@ -869,7 +871,6 @@
             }
         }
 
-        // FIXED: Automated Threshold Lock evaluation injected safely outside the loop pass
         if (toleranceMode === 2) {
             if (existenzThreatLevel >= 35) {
                 autoTriggeredUnlimited = true;
@@ -898,19 +899,16 @@
             }
 
             bitBlueprints.forEach((blueprint) => {
-                // FIXED: Increments the tracker ONLY when the specific human rights bit evaluates to 0 (compromised)
                 if ((person.bitmask & blueprint.bit) === 0) {
                     blueprint.count++;
                 }
             });
         });
 
-        // --- SYSTEMIC STRESS VECTOR INTERCEPTOR ---
-        // If intolerance hits a 51% institutional majority, overwrite rights deprivation tallies to show global subversion
         if (isCivilizationOverthrown) {
             bitBlueprints.forEach((blueprint) => {
                 if (blueprint.bit === 2 || blueprint.bit === 4) {
-                    blueprint.count = people.length; // Forcefully pins Autonomy and Integrity metrics to 100% saturation
+                    blueprint.count = people.length;
                 }
             });
         }
@@ -931,7 +929,6 @@
                 vectorRow.style.borderRadius = '2px';
                 
                 if (isCivilizationOverthrown && (vector.bit === 2 || vector.bit === 4)) {
-                    // Terminal Collapse Highlight: Blinks the overthrown metrics in sharp white-on-crimson
                     vectorRow.style.color = '#ffffff';
                     vectorRow.style.background = '#e53e3e';
                     vectorRow.style.fontWeight = 'bold';
@@ -949,36 +946,40 @@
                 vectorsContainer.appendChild(vectorRow);
             });
         }
+
+        const instigatorPanel = document.getElementById('instigator-panel-wrapper');
         const instigatorContainer = document.getElementById('top-instigators-list');
-        if (instigatorContainer) {
-            instigatorContainer.innerHTML = '';
-            
-            // Filters the existing codebase array for active, intolerant extremist nodes
-            let allDogmatists = people.filter(p => p.age >= 0 && p.isIntolerant);
-            
-            // Hard limit: Slice precisely the first 2 actors to prevent UI panel clutter
-            let visibleInstigators = allDogmatists.slice(0, 2);
-            
-            visibleInstigators.forEach((node, index) => {
-                const instigatorRow = document.createElement('div');
-                instigatorRow.style.display = 'flex';
-                instigatorRow.style.justifyContent = 'space-between';
-                instigatorRow.style.padding = '2px 4px';
-                instigatorRow.style.fontSize = '11px';
-                instigatorRow.style.color = '#fc8181'; // Highlights them in a distinct extremist red accent
+        
+        let allDogmatists = people.filter(p => p.age >= 0 && p.isIntolerant);
+
+        if (instigatorPanel && instigatorContainer) {
+            if (allDogmatists.length > 0) {
+                instigatorPanel.style.display = 'block'; 
+                instigatorContainer.innerHTML = '';
                 
-                instigatorRow.innerHTML = `
-                    <span>${index + 1}. Dogmatic Instigator #${node.id}</span>
-                    <span style="font-weight: bold; color: #e53e3e;">[LEVEL 1]</span>
-                `;
-                instigatorContainer.appendChild(instigatorRow);
-            });
+                let visibleInstigators = allDogmatists.slice(0, 2);
+                
+                visibleInstigators.forEach((node, index) => {
+                    // Assign flag state into active memory block for canvas loops to intercept cleanly
+                    node.isPinkInstigator = true;
+
+                    const instigatorRow = document.createElement('div');
+                    instigatorRow.style.display = 'flex';
+                    instigatorRow.style.justifyContent = 'space-between';
+                    instigatorRow.style.padding = '2px 4px';
+                    instigatorRow.style.fontSize = '11px';
+                    instigatorRow.style.color = '#fc8181';
+                    instigatorRow.innerHTML = `
+                        <span>${index + 1}. Dogmatic Instigator #${node.id}</span>
+                        <span style="font-weight: bold; color: #e53e3e;">[LEVEL 1]</span>
+                    `;
+                    instigatorContainer.appendChild(instigatorRow);
+                });
+            } else {
+                instigatorPanel.style.display = 'none';
+            }
         }        
     }
-
-
-
-
 
 
     function getXYZ(person) {
