@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.087</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.088</title>
     <style>
         body { 
             margin: 0; 
@@ -512,38 +512,51 @@
 
     function getXYZ(person) {
         let mask = person.bitmask;
-        
-        let spaceExpansionFactor = 1.0;
-        if (mask & 1)   spaceExpansionFactor *= 1.1;   
-        if (mask & 16)  spaceExpansionFactor *= 1.25;  
-        if (mask & 128) spaceExpansionFactor *= 1.4;   
+        let x = 0;
+        let y = 0;
+        let z = 0;
 
-        let internalMoralForce = 1.0;
-        if (mask & 2)   internalMoralForce += 0.5;     
-        if (mask & 4)   internalMoralForce += 1.0;     
-        if (mask & 8)   internalMoralForce += 1.5;     
+        // X-Axis Identity & Assets
+        if (mask & 1)   x += 5;   
+        if (mask & 16)  x += 20;  
+        if (mask & 128) x += 40;  
 
-        const goldenRatio = 1.61803398875;
-        let continuousRadius = Math.log(person.age + 1) * goldenRatio * 15.0 * spaceExpansionFactor * (internalMoralForce * 0.4);
-        let spiralTheta = person.individualTheta + (person.age * 0.065) + person.familySeed;
+        // Y-Axis Cognitive/Moral Sovereignty
+        if (mask & 2)   y += 5;   
+        if (mask & 4)   y += 10;  
+        if (mask & 8)   y += 15;  
 
-        let finalX = continuousRadius * Math.cos(spiralTheta);
-        let finalY = continuousRadius * Math.sin(spiralTheta);
-        
-        let structuralFloor = (mask & 32) ? 40 : 0;  
-        let systemGrowth    = (mask & 64) ? 30 : 0;     
-        let finalZ = structuralFloor + systemGrowth + (person.age * 4.5); 
+        // Z-Axis Evolutionary Level of Being
+        if (mask & 32)  z += 15;  
+        if (mask & 64)  z += 30;  
+        if (mask & 256) z += 60;  
 
-        return { x: finalX, y: finalY, z: finalZ };
+        return { x: x, y: y, z: z };
     }
 
     function project(x, y, z, personAge, personBitmask) {
         const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2 + 160; 
-        const matrixScale = 2.4; 
+        const centerY = canvas.height / 2 + 130;
+        const matrixScaleXY = 3.6; 
+        const matrixScaleZ = 4.2; 
+
+        let currentAge = personAge || 0;
+        let currentMask = personBitmask || 0;
+
+        const goldenRatio = 1.61803398875;
+        let spiralTheta = (currentAge * 0.065);
+        let internalMoralCurvature = (currentMask & 4 && currentMask & 8) ? 1.0 : 0.65;
         
-        let isoX = centerX + (x - y) * Math.cos(0.52) * matrixScale;
-        let isoY = centerY + (x + y) * Math.sin(0.52) * matrixScale - (z * matrixScale);
+        // Time naturally curves space outward continuously, completely dissolving the concentric walls
+        let spaceWarpRadius = Math.log(currentAge + 1) * goldenRatio * 18.0 * internalMoralCurvature;
+        
+        let scaleFactor = (currentAge / 80.0) + 1.0;
+        let curvedX = (x * scaleFactor) + (spaceWarpRadius * Math.cos(spiralTheta));
+        let curvedY = (y * scaleFactor) + (spaceWarpRadius * Math.sin(spiralTheta));
+        let curvedZ = z + (currentAge * 3.5 * internalMoralCurvature); // Continuous vertical lifecycle progression
+
+        let isoX = centerX + (curvedX - curvedY) * Math.cos(0.52) * matrixScaleXY;
+        let isoY = centerY + (curvedX + curvedY) * Math.sin(0.52) * matrixScaleXY - (curvedZ * matrixScaleZ);
         
         return { x: isoX, y: isoY };
     }
