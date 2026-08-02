@@ -11,28 +11,19 @@
             color: #ffffff; 
             font-family: 'Courier New', monospace; 
             display: flex; 
+            flex-direction: column; /* Changed to native top-to-bottom layout hierarchy */
             height: 100vh; 
-            overflow: hidden; 
+            overflow-y: auto; 
         }        
-        #sidebar { 
-            width: 330px; 
-            background: #09090f; 
-            padding: 20px; 
-            box-sizing: border-box; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 18px; 
-            border-right: 1px solid #141424; 
-            z-index: 10;
-        }
         #canvas-container { 
-            flex-grow: 1; 
+            width: 100%;
+            height: 60vh; /* Allocates optimal visual height for the 3D grid layout canvas */
             position: relative; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             background: #030305;
-            height: 100vh;
+            border-bottom: 1px solid #141424;
         }
         canvas { 
             background: #030305; 
@@ -41,34 +32,51 @@
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Prevents 3D circles from stretching out of proportion on thin ratios */
+            object-fit: contain; 
+        }
+        
+        /* Unified Responsive Dashboard Grid Wrapper */
+        .dashboard-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Side-by-side distribution on large widescreen environments */
+            gap: 20px;
+            padding: 20px;
+            background: #09090f;
+            box-sizing: border-box;
+        }
+        
+        #sidebar { 
+            width: 100%; 
+            background: #09090f; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 18px; 
         }
         #right-panel {
-            width: 420px;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            border-left: 1px solid #141424;
             background: #09090f;
-            height: 100%;
+            gap: 18px;
         }
         #inspect-panel { 
-            height: 45%;
-            padding: 20px; 
+            padding: 10px; 
             box-sizing: border-box; 
             display: flex; 
             flex-direction: column; 
             gap: 10px; 
-            overflow-y: auto;
-            border-bottom: 1px solid #141424;
         }
         #matrix-log {
-            height: 55%;
-            padding: 20px;
+            padding: 10px;
             box-sizing: border-box;
             background: #030305;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            border: 1px solid #141424;
+            border-radius: 4px;
+            height: 250px;
         }
         #log-header-zone {
             display: flex;
@@ -180,45 +188,20 @@
             border-left: 3px solid #ff00aa; 
         }        
         
-        /* Mobile and Tablet Fluid Adaptation Layout Settings Placement */
+        /* Mobile Smartphone Specific Vertical Flow Override Overlays */
         @media (max-width: 1024px) {
-            body {
-                display: grid !important;
-                grid-template-areas: 
-                    "canvas"
-                    "sidebar"
-                    "rightpanel";
-                grid-template-rows: auto auto auto;
-                overflow-y: auto;
-                height: auto;
-            }
             #canvas-container {
-                grid-area: canvas;
-                width: 100%;
-                height: 55dvh !important; 
+                height: 50dvh !important; 
             }
-            #sidebar {
-                grid-area: sidebar;
-                width: 100% !important;
-                height: auto !important;
-                border-right: none !important;
-                border-bottom: 1px solid #141424;
-            }
-            #right-panel {
-                grid-area: rightpanel;
-                width: 100% !important;
-                height: auto !important;
-                border-left: none !important;
+            .dashboard-wrapper {
+                grid-template-columns: 1fr; /* Forces selectors and logs to cascade down cleanly into a single phone column block */
+                padding: 15px;
             }
         }
         
         @media (max-width: 1024px) and (orientation: landscape) {
-            body {
-                display: flex !important;
-                flex-direction: column;
-            }
             #canvas-container {
-                height: 85dvh !important; 
+                height: 80dvh !important; 
             }
         }        
     </style>
@@ -226,133 +209,137 @@
 
 <body>
 
-    <!-- Left Control Panel -->
-    <div id="sidebar">
-        <h2 style="margin: 0; color: #63b3ed; font-size: 16px; letter-spacing: 1px;">EXISTENZ CHRONOS</h2>
-        
-        <div>
-            <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 5px;">Spacetime Era Vector:</label>
-            <select id="sim-select" onchange="changeSimulation()">
-                <option value="tribal">1. Deep Tribal Matrix (Pre-State Sovereignty)</option>
-                <option value="antiquity">2. Classical Antiquity (400 BC - Diogenes Cynicism)</option>
-                <option value="feudal">3. Medieval Feudalism (Stratified Subservience)</option>
-                <option value="enlighten">4. Age of Enlightenment (Re-emergence of Reason)</option>
-                <option value="industrial">5. Early Industrial Grid (Labor Optimization)</option>
-                <option value="rights">6. Post-WWII Framework (Universal Declaration Era)</option>
-                <option value="pre-surveil">7. Pre-Surveillance Digital (Late 90s Cybernetic Optimism)</option>
-                <option value="early-data">8. Early Algorithmic Data Capture (2010s Silicon Boom)</option>
-                <option value="modern">9. The Hyper-Digital Now (2020s Total Surveillance)</option>
-                <option value="crisis">10. Authoritarian Threat Event (Systemic Severance)</option>
-            </select>
-        </div>
-
-        <div>
-            <label for="scale-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Scale Multiplier Continuum:</label>
-            <select id="scale-select" onchange="changeScaleMultiplier()">
-                <option value="1" selected>x1 Unity Matrix Mesh</option>
-                <option value="10">x10 Expanded Field</option>
-                <option value="100">x100 Multi-Layer Latice</option>
-                <option value="1000">x1000 Kilo-Density Layer</option>
-                <option value="10000">x10000 Macro-Continuum</option>
-                <option value="100000">x100000 Quantum Horizon</option>
-                <option value="1000000">x1000000 Mega-Spacetime Array</option>
-            </select>
-        </div>
-
-        <div>
-            <label for="birth-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Birth Rate Flux Density:</label>
-            <select id="birth-select" onchange="changeBirthRateDensity()">
-                <option value="0.02">Low Fluid Attrition (2%)</option>
-                <option value="0.05" selected>Standard Equilibrium (5%)</option>
-                <option value="0.12">High Generational Spurt (12%)</option>
-                <option value="0.25">Hyper Exponential Boom (25%)</option>
-            </select>
-        </div>        
-        
-        <div>
-            <label for="speed-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Temporal Speed Warp:</label>
-            <select id="speed-select" onchange="changeSimulationSpeed()">
-                <option value="1.0" selected>1.0x Normal Chronos Speed</option>
-                <option value="0.8">0.8x Smooth Retardation Step</option>
-                <option value="0.6">0.6x Mid-Tier Dilated Pace</option>
-                <option value="0.4">0.4x Deep Telemetry Mode</option>
-                <option value="0.2">0.2x High-Density Sub-Interval</option>
-                <option value="0.05">0.05x Absolute Micro-Continuum</option>
-            </select>
-        </div>        
-        
-        <div class="threat-meter">
-            <div style="display:flex; justify-content:space-between; font-size:11px;">
-                <span>ExistenzThreat Vector:</span>
-                <span id="threat-pct" style="font-weight:bold; color:#48bb78;">0%</span>
-            </div>
-            <div style="background:#1a2233; height:5px; border-radius:2px;"><div id="threat-bar"></div></div>
-        </div>
-
-        <div class="threat-meter" style="margin-top: 10px;">
-            <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC METRICS</div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px;">
-                <span>Total Active Victims:</span>
-                <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
-            </div>
-            
-            <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
-            <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
-                <!-- Dynamically populated and sorted via script -->
-            </div>
-        </div>
-
-        <div style="margin-top: 15px; background: #09090f; border: 1px solid #141424; padding: 10px; border-radius: 4px; font-size: 11px;">
-            <div style="color: #00f0ff; font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px;">EVALUATED AGE MATRIX</div>
-            <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
-                <span>Minimum Lifespan Node:</span>
-                <span id="meta-age-min" style="color: #ffffff; font-weight: bold;">0.0</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
-                <span>Median Spacetime Age:</span>
-                <span id="meta-age-med" style="color: #ffffff; font-weight: bold;">0.0</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
-                <span>Maximum Lifespan Node:</span>
-                <span id="meta-age-max" style="color: #ffffff; font-weight: bold;">0.0</span>
-            </div>
-        </div>        
-        
-        <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
-        <button class="btn btn-toggle" id="spiral-btn" onclick="toggleSpiralField()">Show Majestic Spirals</button>
-    </div>
-
-    <!-- Center Coordinate Field -->
     <div id="canvas-container">
         <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; z-index: 20; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px);">
-            100% ZOOM [RESET]
+            150% ZOOM [RESET]
         </button>
         <canvas id="simCanvas" width="750" height="750"></canvas>
     </div>
 
-    <!-- Right Panels -->
-    <div id="right-panel">
-        <div id="inspect-panel">
-            <h3 style="margin: 0; font-size: 13px; color: #a0aec0;">MATRIX MONITOR</h3>
-            <p id="no-selection" style="color: #4a5568; font-size: 11px; margin: 0;">Isolate an entity on the grid to filter and reduce telemetry chatter.</p>
-            <div id="inspector-content" style="display: none;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-size: 14px; font-weight: bold; color: #63b3ed;" id="ins-name">Individual #--</div>
-                    <button class="btn" style="padding:2px 6px; font-size:10px; background:#4a5568;" onclick="clearSelection()">Clear Lock</button>
+    <!-- Bottom Layout Block: Unified Responsive Dashboard Elements -->
+    <div class="dashboard-wrapper">
+        
+        <!-- Left Column Pane: Control Pull-downs and Selectors -->
+        <div id="sidebar">
+            <h2 style="margin: 0; color: #63b3ed; font-size: 16px; letter-spacing: 1px;">EXISTENZ | TIMELINES</h2>
+            
+            <div>
+                <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 5px;">Spacetime Era Vector:</label>
+                <select id="sim-select" onchange="changeSimulation()">
+                    <option value="tribal">1. Deep Tribal Matrix (Pre-State Sovereignty)</option>
+                    <option value="antiquity">2. Classical Antiquity (400 BC - Diogenes Cynicism)</option>
+                    <option value="feudal">3. Medieval Feudalism (Stratified Subservience)</option>
+                    <option value="enlighten">4. Age of Enlightenment (Re-emergence of Reason)</option>
+                    <option value="industrial">5. Early Industrial Grid (Labor Optimization)</option>
+                    <option value="rights">6. Post-WWII Framework (Universal Declaration Era)</option>
+                    <option value="pre-surveil">7. Pre-Surveillance Digital (Late 90s Cybernetic Optimism)</option>
+                    <option value="early-data">8. Early Algorithmic Data Capture (2010s Silicon Boom)</option>
+                    <option value="modern">9. The Hyper-Digital Now (2020s Total Surveillance)</option>
+                    <option value="crisis">10. Authoritarian Threat Event (Systemic Severance)</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="scale-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Scale Multiplier Continuum:</label>
+                <select id="scale-select" onchange="changeScaleMultiplier()">
+                    <option value="1" selected>x1 Unity Matrix Mesh</option>
+                    <option value="10">x10 Expanded Field</option>
+                    <option value="100">x100 Multi-Layer Latice</option>
+                    <option value="1000">x1000 Kilo-Density Layer</option>
+                    <option value="10000">x10000 Macro-Continuum</option>
+                    <option value="100000">x100000 Quantum Horizon</option>
+                    <option value="1000000">x1000000 Mega-Spacetime Array</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="birth-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Birth Rate Flux Density:</label>
+                <select id="birth-select" onchange="changeBirthRateDensity()">
+                    <option value="0.02">Low Fluid Attrition (2%)</option>
+                    <option value="0.05" selected>Standard Equilibrium (5%)</option>
+                    <option value="0.12">High Generational Spurt (12%)</option>
+                    <option value="0.25">Hyper Exponential Boom (25%)</option>
+                </select>
+            </div>        
+            
+            <div>
+                <label for="speed-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Temporal Speed Warp:</label>
+                <select id="speed-select" onchange="changeSimulationSpeed()">
+                    <option value="1.0" selected>1.0x Normal</option>
+                    <option value="0.8">0.8x Smooth Retardation</option>
+                    <option value="0.6">0.6x Mid-Tier Pace</option>
+                    <option value="0.4">0.4x Telemetry Mode</option>
+                    <option value="0.2">0.2x High-Density</option>
+                    <option value="0.05">0.05x Micro-Continuum</option>
+                </select>
+            </div>        
+            
+            <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
+            <button class="btn btn-toggle" id="spiral-btn" onclick="toggleSpiralField()">Show Majestic Spirals</button>
+        </div>
+
+        <!-- Right Column Pane: Live Telemetry Stats and Inspectors -->
+        <div id="right-panel">
+            <div class="threat-meter">
+                <div style="display:flex; justify-content:space-between; font-size:11px;">
+                    <span>ExistenzThreat Vector:</span>
+                    <span id="threat-pct" style="font-weight:bold; color:#48bb78;">0%</span>
                 </div>
-                <div style="font-size: 11px; color: #718096; margin: 4px 0 8px 0;">Lineage: <span id="ins-family" style="color:#9f7aea;">Alpha</span> | Age: <span id="ins-age" style="color:#ecc94b;">0</span></div>
-                <div style="margin-bottom: 10px; font-size: 12px; color: #cbd5e0;">Coordinates: <span id="ins-coords" style="color: #ecc94b;">X:0, Y:0, Z:0</span></div>
-                <div id="pillars-list" style="display: flex; flex-direction: column; gap: 5px;"></div>
+                <div style="background:#1a2233; height:5px; border-radius:2px;"><div id="threat-bar"></div></div>
+            </div>
+
+            <div class="threat-meter" style="margin-top: 0px;">
+                <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC METRICS</div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px;">
+                    <span>Total Active Victims:</span>
+                    <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
+                </div>
+                
+                <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
+                <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <div style="background: #09090f; border: 1px solid #141424; padding: 10px; border-radius: 4px; font-size: 11px;">
+                <div style="color: #00f0ff; font-weight: bold; margin-bottom: 6px; letter-spacing: 0.5px;">EVALUATED AGE MATRIX</div>
+                <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
+                    <span>Minimum Lifespan Node:</span>
+                    <span id="meta-age-min" style="color: #ffffff; font-weight: bold;">0.0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
+                    <span>Median Spacetime Age:</span>
+                    <span id="meta-age-med" style="color: #ffffff; font-weight: bold;">0.0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 2px 0; color: #8e8eaf;">
+                    <span>Maximum Lifespan Node:</span>
+                    <span id="meta-age-max" style="color: #ffffff; font-weight: bold;">0.0</span>
+                </div>
+            </div>        
+
+            <div id="inspect-panel">
+                <h3 style="margin: 0; font-size: 13px; color: #a0aec0;">MATRIX MONITOR</h3>
+                <p id="no-selection" style="color: #4a5568; font-size: 11px; margin: 0;">Isolate an entity on the grid to filter and reduce telemetry chatter.</p>
+                <div id="inspector-content" style="display: none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="font-size: 14px; font-weight: bold; color: #63b3ed;" id="ins-name">Individual #--</div>
+                        <button class="btn" style="padding:2px 6px; font-size:10px; background:#4a5568;" onclick="clearSelection()">Clear Lock</button>
+                    </div>
+                    <div style="font-size: 11px; color: #718096; margin: 4px 0 8px 0;">Lineage: <span id="ins-family" style="color:#9f7aea;">Alpha</span> | Age: <span id="ins-age" style="color:#ecc94b;">0</span></div>
+                    <div style="margin-bottom: 10px; font-size: 12px; color: #cbd5e0;">Coordinates: <span id="ins-coords" style="color: #ecc94b;">X:0, Y:0, Z:0</span></div>
+                    <div id="pillars-list" style="display: flex; flex-direction: column; gap: 5px;"></div>
+                </div>
+            </div>
+
+            <div id="matrix-log">
+                <div id="log-header-zone">
+                    <h3 style="margin:0; font-size:12px; color:#a0aec0; letter-spacing:0.5px;">LOG TELEMETRY</h3>
+                    <span id="log-filter-status" style="font-size:10px; color:#4a5568; background:#121620; padding:2px 6px; border-radius:3px;">FILTER: GLOBAL</span>
+                </div>
+                <div id="log-stream"></div>
             </div>
         </div>
 
-        <div id="matrix-log">
-            <div id="log-header-zone">
-                <h3 style="margin:0; font-size:12px; color:#a0aec0; letter-spacing:0.5px;">LOG TELEMETRY</h3>
-                <span id="log-filter-status" style="font-size:10px; color:#4a5568; background:#121620; padding:2px 6px; border-radius:3px;">FILTER: GLOBAL</span>
-            </div>
-            <div id="log-stream"></div>
-        </div>
     </div>
 
 <script>
@@ -1136,8 +1123,8 @@
 
     function changeBirthRateDensity() {
         currentBirthProbability = parseFloat(document.getElementById('birth-select').value);
-        pushLog(`Generational birth flux density calibrated to [${currentBirthProbability * 100}%].`, 'log-shift');
-    }    
+        pushLog(`Generational birth flux density calibrated to [${Math.round(currentBirthProbability * 100)}%].`, 'log-shift');
+    }
     
     function resetCameraZoom() {
         canvasZoomFactor = 1.5;
