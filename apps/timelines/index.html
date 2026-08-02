@@ -392,6 +392,7 @@
     let simulationTick = 0;
     let existenzThreatLevel = 0;
     let globalSystemicFatalities = 0;
+    let globalTotalCompletions = 0;
     let currentPopulationScale = 100;
     let currentScaleMultiplier = 1;
     let currentSpeedMultiplier = 1.0;
@@ -614,7 +615,7 @@
         let totalCheckedPillars = people.length * 9; 
         
         let victimCount = 0;
-        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+        let bitFailureCounts =; 
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
@@ -652,6 +653,12 @@
             }
 
             if (naturalDemiseTriggered) {
+                // Track total units completing their lifecycle historically to calculate rate per 100
+                if (typeof globalTotalCompletions === 'undefined') {
+                    globalTotalCompletions = 0;
+                }
+                globalTotalCompletions++;
+
                 // Evaluate bitmask before clearing state to identify systemic rights fatalities
                 let wasCompromised = false;
                 for (let b = 0; b < 9; b++) {
@@ -713,7 +720,12 @@
         }
 
         if (document.getElementById('systemic-death-count')) {
-            document.getElementById('systemic-death-count').innerText = globalSystemicFatalities.toString();
+            // Compute the historical normalized rate per 100 dynamically
+            let fatalityRate = 0;
+            if (typeof globalTotalCompletions !== 'undefined' && globalTotalCompletions > 0) {
+                fatalityRate = Math.round((globalSystemicFatalities / globalTotalCompletions) * 100);
+            }
+            document.getElementById('systemic-death-count').innerText = `${fatalityRate} / 100`;
         }
 
         const bitBlueprints = [
@@ -770,6 +782,7 @@
             });
         }
     }
+
 
 
 
