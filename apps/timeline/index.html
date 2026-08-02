@@ -209,7 +209,7 @@
             <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC METRICS</div>
             <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px;">
                 <span>Total Active Victims:</span>
-                <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 50</span>
+                <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
             </div>
             
             <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
@@ -303,7 +303,7 @@
     
     function initPopulation() {
         people = [];
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 100; i++) {
             let assignedAge = Math.floor(Math.random() * 80);
             let familyId = Math.floor(Math.random() * families.length);
             people.push({
@@ -424,7 +424,7 @@
     function processLifecycle() {
         simulationTick++;
         let brokenPillarsCount = 0;
-        let totalCheckedPillars = people.length * 7; 
+        let totalCheckedPillars = people.length * 9; 
         
         let victimCount = 0;
         // CORRECTED: Array initialized with 7 zeros to prevent syntax compile crashes
