@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.986B</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.987B</title>
     <style>
         body { 
             margin: 0; 
@@ -643,8 +643,11 @@
                 ctx.beginPath();
                 
                 for (let testAge = 0; testAge <= 80; testAge += 1) {
-                    let mockPerson = { id: fId, family: familyName };
-                    let testMask = calculatePillars(mockPerson, testAge, currentSimType);
+                    let maskAccumulator = 0;
+                    for (let sampleId = 0; sampleId < 8; sampleId++) {
+                        maskAccumulator |= calculatePillars({ id: sampleId, family: familyName }, testAge, currentSimType);
+                    }
+                    let testMask = maskAccumulator;
                     
                     let spaceExpansionFactor = 1.0;
                     if (testMask & 1) spaceExpansionFactor *= 1.1;
