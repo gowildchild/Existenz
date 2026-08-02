@@ -260,10 +260,10 @@
                 <option value="feudal">3. Medieval Feudalism (Stratified Subservience)</option>
                 <option value="enlighten">4. Age of Enlightenment (Re-emergence of Reason)</option>
                 <option value="industrial">5. Early Industrial Grid (Labor Optimization)</option>
-                <option value="rights" selected>6. Post-WWII Framework (Universal Declaration Era)</option>
+                <option value="rights">6. Post-WWII Framework (Universal Declaration Era)</option>
                 <option value="pre-surveil">7. Pre-Surveillance Digital (Late 90s Cybernetic Optimism)</option>
                 <option value="early-data">8. Early Algorithmic Data Capture (2010s Silicon Boom)</option>
-                <option value="modern">9. The Hyper-Digital Now (2020s Total Surveillance)</option>
+                <option value="modern" selected>9. The Hyper-Digital Now (2020s Total Surveillance)</option>
                 <option value="crisis">10. Authoritarian Threat Event (Systemic Severance)</option>
             </select>
         </div>
@@ -1417,6 +1417,17 @@
             let lockedPerson = people.find(p => p.id === selectedPersonId);
             
             if (lockedPerson) {
+                const nameEl = document.getElementById('ins-name');
+                if (nameEl) {
+                    nameEl.innerText = `Individual #${lockedPerson.id}`;
+                    
+                    // If the selected node matches your active instigator parameters, flip it to pink/crimson accent
+                    if (lockedPerson.age >= 12 && lockedPerson.isPinkInstigator) {
+                        nameEl.style.color = '#fc8181'; // Radicalized Instigator Color Accent
+                    } else {
+                        nameEl.style.color = '#63b3ed'; // Standard Baseline Blue Profile Color
+                    }
+                }                
                 const statusEl = document.getElementById('log-filter-status');
                 if (statusEl) {
                     statusEl.innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
