@@ -969,8 +969,13 @@
 
     canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const clickY = e.clientY - rect.top;
+        
+        // Extract display pixel density ratios to match internal buffer dimensions
+        const dpr = window.devicePixelRatio || 1;
+        
+        // Multiply screen inputs by devicePixelRatio to align cursor hits with drawing bounds
+        const clickX = (e.clientX - rect.left) * dpr;
+        const clickY = (e.clientY - rect.top) * dpr;
         
         let closestIndex = -1;
         let minDist = 99999;
@@ -988,8 +993,8 @@
             }
         });
         
-        // Calibrated targeting threshold buffer scaled for 14ms high-refresh matrix inputs
-        let adaptiveThreshold = 45 / canvasZoomFactor;
+        // Threshold buffer calibrated for scaled pixel layouts
+        let adaptiveThreshold = (45 * dpr) / canvasZoomFactor;
         if (minDist < adaptiveThreshold && closestIndex !== -1) { 
             selectedPersonIndex = closestIndex;
             let lockedPerson = people[selectedPersonIndex];
@@ -1000,11 +1005,15 @@
                 statusEl.innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
                 statusEl.style.color = '#9f7aea';
             }
+            
             pushLog(`TELEMETRY LOCK ENGAGED: Isolating data strings for Individual #${lockedPerson.id} and the ${lockedPerson.family}.`, 'log-lock');
+            
+            // Force an immediate isolated frame refresh to override processing drift
             drawGrid();
             updateSimulation();
         }
     });
+
 
 
     function clearSelection() {
