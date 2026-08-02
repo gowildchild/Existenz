@@ -10,10 +10,18 @@
             background: #030305; 
             color: #ffffff; 
             font-family: 'Courier New', monospace; 
-            display: flex; /* Original horizontal layout row for desktop */
+            display: flex; /* Converted safely to vertical orchestration for top navbar */
+            flex-direction: column;
             height: 100vh; 
             overflow: hidden; 
         }        
+        #workspace-grid {
+            display: flex; /* Protects widescreen horizontal arrangement on desktop monitors */
+            flex-direction: row;
+            width: 100%;
+            height: calc(100vh - 39px); /* Automatically subtracts absolute header menu row height */
+            overflow: hidden;
+        }
         #sidebar { 
             width: 360px; /* Enhanced slightly to shield data monitor rows comfortably */
             background: #09090f; 
@@ -34,7 +42,7 @@
             align-items: center; 
             justify-content: center; 
             background: #030305;
-            height: 100vh;
+            height: 100%; /* Scales dynamically inside your protected inner wrapper layout */
         }
         canvas { 
             background: #030305; 
@@ -188,13 +196,17 @@
         /* 📱 Cellphone and Tablet Fluid Override Zone - Isolated strictly under 1024px */
         @media (max-width: 1024px) {
             body {
+                display: block !important;
+                overflow-y: auto;
+                height: auto;
+            }
+            #workspace-grid {
                 display: grid !important;
                 grid-template-areas: 
                     "canvas"
                     "rightpanel"
                     "sidebar";
                 grid-template-rows: auto auto auto;
-                overflow-y: auto;
                 height: auto;
             }
             #canvas-container {
@@ -225,13 +237,14 @@
 
 <body>
     <div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box;">
-    <a href="https://github.com/gowildchild/Existenz/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">GitHub</a>
+    <a href="https://github.com" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">GitHub</a>
     <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;">Existenz Simulator</a>
     <a href="/Existenz/apps/lifetime/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a>
     <a href="/Existenz/timelines/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">TimeLine</a>
     </div>
     <!-- Panel 1: Original Left Controls Sidebar (Desktop Left / Mobile Bottom) -->
-    <div id="sidebar">
+    <div id="workspace-grid">
+      <div id="sidebar">
         <h2 style="margin: 0; color: #63b3ed; font-size: 16px; letter-spacing: 1px;">EXISTENZ | TIMELINES</h2>
         
         <div>
@@ -366,7 +379,8 @@
             </div>
             <div id="log-stream"></div>
         </div>
-
+      </div> <!-- Cleanly closes #right-panel -->
+    </div> 
 <script>
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
