@@ -774,17 +774,19 @@
             document.getElementById('generations-count').innerText = generationsPassed.toString();
         }
 
-        // --- DYNAMIC POPPERTIME TELEMETRY TRACKER ---
         const toleranceRow = document.getElementById('tolerance-metric-row');
         if (toleranceRow) {
-            if (currentSimType === 'tolerance-paradox') {
-                toleranceRow.style.display = 'flex'; // Reveals row only inside Era 11
+            // Evaluates your active defense switch state directly on every frame step
+            if (!rationalDefenseActive) {
+                toleranceRow.style.display = 'flex'; // Snaps into view instantly when tolerance is UNLTD
+                
+                // Keep your calculations running true to trace infected units live
                 let livingUnits = people.filter(p => p.age >= 0);
                 let infectedUnits = livingUnits.filter(p => p.isExtremist);
                 let spreadPct = livingUnits.length > 0 ? Math.round((infectedUnits.length / livingUnits.length) * 100) : 0;
                 document.getElementById('tolerance-pct').innerText = `${spreadPct}%`;
             } else {
-                toleranceRow.style.display = 'none'; // Safely conceals line item during regular eras
+                toleranceRow.style.display = 'none'; // Conceals row cleanly when defense handles limits (LTD)
             }
         }
 
