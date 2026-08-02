@@ -655,7 +655,7 @@
         let isCurrentToleranceUnlimited = (toleranceMode === 1 || (toleranceMode === 2 && autoTriggeredUnlimited));
         
         // Global stable arrays for this frame to prevent reference crashes downstream
-        let livingUnits = people.filter(p => p.age >= 0);
+        livingUnits = people.filter(p => p.age >= 0);
         let infectedUnits = livingUnits.filter(p => p.isExtremist);
         
         simulationTick++;
