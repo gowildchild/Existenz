@@ -269,6 +269,9 @@
 
     <!-- Center Coordinate Field -->
     <div id="canvas-container">
+        <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; z-index: 20; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px);">
+            100% ZOOM [RESET]
+        </button>
         <canvas id="simCanvas" width="750" height="750"></canvas>
     </div>
 
@@ -684,8 +687,13 @@
         // Secure camera lens parameters between 0.1x panorama and 15.0x extreme close-ups
         if (nextZoom < 0.1) nextZoom = 0.1;
         if (nextZoom > 15.0) nextZoom = 15.0;
-
         canvasZoomFactor = nextZoom;
+        const zoomBtn = document.getElementById('zoom-tracker-btn');
+        if (zoomBtn) {
+            let displayPercent = Math.round(canvasZoomFactor * 100);
+            zoomBtn.innerText = `${displayPercent}% ZOOM [RESET]`;
+        }
+        
 
         // Instantly invoke viewport redraw requests to present smooth camera movements
         drawGrid();
@@ -963,6 +971,20 @@
     function changeSimulationSpeed() {
         currentSpeedMultiplier = parseFloat(document.getElementById('speed-select').value);
         pushLog(`Temporal frequency pacing shifted to [${currentSpeedMultiplier}x].`, 'log-shift');
+    }
+    
+    function resetCameraZoom() {
+        canvasZoomFactor = 1.0;
+        
+        // Restore your exact baseline layout string format on mouse clicks
+        const zoomBtn = document.getElementById('zoom-tracker-btn');
+        if (zoomBtn) {
+            zoomBtn.innerText = "100% ZOOM [RESET]";
+        }
+        
+        pushLog("Viewport camera matrix returned to 1:1 baseline focus.", 'log-shift');
+        drawGrid();
+        updateSimulation();
     }
     
     function executionLoop() {
