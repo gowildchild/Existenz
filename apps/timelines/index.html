@@ -337,30 +337,22 @@
 
         <div class="threat-meter" style="margin: 10px 20px 0 20px;">
             <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC METRICS</div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px;">
-                <span>Total Active Victims:</span>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px;">
+                <span>Total Active Victims (Severed Layer):</span>
                 <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px; color: #fc8181;">
+                <span>Systemic Attrition Fatalities:</span>
+                <div>
+                    <span id="systemic-death-count" style="font-weight:bold; margin-right: 8px;">0 / 100</span>
+                    <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
+                </div>
             </div>
             <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
             <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
                 <!-- Dynamically populated -->
             </div>
         </div>
-
-        <!-- Real-Time Structural Attrition Causality Tracking Data Pane with Integrated Reset Link -->
-        <div class="threat-meter" style="margin: 10px 20px 0 20px;">
-            <div style="font-size: 11px; color: #a0aec0; margin-bottom: 6px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC RIGHTS CAUSALITY</div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px; color: #f6ad55;">
-                <span>Severed Rights Layer:</span>
-                <span id="severed-rights-count" style="font-weight:bold;">0 / 100</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; color: #fc8181;">
-                <span>Systemic Attrition Fatalities:</span>
-                <div>
-                    <span id="systemic-death-count" style="font-weight:bold; margin-right: 8px;">0</span>
-                    <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
-                </div>
-            </div>
         </div>
 
         <!-- Optimized Lifespan Statistics Compact Tracking Box -->
