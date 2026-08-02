@@ -323,8 +323,8 @@
             <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
                 150% ZOOM [RESET]
             </button>
-            <button id="defense-toggle-btn" onclick="toggleRationalDefense()" style="background: rgba(229, 62, 62, 0.2); color: #fc8181; border: 1px solid #e53e3e; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
-                TOLERANCE [UNLTD]
+            <button id="defense-toggle-btn" onclick="toggleRationalDefense()" style="background: rgba(72, 187, 120, 0.2); color: #48bb78; border: 1px solid #48bb78; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
+                TOLERANCE [LTD]
             </button>
         </div>
         <canvas id="simCanvas" width="750" height="750"></canvas>
@@ -400,7 +400,7 @@
     let existenzThreatLevel = 0;
     let globalSystemicFatalities = 0;
     let globalTotalCompletions = 0;
-    let rationalDefenseActive = false;
+    let rationalDefenseActive = true;
     let currentPopulationScale = 100;
     let currentScaleMultiplier = 1;
     let currentSpeedMultiplier = 1.0;
@@ -734,9 +734,10 @@
                             let distance = Math.hypot(dx, dy) * 100;
 
                             if (distance < 25) {
-                                if (Math.random() < 0.015 * currentSpeedMultiplier) {
+                            // 0.002 introduces slow sociological grid friction (0.2% conversion rate per frame)
+                                if (Math.random() < 0.002 * currentSpeedMultiplier) {
                                     neighbor.isExtremist = true;
-                                    pushLog(`Unit #${neighbor.id} infected by Intolerant Strain.`, 'log-threat');
+                                    pushLog(`Unit #${neighbor.id} converted via spatial footprint.`, 'log-threat');
                                 }
                             }
                         }
@@ -836,14 +837,14 @@
 
         const bitBlueprints = [
             { name: "EXISTENCE (1)",   count: 0, bit: 1 },
-            { name: "AUTONOMY (2)",    bit: 2 },
-            { name: "INTEGRITY (4)",   bit: 4 },
-            { name: "PSYCHOLOGY (8)",  bit: 8 },
-            { name: "PHYSICAL (16)",   bit: 16 },
-            { name: "DISABILITY (32)", bit: 32 },
-            { name: "DEVELOPMENT (64)",bit: 64 },
-            { name: "PROPERTY (128)",  bit: 128 },
-            { name: "PRESENCE (256)",  bit: 256 }
+            { name: "AUTONOMY (2)",    count: 0, bit: 2 },
+            { name: "INTEGRITY (4)",   count: 0, bit: 4 },
+            { name: "PSYCHOLOGY (8)",  count: 0, bit: 8 },
+            { name: "PHYSICAL (16)",   count: 0, bit: 16 },
+            { name: "DISABILITY (32)", count: 0, bit: 32 },
+            { name: "DEVELOPMENT (64)",count: 0, bit: 64 },
+            { name: "PROPERTY (128)",  count: 0, bit: 128 },
+            { name: "PRESENCE (256)",  count: 0, bit: 256 }
         ];
 
         people.forEach((person) => {
@@ -1326,7 +1327,7 @@
                 pushLog('Popperian limit dropped: Society vulnerable to unlimited ideological subversion.', 'log-threat');
             }
         }
-    }    
+    }  
 
     function changeSimulation() {
         currentSimType = document.getElementById('sim-select').value;
