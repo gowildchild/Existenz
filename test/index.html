@@ -369,6 +369,7 @@
                     <span id="tolerance-pct" style="font-weight:bold;">0%</span>
                 </div>
             </div>
+            <div id="top-instigators-list"></div>
             <div id="vector-header-label" style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
             <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
                 <!-- Dynamically populated -->
@@ -693,6 +694,8 @@
             if (currentSimType === 'feudal')     currentEraCeiling = 40;
             if (currentSimType === 'industrial') currentEraCeiling = 68;
             if (currentSimType === 'rights')     currentEraCeiling = 82; // Baseline standard exception distribution
+            if (currentSimType === 'algorithmic') currentEraCeiling = 83; 
+            if (currentSimType === 'total-surveillance') currentEraCeiling = 84; 
 
             // FIXED: Expanded the maximum variance boundary to 110 for natural biological decay exceptions
             if (person.age >= currentEraCeiling) {
@@ -946,6 +949,31 @@
                 vectorsContainer.appendChild(vectorRow);
             });
         }
+        const instigatorContainer = document.getElementById('top-instigators-list');
+        if (instigatorContainer) {
+            instigatorContainer.innerHTML = '';
+            
+            // Filters the existing codebase array for active, intolerant extremist nodes
+            let allDogmatists = people.filter(p => p.age >= 0 && p.isIntolerant);
+            
+            // Hard limit: Slice precisely the first 2 actors to prevent UI panel clutter
+            let visibleInstigators = allDogmatists.slice(0, 2);
+            
+            visibleInstigators.forEach((node, index) => {
+                const instigatorRow = document.createElement('div');
+                instigatorRow.style.display = 'flex';
+                instigatorRow.style.justifyContent = 'space-between';
+                instigatorRow.style.padding = '2px 4px';
+                instigatorRow.style.fontSize = '11px';
+                instigatorRow.style.color = '#fc8181'; // Highlights them in a distinct extremist red accent
+                
+                instigatorRow.innerHTML = `
+                    <span>${index + 1}. Dogmatic Instigator #${node.id}</span>
+                    <span style="font-weight: bold; color: #e53e3e;">[LEVEL 1]</span>
+                `;
+                instigatorContainer.appendChild(instigatorRow);
+            });
+        }        
     }
 
 
