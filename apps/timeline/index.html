@@ -345,7 +345,7 @@
         // --- CHILDHOOD PURITY OVERRIDE MATRIX ---
         // Children under 12 are born fundamentally uncorrupted. 
         // Core moral, cognitive, and development pillars are fully intact at birth.
-        if (age < 12) {
+        if (age < 9) {
             bitmask |= 2;  // AUTONOMY
             bitmask |= 4;  // INTEGRITY
             bitmask |= 8;  // PSYCHOLOGY
@@ -471,6 +471,7 @@
             }
 
             let individualIsVictim = false;
+
             for (let b = 0; b < 7; b++) {
                 if ((1 << b) === 32) continue; 
                 
@@ -568,10 +569,6 @@
         }
     }
 
-
-    // Maps the 9 architectural bits directly into your exact Platonic coordinates
-    // Maps the 9 architectural bits directly onto your pure, wide-sweeping Fibonacci orbits
-    // Maps the 9 architectural bits directly onto your pure, grounded coordinate matrix
     function getXYZ(person) {
         let mask = person.bitmask;
         let x = 0;
