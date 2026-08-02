@@ -964,6 +964,8 @@
         }
         const instigatorPanel = document.getElementById('instigator-panel-wrapper');
         const instigatorContainer = document.getElementById('top-instigators-list');
+        const canaryPanel = document.getElementById('canary-panel-wrapper');
+        const canaryContainer = document.getElementById('canary-alerts-list');
         
         // Grab active, living entities who match the extremist strain criteria
         let allDogmatists = people.filter(p => p.age >= 0 && p.isIntolerant);
@@ -974,14 +976,54 @@
         });
 
         // Count and flag ableism violations globally BEFORE checking the instigator loops
-        let activeAbleismCount = 0;
+        let shieldHumanRightsBroken = false;
+        let shieldBasicRightsBroken = false;
+        let shieldDiscriminationBroken = false;
+        let generalViolationsCount = 0;
+        let ableismViolationsCount = 0;
+
+        const SHIELD_HUMAN_RIGHTS          = 1 << 20; 
+        const SHIELD_DISCRIMINATION_RIGHTS = 1 << 22; 
+        const SHIELD_BASIC_RIGHTS          = 1 << 24;         
+
+        // We check the first active living person to track universal era shield statuses
+        let samplePerson = people.find(p => p.age >= 0);
+        if (samplePerson) {
+            if ((samplePerson.bitmask & SHIELD_HUMAN_RIGHTS) === 0) shieldHumanRightsBroken = true;
+            if ((samplePerson.bitmask & SHIELD_BASIC_RIGHTS) === 0) shieldBasicRightsBroken = true;
+            if ((samplePerson.bitmask & SHIELD_DISCRIMINATION_RIGHTS) === 0) shieldDiscriminationBroken = true; 
+        }        
+        
         people.forEach((p) => {
-            if (p.age >= 0 && (p.bitmask & 32) === 0) {
-                activeAbleismCount++;
-                if (isCanaryActive) { p.isCanaryAlert = true; } // Sets target for the drawGrid engine pass
+            if (p.age >= 0) {
+                let nodeHasGeneralBroke = false;
+                let nodeHasAbleismBroke = ((p.bitmask & 32) === 0);
+
+                // Scan the general 1:1 threat matrix enum bits (Autonomy, Integrity, Physical, etc.)
+                const generalBits =;
+                for (let i = 0; i < generalBits.length; i++) {
+                    if ((p.bitmask & generalBits[i]) === 0) {
+                        nodeHasGeneralBroke = true;
+                        if (isCanaryActive && (shieldHumanRightsBroken || shieldBasicRightsBroken)) {
+                            generalViolationsCount++;
+                        }
+                    }
+                }
+
+                if (nodeHasAbleismBroke && isCanaryActive && shieldDiscriminationBroken) {
+                    ableismViolationsCount++;
+                }
+                // Activate neon-green canvas halos if the master canary switch is on and shields are fractured
+                if (isCanaryActive) {
+                    if (shieldDiscriminationBroken && nodeHasAbleismBroke) {
+                        p.isCanaryAlert = true;
+                    }
+                    if ((shieldHumanRightsBroken || shieldBasicRightsBroken) && nodeHasGeneralBroke) {
+                        p.isCanaryAlert = true;
+                    }
+                }
             }
         });        
-        
         if (instigatorPanel && instigatorContainer) {
             if (allDogmatists.length > 0) {
                 instigatorPanel.style.display = 'block'; 
@@ -1026,22 +1068,46 @@
         }  
         // CHANNEL 2: INDEPENDENT CANARY ALERTS SEPARATION LAYER (Ableism Metric Monitoring)
         if (canaryPanel && canaryContainer) {
-            if (isCanaryActive && activeAbleismCount > 0) {
+            let hasAnyCanarySignal = isCanaryActive && (shieldHumanRightsBroken || shieldBasicRightsBroken || shieldDiscriminationBroken);
+            
+            if (hasAnyCanarySignal) {
                 canaryPanel.style.display = 'block';
                 canaryContainer.innerHTML = '';
 
-                const ableismRow = document.createElement('div');
-                ableismRow.style.padding = '2px 4px';
-                ableismRow.style.fontSize = '11px';
-                ableismRow.style.color = '#39ff14'; // Matches your bright neon green canvas profile
-                ableismRow.style.fontWeight = 'bold';
-                ableismRow.innerHTML = `⚠️ CANARY TARGET DETECTED: ${activeAbleismCount} nodes tracking acute Ableism strain.`;
-                canaryContainer.appendChild(ableismRow);
+                // Block A: General Fundamental Rights Shield Violations with Counter
+                if (shieldHumanRightsBroken || shieldBasicRightsBroken) {
+                    let brokenLabel = (shieldHumanRightsBroken && shieldBasicRightsBroken) ? "HUMAN & BASIC" : (shieldHumanRightsBroken ? "HUMAN" : "BASIC");
+                    const humanRightsRow = document.createElement('div');
+                    humanRightsRow.style.padding = '2px 4px';
+                    humanRightsRow.style.fontSize = '11px';
+                    humanRightsRow.style.color = '#39ff14'; 
+                    humanRightsRow.style.fontWeight = 'bold';
+                    // FIXED: Output the exact calculated count of total general rights broken across spacetime
+                    humanRightsRow.innerHTML = `⚠️ CANARY SIGNAL: Institutional ${brokenLabel} Shields Broken! [${generalViolationsCount.toLocaleString()} Rights Stripped]`;
+                    canaryContainer.appendChild(humanRightsRow);
+                }
+
+                // Block B: Special Designated Anti-Discrimination Shield Violations with Counter
+                if (shieldDiscriminationBroken) {
+                    const ableismRow = document.createElement('div');
+                    if (shieldHumanRightsBroken || shieldBasicRightsBroken) {
+                        ableismRow.style.borderTop = '1px dashed rgba(57, 255, 20, 0.15)';
+                        ableismRow.style.marginTop = '4px';
+                        ableismRow.style.paddingTop = '4px';
+                    }
+                    ableismRow.style.paddingLeft = '4px';
+                    ableismRow.style.paddingRight = '4px';
+                    ableismRow.style.fontSize = '11px';
+                    ableismRow.style.color = '#39ff14'; 
+                    ableismRow.style.fontWeight = 'bold';
+                    // FIXED: Output the exact calculated count of active ableism deprivations occurring live
+                    ableismRow.innerHTML = `♿ SPECIAL ALERT: Systemic DISCRIMINATION Shield Fractured! [${ableismViolationsCount.toLocaleString()} Ableism Strains]`;
+                    canaryContainer.appendChild(ableismRow);
+                }
             } else {
-                // Completely collapses the canary metric display field when zero violations are active
                 canaryPanel.style.display = 'none';
-            }        
-        }        
+            }
+        }      
     }
 
 
