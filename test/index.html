@@ -722,18 +722,18 @@
                 }
 
                 let livingUnits = people.filter(p => p.age >= 0);
-                let infectedUnits = livingUnits.filter(p => p.isExtremist);
-                let currentSocietalInfectionRate = livingUnits.length > 0 ? (infectedUnits.length / livingUnits.length) : 0;
+                let indoctrinatedUnits = livingUnits.filter(p => p.isIntolerant);
+                let currentIntoleranceRate = livingUnits.length > 0 ? (indoctrinatedUnits.length / livingUnits.length) : 0;
 
                 person.age = -1.0; 
                 person.bitmask = 0;
                 person.birthCountdown = 0;
                 person.permanentScars = 0;
 
-                if (!rationalDefenseActive && Math.random() < currentSocietalInfectionRate) {
-                    person.isExtremist = true; 
+                if (!rationalDefenseActive && Math.random() < currentIntoleranceRate) {
+                    person.isIntolerant = true; 
                 } else {
-                    person.isExtremist = false; 
+                    person.isIntolerant = false; 
                 }
 
                 pushLog(`Unit #${person.id} completed lifecycle. Entering birth flux queue.`, 'log-shift', person.id, person.family);
@@ -744,15 +744,15 @@
             let isCurrentToleranceUnlimited = (toleranceMode === 1 || (toleranceMode === 2 && typeof autoTriggeredUnlimited !== 'undefined' && autoTriggeredUnlimited));
 
             if (isCurrentToleranceUnlimited && person.age >= 0) {
-                const totalInfected = people.filter(p => p.age >= 0 && p.isExtremist).length;
-                if (totalInfected === 0 && person.id === 42) {
-                    person.isExtremist = true;
+                const totalIndoctrinated = people.filter(p => p.age >= 0 && p.isIntolerant).length;
+                if (totalIndoctrinated === 0 && person.id === 42) {
+                    person.isIntolerant = true;
                     pushLog('Ideological strain mutation observed inside active population matrix.', 'log-threat');
                 }
 
-                if (person.isExtremist) {
+                if (person.isIntolerant) {
                     people.forEach((neighbor) => {
-                        if (neighbor.age >= 0 && !neighbor.isExtremist) {
+                        if (neighbor.age >= 0 && !neighbor.isIntolerant) {
                             let dx = (person.individualTheta ? Math.cos(person.individualTheta) : 0) - (neighbor.individualTheta ? Math.cos(neighbor.individualTheta) : 0);
                             let dy = (person.individualTheta ? Math.sin(person.individualTheta) : 0) - (neighbor.individualTheta ? Math.sin(neighbor.individualTheta) : 0);
                             let distance = Math.hypot(dx, dy) * 100;
@@ -760,14 +760,14 @@
                             if (distance < 25) {
                                 // Maintains your 0.2% slow sociological friction conversion probability
                                 if (Math.random() < 0.002 * currentSpeedMultiplier) {
-                                    neighbor.isExtremist = true;
+                                    neighbor.isIntolerant = true;
                                     pushLog(`Unit #${neighbor.id} converted via spatial footprint.`, 'log-threat');
                                 }
                             }
                         }
                     });
                 } else {
-                    const activeAggressors = people.filter(p => p.age >= 0 && p.isExtremist);
+                    const activeAggressors = people.filter(p => p.age >= 0 && p.isIntolerant);
                     activeAggressors.forEach((aggressor) => {
                         let dx = (person.individualTheta ? Math.cos(person.individualTheta) : 0) - (aggressor.individualTheta ? Math.cos(aggressor.individualTheta) : 0);
                         let dy = (person.individualTheta ? Math.sin(person.individualTheta) : 0) - (aggressor.individualTheta ? Math.sin(aggressor.individualTheta) : 0);
@@ -842,12 +842,12 @@
                 toleranceRow.style.display = 'flex'; 
                 
                 let livingUnits = people.filter(p => p.age >= 0);
-                let infectedUnits = livingUnits.filter(p => p.isExtremist);
-                let rawInfectedCount = infectedUnits.length * currentScaleMultiplier;
-                let spreadPct = livingUnits.length > 0 ? Math.round((infectedUnits.length / livingUnits.length) * 100) : 0;
+                let indoctrinatedUnits = livingUnits.filter(p => p.isIntolerant);
+                let rawIndoctrinatedCount = indoctrinatedUnits.length * currentScaleMultiplier;
+                let spreadPct = livingUnits.length > 0 ? Math.round((indoctrinatedUnits.length / livingUnits.length) * 100) : 0;
 
                 if (document.getElementById('tolerance-count')) {
-                    document.getElementById('tolerance-count').innerText = `[${rawInfectedCount.toLocaleString()}]`;
+                    document.getElementById('tolerance-count').innerText = `[${rawIndoctrinatedCount.toLocaleString()}]`;
                 }
                 if (document.getElementById('tolerance-pct')) {
                     document.getElementById('tolerance-pct').innerText = `${spreadPct}%`;
@@ -890,8 +890,8 @@
         ];
 
         let livingUnitsForVectors = people.filter(p => p.age >= 0);
-        let infectedUnitsForVectors = livingUnitsForVectors.filter(p => p.isExtremist);
-        let currentSpreadPercentage = livingUnitsForVectors.length > 0 ? Math.round((infectedUnitsForVectors.length / livingUnitsForVectors.length) * 100) : 0;
+        let indoctrinatedUnitsForVectors = livingUnitsForVectors.filter(p => p.isIntolerant);
+        let currentSpreadPercentage = livingUnitsForVectors.length > 0 ? Math.round((indoctrinatedUnitsForVectors.length / livingUnitsForVectors.length) * 100) : 0;
         let isCivilizationOverthrown = (!rationalDefenseActive && currentSpreadPercentage >= 51);
 
         people.forEach((person) => {
@@ -1232,8 +1232,8 @@
             } else {
                 let baseColorRGB = "72, 187, 120"; 
                 
-                // FIXED: Checks the node's extremist state universally across all spacetime eras
-                if (!rationalDefenseActive && person.isExtremist) {
+                // FIXED: Checks the node's Intolerant state universally across all spacetime eras
+                if (!rationalDefenseActive && person.isIntolerant) {
                     baseColorRGB = "255, 0, 170"; // Sharp Neon Accent Pink for active intolerant carriers
                 } else if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
                     baseColorRGB = "229, 62, 62";  
@@ -1254,7 +1254,7 @@
                 }
                 
                 // FIXED: Automatically inflates the radius for active carriers across any active era
-                let isCarrier = (!rationalDefenseActive && person.isExtremist);
+                let isCarrier = (!rationalDefenseActive && person.isIntolerant);
                 let radius = (isCarrier ? 4.0 : 2.5) + (person.age * 0.05);
                 ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
             }
@@ -1388,8 +1388,8 @@
             btn.style.color = '#48bb78';
             btn.innerText = '[LIMITED] TOLERANCE';
             
-            // Popper Theoretical Purge: Actively cleanses infection from nodes on defensive boundaries
-            people.forEach(p => p.isExtremist = false);
+            // Popper Theoretical Purge: Actively cleanses indoctrination from nodes on defensive boundaries
+            people.forEach(p => p.isIntolerant = false);
             
             if (document.getElementById('tolerance-count')) document.getElementById('tolerance-count').innerText = "";
             if (document.getElementById('tolerance-pct')) document.getElementById('tolerance-pct').innerText = "0%";
@@ -1427,7 +1427,7 @@
         
         // Flushes past generational scarring states and forces clean historical vectors
         people.forEach((person) => {
-            person.isExtremist = false;  // Purges all historical virus traces completely
+            person.isIntolerant = false;  // Purges all historical virus traces completely
             person.permanentScars = 0;   // Wipes previous physical/psychological scars
             person.lastBitmask = 0;      // Breaks old bit states to force fresh engine evaluations
         });
@@ -1435,7 +1435,7 @@
         // Patient Zero Universal Injection Vector
         // FIXED: Explicitly assigns the ignition state to individual Node #0 instead of the parent array container
         if (currentSimType === 'tolerance-paradox' && people.length > 0) {
-            people[0].isExtremist = true; // Targets the first person node directly inside the collection loop
+            people[0].isIntolerant = true; // Targets the first person node directly inside the collection loop
             pushLog('Ideological strain tracking active. Patient Zero injected at Vector Node #1.', 'log-threat');
         }
 
