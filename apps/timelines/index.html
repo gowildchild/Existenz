@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.100b</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.101b</title>
     <style>
         body { 
             margin: 0; 
@@ -392,9 +392,9 @@
     function processLifecycle() {
         simulationTick++;
         let brokenPillarsCount = 0;
-        let totalCheckedPillars = people.length * 7; 
+        // FIXED: Dynamically balances against the 8 active tracked pillars to prevent 100%+ arithmetic overflow
+        let totalCheckedPillars = people.length * 8; 
         let victimCount = 0;
-        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
         
         const bitBlueprints = [
             { name: "EXISTENCE (1)",    count: 0, bit: 1 },
@@ -822,12 +822,9 @@
     
     
     window.addEventListener('load', () => {
-        initPopulation();
-        
-        // Safely executes now that pushLog is fully defined in the global memory space
-        pushLog("Existenz Space-Time Matrix online. 50 multiversal timelines activated.", "log-birth");
-        
-        updateSimulation();
+    initPopulation();
+    pushLog(`Existenz Space-Time Matrix online. ${currentPopulationScale} multiversal timelines activated.`, "log-birth");
+    updateSimulation();
     });
 </script>
 </body>
