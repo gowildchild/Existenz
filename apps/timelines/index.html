@@ -537,8 +537,165 @@
     // Attach resolution listeners to catch mobile orientation flips smoothly
     window.addEventListener('resize', autoScaleViewportResolution);
     window.addEventListener('DOMContentLoaded', autoScaleViewportResolution);
-    
     function calculatePillars(person, age, type) {
+        // Initialize with 0 to construct the bitmask layers cleanly
+        let bitmask = 0;
+
+        // FIXED: Shifted from plain decimals to your exact 1:1 macro policy shield bitmasks
+        const SHIELD_HUMAN_RIGHTS          = 1 << 20; // 1048576 Shield A
+        const SHIELD_DISCRIMINATION_RIGHTS = 1 << 22; // 8388608 Shield B3
+        const SHIELD_BASIC_RIGHTS          = 1 << 24; // 2097152 Shield B
+
+        // --- UNIVERSAL ARCHITECTURAL CONSTANTS ---
+        bitmask |= 1;   // EXISTENCE
+        bitmask |= 32;  // DISABILITY (The permanent universal floor holding up the framework)
+        bitmask |= 16;  // PHYSICAL (Vessel remains active while alive)
+        bitmask |= 256; // PRESENCE (Real-time footprint remains active while alive)
+
+        // Set the macro protection shields active natively at boot
+        bitmask |= SHIELD_HUMAN_RIGHTS;
+        bitmask |= SHIELD_DISCRIMINATION_RIGHTS;
+        bitmask |= SHIELD_BASIC_RIGHTS;
+
+        // FIXED: Baseline health profiles return the fully saturated mask instead of an empty 0
+        if (type === 'rights' || type === 'baseline') {
+            bitmask |= 2 | 4 | 8 | 64 | 128; // Ensure general rights are fully packed for peace
+            return bitmask;
+        }        
+
+        // --- CHILDHOOD PURITY OVERRIDE MATRIX ---
+        if (age < 9) {
+            bitmask |= 2;  // AUTONOMY
+            bitmask |= 4;  // INTEGRITY
+            bitmask |= 8;  // PSYCHOLOGY
+            bitmask |= 64; // DEVELOPMENT
+            return bitmask; 
+        }
+
+        switch(type) {
+            case 'tribal':
+                bitmask |= 2; 
+                if (age >= 10) bitmask |= 4;  
+                if (age >= 4)  bitmask |= 8;  
+                if (age >= 8)  bitmask |= 64; 
+                break;
+
+            case 'antiquity': 
+                bitmask |= 2; 
+                bitmask |= 4; 
+                if (age >= 12) bitmask |= 8;  
+                if (age >= 6)  bitmask |= 64; 
+                break;
+
+            case 'feudal':
+                if (person.id % 8 === 0) bitmask |= 2 | 128; 
+                if (age >= 14) bitmask |= 4;  
+                if (age >= 10) bitmask |= 64; 
+                break;
+
+            case 'enlighten':
+                if (age >= 15) bitmask |= 2;  
+                bitmask |= 4;                 
+                if (age >= 10) bitmask |= 8;  
+                if (age >= 5)  bitmask |= 64; 
+                break;
+
+            case 'industrial':
+                if (age >= 18) bitmask |= 2;   
+                if (person.id % 2 === 0) bitmask |= 4; 
+                if (age < 12 || age > 48) bitmask |= 8; 
+                if (age >= 12) bitmask |= 64;  
+                if (age >= 35) bitmask |= 128; 
+                break;
+
+            case 'pre-surveil': 
+                bitmask |= 2 | 4; 
+                if (age >= 5 && person.id % 6 !== 0) bitmask |= 8; 
+                if (person.id % 8 !== 0) bitmask |= 64; 
+                if (age >= 22 && person.id % 12 !== 0) bitmask |= 128; 
+                break;
+                
+            case 'early-data': 
+                bitmask |= 2 | 4 | 64 | 128;   
+                if (age >= 12 && age <= 45) {
+                    bitmask |= 8; 
+                }
+                break;
+
+            case 'algorithmic': 
+            case 'modern': 
+                bitmask |= 2 | 64 | 128;       
+                if (age >= 11 && age <= 55) {
+                    bitmask |= 8;              
+                }
+                if (person.id % 3 !== 0) {
+                    bitmask |= 4;              
+                }
+                break;
+
+            case 'crisis': 
+                bitmask |= 128; 
+                if (age < 25 || age > 60) {
+                    bitmask |= 2 | 4 | 8 | 64; 
+                } else {
+                    bitmask |= 2; 
+                    if (person.id % 5 === 0) bitmask |= 4; 
+                }
+                break;
+
+            // FIXED: Added missing era handlers to actively trigger your crisis threat simulations
+            case 'authoritarian':
+            case 'total-surveillance':
+                // Systemically wipe out the institutional protection shield flags
+                bitmask &= ~SHIELD_HUMAN_RIGHTS;
+                bitmask &= ~SHIELD_BASIC_RIGHTS;
+                bitmask &= ~SHIELD_DISCRIMINATION_RIGHTS;
+
+                // Environment damages general human rights pillars due to surveillance tracking
+                bitmask &= ~2;   // Wipes Autonomy
+                bitmask &= ~4;   // Wipes Integrity
+                bitmask &= ~8;   // Wipes Psychology
+                bitmask &= ~64;  // Wipes Development
+                bitmask &= ~128; // Wipes Property
+                break;
+        }
+
+        // --- REALISTIC PROBABILISTIC SCARRING FILTER ---
+        if (type === 'early-data' || type === 'modern' || type === 'crisis' || type === 'authoritarian' || type === 'total-surveillance') {
+            if (person.permanentScars === undefined) {
+                person.permanentScars = 0;
+            }
+            
+            for (let b = 0; b < 9; b++) {
+                let bit = 1 << b;
+                if (bit === 32) continue; // Skip permanent disability baseline floor
+                
+                if (!(bitmask & bit)) {
+                    if (Math.random() < 0.001) {
+                        person.permanentScars |= bit; 
+                    }
+                }
+            }
+            bitmask &= ~person.permanentScars;
+        }
+
+        // --- DUAL-VECTOR ABLEISM INTERCEPTOR ---
+        if (person.id % 4 === 0) {
+            if (type === 'total-surveillance') {
+                // Vector A: Direct strike automatically strips the DISABILITY (32) pillar on Frame 1
+                bitmask &= ~32;
+            } else if (type === 'authoritarian') {
+                // Vector B: Cascade strike strips bit 32 gradually over time via systemic friction
+                if (age >= 15 || Math.random() < 0.1) {
+                    bitmask &= ~32;
+                }
+            }
+        }
+
+        return bitmask;
+    }
+    
+    function calculatePillarsOld(person, age, type) {
         let bitmask = 0;
         // let bitmask = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256;
 
