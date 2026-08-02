@@ -345,12 +345,12 @@
                 <span>Systemic Attrition Fatalities:</span>
                 <div>
                     <span id="systemic-death-count" style="font-weight:bold; margin-right: 8px;">0 / 100</span>
-                    <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
                 </div>
             </div>
             <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px; color: #8e8eaf;">
                 <span>Generations Passed:</span>
                 <span id="generations-count" style="font-weight:bold; color:#ffffff;">0</span>
+                <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
             </div>
             <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
             <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
@@ -740,26 +740,29 @@
         document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
 
+        // Dynamically scale current active totals up based on the continuum multiplier selection
+        let weightedVictims = victimCount * currentScaleMultiplier;
+        let weightedTotalPopulation = people.length * currentScaleMultiplier;
+
         if (document.getElementById('victim-count')) {
-            document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
+            document.getElementById('victim-count').innerText = `${weightedVictims.toLocaleString()} / ${weightedTotalPopulation.toLocaleString()}`;
         }
 
         if (document.getElementById('systemic-death-count')) {
-            // Compute the historical normalized rate per 100 dynamically
             let fatalityRate = 0;
             if (typeof globalTotalCompletions !== 'undefined' && globalTotalCompletions > 0) {
                 fatalityRate = Math.round((globalSystemicFatalities / globalTotalCompletions) * 100);
             }
             document.getElementById('systemic-death-count').innerText = `${fatalityRate} / 100`;
         }
+
         if (document.getElementById('generations-count')) {
-            // Calculates generations passed based on overall population turnover cycles
             let generationsPassed = 0;
             if (typeof globalTotalCompletions !== 'undefined' && people.length > 0) {
                 generationsPassed = Math.floor(globalTotalCompletions / people.length);
             }
             document.getElementById('generations-count').innerText = generationsPassed.toString();
-        }        
+        }
 
         const bitBlueprints = [
             { name: "EXISTENCE (1)",   count: 0, bit: 1 },
@@ -1242,8 +1245,18 @@
     function changeScaleMultiplier() {
         currentScaleMultiplier = parseFloat(document.getElementById('scale-select').value);
         pushLog(`Continuum scale matrix expanded to [${currentScaleMultiplier}x].`, 'log-shift');
+        
+        // Dynamic dashboard refresh to instantly catch scale value text transformations
+        if (document.getElementById('victim-count')) {
+            let displayedTotal = people.length * currentScaleMultiplier;
+            // The display text adjusts smoothly using your current loop results
+            document.getElementById('victim-count').innerText = `0 / ${displayedTotal.toLocaleString()}`;
+        }
+        
         drawGrid();
-        updateSimulation();
+        if (typeof updateSimulation === 'function') {
+            updateSimulation();
+        }
     }
 
     function changeSimulationSpeed() {
