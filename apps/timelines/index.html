@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.990B</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.991B</title>
     <style>
         body { 
             margin: 0; 
@@ -573,6 +573,12 @@
         let x = 0;
         let y = 0;
         let z = 0;
+        
+        let growthScale = Math.min(age / 12, 1);
+        const goldenRatio = 1.61803398875;
+        let continuousRadius = Math.log(age + 1) * goldenRatio * 8.5;
+        let spiralTheta = 0 + (age * 0.065) + person.familySeed;
+
         if (mask & 1) x += 5;
         if (mask & 16) x += 20;
         if (mask & 128) x += 20; 
