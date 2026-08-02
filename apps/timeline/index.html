@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | v0.96b</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | v0.970b</title>
     <style>
         body { 
             margin: 0; 
@@ -341,6 +341,22 @@
         bitmask |= 16;  // PHYSICAL (Vessel remains active while alive)
         bitmask |= 256; // PRESENCE (Real-time footprint remains active while alive)
 
+        // --- CHILDHOOD PURITY OVERRIDE MATRIX ---
+        // Children under 12 are born fundamentally uncorrupted. 
+        // Core moral, cognitive, and development pillars are fully intact at birth.
+        if (age < 12) {
+            bitmask |= 2;  // AUTONOMY
+            bitmask |= 4;  // INTEGRITY
+            bitmask |= 8;  // PSYCHOLOGY
+            bitmask |= 64; // DEVELOPMENT
+            
+            // Provide human-rights eras with their protective defensive shields early
+            if (type === 'rights') {
+                bitmask |= (1 << 20) | (1 << 24); // SHIELD_HUMAN_RIGHTS & SHIELD_BASIC_RIGHTS
+            }
+            return bitmask; // Bypasses harsh adult historical compromises for kids under 12
+        }
+
         switch(type) {
             case 'tribal':
                 bitmask |= 2; // Tribal group autonomy
@@ -381,6 +397,7 @@
                 bitmask |= 2 | 4 | 64;         // Universal Declaration architectures online
                 if (age >= 3)  bitmask |= 8;   // Modern mental healthcare tracking
                 if (age >= 28) bitmask |= 128; // Standard asset and home ownership protection metrics
+                bitmask |= (1 << 20) | (1 << 24); // Protect native adult shields
                 break;
 
             case 'pre-surveil': // Late 90s Cybernetic Optimism (CORRECTED RANGE BOUNDARIES)
@@ -418,6 +435,7 @@
         }
         return bitmask;
     }
+
 
 
 
