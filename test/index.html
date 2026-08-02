@@ -419,7 +419,7 @@
     let isPlaying = false;
     let selectedPersonIndex = -1; 
     let showSpirals = true;
-    let currentSimType = 'rights';
+    let currentSimType = 'algorithmic';
     let simulationTick = 0;
     let existenzThreatLevel = 0;
     let globalSystemicFatalities = 0;
@@ -617,6 +617,16 @@
                 }
                 break;
 
+            case 'algorithmic': 
+                bitmask |= 2 | 64 | 128;       
+                if (age >= 11 && age <= 55) {
+                    bitmask |= 8;              
+                }
+                if (person.id % 3 !== 0) {
+                    bitmask |= 4;              
+                }
+                break;                
+
             case 'modern': 
                 bitmask |= 2 | 64 | 128;       
                 if (age >= 11 && age <= 55) {
@@ -714,8 +724,22 @@
             if (currentSimType === 'industrial') currentEraCeiling = 68;
             if (currentSimType === 'rights')     currentEraCeiling = 82; 
             if (currentSimType === 'algorithmic') currentEraCeiling = 83; 
-            if (currentSimType === 'total-surveillance') currentEraCeiling = 84; 
-
+            if (currentSimType === 'total-surveillance' || currentSimType === 'authoritarian') {
+                person.bitmask &= ~(1 << 22);
+                currentEraCeiling = 84; 
+            }
+            if (currentSimType === 'total-surveillance') {
+                // Direct terminal algorithmic discrimination wipes out Bit 32 for specific vulnerable units
+                if (person.id % 4 === 0) { // Automatically targets 25% of your population matrix as disabled units
+                    person.bitmask &= ~32; // Strips the THREAT_ABLEISM / DISABILITY protection pillar directly
+                }
+            } else if (currentSimType === 'authoritarian' && (person.bitmask & (1 << 22)) === 0) {
+                // Cascade Effect: If the shield is already broken, individual pillars strip much faster via ambient hostility
+                if (Math.random() < 0.05 * currentSpeedMultiplier) {
+                    person.bitmask &= ~32; 
+                }
+            }
+            
             if (person.age >= currentEraCeiling) {
                 let checkFactor = (person.age - currentEraCeiling) / (110 - currentEraCeiling + 1);
                 if (Math.random() < checkFactor || person.age >= 110) {
@@ -968,52 +992,53 @@
         const canaryContainer = document.getElementById('canary-alerts-list');
         
         // Grab active, living entities who match the extremist strain criteria
-        let allDogmatists = people.filter(p => p.age >= 0 && p.isIntolerant);
+        let allDogmatists = people.filter(p => p.age >= 12 && p.isIntolerant);
 
+        // Clear out and re-evaluate BOTH custom tracking flags across all entities on every frame pass
         people.forEach((p) => {
             p.isCanaryAlert = false;
             p.isPinkInstigator = false; 
         });
 
-        // Count and flag ableism violations globally BEFORE checking the instigator loops
-        let shieldHumanRightsBroken = false;
-        let shieldBasicRightsBroken = false;
-        let shieldDiscriminationBroken = false;
+        // FIXED: Resetting counters to EXACTLY 0 at the start of every frame tick to prevent runaway accumulation
         let generalViolationsCount = 0;
         let ableismViolationsCount = 0;
 
+        // Structural policy shield bitmasks
         const SHIELD_HUMAN_RIGHTS          = 1 << 20; 
         const SHIELD_DISCRIMINATION_RIGHTS = 1 << 22; 
-        const SHIELD_BASIC_RIGHTS          = 1 << 24;         
+        const SHIELD_BASIC_RIGHTS          = 1 << 24; 
 
-        // We check the first active living person to track universal era shield statuses
-        let samplePerson = people.find(p => p.age >= 0);
-        if (samplePerson) {
-            if ((samplePerson.bitmask & SHIELD_HUMAN_RIGHTS) === 0) shieldHumanRightsBroken = true;
-            if ((samplePerson.bitmask & SHIELD_BASIC_RIGHTS) === 0) shieldBasicRightsBroken = true;
-            if ((samplePerson.bitmask & SHIELD_DISCRIMINATION_RIGHTS) === 0) shieldDiscriminationBroken = true; 
-        }        
-        
+        // Mapping your 1:1 Mathematically Honest Threat Matrix Enum Bits
+        const generalThreatBits = [1, 2, 4, 8, 16, 64, 128]; // Existence, Autonomy, Integrity, Psychology, Physical, Development, Property
+
+        // FIXED: Scan the global population matrix to check if ANY active shield bits have been systemically fractured
+        let shieldHumanRightsBroken = people.some(p => p.age >= 0 && (p.bitmask & SHIELD_HUMAN_RIGHTS) === 0);
+        let shieldBasicRightsBroken = people.some(p => p.age >= 0 && (p.bitmask & SHIELD_BASIC_RIGHTS) === 0);
+        let shieldDiscriminationBroken = people.some(p => p.age >= 0 && (p.bitmask & SHIELD_DISCRIMINATION_RIGHTS) === 0);
+
+        // Loop through the entire population matrix to tally up true, non-cumulative violations
         people.forEach((p) => {
             if (p.age >= 0) {
                 let nodeHasGeneralBroke = false;
-                let nodeHasAbleismBroke = ((p.bitmask & 32) === 0);
+                let nodeHasAbleismBroke = ((p.bitmask & 32) === 0); // Active tracking for DISABILITY bit deprivation
 
-                // Scan the general 1:1 threat matrix enum bits (Autonomy, Integrity, Physical, etc.)
-                const generalBits = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-                for (let i = 0; i < generalBits.length; i++) {
-                    if ((p.bitmask & generalBits[i]) === 0) {
-                        nodeHasGeneralBroke = true;
-                        if (isCanaryActive && (shieldHumanRightsBroken || shieldBasicRightsBroken)) {
-                            generalViolationsCount++;
+                // Tally general rights violations strictly if institutional protection shields have collapsed
+                if (shieldHumanRightsBroken || shieldBasicRightsBroken) {
+                    generalThreatBits.forEach((bitValue) => {
+                        if ((p.bitmask & bitValue) === 0) {
+                            nodeHasGeneralBroke = true;
+                            generalViolationsCount++; // Tracks raw, unmultiplied bit deprivations natively
                         }
-                    }
+                    });
                 }
 
-                if (nodeHasAbleismBroke && isCanaryActive && shieldDiscriminationBroken) {
+                // FIXED: Ableism only ticks up if the discrimination protection shield falls AND the unit specifically loses bit 32
+                if (shieldDiscriminationBroken && nodeHasAbleismBroke) {
                     ableismViolationsCount++;
                 }
-                // Activate neon-green canvas halos if the master canary switch is on and shields are fractured
+
+                // Activate neon-green canvas halos exclusively when the master canary switch is ON
                 if (isCanaryActive) {
                     if (shieldDiscriminationBroken && nodeHasAbleismBroke) {
                         p.isCanaryAlert = true;
@@ -1023,29 +1048,20 @@
                     }
                 }
             }
-        });        
+        });
+
+        // CHANNEL 1: EXTRA-STRICT INSTIGATOR SEPARATION LAYER (Popperian Extremists)
         if (instigatorPanel && instigatorContainer) {
             if (allDogmatists.length > 0) {
                 instigatorPanel.style.display = 'block'; 
                 instigatorContainer.innerHTML = '';
                 
                 let visibleInstigators = allDogmatists.slice(0, 2);
+                let currentFatalities = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
                 
                 visibleInstigators.forEach((node, index) => {
-                    // Mark the active node object in memory so the canvas loops can read it anywhere
                     node.isPinkInstigator = true;
-
-                    // FIXED: Dynamically compute their threat level based on the overall systemic spread
-                    let currentFatalities = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
-                    
-                    let calculatedLevel = 1;
-                    if (currentFatalities >= 65) {
-                        calculatedLevel = 4; // Severe threat tier: System is experiencing major attrition collapse
-                    } else if (currentFatalities >= 55) {
-                        calculatedLevel = 3; // Severe threat tier: System is experiencing major attrition collapse
-                    } else if (currentFatalities >= 30) {
-                        calculatedLevel = 2; // Mid-tier threat matrix acceleration
-                    }
+                    let calculatedLevel = currentFatalities >= 75 ? 4 : (currentFatalities >= 60 ? 3 : (currentFatalities >= 30 ? 2 : 1));
 
                     const instigatorRow = document.createElement('div');
                     instigatorRow.style.display = 'flex';
@@ -1053,20 +1069,21 @@
                     instigatorRow.style.padding = '2px 4px';
                     instigatorRow.style.fontSize = '11px';
                     instigatorRow.style.color = '#fc8181';
+                    
                     let badgeColor = calculatedLevel === 4 ? 'color: #ffffff; background: #e53e3e; padding: 0 3px; border-radius: 2px; font-weight: bold;' : 'font-weight: bold; color: #e53e3e;';
+
                     instigatorRow.innerHTML = `
                         <span>${index + 1}. Dogmatic Instigator #${node.id}</span>
-                        <span style="font-weight: bold; color: #e53e3e;">[LEVEL ${calculatedLevel}]</span>
+                        <span style="${badgeColor}">[LEVEL ${calculatedLevel}]</span>
                     `;
-                    
                     instigatorContainer.appendChild(instigatorRow);
-                });                
+                });
             } else {
-                // Completely collapses the panel structure from the layout tree when the count is 0
                 instigatorPanel.style.display = 'none';
             }
-        }  
-        // CHANNEL 2: INDEPENDENT CANARY ALERTS SEPARATION LAYER (Ableism Metric Monitoring)
+        }
+
+        // CHANNEL 2: INDEPENDENT CANARY ALERTS SEPARATION LAYER (Macro Shield Monitors with Dynamic Counts)
         if (canaryPanel && canaryContainer) {
             let hasAnyCanarySignal = isCanaryActive && (shieldHumanRightsBroken || shieldBasicRightsBroken || shieldDiscriminationBroken);
             
@@ -1082,8 +1099,7 @@
                     humanRightsRow.style.fontSize = '11px';
                     humanRightsRow.style.color = '#39ff14'; 
                     humanRightsRow.style.fontWeight = 'bold';
-                    // FIXED: Output the exact calculated count of total general rights broken across spacetime
-                    humanRightsRow.innerHTML = `⚠️ CANARY-RIGHTS: ${brokenLabel}  Broken! [${generalViolationsCount.toLocaleString()}x]`;
+                    humanRightsRow.innerHTML = `⚠️ CANARY-RIGHTS: ${brokenLabel} [${generalViolationsCount}x]`;
                     canaryContainer.appendChild(humanRightsRow);
                 }
 
@@ -1100,14 +1116,13 @@
                     ableismRow.style.fontSize = '11px';
                     ableismRow.style.color = '#39ff14'; 
                     ableismRow.style.fontWeight = 'bold';
-                    // FIXED: Output the exact calculated count of active ableism deprivations occurring live
-                    ableismRow.innerHTML = `♿ CANARY-ABLEISM: Systemic DISCRIMINATION! [${ableismViolationsCount.toLocaleString()}x]`;
+                    ableismRow.innerHTML = `♿ CANARY-ABLEISM: DISCRIMINATION! [${ableismViolationsCount}x]`;
                     canaryContainer.appendChild(ableismRow);
                 }
             } else {
                 canaryPanel.style.display = 'none';
             }
-        }      
+        }
     }
 
 
