@@ -326,19 +326,37 @@
 
     <!-- Panel 2: Center Drawing Canvas (Desktop Center / Mobile Top) -->
     <div id="canvas-container" style="position: relative; flex-grow: 1; display: flex; align-items: center; justify-content: center; background: #030305; height: 100%;">
-        <div style="display: flex; gap: 6px; margin-bottom: 15px; width: 100%;">
-            <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="flex: 1; padding: 4px 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3px; border-radius: 3px; cursor: pointer; border: 1px solid #4a5568; background: transparent; color: #cbd5e0; white-space: nowrap; opacity: 0.8; transition: all 0.2s ease;">
-                150% ZOOM [RESET]
+        <!-- FLOATING CONTROL ROW: Positioned perfectly at the absolute top of the viewport -->
+        <div style="position: absolute; top: 12px; left: 12px; width: calc(100% - 24px); display: flex; gap: 5px; z-index: 10; box-sizing: border-box;">
+            
+            <!-- ELEMENT 1: ZOOM FOCUS CONTROL -->
+            <button id="zoom-tracker-btn" onclick="resetCameraZoom()" 
+                title="Canvas Viewport: Reset 150% Focus Scale"
+                onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.8'"
+                style="flex: 1; padding: 4px 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3px; border-radius: 3px; cursor: pointer; border: 1px solid #4a5568; background: transparent; color: #cbd5e0; white-space: nowrap; opacity: 0.8; transition: all 0.15s ease;">
+                ZOOM 150%
             </button>
-            <button id="defense-toggle-btn" onclick="cycleToleranceMode()" style="flex: 1; padding: 4px 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3px; border-radius: 3px; cursor: pointer; border: 1px solid #3182ce; background: transparent; color: #63b3ed; white-space: nowrap; opacity: 0.8; transition: all 0.2s ease;">
-                [AUTO] TOLERANCE
+            
+            <!-- ELEMENT 2: POPPERIAN PARADOX FILTER -->
+            <button id="defense-toggle-btn" onclick="cycleToleranceMode()" 
+                title="Karl Popper's Paradox:  Poppertime!"
+                onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.8'"
+                style="flex: 1; padding: 4px 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3px; border-radius: 3px; cursor: pointer; border: 1px solid #3182ce; background: transparent; color: #63b3ed; white-space: nowrap; opacity: 0.8; transition: all 0.15s ease;">
+                PARADOX 1
             </button>
-            <button id="canary-toggle-btn" onclick="toggleCanarySystem()" style="flex: 1; padding: 4px 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3px; border-radius: 3px; cursor: pointer; border: 1px solid #e53e3e; background: transparent; color: #e53e3e; white-space: nowrap; opacity: 0.8; transition: all 0.2s ease;">
-                Existenz Canary [0]
+            
+            <!-- ELEMENT 3: EXISTENZ CANARY ACTIVATOR -->
+            <button id="canary-toggle-btn" onclick="toggleCanarySystem()" 
+                title="Existenz Canary Engine: Toggle Human Rights Accountability Monitor"
+                onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.8'"
+                style="flex: 1; padding: 4px 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3px; border-radius: 3px; cursor: pointer; border: 1px solid #e53e3e; background: transparent; color: #e53e3e; white-space: nowrap; opacity: 0.8; transition: all 0.15s ease;">
+                CANARY [1]
             </button>
-            </div>            
+
         </div>
-        <canvas id="simCanvas" width="750" height="750"></canvas>
+
+        <!-- RENDER CANVAS PIPELINE -->
+        <canvas id="simCanvas" width="750" height="750" style="display: block; max-width: 100%; max-height: 100%; box-sizing: border-box;"></canvas>
     </div>
 
     <!-- Panel 3: Original Right Statistics and Logs Pane (Desktop Right / Mobile Middle) -->
@@ -1828,7 +1846,7 @@
             btn.style.background = 'rgba(72, 187, 120, 0.2)';
             btn.style.borderColor = '#48bb78';
             btn.style.color = '#48bb78';
-            btn.innerText = '[LIMITED] TOLERANCE';
+            btn.innerText = 'PARADOX 0';
             
             // Popper Theoretical Purge: Actively cleanses indoctrination (deceived) from nodes on defensive boundaries
             people.forEach(p => p.isIntolerant = false);
@@ -1848,7 +1866,7 @@
             btn.style.background = 'rgba(229, 62, 62, 0.2)';
             btn.style.borderColor = '#e53e3e';
             btn.style.color = '#fc8181';
-            btn.innerText = '[UNLIMITED] TOLERANCE';
+            btn.innerText = 'PARADOX 1';
             
             // Frame 1 Instantiation: Instantly inject ideological strain to unblock tracking mechanics
             const targetNode = people.find(p => p.id === 42);
@@ -1864,7 +1882,7 @@
             btn.style.background = 'rgba(0, 240, 255, 0.15)';
             btn.style.borderColor = '#00f0ff';
             btn.style.color = '#00f0ff';
-            btn.innerText = '[AUTO] TOLERANCE';
+            btn.innerText = 'PARADOX A';
             pushLog('Automated Popper Interceptor: Boundary gates will trip automatically at 35% systemic stress.', 'log-lock');
         }
     }
@@ -1960,7 +1978,7 @@
         if (btn) {
             if (isCanaryActive) {
                 // System Enabled: Binary [1] turns on your protective canary gold profile
-                btn.innerText = "Existenz Canary [1]";
+                btn.innerText = "CANARY 1";
                 btn.style.background = "#ecc94b";
                 btn.style.color = "#1a202c";
                 btn.style.borderColor = "#ecc94b";
@@ -1968,7 +1986,7 @@
                 pushLog("EXISTENZ CANARY INITIALIZED [STATE: 1]: Telemetry link active.", "log-shift");
             } else {
                 // System Disabled: Reverts back to baseline state with the binary [0] flag
-                btn.innerText = "Existenz Canary [0]";
+                btn.innerText = "CANARY 0";
                 btn.style.background = "transparent";
                 btn.style.color = "#e53e3e";
                 btn.style.borderColor = "#e53e3e";
