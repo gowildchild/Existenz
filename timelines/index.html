@@ -407,7 +407,7 @@
     let globalTotalCompletions = 0;
     // 0 = LIMITED, 1 = UNLIMITED, 2 = AUTO
     let toleranceMode = 2; 
-    let rationalDefenseActive = true; 
+    let autoTriggeredUnlimited = false; 
     let fatalityHistoryWindow = [];
     let currentPopulationScale = 100;
     let currentScaleMultiplier = 1;
@@ -837,11 +837,36 @@
         const toleranceRow = document.getElementById('tolerance-metric-row');
         const alertOverlay = document.getElementById('collapse-alert-overlay');
         
+        let livingUnits = people.filter(p => p.age >= 0);
+        let currentVictimPercentage = livingUnits.length > 0 ? (victimCount / livingUnits.length) * 100 : 0;
+
+        // --- AUTOMATED REGIME SHIFT INTERCEPTOR ---
+        if (toleranceMode === 2) {
+            if (currentVictimPercentage >= 35 && !autoTriggeredUnlimited) {
+                autoTriggeredUnlimited = true;
+                const autoBtn = document.getElementById('defense-toggle-btn');
+                if (autoBtn) {
+                    autoBtn.style.background = 'rgba(229, 62, 62, 0.4)';
+                    autoBtn.style.borderColor = '#e53e3e';
+                    autoBtn.style.color = '#ff0055';
+                    autoBtn.innerText = '[AUTO: TRIPPED] TOLERANCE';
+                }
+                pushLog('CRITICAL FAULT: Systemic trauma hit 35%. AUTO controller has dropped defensive limits!', 'log-threat');
+            }
+        } else {
+            autoTriggeredUnlimited = false; 
+            const autoBtn = document.getElementById('defense-toggle-btn');
+            if (autoBtn && toleranceMode === 2 && autoBtn.innerText !== '[AUTO] TOLERANCE') {
+                autoBtn.innerText = '[AUTO] TOLERANCE';
+            }
+        }
+
+        // --- THE UNHIDE MECHANISM ---
         if (toleranceRow) {
-            if (!rationalDefenseActive) {
-                toleranceRow.style.display = 'flex'; 
+            // Unhides the row instantly if mode is explicitly Unlimited (1) OR if Auto (2) has been tripped
+            if (toleranceMode === 1 || (toleranceMode === 2 && autoTriggeredUnlimited)) {
+                toleranceRow.style.display = 'flex'; // This forces the layer to be visible on your screen!
                 
-                let livingUnits = people.filter(p => p.age >= 0);
                 let infectedUnits = livingUnits.filter(p => p.isExtremist);
                 let rawInfectedCount = infectedUnits.length * currentScaleMultiplier;
                 let spreadPct = livingUnits.length > 0 ? Math.round((infectedUnits.length / livingUnits.length) * 100) : 0;
@@ -853,27 +878,27 @@
                     document.getElementById('tolerance-pct').innerText = `${spreadPct}%`;
                 }
 
-                // --- MAJORITY TAKEOVER COLLAPSE MONITOR INTERCEPTOR ---
-                // Triggers the blinking warning window overlay the exact frame tick it hits or breaks past 51%
                 if (alertOverlay) {
                     if (spreadPct >= 51) {
-                        alertOverlay.style.display = 'block';
+                        alertOverlay.style.opacity = "1";
+                        alertOverlay.style.visibility = "visible";
+                        alertOverlay.classList.add('active-alarm');
                     } else {
-                        alertOverlay.style.display = 'none';
+                        alertOverlay.style.opacity = "0";
+                        alertOverlay.style.visibility = "hidden";
+                        alertOverlay.classList.remove('active-alarm');
                     }
                 }
             } else {
+                // Hides the row completely if in normal Limited mode or if Auto hasn't tripped yet
                 toleranceRow.style.display = 'none';
                 if (alertOverlay) {
-                    alertOverlay.style.display = 'none';
+                    alertOverlay.style.opacity = "0";
+                    alertOverlay.style.visibility = "hidden";
+                    alertOverlay.classList.remove('active-alarm');
                 }
-                
-                if (document.getElementById('tolerance-count')) {
-                    document.getElementById('tolerance-count').innerText = "";
-                }
-                if (document.getElementById('tolerance-pct')) {
-                    document.getElementById('tolerance-pct').innerText = "0%";
-                }
+                if (document.getElementById('tolerance-count')) document.getElementById('tolerance-count').innerText = "";
+                if (document.getElementById('tolerance-pct')) document.getElementById('tolerance-pct').innerText = "0%";
             }
         }
 
@@ -892,7 +917,7 @@
         let livingUnitsForVectors = people.filter(p => p.age >= 0);
         let infectedUnitsForVectors = livingUnitsForVectors.filter(p => p.isExtremist);
         let currentSpreadPercentage = livingUnitsForVectors.length > 0 ? Math.round((infectedUnitsForVectors.length / livingUnitsForVectors.length) * 100) : 0;
-        let isCivilizationOverthrown = (!rationalDefenseActive && currentSpreadPercentage >= 51);
+        let isCivilizationOverthrown = (runningInUnlimitedNow && currentSpreadPercentage >= 51);
 
         people.forEach((person) => {
             if (person.bitmask === 0) {
@@ -1256,7 +1281,6 @@
                     ctx.fillStyle = `rgb(${baseColorRGB})`;
                 }
                 
-                // FIXED: Replaces old boolean check with our structural running state rules
                 let isCarrier = (runningInUnlimitedNow && person.isExtremist);
                 let radius = (isCarrier ? 4.0 : 2.5) + (person.age * 0.05);
                 ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
