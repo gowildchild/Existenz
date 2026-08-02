@@ -469,7 +469,7 @@
 
 
     function processLifecycle() {
-        simulationTick++;
+        simulationTick += 1 * currentSpeedMultiplier;
         let brokenPillarsCount = 0;
         let totalCheckedPillars = people.length * 9; 
         
@@ -877,7 +877,9 @@
         if (!isPlaying) return;
         processLifecycle();
         updateSimulation();
-        setTimeout(() => { requestAnimationFrame(executionLoop); }, 70); 
+        // Dynamically dilate frame processing intervals based on your custom speed state
+        let calibratedDelay = 70 / currentSpeedMultiplier;
+        setTimeout(() => { requestAnimationFrame(executionLoop); }, calibratedDelay); 
     }
 
 window.addEventListener('load', () => {
