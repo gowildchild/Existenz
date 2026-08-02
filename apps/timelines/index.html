@@ -501,108 +501,120 @@
         bitmask |= 256; // PRESENCE (Real-time footprint remains active while alive)
 
         // --- CHILDHOOD PURITY OVERRIDE MATRIX ---
-        // Children under 12 are born fundamentally uncorrupted. 
-        // Core moral, cognitive, and development pillars are fully intact at birth.
         if (age < 9) {
             bitmask |= 2;  // AUTONOMY
             bitmask |= 4;  // INTEGRITY
             bitmask |= 8;  // PSYCHOLOGY
             bitmask |= 64; // DEVELOPMENT
             
-            // Provide human-rights eras with their protective defensive shields early
             if (type === 'rights') {
-                bitmask |= (1 << 20) | (1 << 24); // SHIELD_HUMAN_RIGHTS & SHIELD_BASIC_RIGHTS
+                bitmask |= (1 << 20) | (1 << 24); 
             }
-            return bitmask; // Bypasses harsh adult historical compromises for kids under 12
+            return bitmask; 
         }
 
         switch(type) {
             case 'tribal':
-                bitmask |= 2; // Tribal group autonomy
-                if (age >= 10) bitmask |= 4;  // Integrity inside clan survival
-                if (age >= 4)  bitmask |= 8;  // Psychology protected by proximal bands
-                if (age >= 8)  bitmask |= 64; // Tribal developmental knowledge
+                bitmask |= 2; 
+                if (age >= 10) bitmask |= 4;  
+                if (age >= 4)  bitmask |= 8;  
+                if (age >= 8)  bitmask |= 64; 
                 break;
 
-            case 'antiquity': // Diogenes / Cynic Era
-                bitmask |= 2; // Absolute sovereign autonomy of choice
-                bitmask |= 4; // High moral axis of choice
-                if (age >= 12) bitmask |= 8;  // Internal peace unbothered by external assets
-                if (age >= 6)  bitmask |= 64; // High individual evolutionary development
+            case 'antiquity': 
+                bitmask |= 2; 
+                bitmask |= 4; 
+                if (age >= 12) bitmask |= 8;  
+                if (age >= 6)  bitmask |= 64; 
                 break;
 
             case 'feudal':
-                if (person.id % 8 === 0) bitmask |= 2 | 128; // Only lords hold Autonomy & Property
-                if (age >= 14) bitmask |= 4;  // Integrity restricted to strict serf/lord oaths
-                if (age >= 10) bitmask |= 64; // Development limited to serf production
+                if (person.id % 8 === 0) bitmask |= 2 | 128; 
+                if (age >= 14) bitmask |= 4;  
+                if (age >= 10) bitmask |= 64; 
                 break;
 
             case 'enlighten':
-                if (age >= 15) bitmask |= 2;  // Autonomy scales back upward as reason maps out
-                bitmask |= 4;                 // Objective human morality axis re-emerges
-                if (age >= 10) bitmask |= 8;  // Psychology shifts to intellectual curiosity
-                if (age >= 5)  bitmask |= 64; // Massive developmental and creative growth bounds
+                if (age >= 15) bitmask |= 2;  
+                bitmask |= 4;                 
+                if (age >= 10) bitmask |= 8;  
+                if (age >= 5)  bitmask |= 64; 
                 break;
 
             case 'industrial':
-                if (age >= 18) bitmask |= 2;   // Legal autonomy granted for factory labor classes
-                if (person.id % 2 === 0) bitmask |= 4; // Integrity strained heavily by factory environments
-                if (age < 12 || age > 48) bitmask |= 8; // Psychology only intact outside child labor and elder breakdown
-                if (age >= 12) bitmask |= 64;  // Industrial production training
-                if (age >= 35) bitmask |= 128; // Assets accumulated late in life
+                if (age >= 18) bitmask |= 2;   
+                if (person.id % 2 === 0) bitmask |= 4; 
+                if (age < 12 || age > 48) bitmask |= 8; 
+                if (age >= 12) bitmask |= 64;  
+                if (age >= 35) bitmask |= 128; 
                 break;
 
-            case 'rights': // Post-WWII Institutional Framework
-                bitmask |= 2 | 4; // Universal Declaration architectures online
-                if (age >= 3 && person.id % 6 !== 0) bitmask |= 8; // Modern mental healthcare tracking with 16% variance stress
-                if (person.id % 12 !== 0) bitmask |= 64; // Development tracking with localized institutional blockages
-                if (age >= 28 && person.id % 4 !== 0) bitmask |= 128; // Standard asset and home ownership protection metrics with a 25% economic barrier hurdle
-                bitmask |= (1 << 20) | (1 << 24); // Protect native adult shields
+            case 'rights': 
+                bitmask |= 2 | 4; 
+                if (age >= 3 && person.id % 6 !== 0) bitmask |= 8; 
+                if (person.id % 12 !== 0) bitmask |= 64; 
+                if (age >= 28 && person.id % 4 !== 0) bitmask |= 128; 
+                bitmask |= (1 << 20) | (1 << 24); 
                 break;
 
-              case 'pre-surveil': // Late 90s Cybernetic Optimism (CORRECTED RANGE BOUNDARIES)
-                bitmask |= 2 | 4; // Core autonomy and integrity online
-                if (age >= 5 && person.id % 6 !== 0) bitmask |= 8; // Psychology intact with a light 16% localized digital isolation stress factor
-                if (person.id % 8 !== 0) bitmask |= 64; // Open web development accessible to 87.5% of the infrastructure framework
-                if (age >= 22 && person.id % 12 !== 0) bitmask |= 128; // Early digital assets layer scale with minor 8% network volatility ripples
+            case 'pre-surveil': 
+                bitmask |= 2 | 4; 
+                if (age >= 5 && person.id % 6 !== 0) bitmask |= 8; 
+                if (person.id % 8 !== 0) bitmask |= 64; 
+                if (age >= 22 && person.id % 12 !== 0) bitmask |= 128; 
                 break;
                 
-            case 'early-data': // 2010s Silicon Boom Expansion
-                bitmask |= 2 | 4 | 64 | 128;   // Rapid expansion of tools and asset access
-                // Fix: Grant psychological baseline universally, then compromise it under screen loops
+            case 'early-data': 
+                bitmask |= 2 | 4 | 64 | 128;   
                 if (age >= 12 && age <= 45) {
                     bitmask |= 8; 
                 }
                 break;
 
-            case 'modern': // The Hyper-Digital Now (2020s Panopticon)
-                bitmask |= 2 | 64 | 128;       // Pervasive connectivity and instant material tools online
-                // Fix: Grant psychological baseline safely only outside targeted algorithmic bracket windows
+            case 'modern': 
+                bitmask |= 2 | 64 | 128;       
                 if (age >= 11 && age <= 55) {
                     bitmask |= 8;              
                 }
                 if (person.id % 3 !== 0) {
-                    bitmask |= 4;              // Personal integrity drops under systematic digital moderation metrics
+                    bitmask |= 4;              
                 }
                 break;
 
-            case 'crisis': // Systemic Rights Severance / Authoritarian Threat Limit
-                bitmask |= 128; // Total centralization of resource asset matrices at the top
+            case 'crisis': 
+                bitmask |= 128; 
                 if (age < 25 || age > 60) {
-                    bitmask |= 2 | 4 | 8 | 64; // Safe zones restricted only to dependent layers
+                    bitmask |= 2 | 4 | 8 | 64; 
                 } else {
-                    bitmask |= 2; // Critical limit: Only raw internal Autonomy remains to resist
-                    if (person.id % 5 === 0) bitmask |= 4; // Rare 20% guard their hidden Integrity core
+                    bitmask |= 2; 
+                    if (person.id % 5 === 0) bitmask |= 4; 
                 }
                 break;
         }
 
-        // --- PROGRESSIVE SYSTEMIC ATTRITION SCARRING FOR ERAS 8, 9, 10 ---
-        // Intercepts active state steps to ensure structural trauma stays permanently broken for life
+        // --- REALISTIC PROBABILISTIC SCARRING FILTER ---
         if (type === 'early-data' || type === 'modern' || type === 'crisis') {
-            if (person.bitmask && person.bitmask !== 0 && person.lastBitmask !== 0) {
-                bitmask &= person.bitmask;
+            // Initialize a dedicated tracking register on the unit if it doesn't exist
+            if (person.permanentScars === undefined) {
+                person.permanentScars = 0; 
             }
+
+            // Check if the current environmental era rules are actively stripping a bit right now
+            for (let b = 0; b < 9; b++) {
+                let bit = 1 << b;
+                if (bit === 32) continue; // Skip permanent disability floor
+
+                // If the era setup stripped the bit on this frame tick...
+                if (!(bitmask & bit)) {
+                    // ...there is a rolling stochastic chance it becomes a permanent scar for this unit's lifecycle
+                    if (Math.random() < 0.02) { 
+                        person.permanentScars |= bit;
+                    }
+                }
+            }
+
+            // Apply any accumulated scars directly back to the active bitmask
+            bitmask &= ~person.permanentScars;
         }
 
         return bitmask;
@@ -623,11 +635,21 @@
             
             // Handle active waiting queue for stochastic randomized birth spacing
             if (person.age < 0) {
-                if (Math.random() < currentBirthProbability * currentSpeedMultiplier) {
+                // If countdown is not yet set, initialize it with an isolated stochastic frame delay
+                if (person.birthCountdown === undefined || person.birthCountdown <= 0) {
+                    // Generates an isolated spacing buffer between 30 and 150 frames
+                    person.birthCountdown = 30 + Math.random() * 120;
+                }
+                
+                // Decrement the frame register continuously based on the temporal speed warp multiplier
+                person.birthCountdown -= 1.0 * currentSpeedMultiplier;
+                
+                // Node is held in absolute ghost state until its unique frame countdown expires cleanly
+                if (person.birthCountdown <= 0) {
                     person.age = 0.0;
                     person.individualTheta = Math.random() * Math.PI * 2;
                     person.lastBitmask = 0;
-                    pushLog(`Unit #${person.id} reborn into ${person.family} after generational flux delay.`, 'log-birth', person.id, person.family);
+                    pushLog(`Unit #${person.id} reborn into ${person.family} after isolated frame delay cooldown.`, 'log-birth', person.id, person.family);
                 } else {
                     person.bitmask = 0; // Maintain absolute ghost state while in the birth queue
                     return;
@@ -675,6 +697,8 @@
                 // Shift to a negative state to initialize the randomized stochastic birth spacing queue
                 person.age = -1.0; 
                 person.bitmask = 0;
+                person.birthCountdown = 0; 
+                person.permanentScars = 0; // Resets the structural scar register for the newborn node
                 pushLog(`Unit #${person.id} completed lifecycle. Entering birth flux queue.`, 'log-shift', person.id, person.family);
                 return;
             }
@@ -714,10 +738,6 @@
 
         if (document.getElementById('victim-count')) {
             document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
-        }
-
-        if (document.getElementById('severed-rights-count')) {
-            document.getElementById('severed-rights-count').innerText = `${victimCount} / ${people.length}`;
         }
 
         if (document.getElementById('systemic-death-count')) {
