@@ -194,11 +194,9 @@ class ExistentialMeta(IntFlag):
 
     # The external defense factors, protected SHIELD structures
     SHIELD_HUMAN_RIGHTS          = 1 << 20 # 1048576 Shield A (Institutional)
-    SHIELD_BASIC_RIGHTS          = 1 << 21 # 2097152 Shield B (Institutional)
-    SHIELD_ASYLUM_RIGHTS         = 1 << 22 # 4194304 Shield B2 (Sovereign)
-    SHIELD_DISCRIMINATION_RIGHTS = 1 << 23 # 8388608 Shield B3 (Systemic)
+    SHIELD_DISCRIMINATION_RIGHTS = 1 << 22 # 8388608 Shield B3 (Systemic)
+    SHIELD_BASIC_RIGHTS          = 1 << 24 # 2097152 Shield B (Institutional)
     # The acquired micro-structural SHIELDS
-    SHIELD_ONLINE_RIGHTS         = 1 << 24 # 16777216 Shield C (Systemic Risks)
     SHIELD_EXPLOITATION_RIGHTS   = 1 << 25 # 33554432 Shield C2 (Anti-Exploitation)
     SHIELD_AQUIRED_RIGHTS        = 1 << 26 # 67108864 Shield D (Acquired by alliance)
     # Forensic and Trust Shields
