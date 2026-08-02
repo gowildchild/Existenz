@@ -969,10 +969,14 @@
                     node.isPinkInstigator = true;
 
                     // FIXED: Dynamically compute their threat level based on the overall systemic spread
+                    let currentFatalities = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
+                    
                     let calculatedLevel = 1;
-                    if (currentSpreadPercentage >= 55) {
-                        calculatedLevel = 3; // Threat level scales up as society approaches majority collapse
-                    } else if (currentSpreadPercentage >= 35) {
+                    if (currentFatalities >= 65) {
+                        calculatedLevel = 4; // Severe threat tier: System is experiencing major attrition collapse
+                    } else if (currentFatalities >= 55) {
+                        calculatedLevel = 3; // Severe threat tier: System is experiencing major attrition collapse
+                    } else if (currentFatalities >= 30) {
                         calculatedLevel = 2; // Mid-tier threat matrix acceleration
                     }
 
@@ -983,12 +987,21 @@
                     instigatorRow.style.fontSize = '11px';
                     instigatorRow.style.color = '#fc8181';
                     
-                    // FIXED: Output the dynamic level tracking data variable natively to the screen panel
                     instigatorRow.innerHTML = `
                         <span>${index + 1}. Dogmatic Instigator #${node.id}</span>
                         <span style="font-weight: bold; color: #e53e3e;">[LEVEL ${calculatedLevel}]</span>
                     `;
                     instigatorContainer.appendChild(instigatorRow);
+                    let targetX = node.screenX || (node.pt ? node.pt.x : null);
+                    let targetY = node.screenY || (node.pt ? node.pt.y : null);
+
+                    if (typeof ctx !== 'undefined' && targetX && targetY) {
+                        ctx.beginPath();
+                        ctx.arc(targetX, targetY, 12 * canvasZoomFactor, 0, Math.PI * 2);
+                        ctx.strokeStyle = '#ff1493'; // High-contrast hot pink tracking ring
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }                    
                 });
             } else {
                 // Completely collapses the panel structure from the layout tree when the count is 0
