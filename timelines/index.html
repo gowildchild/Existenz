@@ -649,6 +649,9 @@
 
 
     function processLifecycle() {
+        // BRIDGE TOKENS: Safely initializes local scope definitions to prevent execution loop failures
+        let rationalDefenseActive = (toleranceMode === 0);
+        let runningInUnlimitedNow = (toleranceMode === 1 || (toleranceMode === 2 && autoTriggeredUnlimited));
         simulationTick++;
         let brokenPillarsCount = 0;
         let totalCheckedPillars = people.length * 9; 
@@ -747,7 +750,7 @@
 
             if (isCurrentToleranceUnlimited && person.age >= 0) {
                 const totalInfected = people.filter(p => p.age >= 0 && p.isExtremist).length;
-                if (totalInfected === 0 && person.id === 42) {
+                if (totalInfected === 0 && person.id === 42 && simulationTick > 1) {
                     person.isExtremist = true;
                     pushLog('Ideological strain mutation observed inside active population matrix.', 'log-threat');
                 }
