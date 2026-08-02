@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.999f</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.999ALPHA</title>
     <style>
         @keyframes blinkerAlert {
             0% { opacity: 1.0; box-shadow: 0 0 20px rgba(255, 0, 85, 0.6); }
@@ -722,8 +722,8 @@
                 }
 
                 let livingUnits = people.filter(p => p.age >= 0);
-                let indoctrinatedUnits = livingUnits.filter(p => p.isIntolerant);
-                let currentIntoleranceRate = livingUnits.length > 0 ? (indoctrinatedUnits.length / livingUnits.length) : 0;
+                let deceivedUnits = livingUnits.filter(p => p.isIntolerant);
+                let currentIntoleranceRate = livingUnits.length > 0 ? (deceivedUnits.length / livingUnits.length) : 0;
 
                 person.age = -1.0; 
                 person.bitmask = 0;
@@ -744,8 +744,8 @@
             let isCurrentToleranceUnlimited = (toleranceMode === 1 || (toleranceMode === 2 && typeof autoTriggeredUnlimited !== 'undefined' && autoTriggeredUnlimited));
 
             if (isCurrentToleranceUnlimited && person.age >= 0) {
-                const totalIndoctrinated = people.filter(p => p.age >= 0 && p.isIntolerant).length;
-                if (totalIndoctrinated === 0 && person.id === 42) {
+                const totalDeceived = people.filter(p => p.age >= 0 && p.isIntolerant).length;
+                if (totalDeceived === 0 && person.id === 42) {
                     person.isIntolerant = true;
                     pushLog('Ideological strain mutation observed inside active population matrix.', 'log-threat');
                 }
@@ -842,12 +842,12 @@
                 toleranceRow.style.display = 'flex'; 
                 
                 let livingUnits = people.filter(p => p.age >= 0);
-                let indoctrinatedUnits = livingUnits.filter(p => p.isIntolerant);
-                let rawIndoctrinatedCount = indoctrinatedUnits.length * currentScaleMultiplier;
-                let spreadPct = livingUnits.length > 0 ? Math.round((indoctrinatedUnits.length / livingUnits.length) * 100) : 0;
+                let deceivedUnits = livingUnits.filter(p => p.isIntolerant);
+                let rawDeceivedCount = deceivedUnits.length * currentScaleMultiplier;
+                let spreadPct = livingUnits.length > 0 ? Math.round((deceivedUnits.length / livingUnits.length) * 100) : 0;
 
                 if (document.getElementById('tolerance-count')) {
-                    document.getElementById('tolerance-count').innerText = `[${rawIndoctrinatedCount.toLocaleString()}]`;
+                    document.getElementById('tolerance-count').innerText = `[${rawDeceivedCount.toLocaleString()}]`;
                 }
                 if (document.getElementById('tolerance-pct')) {
                     document.getElementById('tolerance-pct').innerText = `${spreadPct}%`;
@@ -890,8 +890,8 @@
         ];
 
         let livingUnitsForVectors = people.filter(p => p.age >= 0);
-        let indoctrinatedUnitsForVectors = livingUnitsForVectors.filter(p => p.isIntolerant);
-        let currentSpreadPercentage = livingUnitsForVectors.length > 0 ? Math.round((indoctrinatedUnitsForVectors.length / livingUnitsForVectors.length) * 100) : 0;
+        let deceivedUnitsForVectors = livingUnitsForVectors.filter(p => p.isIntolerant);
+        let currentSpreadPercentage = livingUnitsForVectors.length > 0 ? Math.round((deceivedUnitsForVectors.length / livingUnitsForVectors.length) * 100) : 0;
         let isCivilizationOverthrown = (!rationalDefenseActive && currentSpreadPercentage >= 51);
 
         people.forEach((person) => {
@@ -1388,7 +1388,7 @@
             btn.style.color = '#48bb78';
             btn.innerText = '[LIMITED] TOLERANCE';
             
-            // Popper Theoretical Purge: Actively cleanses indoctrination from nodes on defensive boundaries
+            // Popper Theoretical Purge: Actively cleanses indoctrination (deceived) from nodes on defensive boundaries
             people.forEach(p => p.isIntolerant = false);
             
             if (document.getElementById('tolerance-count')) document.getElementById('tolerance-count').innerText = "";
