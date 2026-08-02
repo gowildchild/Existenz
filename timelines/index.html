@@ -318,13 +318,15 @@
     </div>
 
     <!-- Panel 2: Center Drawing Canvas (Desktop Center / Mobile Top) -->
-    <div id="canvas-container">
-        <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; z-index: 20; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px);">
-            150% ZOOM [RESET]
-        </button>
-        <button id="defense-toggle-btn" onclick="toggleRationalDefense()" style="background: rgba(229, 62, 62, 0.2); color: #fc8181; border: 1px solid #e53e3e; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px);">
-            TOLERANCE [UNLTD]
-        </button>        
+    <div id="canvas-container" style="position: relative; flex-grow: 1; display: flex; align-items: center; justify-content: center; background: #030305; height: 100%;">
+        <div style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 20; width: max-content;">
+            <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
+                150% ZOOM [RESET]
+            </button>
+            <button id="defense-toggle-btn" onclick="toggleRationalDefense()" style="background: rgba(229, 62, 62, 0.2); color: #fc8181; border: 1px solid #e53e3e; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
+                TOLERANCE [UNLTD]
+            </button>
+        </div>
         <canvas id="simCanvas" width="750" height="750"></canvas>
     </div>
 
