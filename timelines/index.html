@@ -357,9 +357,12 @@
                     <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
                 </div>
             </div>
-            <div id="tolerance-metric-row" style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 12px; color: #ff00aa;">
+            <div id="tolerance-metric-row" style="display:none; justify-content:space-between; font-size:11px; margin-bottom: 12px; color: #ff00aa;">
                 <span>Poppertime:</span>
-                <span id="tolerance-pct" style="font-weight: bold;">0%</span>
+                <div>
+                    <span id="tolerance-count" style="font-weight:bold; margin-right: 4px;">[0]</span>
+                    <span id="tolerance-pct" style="font-weight:bold;">0%</span>
+                </div>
             </div>
             <div id="vector-header-label" style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
             <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
@@ -780,13 +783,31 @@
             if (!rationalDefenseActive) {
                 toleranceRow.style.display = 'flex'; // Snaps into view instantly when tolerance is UNLTD
                 
-                // Keep your calculations running true to trace infected units live
+                // Track active living layers and calculate total ideological transmission metrics
                 let livingUnits = people.filter(p => p.age >= 0);
                 let infectedUnits = livingUnits.filter(p => p.isExtremist);
+                
+                // Compute rates and counts scaled up across multi-continuum multiplier weights
+                let rawInfectedCount = infectedUnits.length * currentScaleMultiplier;
                 let spreadPct = livingUnits.length > 0 ? Math.round((infectedUnits.length / livingUnits.length) * 100) : 0;
-                document.getElementById('tolerance-pct').innerText = `${spreadPct}%`;
+                
+                // Print the raw metrics to the interface container elements smoothly
+                if (document.getElementById('tolerance-count')) {
+                    document.getElementById('tolerance-count').innerText = `[${rawInfectedCount.toLocaleString()}]`;
+                }
+                if (document.getElementById('tolerance-pct')) {
+                    document.getElementById('tolerance-pct').innerText = `${spreadPct}%`;
+                }
             } else {
                 toleranceRow.style.display = 'none'; // Conceals row cleanly when defense handles limits (LTD)
+                
+                // Clear out data strings synchronously to avoid caching stale parameters
+                if (document.getElementById('tolerance-count')) {
+                    document.getElementById('tolerance-count').innerText = "[0]";
+                }
+                if (document.getElementById('tolerance-pct')) {
+                    document.getElementById('tolerance-pct').innerText = "0%";
+                }
             }
         }
 
@@ -1361,8 +1382,11 @@
         if (document.getElementById('generations-count')) {
             document.getElementById('generations-count').innerText = "0";
         }
+        if (document.getElementById('tolerance-count')) {
+            document.getElementById('tolerance-count').innerText = "[0]";
+        }
         if (document.getElementById('tolerance-pct')) {
-            document.getElementById('tolerance-pct').innerText = "0%"; // Fixed: Wipes Poppertime index data synchronously
+            document.getElementById('tolerance-pct').innerText = "0%";
         }
         pushLog("Systemic telemetry tracking logs flushed and reset to zero vector.", "log-shift");
     }
