@@ -1153,7 +1153,7 @@
             // Filter out waiting tokens in the birth queue to keep age telemetry metrics running accurately
             let activeAges = people.map(p => p.age).filter(a => a >= 0).sort((a, b) => a - b);
             if (activeAges.length > 0) {
-                let minAge = activeAges[0];
+                let minAge = activeAges[0]; // FIXED: Tracks the lowest entry integer out of the sorted array index
                 let maxAge = activeAges[activeAges.length - 1];
                 let medianAge;
                 let midIndex = Math.floor(activeAges.length / 2);
