@@ -530,8 +530,8 @@
 
         // Z-Axis Evolutionary Level of Being
         if (mask & 32)  z += 15;  
-        if (mask & 64)  z += (person.age * 0.4);  
-        if (mask & 256) z += (person.age * 0.8);  
+        if (mask & 64)  z += 40;  
+        if (mask & 256) z += 80;  
 
         return { x: x, y: y, z: z };
     }
@@ -540,21 +540,22 @@
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2 + 130;
         const matrixScaleXY = 3.6; 
-        const matrixScaleZ = 5.2; // Amplified independently to open up the 3D vertical funnel height
+        const matrixScaleZ = 4.2; 
 
-        // --- THE GOLDEN RATIO SPACETIME MATRIX ---
+        let currentAge = personAge || 0;
+        let currentMask = personBitmask || 0;
+
         const goldenRatio = 1.61803398875;
-        let spiralTheta = (personAge * 0.065);
-        let internalMoralCurvature = (personBitmask & 4 && personBitmask & 8) ? 1.0 : 0.65;
+        let spiralTheta = (currentAge * 0.065);
+        let internalMoralCurvature = (currentMask & 4 && currentMask & 8) ? 1.0 : 0.65;
         
-        // Time naturally curves space outward via your logarithmic timeline scale
-        let spaceWarpRadius = Math.log(personAge + 1) * goldenRatio * 16.0 * internalMoralCurvature;
+        let spaceWarpRadius = Math.log(currentAge + 1) * goldenRatio * 22.0 * internalMoralCurvature;
+        
+        let scaleFactor = (currentAge / 80.0) + 1.0;
+        let curvedX = (x * scaleFactor) + (spaceWarpRadius * Math.cos(spiralTheta));
+        let curvedY = (y * scaleFactor) + (spaceWarpRadius * Math.sin(spiralTheta));
+        let curvedZ = z + (currentAge * 2.5); 
 
-        let curvedX = x + (spaceWarpRadius * Math.cos(spiralTheta));
-        let curvedY = y + (spaceWarpRadius * Math.sin(spiralTheta));
-        let curvedZ = z;
-
-        // Final Isometric Projection preserving bitmask data and vertical depth scaling
         let isoX = centerX + (curvedX - curvedY) * Math.cos(0.52) * matrixScaleXY;
         let isoY = centerY + (curvedX + curvedY) * Math.sin(0.52) * matrixScaleXY - (curvedZ * matrixScaleZ);
         
