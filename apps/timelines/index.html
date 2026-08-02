@@ -516,47 +516,48 @@
         let y = 0;
         let z = 0;
 
-        // X-Axis Identity & Assets
-        if (mask & 1)   x += 5;   
-        if (mask & 16)  x += 20;  
-        if (mask & 128) x += 40;  
+        // --- X-AXIS: MATERIAL SECURITY TOOLS (STABLE COORDINATES) ---
+        if (mask & 1)   x += 5;   // EXISTENCE (You, alive, with a body)
+        if (mask & 16)  x += 20;  // PHYSICAL (The biological vessel)
+        if (mask & 128) x += 40;  // PROPERTY (Material Assets and Income Protection)
 
-        // Y-Axis Cognitive/Moral Sovereignty
-        if (mask & 2)   y += 5;   
-        if (mask & 4)   y += 10;  
-        if (mask & 8)   y += 15;  
+        // --- Y-AXIS: COGNITIVE AND MORAL SOVEREIGNTY ---
+        if (mask & 2)   y += 5;   // AUTONOMY (The Sovereign Right to Choose)
+        if (mask & 4)   y += 10;  // INTEGRITY (The Moral Axis of Personal Choice)
+        if (mask & 8)   y += 15;  // PSYCHOLOGY (Cognitive Internal State / Mental Peace)
 
-        // Z-Axis Evolutionary Level of Being
-        if (mask & 32)  z += 15;  
-        if (mask & 64)  z += 30;  
-        if (mask & 256) z += 60;  
+        // --- Z-AXIS: SYSTEMIC EVOLUTIONARY SPECTRUM (STRUCTURAL GROWTH) ---
+        if (mask & 32)  z += 15;  // DISABILITY (The permanent universal inclusive floor)
+        if (mask & 64)  z += 40;  // DEVELOPMENT (Evolutionary, Intellectual, and Creative Growth)
+        if (mask & 256) z += 80;  // PRESENCE (Real-Time Spacetime Footprint)
 
-        return { x: x, y: y, z: z };
+        // --- THE UNBROKEN PLATONIC GOLDEN RATIO TRAJECTORY ---
+        const goldenRatio = 1.61803398875;
+        let internalMoralCurvature = (mask & 4 && mask & 8) ? 1.0 : 0.65;
+
+        // Age expands the horizontal trajectory smoothly and continuously across all scales
+        let continuousRadius = Math.log(person.age + 1) * goldenRatio * 14.0;
+        let spiralTheta = person.individualTheta + (person.age * 0.065) + person.familySeed;
+
+        // Space opens horizontally based on pure continuous floating-point math
+        let finalX = x + (continuousRadius * Math.cos(spiralTheta));
+        let finalY = y + (continuousRadius * Math.sin(spiralTheta));
+        
+        // Time smoothly drives the lifecycle climb up the vertical axis corridor
+        let finalZ = z + ((person.age * 2.5) * internalMoralCurvature);
+
+        return { x: finalX, y: finalY, z: finalZ };
     }
+
 
     function project(x, y, z, personAge, personBitmask) {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2 + 130;
-        const matrixScaleXY = 3.6; 
-        const matrixScaleZ = 4.2; 
-
-        let currentAge = personAge || 0;
-        let currentMask = personBitmask || 0;
-
-        const goldenRatio = 1.61803398875;
-        let spiralTheta = (currentAge * 0.065);
-        let internalMoralCurvature = (currentMask & 4 && currentMask & 8) ? 1.0 : 0.65;
+        const matrixScale = 2.8; 
         
-        // Time naturally curves space outward continuously, completely dissolving the concentric walls
-        let spaceWarpRadius = Math.log(currentAge + 1) * goldenRatio * 18.0 * internalMoralCurvature;
-        
-        let scaleFactor = (currentAge / 80.0) + 1.0;
-        let curvedX = (x * scaleFactor) + (spaceWarpRadius * Math.cos(spiralTheta));
-        let curvedY = (y * scaleFactor) + (spaceWarpRadius * Math.sin(spiralTheta));
-        let curvedZ = z + (currentAge * 3.5 * internalMoralCurvature); // Continuous vertical lifecycle progression
-
-        let isoX = centerX + (curvedX - curvedY) * Math.cos(0.52) * matrixScaleXY;
-        let isoY = centerY + (curvedX + curvedY) * Math.sin(0.52) * matrixScaleXY - (curvedZ * matrixScaleZ);
+        // Pure isometric perspective camera transformation
+        let isoX = centerX + (x - y) * Math.cos(0.52) * matrixScale;
+        let isoY = centerY + (x + y) * Math.sin(0.52) * matrixScale - (z * matrixScale);
         
         return { x: isoX, y: isoY };
     }
