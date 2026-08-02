@@ -10,12 +10,20 @@
             background: #030305; 
             color: #ffffff; 
             font-family: 'Courier New', monospace; 
-            display: flex; /* Original horizontal layout row for desktop */
+            display: flex; 
+            flex-direction: column; /* Stacks navigation bar cleanly on top row 1 */
             height: 100vh; 
             overflow: hidden; 
         }        
+        .main-workspace-wrapper {
+            display: flex; /* Restores your original horizontal layout row strictly for your 3 panels */
+            flex-grow: 1;
+            width: 100%;
+            height: calc(100vh - 35px); /* Subtracts the navigation bar thickness to prevent vertical scrolling */
+            overflow: hidden;
+        }
         #sidebar { 
-            width: 360px; /* Enhanced slightly to shield data monitor rows comfortably */
+            width: 360px; 
             background: #09090f; 
             padding: 20px; 
             box-sizing: border-box; 
@@ -186,16 +194,20 @@
         }        
         
         /* 📱 Cellphone and Tablet Fluid Override Zone - Isolated strictly under 1024px */
-        @media (max-width: 1024px) {
+          @media (max-width: 1024px) {
             body {
-                display: grid !important;
+                overflow-y: auto;
+                height: auto;
+            }
+            .main-workspace-wrapper {
+                display: grid !important; /* Re-routes mobile to use your stacked grid area templates */
                 grid-template-areas: 
                     "canvas"
                     "rightpanel"
                     "sidebar";
                 grid-template-rows: auto auto auto;
-                overflow-y: auto;
                 height: auto;
+                overflow-y: auto;
             }
             #canvas-container {
                 grid-area: canvas;
@@ -225,147 +237,156 @@
 
 <body>
     <div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box;">
-    <a href="https://github.com/gowildchild/Existenz/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">GitHub</a>
-    <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;">Existenz Simulator</a>
-    <a href="/Existenz/apps/lifetime/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a>
-    <a href="/Existenz/timelines/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">TimeLine</a>
-    </div>
-    <!-- Panel 1: Original Left Controls Sidebar (Desktop Left / Mobile Bottom) -->
-    <div id="sidebar">
-        <h2 style="margin: 0; color: #63b3ed; font-size: 16px; letter-spacing: 1px;">EXISTENZ | TIMELINES</h2>
-        
-        <div>
-            <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 5px;">Spacetime Era Vector:</label>
-            <select id="sim-select" onchange="changeSimulation()">
-                <option value="tribal">1. Deep Tribal Matrix (Pre-State Sovereignty)</option>
-                <option value="antiquity">2. Classical Antiquity (400 BC - Diogenes Cynicism)</option>
-                <option value="feudal">3. Medieval Feudalism (Stratified Subservience)</option>
-                <option value="enlighten">4. Age of Enlightenment (Re-emergence of Reason)</option>
-                <option value="industrial">5. Early Industrial Grid (Labor Optimization)</option>
-                <option value="rights">6. Post-WWII Framework (Universal Declaration Era)</option>
-                <option value="pre-surveil">7. Pre-Surveillance Digital (Late 90s Cybernetic Optimism)</option>
-                <option value="early-data">8. Early Algorithmic Data Capture (2010s Silicon Boom)</option>
-                <option value="modern">9. The Hyper-Digital Now (2020s Total Surveillance)</option>
-                <option value="crisis">10. Authoritarian Threat Event (Systemic Severance)</option>
-            </select>
-        </div>
-
-        <div>
-            <label for="scale-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Scale Multiplier Continuum:</label>
-            <select id="scale-select" onchange="changeScaleMultiplier()">
-                <option value="1" selected>x1 Unity Matrix Mesh</option>
-                <option value="10">x10 Expanded Field</option>
-                <option value="100">x100 Multi-Layer Latice</option>
-                <option value="1000">x1000 Kilo-Density Layer</option>
-                <option value="10000">x10000 Macro-Continuum</option>
-                <option value="100000">x100000 Quantum Horizon</option>
-                <option value="1000000">x1000000 Mega-Spacetime Array</option>
-            </select>
-        </div>
-
-        <div>
-            <label for="birth-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Birth Rate Flux Density:</label>
-            <select id="birth-select" onchange="changeBirthRateDensity()">
-                <option value="0.02">Low Fluid Attrition (2%)</option>
-                <option value="0.05" selected>Standard Equilibrium (5%)</option>
-                <option value="0.12">High Generational Spurt (12%)</option>
-                <option value="0.25">Hyper Exponential Boom (25%)</option>
-            </select>
-        </div>        
-        
-        <div>
-            <label for="speed-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Temporal Speed Warp:</label>
-            <select id="speed-select" onchange="changeSimulationSpeed()">
-                <option value="1.0" selected>1.0x Normal</option>
-                <option value="0.8">0.8x Smooth Retardation</option>
-                <option value="0.6">0.6x Mid-Tier Pace</option>
-                <option value="0.4">0.4x Telemetry Mode</option>
-                <option value="0.2">0.2x High-Density</option>
-                <option value="0.05">0.05x Micro-Continuum</option>
-            </select>
-        </div>        
-        
-        <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
-        <button class="btn btn-toggle" id="spiral-btn" onclick="toggleSpiralField()">Show Majestic Spirals</button>
-
-        <!-- Dynamic Left-Anchored Matrix Inspector Window Panel -->
-        <div id="inspect-panel">
-            <h3 style="margin: 0; font-size: 13px; color: #a0aec0;">MATRIX MONITOR</h3>
-            <p id="no-selection" style="color: #4a5568; font-size: 11px; margin: 0;">Isolate an entity on the grid to filter and reduce telemetry chatter.</p>
-            <div id="inspector-content" style="display: none;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-size: 14px; font-weight: bold; color: #63b3ed;" id="ins-name">Individual #--</div>
-                    <button class="btn" style="padding:2px 6px; font-size:10px; background:#4a5568;" onclick="clearSelection()">Clear Lock</button>
-                </div>
-                <div style="font-size: 11px; color: #718096; margin: 4px 0 8px 0;">Lineage: <span id="ins-family" style="color:#9f7aea;">Alpha</span> | Age: <span id="ins-age" style="color:#ecc94b;">0</span></div>
-                <div style="margin-bottom: 10px; font-size: 12px; color: #cbd5e0;">Coordinates: <span id="ins-coords" style="color: #ecc94b;">X:0, Y:0, Z:0</span></div>
-                <div id="pillars-list" style="display: flex; flex-direction: column; gap: 5px;"></div>
-            </div>
-        </div>
+        <a href="https://github.com" target="_blank" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;">GitHub</a>
+        <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;">Existenz Simulator</a>
+        <a href="/Existenz/apps/lifetime/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;">LifeTime</a>
+        <a href="/Existenz/apps/timelines/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">TimeLine</a>
     </div>
 
-    <!-- Panel 2: Center Drawing Canvas (Desktop Center / Mobile Top) -->
-    <div id="canvas-container">
-        <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; z-index: 20; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px);">
-            150% ZOOM [RESET]
-        </button>
-        <canvas id="simCanvas" width="750" height="750"></canvas>
-    </div>
+    <!-- Master Horizontal Layout Layer Wrapper Protecting Widescreen Alignments -->
+    <div class="main-workspace-wrapper">
 
-    <!-- Panel 3: Original Right Statistics and Logs Pane (Desktop Right / Mobile Middle) -->
-    <div id="right-panel">
-        <div class="threat-meter" style="margin: 20px 20px 0 20px;">
-            <div style="display:flex; justify-content:space-between; font-size:11px;">
-                <span>ExistenzThreat Vector:</span>
-                <span id="threat-pct" style="font-weight:bold; color:#48bb78;">0%</span>
+        <!-- Panel 1: Original Left Controls Sidebar (Desktop Left / Mobile Bottom) -->
+        <div id="sidebar">
+            <h2 style="margin: 0; color: #63b3ed; font-size: 16px; letter-spacing: 1px;">EXISTENZ | TIMELINES</h2>
+            
+            <div>
+                <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 5px;">Spacetime Era Vector:</label>
+                <select id="sim-select" onchange="changeSimulation()">
+                    <option value="tribal">1. Deep Tribal Matrix (Pre-State Sovereignty)</option>
+                    <option value="antiquity">2. Classical Antiquity (400 BC - Diogenes Cynicism)</option>
+                    <option value="feudal">3. Medieval Feudalism (Stratified Subservience)</option>
+                    <option value="enlighten">4. Age of Enlightenment (Re-emergence of Reason)</option>
+                    <option value="industrial">5. Early Industrial Grid (Labor Optimization)</option>
+                    <option value="rights">6. Post-WWII Framework (Universal Declaration Era)</option>
+                    <option value="pre-surveil">7. Pre-Surveillance Digital (Late 90s Cybernetic Optimism)</option>
+                    <option value="early-data">8. Early Algorithmic Data Capture (2010s Silicon Boom)</option>
+                    <option value="modern">9. The Hyper-Digital Now (2020s Total Surveillance)</option>
+                    <option value="crisis">10. Authoritarian Threat Event (Systemic Severance)</option>
+                </select>
             </div>
-            <div style="background:#1a2233; height:5px; border-radius:2px;"><div id="threat-bar"></div></div>
-        </div>
 
-        <div class="threat-meter" style="margin: 10px 20px 0 20px;">
-            <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC METRICS</div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px;">
-                <span>Total Active Victims:</span>
-                <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
+            <div>
+                <label for="scale-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Scale Multiplier Continuum:</label>
+                <select id="scale-select" onchange="changeScaleMultiplier()">
+                    <option value="1" selected>x1 Unity Matrix Mesh</option>
+                    <option value="10">x10 Expanded Field</option>
+                    <option value="100">x100 Multi-Layer Latice</option>
+                    <option value="1000">x1000 Kilo-Density Layer</option>
+                    <option value="10000">x10000 Macro-Continuum</option>
+                    <option value="100000">x100000 Quantum Horizon</option>
+                    <option value="1000000">x1000000 Mega-Spacetime Array</option>
+                </select>
             </div>
-            <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
-            <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
-                <!-- Dynamically populated -->
-            </div>
-        </div>
 
-        <!-- Real-Time Structural Attrition Causality Tracking Data Pane with Integrated Reset Link -->
-        <div class="threat-meter" style="margin: 10px 20px 0 20px;">
-            <div style="font-size: 11px; color: #a0aec0; margin-bottom: 6px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC RIGHTS CAUSALITY</div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px; color: #f6ad55;">
-                <span>Severed Rights Layer:</span>
-                <span id="severed-rights-count" style="font-weight:bold;">0 / 100</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; color: #fc8181;">
-                <span>Systemic Attrition Fatalities:</span>
-                <div>
-                    <span id="systemic-death-count" style="font-weight:bold; margin-right: 8px;">0</span>
-                    <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
+            <div>
+                <label for="birth-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Birth Rate Flux Density:</label>
+                <select id="birth-select" onchange="changeBirthRateDensity()">
+                    <option value="0.02">Low Fluid Attrition (2%)</option>
+                    <option value="0.05" selected>Standard Equilibrium (5%)</option>
+                    <option value="0.12">High Generational Spurt (12%)</option>
+                    <option value="0.25">Hyper Exponential Boom (25%)</option>
+                </select>
+            </div>        
+            
+            <div>
+                <label for="speed-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Temporal Speed Warp:</label>
+                <select id="speed-select" onchange="changeSimulationSpeed()">
+                    <option value="1.0" selected>1.0x Normal</option>
+                    <option value="0.8">0.8x Smooth Retardation</option>
+                    <option value="0.6">0.6x Mid-Tier Pace</option>
+                    <option value="0.4">0.4x Telemetry Mode</option>
+                    <option value="0.2">0.2x High-Density</option>
+                    <option value="0.05">0.05x Micro-Continuum</option>
+                </select>
+            </div>        
+            
+            <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
+            <button class="btn btn-toggle" id="spiral-btn" onclick="toggleSpiralField()">Show Majestic Spirals</button>
+            
+            <!-- Dynamic Left-Anchored Matrix Inspector Window Panel -->
+            <div id="inspect-panel">
+                <h3 style="margin: 0; font-size: 13px; color: #a0aec0;">MATRIX MONITOR</h3>
+                <p id="no-selection" style="color: #4a5568; font-size: 11px; margin: 0;">Isolate an entity on the grid to filter and reduce telemetry chatter.</p>
+                <div id="inspector-content" style="display: none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="font-size: 14px; font-weight: bold; color: #63b3ed;" id="ins-name">Individual #--</div>
+                        <button class="btn" style="padding:2px 6px; font-size:10px; background:#4a5568;" onclick="clearSelection()">Clear Lock</button>
+                    </div>
+                    <div style="font-size: 11px; color: #718096; margin: 4px 0 8px 0;">Lineage: <span id="ins-family" style="color:#9f7aea;">Alpha</span> | Age: <span id="ins-age" style="color:#ecc94b;">0</span></div>
+                    <div style="margin-bottom: 10px; font-size: 12px; color: #cbd5e0;">Coordinates: <span id="ins-coords" style="color: #ecc94b;">X:0, Y:0, Z:0</span></div>
+                    <div id="pillars-list" style="display: flex; flex-direction: column; gap: 5px;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Optimized Lifespan Statistics Compact Tracking Box -->
-        <div style="margin: 10px 20px 0 20px; background: #0c0c14; border: 1px solid #141424; padding: 6px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-            <div style="color: #00f0ff; font-weight: bold; white-space: nowrap;">Lifespan Statistics:</div>
-            <div style="display: flex; gap: 14px; color: #8e8eaf;">
-                <span>MIN: <span id="meta-age-min" style="color: #ffffff; font-weight: bold;">0.0</span></span>
-                <span>MED: <span id="meta-age-med" style="color: #ffffff; font-weight: bold;">0.0</span></span>
-                <span>MAX: <span id="meta-age-max" style="color: #ffffff; font-weight: bold;">0.0</span></span>
-            </div>
-        </div>      
-        <div id="matrix-log" style="flex-grow: 1; margin-top: 15px;">
-            <div id="log-header-zone">
-                <h3 style="margin:0; font-size:12px; color:#a0aec0; letter-spacing:0.5px;">LOG TELEMETRY</h3>
-                <span id="log-filter-status" style="font-size:10px; color:#4a5568; background:#121620; padding:2px 6px; border-radius:3px;">FILTER: GLOBAL</span>
-            </div>
-            <div id="log-stream"></div>
+        <!-- Panel 2: Center Drawing Canvas (Desktop Center / Mobile Top) -->
+        <div id="canvas-container">
+            <button id="zoom-tracker-btn" onclick="resetCameraZoom()" style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); background: rgba(9, 9, 15, 0.85); color: #00f0ff; border: 1px solid #141424; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; z-index: 20; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px);">
+                150% ZOOM [RESET]
+            </button>
+            <canvas id="simCanvas" width="750" height="750"></canvas>
         </div>
+        <!-- Panel 3: Original Right Statistics and Logs Pane (Desktop Right / Mobile Middle) -->
+        <div id="right-panel">
+            <div class="threat-meter" style="margin: 20px 20px 0 20px;">
+                <div style="display:flex; justify-content:space-between; font-size:11px;">
+                    <span>ExistenzThreat Vector:</span>
+                    <span id="threat-pct" style="font-weight:bold; color:#48bb78;">0%</span>
+                </div>
+                <div style="background:#1a2233; height:5px; border-radius:2px;"><div id="threat-bar"></div></div>
+            </div>
+
+            <div class="threat-meter" style="margin: 10px 20px 0 20px;">
+                <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC METRICS</div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 12px;">
+                    <span>Total Active Victims:</span>
+                    <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
+                </div>
+                <div style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
+                <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <!-- Real-Time Structural Attrition Causality Tracking Data Pane -->
+            <div class="threat-meter" style="margin: 10px 20px 0 20px;">
+                <div style="font-size: 11px; color: #a0aec0; margin-bottom: 6px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">SYSTEMIC RIGHTS CAUSALITY</div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px; color: #f6ad55;">
+                    <span>Severed Rights Layer:</span>
+                    <span id="severed-rights-count" style="font-weight:bold;">0 / 100</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; color: #fc8181;">
+                    <span>Systemic Attrition Fatalities:</span>
+                    <div>
+                        <span id="systemic-death-count" style="font-weight:bold; margin-right: 8px;">0</span>
+                        <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Razor-Thin Horizontal Lifespan Statistics Readout Bar -->
+            <div style="margin: 10px 20px 0 20px; background: #0c0c14; border: 1px solid #141424; padding: 6px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                <div style="color: #00f0ff; font-weight: bold; white-space: nowrap;">Lifespan Statistics:</div>
+                <div style="display: flex; gap: 14px; color: #8e8eaf;">
+                    <span>MIN: <span id="meta-age-min" style="color: #ffffff; font-weight: bold;">0.0</span></span>
+                    <span>MED: <span id="meta-age-med" style="color: #ffffff; font-weight: bold;">0.0</span></span>
+                    <span>MAX: <span id="meta-age-max" style="color: #ffffff; font-weight: bold;">0.0</span></span>
+                </div>
+            </div>      
+
+            <!-- Full-Height Telemetry Log Window -->
+            <div id="matrix-log" style="flex-grow: 1; margin-top: 15px;">
+                <div id="log-header-zone">
+                    <h3 style="margin:0; font-size:12px; color:#a0aec0; letter-spacing:0.5px;">LOG TELEMETRY</h3>
+                    <span id="log-filter-status" style="font-size:10px; color:#4a5568; background:#121620; padding:2px 6px; border-radius:3px;">FILTER: GLOBAL</span>
+                </div>
+                <div id="log-stream"></div>
+            </div>
+        </div>
+
+    </div> <!-- Closes .main-workspace-wrapper container envelope -->
+        
 
 <script>
     const canvas = document.getElementById('simCanvas');
@@ -599,18 +620,28 @@
         let totalCheckedPillars = people.length * 9; 
         
         let victimCount = 0;
-        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+        let severedRightsPopulation = 0; 
+        let bitFailureCounts =; 
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
             
-            // Handle active waiting queue for stochastic randomized birth spacing
+            // Handle individual randomized cooldown timers to completely eliminate birth explosions
             if (person.age < 0) {
-                if (Math.random() < currentBirthProbability * currentSpeedMultiplier) {
+                if (typeof person.birthDelayTicks === 'undefined' || person.birthDelayTicks === null) {
+                    // Assign a completely separate custom frame delay between 10 and 180 ticks upon demise
+                    person.birthDelayTicks = Math.floor(Math.random() * 170) + 10;
+                }
+                
+                // Scale the tracking decrement step relative to your temporal warp factor
+                person.birthDelayTicks -= 1 * currentSpeedMultiplier;
+                
+                if (person.birthDelayTicks <= 0) {
                     person.age = 0.0;
+                    person.birthDelayTicks = null; // Clear active timer registration slot
                     person.individualTheta = Math.random() * Math.PI * 2;
                     person.lastBitmask = 0;
-                    pushLog(`Unit #${person.id} reborn into ${person.family} after generational flux delay.`, 'log-birth', person.id, person.family);
+                    pushLog(`Unit #${person.id} reborn into ${person.family} after isolated flux delay.`, 'log-birth', person.id, person.family);
                 } else {
                     person.bitmask = 0; // Maintain absolute ghost state while in the birth queue
                     return;
@@ -636,15 +667,31 @@
                 }
             }
 
+            // Map actual pillars rules right before mortality validation passes
+            let testMask = calculatePillars(person, person.age, currentSimType);
+
+            // Compute rights deprivation profiles for living units (Missing Bit 2, 4, OR 8)
+            if (person.age >= 0 && (!(testMask & 2) || !(testMask & 4) || !(testMask & 8))) {
+                severedRightsPopulation++;
+            }
+
             if (naturalDemiseTriggered) {
+                // SYSTEMIC CAUSALITY CALCULATOR: If missing core pillars, register as an institutional fatality
+                if (!(testMask & 2) || !(testMask & 4) || !(testMask & 8)) {
+                    globalSystemicFatalities++;
+                    pushLog(`!! CAUSALITY !! Unit #${person.id} dissolved. Death compounded by Systemic Attrition.`, 'log-threat', person.id, person.family);
+                } else {
+                    pushLog(`Unit #${person.id} completed lifecycle naturally and dissolved.`, 'log-shift', person.id, person.family);
+                }
+
                 // Shift to a negative state to initialize the randomized stochastic birth spacing queue
                 person.age = -1.0; 
+                person.birthDelayTicks = null; // Forces recalculation of unique delay on next tick pass
                 person.bitmask = 0;
-                pushLog(`Unit #${person.id} completed lifecycle. Entering birth flux queue.`, 'log-shift', person.id, person.family);
                 return;
             }
 
-            person.bitmask = calculatePillars(person, person.age, currentSimType);
+            person.bitmask = testMask;
 
             if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
                 if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
@@ -671,6 +718,15 @@
                 victimCount++;
             }
         });
+
+        // Update real-time metric counters inside UI dashboard elements
+        let livingCount = people.filter(p => p.age >= 0).length || 1;
+        if (document.getElementById('severed-rights-count')) {
+            document.getElementById('severed-rights-count').innerText = `${severedRightsPopulation} / ${livingCount}`;
+        }
+        if (document.getElementById('systemic-death-count')) {
+            document.getElementById('systemic-death-count').innerText = globalSystemicFatalities.toLocaleString();
+        }
 
         existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
         document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
@@ -735,6 +791,7 @@
             });
         }
     }
+
 
 
 
