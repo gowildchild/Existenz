@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.982BETA</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.983BETA</title>
     <style>
         body { 
             margin: 0; 
@@ -655,22 +655,22 @@
                     }
                     
                     let spaceExpansionFactor = 1.0;
-                    if (testMask & 1)   spaceExpansionFactor *= 1.1;
-                    if (testMask & 16)  spaceExpansionFactor *= 1.25;
+                    if (testMask & 1) spaceExpansionFactor *= 1.1;
+                    if (testMask & 16) spaceExpansionFactor *= 1.25;
                     if (testMask & 128) spaceExpansionFactor *= 1.4;
 
                     let internalMoralForce = 1.0;
-                    if (testMask & 2)   internalMoralForce += 0.5;
-                    if (testMask & 4)   internalMoralForce += 1.0;
-                    if (testMask & 8)   internalMoralForce += 1.5;
+                    if (testMask & 2) internalMoralForce += 0.5;
+                    if (testMask & 4) internalMoralForce += 1.0;
+                    if (testMask & 8) internalMoralForce += 1.5;
 
                     const goldenRatio = 1.61803398875;
-                    let continuousRadius = Math.log(testAge + 1) * goldenRatio * 5.2 * spaceExpansionFactor * (internalMoralForce * 0.4);
+                    let continuousRadius = Math.log(testAge + 1) * goldenRatio * 8.5; // Aligned scaling constant
                     let spiralTheta = 0 + (testAge * 0.065) + familySeed; 
+                    let sX = ((testMask & 1) ? 5 : 0) + ((testMask & 16) ? 20 : 0) + (continuousRadius * Math.cos(spiralTheta));
+                    let sY = ((testMask & 2) ? 5 : 0) + ((testMask & 4) ? 10 : 0) + ((testMask & 8) ? 15 : 0) + (continuousRadius * Math.sin(spiralTheta));
+                    let sZ = ((testMask & 32) ? 15 : 0) + ((testMask & 64) ? 25 : 0) + (testAge * 0.9); // Aligned to getXYZ coordinate weight and progression rate
 
-                    let sX = continuousRadius * Math.cos(spiralTheta);
-                    let sY = continuousRadius * Math.sin(spiralTheta);
-                    let sZ = ((testMask & 32) ? 25 : 0) + ((testMask & 64) ? 20 : 0) + (testAge * 0.75);
 
                     let pt = project(sX, sY, sZ);
                     if (testAge === 0) ctx.moveTo(pt.x, pt.y);
