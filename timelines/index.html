@@ -619,26 +619,25 @@
 
         // --- REALISTIC PROBABILISTIC SCARRING FILTER ---
         if (type === 'early-data' || type === 'modern' || type === 'crisis') {
-            // Initialize a dedicated tracking register on the unit if it doesn't exist
             if (person.permanentScars === undefined) {
-                person.permanentScars = 0; 
+                person.permanentScars = 0;
             }
-
-            // Check if the current environmental era rules are actively stripping a bit right now
+            
+            // Loop through pillars to find current structural damage
             for (let b = 0; b < 9; b++) {
                 let bit = 1 << b;
-                if (bit === 32) continue; // Skip permanent disability floor
-
-                // If the era setup stripped the bit on this frame tick...
+                if (bit === 32) continue; // Skip permanent disability floor floor baseline
+                
+                // If a pillar is broken on this frame slice
                 if (!(bitmask & bit)) {
-                    // ...there is a rolling stochastic chance it becomes a permanent scar for this unit's lifecycle
-                    if (Math.random() < 0.02) { 
-                        person.permanentScars |= bit;
+                    // FIXED: Instead of auto-locking, give it a tiny 0.1% chance per frame to scar permanently
+                    // This lets nodes experience temporary stress without carrying a permanent injury forever
+                    if (Math.random() < 0.001) {
+                        person.permanentScars |= bit; 
                     }
                 }
             }
-
-            // Apply any accumulated scars directly back to the active bitmask
+            // Force genuinely accumulated damage back onto the active runtime matrix
             bitmask &= ~person.permanentScars;
         }
 
