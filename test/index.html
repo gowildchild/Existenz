@@ -1083,7 +1083,7 @@
                     humanRightsRow.style.color = '#39ff14'; 
                     humanRightsRow.style.fontWeight = 'bold';
                     // FIXED: Output the exact calculated count of total general rights broken across spacetime
-                    humanRightsRow.innerHTML = `⚠️ CANARY SIGNAL: Institutional ${brokenLabel} Shields Broken! [${generalViolationsCount.toLocaleString()} Rights Stripped]`;
+                    humanRightsRow.innerHTML = `⚠️ CANARY-RIGHTS: ${brokenLabel}  Broken! [${generalViolationsCount.toLocaleString()}x]`;
                     canaryContainer.appendChild(humanRightsRow);
                 }
 
@@ -1101,7 +1101,7 @@
                     ableismRow.style.color = '#39ff14'; 
                     ableismRow.style.fontWeight = 'bold';
                     // FIXED: Output the exact calculated count of active ableism deprivations occurring live
-                    ableismRow.innerHTML = `♿ SPECIAL ALERT: Systemic DISCRIMINATION Shield Fractured! [${ableismViolationsCount.toLocaleString()} Ableism Strains]`;
+                    ableismRow.innerHTML = `♿ CANARY-ABLEISM: Systemic DISCRIMINATION! [${ableismViolationsCount.toLocaleString()}x]`;
                     canaryContainer.appendChild(ableismRow);
                 }
             } else {
@@ -1269,7 +1269,6 @@
                 ctx.beginPath();
                 
                 for (let testAge = 0; testAge <= 80; testAge += 1) {
-                    // Use a pristine fully active architectural layout for smooth spatial rails
                     let testMask = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128;
                     
                     let spaceExpansionFactor = 1.0;
@@ -1291,7 +1290,6 @@
                     let sY = (((testMask & 2) ? 5 : 0) + ((testMask & 4) ? 10 : 0) + ((testMask & 8) ? 15 : 0) + ((testMask & 128) ? 20 : 0) + (continuousRadius * Math.sin(spiralTheta))) * growthScale * frameworkScale;
                     let sZ = ((((testMask & 32) ? 15 : 0) + ((testMask & 64) ? 25 : 0)) * growthScale * frameworkScale) + (testAge * 0.9);
 
-
                     let pt = project(sX, sY, sZ);
                     if (testAge === 0) ctx.moveTo(pt.x, pt.y);
                     else ctx.lineTo(pt.x, pt.y);
@@ -1305,38 +1303,33 @@
             let currentFatalities = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
             let calculatedLevel = currentFatalities >= 75 ? 4 : (currentFatalities >= 60 ? 3 : (currentFatalities >= 30 ? 2 : 1));
 
+            // A: DRAW PINK POPPERIAN EXTRA-STRICT TARGET MATRIX 
             activeInstigators.forEach((node) => {
-                // Look up their core background parameters to map family identity tracking
                 let fId = families.indexOf(node.family);
                 if (fId === -1) fId = 0;
                 let familySeed = fId * 1.45;
 
-                // FIXED: Reconstruct the EXACT logarithmic spatial equations used by your family lines
                 const goldenRatio = 1.61803398875;
                 let continuousRadius = Math.log(node.age + 1) * goldenRatio * 8.5; 
                 let spiralTheta = 0 + (node.age * 0.065) + familySeed; 
                 let frameworkScale = 1 + Math.log10(currentScaleMultiplier);
                 let growthScale = Math.min(node.age / 12, 1);
 
-                // Re-apply the universal rights masking factor (fully protected baseline state for structural rails)
                 let sX = (20 + 20 + (continuousRadius * Math.cos(spiralTheta))) * growthScale * frameworkScale;
                 let sY = (5 + 10 + 15 + 20 + (continuousRadius * Math.sin(spiralTheta))) * growthScale * frameworkScale;
                 let sZ = ((15 + 25) * growthScale * frameworkScale) + (node.age * 0.9);
 
-                // Flatten the 3D space vectors into 2D display screen pixels using your native projector
                 let pt = typeof project === 'function' ? project(sX, sY, sZ) : null;
 
                 if (pt && typeof pt.x === 'number' && typeof pt.y === 'number') {
                     ctx.save(); 
 
-                    // 1. STAMP THE SPHERE: Solid Hot Pink inner core ball perfectly pinned to the rail coordinates
                     ctx.beginPath();
                     ctx.arc(pt.x, pt.y, 4 * canvasZoomFactor, 0, Math.PI * 2);
-                    ctx.fillStyle = '#ff1493'; 
+                    ctx.fillStyle = '#ff1493'; // Deep Shocking Pink Sphere Core
                     ctx.fill();
                     ctx.closePath();
 
-                    // 2. TARGET RING 1: Primary bounding tracking circle
                     ctx.beginPath();
                     ctx.arc(pt.x, pt.y, 10 * canvasZoomFactor, 0, Math.PI * 2);
                     ctx.strokeStyle = '#ff1493'; 
@@ -1344,7 +1337,6 @@
                     ctx.stroke();
                     ctx.closePath();
 
-                    // 3. TARGET RING 2 (LEVEL 4 SPECIAL): Outer secondary terminal shockwave line
                     if (calculatedLevel > 2) {
                         ctx.beginPath();
                         ctx.arc(pt.x, pt.y, 18 * canvasZoomFactor, 0, Math.PI * 2);
@@ -1357,9 +1349,35 @@
                     ctx.restore(); 
                 }
             });
+
+            // B: DRAW NEON GREEN EXISTENZ CANARY ALERT MATRIX (Direct screen-space extraction)
+            let canaryNodes = people.filter(p => p.age >= 0 && p.isCanaryAlert);
+            canaryNodes.forEach((node) => {
+                let targetX = node.screenX || (node.pt ? node.pt.x : null);
+                let targetY = node.screenY || (node.pt ? node.pt.y : null);
+
+                if (targetX && targetY) {
+                    ctx.save(); 
+
+                    ctx.beginPath();
+                    ctx.arc(targetX, targetY, 4 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.fillStyle = '#39ff14'; // Bright Neon Green Core Sphere
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(targetX, targetY, 10 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(57, 255, 20, 0.85)'; // Neon Green Protective Tracking Ring
+                    ctx.lineWidth = 1.75;
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.restore(); 
+                }
+            });
         }        
-        
     }
+
 
     function updateSimulation() {
         drawGrid();
