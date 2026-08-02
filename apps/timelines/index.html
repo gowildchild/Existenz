@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.084</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | Gunther v0.085</title>
     <style>
         body { 
             margin: 0; 
@@ -491,6 +491,7 @@
         activeStressVectors.sort((a, b) => b.count - a.count);
         let topFiveVectors = activeStressVectors.slice(0, 5);
 
+        const vectorsContainer = document.getElementById('top-vectors-list');
         if (vectorsContainer) {
             vectorsContainer.innerHTML = '';
             topFiveVectors.forEach((vector, rank) => {
@@ -504,7 +505,7 @@
                     vectorRow.style.color = '#4a5568';
                 }
                 vectorRow.innerHTML = `<span>${rank + 1}. ${vector.name}</span><span style="font-weight:bold;">${vector.count}</span>`;
-                vectorsContainer.appendChild(vectorRow);
+                vectorsContainer.appendChild(vectorRow); // FIXED: Securely uses the verified outer container variable reference
             });
         }
     }
