@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.993B</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.994B</title>
     <style>
         body { 
             margin: 0; 
@@ -480,22 +480,37 @@
         return bitmask;
     }
 
-
-
-
     function processLifecycle() {
         simulationTick++;
         let brokenPillarsCount = 0;
         let totalCheckedPillars = people.length * 9; 
         
         let victimCount = 0;
-        let bitFailureCounts =[0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
-            person.age += 0.5;
+            person.age += 0.5 * currentSpeedMultiplier;
             
-            if (person.age > 80) {
+            // Core historical mortality threshold processor
+            let naturalDemiseTriggered = false;
+            let currentEraCeiling = 80;
+            
+            if (currentSimType === 'tribal')     currentEraCeiling = 35;
+            if (currentSimType === 'antiquity')  currentEraCeiling = 40;
+            if (currentSimType === 'feudal')     currentEraCeiling = 30;
+            if (currentSimType === 'industrial') currentEraCeiling = 45;
+            if (currentSimType === 'rights')     currentEraCeiling = 65;
+
+            // Apply soft stochastic probability curves once beyond nominal era horizons
+            if (person.age >= currentEraCeiling) {
+                let checkFactor = (person.age - currentEraCeiling) / (80 - currentEraCeiling + 1);
+                if (Math.random() < checkFactor || person.age >= 80) {
+                    naturalDemiseTriggered = true;
+                }
+            }
+
+            if (naturalDemiseTriggered) {
                 person.age = 0; 
                 person.individualTheta = Math.random() * Math.PI * 2;
                 person.lastBitmask = 0;
@@ -556,7 +571,7 @@
         people.forEach((person) => {
             // FIXED: If a person has naturally deceased, do not process them as an active victim
             if (person.bitmask === 0) {
-                return; // Skip this person and jump to the next one
+                return; 
             }
 
             bitBlueprints.forEach((blueprint) => {
@@ -579,7 +594,7 @@
         // Target the sidebar element layout wrapper
         const vectorsContainer = document.getElementById('top-vectors-list');
         if (vectorsContainer) {
-            vectorsContainer.innerHTML = ''; // Wipe stale layout data strings
+            vectorsContainer.innerHTML = ''; 
             
             topFiveVectors.forEach((vector, rank) => {
                 const vectorRow = document.createElement('div');
@@ -588,15 +603,13 @@
                 vectorRow.style.padding = '2px 4px';
                 vectorRow.style.borderRadius = '2px';
                 
-                // Color-code rows based on severe impact steps
                 if (vector.count > 0) {
                     vectorRow.style.color = rank === 0 ? '#fc8181' : (rank < 3 ? '#f6ad55' : '#ecc94b');
                     vectorRow.style.background = 'rgba(255,255,255,0.01)';
                 } else {
-                    vectorRow.style.color = '#4a5568'; // Muted color if a vector has zero victims
+                    vectorRow.style.color = '#4a5568'; 
                 }
 
-                // Render descriptive alignment
                 vectorRow.innerHTML = `
                     <span>${rank + 1}. ${vector.name}</span>
                     <span style="font-weight: bold;">${vector.count}</span>
