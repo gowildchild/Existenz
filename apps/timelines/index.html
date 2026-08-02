@@ -1263,10 +1263,6 @@
     }
 
     window.addEventListener('load', () => {
-        // Securely bind elements once DOM trees are completely generated in browser memory
-        canvas = document.getElementById('simCanvas');
-        if (canvas) ctx = canvas.getContext('2d');
-
         initPopulation();
         
         const spiralBtn = document.getElementById('spiral-btn');
@@ -1276,13 +1272,13 @@
         }
         pushLog(`Existenz Space-Time Matrix online. ${currentPopulationScale} multiversal timelines activated.`, "log-birth");
         
-        // Invoke high-DPI scaling directly on verified elements to map coordinates smoothly
         if (typeof autoScaleViewportResolution === 'function') {
             autoScaleViewportResolution();
         } else {
             updateSimulation();
         }
     });
+
 
 </script>
 </body>
