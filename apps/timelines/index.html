@@ -427,62 +427,7 @@
         let totalCheckedPillars = people.length * 7; 
         
         let victimCount = 0;
-        // CORRECTED: Array initialized with 7 zeros to prevent syntax compile crashes
-        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
-
-        people.forEach((person) => {
-            person.lastBitmask = person.bitmask;
-            person.age += 0.5;
-            
-            if (person.age > 80) {
-                person.age = 0; 
-                person.individualTheta = Math.random() * Math.PI * 2;
-                person.lastBitmask = 0;
-                pushLog(`Unit #${person.id} reborn into ${person.family}.`, 'log-birth', person.id, person.family);
-            }
-
-            person.bitmask = calculatePillars(person, person.age, currentSimType);
-
-            if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
-                if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
-                    pushLog(`!! CRITICAL SEVERANCE !! Unit #${person.id} hit Age 30. Integrity stripped by Epoch Crisis rules.`, 'log-threat', person.id, person.family);
-                } else {
-                    pushLog(`Unit #${person.id} bit-shift recorded across spacetime.`, 'log-shift', person.id, person.family);
-                }
-            }
-
-            let individualIsVictim = false;
-            for (let b = 0; b < 7; b++) {
-                if ((1 << b) === 32) continue; 
-                
-                if (!(person.bitmask & (1 << b))) {
-                    brokenPillarsCount++;
-                    bitFailureCounts[b]++; 
-                    individualIsVictim = true;
-                }
-            }
-            if (individualIsVictim) {
-                victimCount++;
-            }
-        });
-
-        existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
-        document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
-        document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
-        document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
-
-        // Update the dynamic metric counters in the sidebar elements
-        if (document.getElementById('victim-count')) {
-            document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
-        }
-
-        // Update the dynamic metric counters in the sidebar elements
-        if (document.getElementById('victim-count')) {
-            document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
-        }
-
-        // --- EXPANDED 9-BIT ARCHITECTURAL ACCUMULATOR ---
-        // Map all 9 bits to their text descriptors and corresponding raw failure totals
+        
         const bitBlueprints = [
             { name: "EXISTENCE (1)",   count: 0, bit: 1 },
             { name: "AUTONOMY (2)",    count: 0, bit: 2 },
@@ -495,35 +440,103 @@
             { name: "PRESENCE (256)",  count: 0, bit: 256 }
         ];
 
-        // Loop through the population to compute counts for all 9 architectural states
+        // First step: Recompute and apply the real-time calculated bitmasks for the living
         people.forEach((person) => {
-            // FIXED: If a person has naturally deceased, do not process them as an active victim
-            if (person.bitmask === 0) {
-                return; // Skip this person and jump to the next one
-            }
-
-            bitBlueprints.forEach((blueprint) => {
-                // If a bit is NOT active, increment the structural failure record tally
-                if (!(person.bitmask & blueprint.bit)) {
-                    blueprint.count++;
-                }
-            });
+            // Units process their basic structural layout based on their current age
+            person.bitmask = calculatePillars(person, person.age, currentSimType);
         });
 
-        // Filter out DISABILITY (32) since it is your permanent inclusive anchor floor
+        people.forEach((person) => {
+            person.lastBitmask = person.bitmask;
+            
+            // Skip processing dead ancestral nodes (units that already dissolved)
+            if (person.bitmask === 0) {
+                // Instantly cycle them back as a newborn generational infant
+                person.age = 0;
+                person.individualTheta = Math.random() * Math.PI * 2;
+                person.bitmask = calculatePillars(person, 0, currentSimType);
+                pushLog(`Generation Cycle: Unit #${person.id} born into ${person.family}.`, 'log-birth', person.id, person.family);
+                return;
+            }
+
+            // --- THE EXISTENZTHREAT SYSTEMIC CALCULATION ---
+            // Calculate how many of the core protective pillars are stripped
+            let personalThreatVector = 0;
+            
+            if (!(person.bitmask & 2))   personalThreatVector += 1.5; // No Autonomy causes systemic friction
+            if (!(person.bitmask & 4))   personalThreatVector += 2.0; // Broken Integrity corrupts choice alignment
+            if (!(person.bitmask & 8))   personalThreatVector += 2.5; // Damaged Psychology causes accelerated mental/physical wear
+            if (!(person.bitmask & 64))  personalThreatVector += 1.0; // Stunted Development limits adaptation
+            if (!(person.bitmask & 128)) personalThreatVector += 2.0; // Missing Property leaves no baseline tool protection
+            
+            // Age ticks forward significantly faster if the individual is crushed by their environment
+            // Base aging step is 0.5 years. High ExistenzThreat accelerates this up to 5x faster!
+            let agingVelocity = 0.5 + (personalThreatVector * 0.4);
+            person.age += agingVelocity;
+
+            // Define the era's ideal biological maximum age boundary
+            let naturalCap = 80; 
+            if (currentSimType === 'tribal')     naturalCap = 35;
+            if (currentSimType === 'antiquity')  naturalCap = 40;
+            if (currentSimType === 'feudal')     naturalCap = 32;
+            if (currentSimType === 'industrial') naturalCap = 48;
+            if (currentSimType === 'rights')     naturalCap = 70;
+
+            // --- THE CRITICAL EXTINCTION CHECK ---
+            // If the accelerated aging outpaces natural caps, or if a severe right crash completely 
+            // strips them of basic structural requirements, the individual collapses.
+            if (person.age >= naturalCap || personalThreatVector > 7.0) {
+                if (person.age < naturalCap) {
+                    pushLog(`!! PREMATURE ATTRITION !! Unit #${person.id} (${person.family}) collapsed at Age ${Math.floor(person.age)} due to high ExistenzThreat.`, 'log-threat', person.id, person.family);
+                }
+                person.bitmask = 0; // Terminate active status bits. Unit collapses out of the field.
+                return; 
+            }
+
+            // Log standard structural changes
+            if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
+                if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
+                    pushLog(`!! CRITICAL SEVERANCE !! Unit #${person.id} hit Age 30. Integrity stripped by Epoch Crisis rules.`, 'log-threat', person.id, person.family);
+                } else {
+                    pushLog(`Unit #${person.id} bit-shift recorded across spacetime.`, 'log-shift', person.id, person.family);
+                }
+            }
+
+            // Accumulate leaderboard metrics for living units
+            let individualIsVictim = false;
+            bitBlueprints.forEach((blueprint) => {
+                if (!(person.bitmask & blueprint.bit)) {
+                    blueprint.count++;
+                    if (blueprint.bit !== 32 && blueprint.bit !== 128 && blueprint.bit !== 256) {
+                        brokenPillarsCount++;
+                    }
+                    individualIsVictim = true;
+                }
+            });
+            
+            if (individualIsVictim) {
+                victimCount++;
+            }
+        });
+
+        // Calculate global threat dashboard metrics
+        existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
+        document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
+        document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
+        document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
+
+        if (document.getElementById('victim-count')) {
+            document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
+        }
+
+        // Sort and populate the Top 5 scoreboard elements
         let activeStressVectors = bitBlueprints.filter(item => item.bit !== 32);
-
-        // Sort vectors dynamically in descending order based on total affected counts
         activeStressVectors.sort((a, b) => b.count - a.count);
-
-        // Extract the Top 5 most critically damaged vectors
         let topFiveVectors = activeStressVectors.slice(0, 5);
 
-        // Target the sidebar element layout wrapper
         const vectorsContainer = document.getElementById('top-vectors-list');
         if (vectorsContainer) {
-            vectorsContainer.innerHTML = ''; // Wipe stale layout data strings
-            
+            vectorsContainer.innerHTML = '';
             topFiveVectors.forEach((vector, rank) => {
                 const vectorRow = document.createElement('div');
                 vectorRow.style.display = 'flex';
@@ -531,15 +544,13 @@
                 vectorRow.style.padding = '2px 4px';
                 vectorRow.style.borderRadius = '2px';
                 
-                // Color-code rows based on severe impact steps
                 if (vector.count > 0) {
                     vectorRow.style.color = rank === 0 ? '#fc8181' : (rank < 3 ? '#f6ad55' : '#ecc94b');
                     vectorRow.style.background = 'rgba(255,255,255,0.01)';
                 } else {
-                    vectorRow.style.color = '#4a5568'; // Muted color if a vector has zero victims
+                    vectorRow.style.color = '#4a5568';
                 }
 
-                // Render descriptive alignment
                 vectorRow.innerHTML = `
                     <span>${rank + 1}. ${vector.name}</span>
                     <span style="font-weight: bold;">${vector.count}</span>
@@ -548,6 +559,7 @@
             });
         }
     }
+
 
 
     // Maps the 9 architectural bits directly into your exact Platonic coordinates
