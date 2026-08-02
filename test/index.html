@@ -749,12 +749,17 @@
             }
 
             if (isCurrentToleranceUnlimited && person.age >= 0) {
-                const totalDeceived = people.filter(p => p.age >= 0 && p.isIntolerant).length;
-                if (totalDeceived === 0 && person.id === 42) {
+            const totalDeceived = people.filter(p => p.age >= 0 && p.isIntolerant).length;
+            if (totalDeceived === 0 && person.age >= 0) {
+                // Targets Node #42, or defaults to Node #0 if #42 is stuck inside the dead birth queue matrix
+                if (person.id === 42 || (person.id === 0 && !people.some(p => p.id === 42 && p.age >= 0))) {
                     person.isIntolerant = true;
                     pushLog('Ideological strain mutation observed inside active population matrix.', 'log-threat');
                 }
+            }
 
+            // Spatial mesh transmission loops execute normally beneath the seed layer
+            if (isCurrentToleranceUnlimited && person.age >= 0) {
                 if (person.isIntolerant) {
                     people.forEach((neighbor) => {
                         if (neighbor.age >= 0 && !neighbor.isIntolerant) {
