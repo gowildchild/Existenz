@@ -331,6 +331,11 @@
             <button id="defense-toggle-btn" onclick="cycleToleranceMode()" style="background: rgba(0, 240, 255, 0.15); color: #00f0ff; border: 1px solid #00f0ff; padding: 6px 12px; font-family: 'Courier New', monospace; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px; transition: 0.1s; backdrop-filter: blur(4px); white-space: nowrap;">
                 [AUTO] TOLERANCE
             </button>
+            <div style="margin-bottom: 15px; padding: 6px; background: rgba(255,255,255,0.02); border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
+            <button id="canary-toggle-btn" onclick="toggleCanarySystem()" style="width: 100%; padding: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 3px; cursor: pointer; border: 1px solid #e53e3e; background: transparent; color: #e53e3e; transition: all 0.2s ease;">
+                Existenz Canary [0]
+            </button>
+            </div>            
         </div>
         <canvas id="simCanvas" width="750" height="750"></canvas>
     </div>
@@ -373,6 +378,11 @@
             <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
                 <!-- Dynamically populated -->
             </div>
+<!-- FIELD B: EXISTENZ CANARY DIAGNOSTIC PANEL (Bright Green Human Rights Accountability Interface) -->
+            <div id="canary-panel-wrapper" style="display: none; margin-bottom: 12px; color: #8e8eaf;">
+                <div style="font-size: 10px; color: #39ff14; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; margin-top: 8px; border-top: 1px solid #1a2233; padding-top: 4px;letter-spacing: 0.5px;">Existenz Canary:</div>
+                <div id="canary-alerts-list" style="font-size: 11px;"></div>
+            </div>            
             <div id="instigator-panel-wrapper" style="display: none; margin-bottom: 12px; color: #8e8eaf;">
                 <!-- Section Title Header: Clear, readable, and safely stacked -->
                 <div style="font-size: 10px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; margin-top: 8px; border-top: 1px solid #1a2233; padding-top: 4px;letter-spacing: 0.5px;">Radicalization:</div>
@@ -415,6 +425,7 @@
     let globalSystemicFatalities = 0;
     let globalTotalCompletions = 0;
     let autoTriggeredUnlimited = false;
+    let isCanaryActive = false;
     // 0 = LIMITED, 1 = UNLIMITED, 2 = AUTO
     let toleranceMode = 2; 
     let rationalDefenseActive = true; 
@@ -956,6 +967,20 @@
         
         // Grab active, living entities who match the extremist strain criteria
         let allDogmatists = people.filter(p => p.age >= 0 && p.isIntolerant);
+
+        people.forEach((p) => {
+            p.isCanaryAlert = false;
+            p.isPinkInstigator = false; 
+        });
+
+        // Count and flag ableism violations globally BEFORE checking the instigator loops
+        let activeAbleismCount = 0;
+        people.forEach((p) => {
+            if (p.age >= 0 && (p.bitmask & 32) === 0) {
+                activeAbleismCount++;
+                if (isCanaryActive) { p.isCanaryAlert = true; } // Sets target for the drawGrid engine pass
+            }
+        });        
         
         if (instigatorPanel && instigatorContainer) {
             if (allDogmatists.length > 0) {
@@ -986,17 +1011,36 @@
                     instigatorRow.style.padding = '2px 4px';
                     instigatorRow.style.fontSize = '11px';
                     instigatorRow.style.color = '#fc8181';
-                    
+                    let badgeColor = calculatedLevel === 4 ? 'color: #ffffff; background: #e53e3e; padding: 0 3px; border-radius: 2px; font-weight: bold;' : 'font-weight: bold; color: #e53e3e;';
                     instigatorRow.innerHTML = `
                         <span>${index + 1}. Dogmatic Instigator #${node.id}</span>
                         <span style="font-weight: bold; color: #e53e3e;">[LEVEL ${calculatedLevel}]</span>
                     `;
+                    
                     instigatorContainer.appendChild(instigatorRow);
-                });
+                });                
             } else {
                 // Completely collapses the panel structure from the layout tree when the count is 0
                 instigatorPanel.style.display = 'none';
             }
+        }  
+        // CHANNEL 2: INDEPENDENT CANARY ALERTS SEPARATION LAYER (Ableism Metric Monitoring)
+        if (canaryPanel && canaryContainer) {
+            if (isCanaryActive && activeAbleismCount > 0) {
+                canaryPanel.style.display = 'block';
+                canaryContainer.innerHTML = '';
+
+                const ableismRow = document.createElement('div');
+                ableismRow.style.padding = '2px 4px';
+                ableismRow.style.fontSize = '11px';
+                ableismRow.style.color = '#39ff14'; // Matches your bright neon green canvas profile
+                ableismRow.style.fontWeight = 'bold';
+                ableismRow.innerHTML = `⚠️ CANARY TARGET DETECTED: ${activeAbleismCount} nodes tracking acute Ableism strain.`;
+                canaryContainer.appendChild(ableismRow);
+            } else {
+                // Completely collapses the canary metric display field when zero violations are active
+                canaryPanel.style.display = 'none';
+            }        
         }        
     }
 
@@ -1633,7 +1677,35 @@
         }        
         pushLog("Historical telemetry tracking scoreboards flushed to zero vector.", "log-shift");
     }    
-    
+
+    function toggleCanarySystem() {
+        isCanaryActive = !isCanaryActive;
+        const btn = document.getElementById('canary-toggle-btn');
+        
+        if (btn) {
+            if (isCanaryActive) {
+                // System Enabled: Binary [1] turns on your protective canary gold profile
+                btn.innerText = "Existenz Canary [1]";
+                btn.style.background = "#ecc94b";
+                btn.style.color = "#1a202c";
+                btn.style.borderColor = "#ecc94b";
+                btn.style.boxShadow = "0 0 8px rgba(236, 201, 75, 0.3)";
+                pushLog("EXISTENZ CANARY INITIALIZED [STATE: 1]: Telemetry link active.", "log-shift");
+            } else {
+                // System Disabled: Reverts back to baseline state with the binary [0] flag
+                btn.innerText = "Existenz Canary [0]";
+                btn.style.background = "transparent";
+                btn.style.color = "#e53e3e";
+                btn.style.borderColor = "#e53e3e";
+                btn.style.boxShadow = "none";
+                pushLog("EXISTENZ CANARY DETACHED [STATE: 0]: Accountability metrics blinded.", "log-threat");
+            }
+        }
+        
+        // Force the graphics rendering engines to instantly repaint the screen state
+        drawGrid();
+        updateSimulation();
+    }    
     
     function executionLoop() {
         if (!isPlaying) return;
