@@ -748,8 +748,6 @@
                 return;
             }
 
-            if (isCurrentToleranceUnlimited && person.age >= 0) {
-            // FIXED: Seed mutation evaluated independently of mode locks to ensure the engine always ignites
             const totalDeceived = people.filter(p => p.age >= 0 && p.isIntolerant).length;
             if (totalDeceived === 0 && person.age >= 0) {
                 // Targets Node #42, or defaults to Node #0 if #42 is stuck inside the dead birth queue matrix
