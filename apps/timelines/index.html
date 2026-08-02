@@ -39,6 +39,9 @@
             box-shadow: inset 0 0 150px rgba(0,0,0,0.98); 
             cursor: pointer;
             display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Prevents 3D circles from stretching out of proportion on thin ratios */
         }
         #right-panel {
             width: 420px;
@@ -389,7 +392,26 @@
         }
     }
 
+    function autoScaleViewportResolution() {
+        const container = document.getElementById('canvas-container');
+        if (!container || !canvas) return;
 
+        // Extract physical screen scaling pixel density ratios
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        const rect = container.getBoundingClientRect();
+
+        // Dynamically adjust internal drawing buffer sizes to eliminate mobile blurry node vectors
+        canvas.width = rect.width * devicePixelRatio;
+        canvas.height = rect.height * devicePixelRatio;
+
+        // Force an immediate 1:1 isometric grid redraw sequence
+        drawGrid();
+        updateSimulation();
+    }
+
+    // Attach resolution listeners to catch mobile orientation flips smoothly
+    window.addEventListener('resize', autoScaleViewportResolution);
+    window.addEventListener('DOMContentLoaded', autoScaleViewportResolution);
     
     function calculatePillars(person, age, type) {
         let bitmask = 0;
@@ -699,6 +721,60 @@
         drawGrid();
         updateSimulation();
     }, { passive: false });
+
+    // Direct multi-touch mobile pinch gesture to viewport camera zoom conversion routine
+    let initialTouchDistance = null;
+
+    canvas.addEventListener('touchstart', (event) => {
+        // Intercept touch parameters only when exactly two fingers are placed on the canvas mesh
+        if (event.touches.length === 2) {
+            let t1 = event.touches[0];
+            let t2 = event.touches[1];
+            initialTouchDistance = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+        }
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (event) => {
+        if (event.touches.length === 2 && initialTouchDistance !== null) {
+            // Prevent default mobile browser elastic overscroll page rubber-banding
+            event.preventDefault();
+
+            let t1 = event.touches[0];
+            let t2 = event.touches[1];
+            let currentTouchDistance = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+
+            if (currentTouchDistance > 0) {
+                // Determine the fluid ratio of touch motion tracking steps
+                let touchScaleRatio = currentTouchDistance / initialTouchDistance;
+                let nextTouchZoom = canvasZoomFactor * (1 + (touchScaleRatio - 1) * 0.4);
+
+                // Secure mobile camera parameters between 0.1x panorama and 15.0x extreme close-ups
+                if (nextTouchZoom < 0.1) nextTouchZoom = 0.1;
+                if (nextTouchZoom > 15.0) nextTouchZoom = 15.0;
+
+                canvasZoomFactor = nextTouchZoom;
+                initialTouchDistance = currentTouchDistance;
+
+                // Dynamically update the top overlay telemetry button using your custom layout string format
+                const zoomBtn = document.getElementById('zoom-tracker-btn');
+                if (zoomBtn) {
+                    let displayPercent = Math.round(canvasZoomFactor * 100);
+                    zoomBtn.innerText = `${displayPercent}% ZOOM [RESET]`;
+                }
+
+                // Instantly invoke viewport redraw requests to present smooth camera movements
+                drawGrid();
+                updateSimulation();
+            }
+        }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', (event) => {
+        // Clear active distance tracking layers when fingers lift away from screen surface
+        if (event.touches.length < 2) {
+            initialTouchDistance = null;
+        }
+    }, { passive: true });
     
     
     function drawGrid() {
