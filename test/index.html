@@ -683,18 +683,21 @@
                 person.age += 0.1 * currentSpeedMultiplier;
             }
             
-            let naturalDemiseTriggered = false;
-            let currentEraCeiling = 80;
-            
-            if (currentSimType === 'tribal')     currentEraCeiling = 35;
-            if (currentSimType === 'antiquity')  currentEraCeiling = 40;
-            if (currentSimType === 'feudal')     currentEraCeiling = 30;
-            if (currentSimType === 'industrial') currentEraCeiling = 45;
-            if (currentSimType === 'rights')     currentEraCeiling = 65;
+            person.bitmask = calculatePillars(person, person.age, currentSimType);
 
+            let naturalDemiseTriggered = false;
+            let currentEraCeiling = 95; // Shifted up to handle realistic modern standard distributions
+            
+            if (currentSimType === 'tribal')     currentEraCeiling = 38;
+            if (currentSimType === 'antiquity')  currentEraCeiling = 45;
+            if (currentSimType === 'feudal')     currentEraCeiling = 40;
+            if (currentSimType === 'industrial') currentEraCeiling = 68;
+            if (currentSimType === 'rights')     currentEraCeiling = 82; // Baseline standard exception distribution
+
+            // FIXED: Expanded the maximum variance boundary to 110 for natural biological decay exceptions
             if (person.age >= currentEraCeiling) {
-                let checkFactor = (person.age - currentEraCeiling) / (80 - currentEraCeiling + 1);
-                if (Math.random() < checkFactor || person.age >= 80) {
+                let checkFactor = (person.age - currentEraCeiling) / (110 - currentEraCeiling + 1);
+                if (Math.random() < checkFactor || person.age >= 110) {
                     naturalDemiseTriggered = true;
                 }
             }
@@ -708,7 +711,7 @@
                 let wasCompromised = false;
                 for (let b = 0; b < 9; b++) {
                     if ((1 << b) === 32) continue;
-                    // FIXED: If the bit is 0, the right is compromised. If it is 1, it is safe.
+                    // Properly evaluates fresh live bit masks right before cleanup routines execute
                     if ((person.bitmask & (1 << b)) === 0) {
                         wasCompromised = true;
                     }
@@ -771,8 +774,6 @@
                     });
                 }
             }
-
-            person.bitmask = calculatePillars(person, person.age, currentSimType);
 
             if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
                 if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
