@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.983BETA</title>
+    <title>Existenz | 10-Epoch Spacetime Matrix | timelines v0.984B</title>
     <style>
         body { 
             margin: 0; 
@@ -450,8 +450,7 @@
         let totalCheckedPillars = people.length * 9; 
         
         let victimCount = 0;
-        // CORRECTED: Array initialized with 7 zeros to prevent syntax compile crashes
-        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+        let bitFailureCounts =; 
 
         people.forEach((person) => {
             person.lastBitmask = person.bitmask;
@@ -476,12 +475,15 @@
 
             let individualIsVictim = false;
 
-            for (let b = 0; b < 7; b++) {
+            // Updated pass to fully track all 9 expanded framework coordinates cleanly
+            for (let b = 0; b < 9; b++) {
                 if ((1 << b) === 32) continue; 
                 
                 if (!(person.bitmask & (1 << b))) {
                     brokenPillarsCount++;
-                    bitFailureCounts[b]++; 
+                    if (b < bitFailureCounts.length) {
+                        bitFailureCounts[b]++;
+                    }
                     individualIsVictim = true;
                 }
             }
@@ -495,18 +497,10 @@
         document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
         document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
 
-        // Update the dynamic metric counters in the sidebar elements
         if (document.getElementById('victim-count')) {
             document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
         }
 
-        // Update the dynamic metric counters in the sidebar elements
-        if (document.getElementById('victim-count')) {
-            document.getElementById('victim-count').innerText = `${victimCount} / ${people.length}`;
-        }
-
-        // --- EXPANDED 9-BIT ARCHITECTURAL ACCUMULATOR ---
-        // Map all 9 bits to their text descriptors and corresponding raw failure totals
         const bitBlueprints = [
             { name: "EXISTENCE (1)",   count: 0, bit: 1 },
             { name: "AUTONOMY (2)",    count: 0, bit: 2 },
