@@ -1318,7 +1318,21 @@
                 btn.style.borderColor = '#48bb78';
                 btn.style.color = '#48bb78';
                 btn.innerText = 'TOLERANCE [LTD]';
-                pushLog('Popperian limit active: Society defends its boundaries against raw intolerance.', 'log-lock');
+                
+                // POPPER THEORETICAL RESET: Actively purges the extremist contagion loop from all living nodes
+                people.forEach((person) => {
+                    person.isExtremist = false;
+                });
+
+                // Instantly zero out the Poppertime display telemetry values
+                if (document.getElementById('tolerance-count')) {
+                    document.getElementById('tolerance-count').innerText = "";
+                }
+                if (document.getElementById('tolerance-pct')) {
+                    document.getElementById('tolerance-pct').innerText = "0%";
+                }
+
+                pushLog('Popperian limit active: Society defends its boundaries. Intolerant strain neutralized and reset.', 'log-lock');
             } else {
                 btn.style.background = 'rgba(229, 62, 62, 0.2)';
                 btn.style.borderColor = '#e53e3e';
@@ -1327,7 +1341,7 @@
                 pushLog('Popperian limit dropped: Society vulnerable to unlimited ideological subversion.', 'log-threat');
             }
         }
-    }  
+    }
 
     function changeSimulation() {
         currentSimType = document.getElementById('sim-select').value;
@@ -1398,10 +1412,6 @@
         globalSystemicFatalities = 0;
         globalTotalCompletions = 0; // Clears cumulative lifecycles to drop generational counter
 
-        // FIXED: Explicitly purges the extremist infection state from every node on the grid
-        people.forEach((person) => {
-            person.isExtremist = false;
-        });
         // Instantly push the reset baselines to the active dashboard UI text spans
         if (document.getElementById('systemic-death-count')) {
             document.getElementById('systemic-death-count').innerText = "0 / 100";
@@ -1409,16 +1419,9 @@
         if (document.getElementById('generations-count')) {
             document.getElementById('generations-count').innerText = "0";
         }
-        if (document.getElementById('tolerance-count')) {
-            document.getElementById('tolerance-count').innerText = "[0]";
-        }
-        if (document.getElementById('tolerance-pct')) {
-            document.getElementById('tolerance-pct').innerText = "0%"; // Wipes Poppertime index data synchronously
-        }
-        
-        pushLog("Systemic telemetry tracking logs flushed and reset to zero vector.", "log-shift");
-    }
-
+        pushLog("Historical telemetry tracking scoreboards flushed to zero vector.", "log-shift");
+    }    
+    
     
     function executionLoop() {
         if (!isPlaying) return;
