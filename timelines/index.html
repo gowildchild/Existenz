@@ -1407,7 +1407,15 @@
             btn.style.borderColor = '#e53e3e';
             btn.style.color = '#fc8181';
             btn.innerText = '[UNLIMITED] TOLERANCE';
-            pushLog('Popperian limit dropped: Society vulnerable under UNLIMITED tolerance.', 'log-threat');
+
+            // FIXED: Automatically force-seeds Node #1 right when you cycle directly into unlimited mode
+            const activeCarriers = people.filter(p => p.age >= 0 && p.isExtremist).length;
+            if (activeCarriers === 0 && people.length > 0) {
+                people[0].isExtremist = true;
+                pushLog('Ideological strain tracking active. Patient Zero injected at Vector Node #1.', 'log-threat');
+            } else {
+                pushLog('Popperian limit dropped: Society vulnerable under UNLIMITED tolerance.', 'log-threat');
+            }
         } 
         
         // MODE 2: AUTO TOLERANCE
@@ -1423,7 +1431,7 @@
     function changeSimulation() {
         currentSimType = document.getElementById('sim-select').value;
         let profileName = document.getElementById('sim-select').options[document.getElementById('sim-select').selectedIndex].text;
-        pushLog(`%c%cEPOCH RESET: Rules shifted to [${profileName}].`, 'color: #00f0ff; font-weight: bold;');
+        pushLog(`EPOCH RESET: Rules shifted to [${profileName}].`, 'log-shift');
         
         // Flushes past generational scarring states and forces clean historical vectors
         people.forEach((person) => {
@@ -1432,10 +1440,10 @@
             person.lastBitmask = 0;      // Breaks old bit states to force fresh engine evaluations
         });
 
-        // Patient Zero Universal Injection Vector
-        // FIXED: Explicitly assigns the ignition state to individual Node #0 instead of the parent array container
-        if (currentSimType === 'tolerance-paradox' && people.length > 0) {
-            people[0].isExtremist = true; // Targets the first person node directly inside the collection loop
+        // FIXED: Universal Injection Vector hooks directly into our three-state toleranceMode
+        // Checks if tolerance mode is explicitly UNLIMITED (1) across ANY active timeline selection
+        if (toleranceMode === 1 && people.length > 0) {
+            people[0].isExtremist = true; // Safely flags the first individual node inside your array index
             pushLog('Ideological strain tracking active. Patient Zero injected at Vector Node #1.', 'log-threat');
         }
 
