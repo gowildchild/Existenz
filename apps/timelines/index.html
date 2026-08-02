@@ -310,6 +310,7 @@
     let currentPopulationScale = 100;
     let currentScaleMultiplier = 1;
     let currentSpeedMultiplier = 1.0;
+    let canvasZoomFactor = 1.0;     
     
     const families = ["Alpha Lineage", "Beta Cluster", "Gamma Node", "Delta Branch", "Epsilon Matrix"];
     let people = [];
@@ -661,11 +662,37 @@
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2 + 110;
         const matrixScale = 3.6; 
-        let isoX = centerX + (x - y) * Math.cos(0.52) * matrixScale;
-        let isoY = centerY + (x + y) * Math.sin(0.52) * matrixScale - (z * matrixScale);
+        
+        // Formulate base isometric layout tracking coordinates first
+        let baseIsoX = (x - y) * Math.cos(0.52) * matrixScale;
+        let baseIsoY = (x + y) * Math.sin(0.52) * matrixScale - (z * matrixScale);
+        
+        // Apply camera zoom strictly to spatial coordinates so expansion tracks the center point perfectly
+        let isoX = centerX + (baseIsoX * canvasZoomFactor);
+        let isoY = centerY + (baseIsoY * canvasZoomFactor);
+        
         return { x: isoX, y: isoY };
     }
+    canvas.addEventListener('wheel', (event) => {
+        // Stop default browser page scrolls while hovering your canvas environment
+        event.preventDefault();
 
+        // Adjust camera lens focus factor (scrolling up focuses closer, down pulls back)
+        let focusStep = event.deltaY < 0 ? 1.1 : 0.9;
+        let nextZoom = canvasZoomFactor * focusStep;
+
+        // Secure camera lens parameters between 0.1x panorama and 15.0x extreme close-ups
+        if (nextZoom < 0.1) nextZoom = 0.1;
+        if (nextZoom > 15.0) nextZoom = 15.0;
+
+        canvasZoomFactor = nextZoom;
+
+        // Instantly invoke viewport redraw requests to present smooth camera movements
+        drawGrid();
+        updateSimulation();
+    }, { passive: false });
+    
+    
     function drawGrid() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.strokeStyle = '#141b26';
@@ -874,7 +901,9 @@
             }
         });
         
-        if (minDist < 30) { 
+        // Dynamically scale your clickable selection radius relative to your viewport zoom factor
+        let adaptiveThreshold = 30 / canvasZoomFactor;
+        if (minDist < adaptiveThreshold) { 
             selectedPersonIndex = closestIndex;
             let lockedPerson = people[selectedPersonIndex];
             document.getElementById('log-filter-status').innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
@@ -883,6 +912,7 @@
             updateSimulation();
         }
     });
+
 
     function clearSelection() {
         selectedPersonIndex = -1;
