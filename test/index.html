@@ -1402,6 +1402,9 @@
             let coords = getXYZ(person);
             let pt = project(coords.x, coords.y, coords.z);
             let dist = Math.hypot(pt.x - clickX, pt.y - clickY);
+            if (person.age >= 12 && person.isPinkInstigator) {
+                dist = dist * 0.2; // Shrinks distance value mathematically to force a hit match
+            }            
             if (dist < minDist) {
                 minDist = dist;
                 closestId = person.id; // Store unique ID instead of array index
