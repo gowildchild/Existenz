@@ -32,7 +32,7 @@
             position: fixed; top:0; left:0; width:100vw; height:100vh;
             background: #000000; z-index: 9999; display: flex;
             flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
         .loading-text { color: var(--cyan); font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 15px; }
         .loading-bar { width: 200px; height: 2px; background: #111; border-radius: 2px; overflow: hidden; position: relative; }
@@ -44,7 +44,6 @@
         
         .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; flex-grow: 1; min-height: 0; }
         .column { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
-
         .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; min-height: 0; }
         .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
         .scrollable-content { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
@@ -83,7 +82,6 @@
 </head>
 <body>
 
-    <!-- Unified Existenz Network Header Bar -->
     <div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px;">
         <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;">Simulator</a> | 
         <a href="/Existenz/apps/lifetime/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> [ 
@@ -93,7 +91,6 @@
         <a href="https://github.comtree/main/struct" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
     </div>
 
-    <!-- Application Loader -->
     <div id="loading-universe">
         <div class="loading-text">ISOLATING COGNITIVE SPACE</div>
         <div class="loading-bar"></div>
@@ -105,7 +102,6 @@
     </header>
 
     <div class="grid">
-        <!-- LEFT COLUMN: CONTROL ARRAYS -->
         <div class="column">
             <div class="panel" style="flex-grow: 2;">
                 <h2>128-BIT CORE REGISTER FIELD (BITS 0 - 64)</h2>
@@ -121,7 +117,6 @@
             </div>
         </div>
 
-        <!-- RIGHT COLUMN: INTERACTIVE HELIX & DATA PAYLOADS -->
         <div class="column">
             <div class="panel" style="flex-grow: 3;">
                 <h2>3D GEOMETRIC FIBONACCI COHESION LAYER (SVG RENDER)</h2>
@@ -162,8 +157,6 @@
         </div>
     </div>
     <script>
-    <script>
-        // Core Definitions matching Project Existenz Framework
         const BitRegistry = {
             0: "EXISTENCE (Baseline Origin Axis)",
             1: "AUTONOMY (Sovereign Choice Coordinates)",
@@ -188,7 +181,6 @@
             32: "THREAT_ABLEISM (Systemic Hostile Attack Ingress)"
         };
 
-        // 30 Acoustic Noise Test Profiles with mapped bit arrays
         const AcousticNoiseProfiles = [
             { name: "Corporate Resource Lock", bits: [7, 17] },
             { name: "Proxy Ableism Exploitation", bits: [5, 6, 32] },
@@ -200,36 +192,35 @@
             { name: "Algorithmic Extraction", bits: [6, 7] },
             { name: "Deep Personal Betrayal", bits: [26] },
             { name: "Surveillance Congestion", bits: [8, 16] },
-            { name: "Asymmetrical Extraction", bits: [7, 6] },
-            { name: "Systemic Integrity Erasure", bits: [2, 1] },
-            { name: "Hired Aggression Ingress", bits: [4, 0] },
-            { name: "Social Gaslighting", bits: [3, 5, 32] },
+            { name: "Asymmetrical Extraction", bits: [7, 8] },
+            { name: "Systemic Integrity Erasure", bits: [1, 2] },
+            { name: "Hired Aggression Ingress", bits: [0, 4] },
+            { name: "Social Gaslighting", bits: [3, 32] },
             { name: "Crypto Property Attack", bits: [6, 7] },
             { name: "Public Security Failure", bits: [16, 20] },
             { name: "Digital Isolation", bits: [3, 24] },
             { name: "Populous Noise Flow", bits: [1, 16] },
             { name: "Vessel of Fools Campaign", bits: [2, 3] },
-            { name: "Forced Efficiency Clamp", bits: [1, 5, 32] },
+            { name: "Forced Efficiency Clamp", bits: [1, 32] },
             { name: "Asymmetrical Contract Drift", bits: [7, 17] },
             { name: "Predatory Optimization", bits: [1, 3] },
             { name: "Total Systemic Crash", bits: [1, 3, 7] },
             { name: "Forensic Invalidation", bits: [24, 26] },
-            { name: "Autonomy Restriction", bits: [1, 5] },
+            { name: "Autonomy Restriction", bits: [1, 32] },
             { name: "Weaponized Stupidity", bits: [2, 16] },
-            { name: "Proxy Bullying Asset Tap", bits: [5, 7, 32] },
+            { name: "Proxy Bullying Asset Tap", bits: [7, 32] },
             { name: "Platonic Axis Target Raid", bits: [2, 26] },
             { name: "Immediate Spacetime Shadow", bits: [4, 8] },
             { name: "Popularity Contest Drift", bits: [1, 20] }
         ];
 
         let activeBits = new Set();
-        let activeBits = new Set();
         window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('loading-universe');
+            const loader = document.getElementById('loading-universe');
+            if (loader) {
                 loader.style.opacity = '0';
-                loader.style.visibility = 'hidden';
-            }, 600);
+                setTimeout(() => loader.style.visibility = 'hidden', 300);
+            }
 
             buildRegisterFields();
             buildScenarioButtons();
@@ -237,12 +228,14 @@
             updateCalculations();
             
             setInterval(() => {
-                document.getElementById('sys-clock').innerText = "FWC SECURITY PROTOCOL CORE RE-CHECK: " + new Date().toISOString().slice(11,19) + " UTC";
+                const el = document.getElementById('sys-clock');
+                if (el) el.innerText = "FWC SECURITY PROTOCOL CORE RE-CHECK: " + new Date().toISOString().slice(11,19) + " UTC";
             }, 1000);
         });
 
         function buildRegisterFields() {
             const container = document.getElementById('bit-register-container');
+            if (!container) return;
             for (let i = 0; i <= 64; i++) {
                 const row = document.createElement('div');
                 row.className = 'bit-row';
@@ -261,6 +254,7 @@
 
         function buildScenarioButtons() {
             const container = document.getElementById('scenarios-container');
+            if (!container) return;
             AcousticNoiseProfiles.forEach((p, idx) => {
                 const btn = document.createElement('button');
                 btn.className = 'btn';
@@ -279,6 +273,7 @@
 
         function toggleProfile(idx, bits) {
             const btn = document.getElementById(`profile-btn-${idx}`);
+            if (!btn) return;
             const isActivating = !btn.classList.contains('btn-active');
             
             document.querySelectorAll('.btn').forEach(b => b.classList.remove('btn-active'));
@@ -302,11 +297,16 @@
             const dataBandwidth = (0.02 + (totalActive * 2.85)).toFixed(2);
             const totalConnections = Math.max(1, 12 - Math.floor(totalActive / 3));
 
-            document.getElementById('power-val').innerText = `${powerConsumption} W`;
-            document.getElementById('bandwidth-val').innerText = `${dataBandwidth} kbps`;
-            document.getElementById('connections-val').innerText = `${totalConnections} / 12`;
+            const pVal = document.getElementById('power-val');
+            const bVal = document.getElementById('bandwidth-val');
+            const cVal = document.getElementById('connections-val');
+            
+            if (pVal) pVal.innerText = `${powerConsumption} W`;
+            if (bVal) bVal.innerText = `${dataBandwidth} kbps`;
+            if (cVal) cVal.innerText = `${totalConnections} / 12`;
 
             const logsContainer = document.getElementById('alert-logs');
+            if (!logsContainer) return;
             logsContainer.innerHTML = '';
             let collisions = [];
 
@@ -339,7 +339,8 @@
             let upper = 0n;
             activeBits.forEach(b => { upper |= (1n << BigInt(b)); });
             let representation = upper.toString(16).toUpperCase().padStart(16, '0');
-            document.getElementById('raw-mask-output').innerText = `REGISTRY STRING MASK: 0x${representation}`;
+            const maskOut = document.getElementById('raw-mask-output');
+            if (maskOut) maskOut.innerText = `REGISTRY STRING MASK: 0x${representation}`;
 
             render3DSpiral();
         }
@@ -347,6 +348,7 @@
         function render3DSpiral() {
             const pathGroup = document.getElementById('helix-path-group');
             const nodesGroup = document.getElementById('nodes-group');
+            if (!pathGroup || !nodesGroup) return;
             pathGroup.innerHTML = '';
             nodesGroup.innerHTML = '';
 
