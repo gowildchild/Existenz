@@ -49,23 +49,23 @@
         .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.72rem; color: var(--cyan); line-height: 1.2;}
         .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
         
-        #spectrum-container { width: 100%; height: 100%; min-height: 160px; background: #010103; border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
+        #spectrum-container { width: 100%; height: 100%; min-height: 180px; background: #010103; border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
         canvas { display: block; width: 100%; height: 100%; }
+        .intro-box { background: rgba(0, 255, 170, 0.02); border: 1px solid #102a20; padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.7rem; line-height: 1.3; color: #b5c5b5; }
         
-        .controls-row { display: flex; gap: 5px; margin-bottom: 5px; flex-shrink: 0; align-items: center; }
-        .control-group { display: flex; flex-direction: column; gap: 2px; font-size: 0.68rem; color: #8e8eaf; }
-        select, button, input[type="number"] { background: #121220; border: 1px solid var(--border); color: #fff; font-family: monospace; font-size: 0.75rem; padding: 5px; cursor: pointer; border-radius: 4px; }
-        input[type="number"] { width: 50px; }
+        .controls-row { display: flex; gap: 5px; margin-bottom: 5px; flex-shrink: 0; }
+        select, button { background: #121220; border: 1px solid var(--border); color: #fff; font-family: monospace; font-size: 0.75rem; padding: 5px; cursor: pointer; border-radius: 4px; }
         button:hover { border-color: var(--cyan); color: var(--cyan); }
         
-        .audit-report-view { background: #020205; border: 1px solid #112; padding: 8px; font-family: monospace; font-size: 0.7rem; color: #b5c5b5; max-height: 155px; overflow-y: auto; line-height: 1.35; }
-        .audit-pass { color: var(--green); font-weight: bold; }
-        .audit-fail { color: var(--pink); font-weight: bold; }
+        .ocean-flow-list { display: grid; grid-template-columns: 1fr; gap: 3px; font-size: 0.7rem; max-height: 140px; overflow-y: auto; border: 1px solid #111; padding: 4px; background: #020205; }
+        .flow-item { padding: 3px; border-bottom: 1px solid #0f0f15; display: flex; justify-content: space-between; }
+        .flow-btn { background: #151525; border: 1px solid #223; color: #8e8eaf; font-size: 0.65rem; padding: 1px 4px; cursor: pointer; }
+        .flow-btn:hover { color: var(--cyan); border-color: var(--cyan); }
     </style>
 </head>
 <body>
 
-    <!-- Header Block -->
+    <!-- Cloned Interface Header Elements -->
     <div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0;">
         <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;">Simulator</a> | 
         <a href="/Existenz/apps/lifetime/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> [ 
@@ -75,70 +75,74 @@
         <a href="https://github.comtree" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
     </div>
     <div class="grid">
-        <!-- Left Column: Controls, Variables, and Primitive Registry Switches -->
+        <!-- Left Column: Input Vectors and Live Control Engine -->
         <div class="column">
             <div class="panel" style="flex-shrink: 0;">
-                <h2>Generary Engine Controls (5 Generations / 125 Years)</h2>
+                <h2>Canary Controller & Demographic Modifiers</h2>
                 <div class="controls-row" style="flex-wrap: wrap; gap: 8px;">
                     <div class="control-group">
-                        <label>Base Scale per Gen</label>
+                        <label>Scale Iterations</label>
                         <select id="scale-select">
-                            <option value="50000" selected>Standard Track (50k / Gen)</option>
-                            <option value="500000">Heavy Urban Load (500k / Gen)</option>
-                            <option value="2000000">Nation Scale (2M / Gen)</option>
+                            <option value="10000">Micro Sample (10,000)</option>
+                            <option value="1000000" selected>Urban Stress (1,000,000)</option>
+                            <option value="11500000">Small Nation (11,500,000)</option>
                         </select>
                     </div>
                     <div class="control-group">
-                        <label>Disability Baseline %</label>
-                        <input type="number" id="disability-pct" min="0" max="100" value="16">
+                        <label>Disability Pop %</label>
+                        <input type="number" id="disability-pct" min="0" max="100" value="15">
                     </div>
                     <div class="control-group">
-                        <label>Broken Shield Base %</label>
-                        <input type="number" id="brokenshield-pct" min="0" max="100" value="25">
+                        <label>Broken Shield %</label>
+                        <input type="number" id="brokenshield-pct" min="0" max="100" value="30">
                     </div>
                     <div style="display: flex; gap: 4px; align-items: flex-end; margin-top: auto;">
-                        <button onclick="runGenerationalComplianceTest()" style="border-color: var(--cyan); color: var(--cyan);">⚡ Run 5-Gen Audit</button>
-                        <button onclick="resetTelemetryTensors()" style="color: var(--pink);">Clear</button>
+                        <button onclick="executeMatrixStressLoad()">⚡ Run Test</button>
+                        <button onclick="clearTelemetryArrays()" style="color: var(--pink);">Clear</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Compliance Audit Report Viewport Container -->
-            <div class="panel" style="flex-shrink: 0; min-height: 190px;">
-                <h2>Safety Compliance Audit Report</h2>
-                <div class="audit-report-view" id="audit-report-target">
-                    System idle. Run a 5-Generation compliance test to compile mathematical audit outcomes...
-                </div>
+            <!-- The 50 Real-Life Environmental Flow Tides Trigger Deck -->
+            <div class="panel" style="flex-shrink: 0; min-height: 160px;">
+                <h2>Natural Ocean Flows (50 Human Life Events)</h2>
+                <div class="ocean-flow-list" id="ocean-flow-target"></div>
+            </div>
+
+            <!-- Intercept Matrix Log -->
+            <div class="panel" style="flex-shrink: 0;">
+                <h2>Simultaneous Register Collision Points Detected</h2>
+                <div class="collision-log" id="collision-log-target">No active collisions tracked. System clear.</div>
             </div>
 
             <div class="panel" style="flex-grow: 1;">
-                <h2>1. Full Existenz Schema Core Registries & Active Load Metrics</h2>
+                <h2>1. Immutable Core Registries & Active Load Metrics</h2>
                 <div class="scrollable-content" id="switchboard-target"></div>
             </div>
         </div>
-        <!-- Right Column: Visual Spectrum Canvas and Hardware Counters -->
+        <!-- Right Column: Graphical Spectrum Grid and Bandwidth Meters -->
         <div class="column">
             <div class="panel" style="flex-grow: 1.2;">
-                <h2>2. Spatiotemporal Generational Spectrum Monitor</h2>
+                <h2>2. Spatiotemporal Spectrum Heatmap Monitor</h2>
                 <div id="spectrum-container">
                     <canvas id="scopeCanvas"></canvas>
                 </div>
             </div>
 
             <div class="panel" style="flex-shrink: 0;">
-                <h2>3. Cross-Generation Computational Overrun Meters</h2>
+                <h2>3. Computational Footprint & Bandwidth Meters</h2>
                 <div class="formula-box">
-                    𝚲𝐑drift = 𝚿realist(Gen1→5) - 𝚿ideal(Lattice) <br>
-                    Time Variable: 125 Years Lifecycle Horizon. 5 Generations processing across Base-2 space.
+                    𝚩𝖂limit = ℛlattice × 𝖡𝖂base 𝚫 𝚩𝖂overrun ⟹ 𝖲ystemic_𝖢ollapse<br>
+                    Red-out lines appear on spectrum monitor when register band density overruns allocated processing tunnels.
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 5px;">
                     <div>
-                        <span style="font-size:0.68rem; color:#8e8eaf;">Generational Processing Cost:</span><br>
+                        <span style="font-size:0.68rem; color:#8e8eaf;">Computational Processing Power:</span><br>
                         <span class="metric-val" id="cpu-power-metric" style="color: var(--green);">0.00 MFLOPs</span>
                     </div>
                     <div>
-                        <span style="font-size:0.68rem; color:#8e8eaf;">Total Active Vector Bandwidth:</span><br>
+                        <span style="font-size:0.68rem; color:#8e8eaf;">Active Telemetry Bandwidth:</span><br>
                         <span class="metric-val" id="bandwidth-metric" style="color: var(--cyan);">0.00 MB/s</span>
                     </div>
                 </div>
@@ -149,7 +153,7 @@
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 6px;">
-                    <span style="font-size:0.68rem; color:#8e8eaf;">Total Lifecycle Runs Evaluated:</span>
+                    <span style="font-size:0.68rem; color:#8e8eaf;">Total Transactions Logged:</span>
                     <span class="metric-val" id="total-processed-counter" style="font-size: 0.9rem;">0</span>
                 </div>
                 <div class="raw-string" id="binary-stream-box">00000000...</div>
@@ -157,9 +161,9 @@
         </div>
     </div>
     <script>
-        // FULL EXTENDED IMMUTABLE ARCHITECTURE BASELINE (CORE, SHIELDS, RIPPLES)
-        const FULL_EXISTENZ_SCHEMA = [
-            // ExistentialCore Primitives
+        // RECENTLY VERIFIED REPOSITORY ENTRIES FOR IMMUTABLE BLUEPRINT SPECIFICATIONS
+        const IMMUTABLE_ARCHITECTURE = [
+            // The 7 Natural Human Pillars (The Foundational Coordinates)
             { bit: 0, name: "EXISTENCE", cat: "pillar", active: true },
             { bit: 1, name: "AUTONOMY", cat: "pillar", active: true },
             { bit: 2, name: "INTEGRITY", cat: "pillar", active: true },
@@ -170,230 +174,260 @@
             { bit: 7, name: "PROPERTY", cat: "pillar", active: false },
             { bit: 8, name: "PRESENCE", cat: "pillar", active: false },
 
-            // Shield Structures
+            // The external defense factors, protected SHIELD structures
             { bit: 20, name: "SHIELD_HUMAN_RIGHTS", cat: "shield", active: false },
             { bit: 22, name: "SHIELD_DISCRIMINATION_RIGHTS", cat: "shield", active: false },
             { bit: 24, name: "SHIELD_BASIC_RIGHTS", cat: "shield", active: true },
+            
+            // The acquired micro-structural SHIELDS
             { bit: 26, name: "SHIELD_AQUIRED_RIGHTS", cat: "shield", active: true },
-            { bit: 30, name: "SHIELD_AQUIRED_TRUST", cat: "shield", active: false },
+            { bit: 30, name: "SHIELD_AQUIRED_TRUST", cat: "shield", active: false }
+        ];
 
-            // Ripples / Blast Radius Coordinates
-            { bit: 64, name: "RIPPLE_INDIVIDUAL", cat: "ripple", active: false },
-            { bit: 65, name: "RIPPLE_PARTNER", cat: "ripple", active: false },
-            { bit: 66, name: "RIPPLE_HOUSEHOLD_MARRIAGE", cat: "ripple", active: false },
-            { bit: 67, name: "RIPPLE_FAMILY", cat: "ripple", active: false },
-            { bit: 68, name: "RIPPLE_FRIENDS", cat: "ripple", active: false },
-            { bit: 69, name: "RIPPLE_PEERS", cat: "ripple", active: false },
-            { bit: 70, name: "RIPPLE_SUPPORT", cat: "ripple", active: false },
-            { bit: 74, name: "RIPPLE_SOCIETY", cat: "ripple", active: false },
-            { bit: 75, name: "RIPPLE_CORPORATE", cat: "ripple", active: false },
-            { bit: 76, name: "RIPPLE_GOVERNED", cat: "ripple", active: false }
+        // Advanced Composite Threat Triggers from ExistentialThreat Spec
+        const THREAT_MATRIX = {
+            THREAT_EXISTENCE: 0, THREAT_AUTONOMY: 1, THREAT_INTEGRITY: 2,
+            THREAT_PSYCHOLOGY: 3, THREAT_PHYSICAL: 4, THREAT_ABLEISM: 5,
+            THREAT_DEVELOPMENT: 6, THREAT_PROPERTY: 7
+        };
+
+        // 50 Natural Ocean Flow Scenarios mapping environmental occurrences to bit clusters
+        const LIFE_OCEAN_FLOWS = [
+            { title: "1. Born into world framework", bits:, threat: [0] },
+            { title: "2. Neurodivergence diagnosis (AuDHD)", bits:, threat: [5] },
+            { title: "3. Learning to read and write", bits:, threat: [] },
+            { title: "4. Setting up first savings vault", bits:, threat: [7] },
+            { title: "5. Onset of systemic physical condition", bits:, threat: [4] },
+            { title: "6. Targeted online profile harassment", bits:, threat: [3] },
+            { title: "7. Moving coordinates to rented flat", bits:, threat: [7] },
+            { title: "8. Initializing marriage alliance contract", bits:, threat: [] },
+            { title: "9. Dismissed via discriminatory automation", bits:, threat: [5, 7] },
+            { title: "10. Suffering development asset plundering", bits:, threat: [7] },
+            { title: "11. Transit walking across town lines", bits:, threat: [] },
+            { title: "12. Exposing organizational accounting corruption", bits:, threat: [1, 2] },
+            { title: "13. Sudden regional internet routing collapse", bits:, threat: [6] },
+            { title: "14. Proxy crowd bullying metrics active", bits:, threat: [3, 5] },
+            { title: "15. Graduating vocational technical academy", bits:, threat: [] },
+            { title: "16. Filing annual demographic census tax", bits:, threat: [] },
+            { title: "17. Sustaining mechanical bone fracture", bits:, threat: [4] },
+            { title: "18. Experiencing massive sensory landscape overload", bits:, threat: [3] },
+            { title: "19. Severe creative performance exhaustion spike", bits:, threat: [] },
+            { title: "20. Signing heavy information containment NDA", bits:, threat: [1] },
+            { title: "21. Provisioning private dedicated server box", bits:, threat: [] },
+            { title: "22. Being shadowed by physical bad actors", bits:, threat: [0, 2] },
+            { title: "23. Disruption of deep biology recovery loops", bits:, threat: [3, 4] },
+            { title: "24. Receiving ancestral heritage asset deeds", bits:, threat: [] },
+            { title: "25. Engaging hyper-focused pattern compiler runs", bits:, threat: [] },
+            { title: "26. Targeted audit block on capital ledgers", bits:, threat: [7] },
+            { title: "27. Releasing verified open-source framework", bits:, threat: [] },
+            { title: "28. Fracture of close trusted alliance link", bits:, threat: [] },
+            { title: "29. Deploying administrative protection breakers", bits:, threat: [] },
+            { title: "30. Enduring systemic legal grid gaslighting", bits:, threat: [1, 3] },
+            { title: "31. Welcoming family lineage addition", bits:, threat: [] },
+            { title: "32. Sourcing basic biological nutrients", bits:, threat: [] },
+            { title: "33. Advancing along age lifecycle markers", bits:, threat: [] },
+            { title: "34. Facing proxy character smear profiles", bits:, threat: [2, 3] },
+            { title: "35. Executing baseline internal biometric scans", bits:, threat: [] },
+            { title: "36. Publishing public threat discovery metrics", bits:, threat: [] },
+            { title: "37. Moving across global continental borders", bits:, threat: [] },
+            { title: "38. Sustaining severe psychological load limits", bits:, threat: [3] },
+            { title: "39. Receiving explicit extortion email lines", bits:, threat: [1, 7] },
+            { title: "40. Achieving clean court boundary correction", bits:, threat: [] },
+            { title: "41. Connecting with high-alignment peer node", bits:, threat: [] },
+            { title: "42. Micromanagement constraint lines active", bits:, threat: [1] },
+            { title: "43. Learning parsing compiler architectures", bits:, threat: [] },
+            { title: "44. Navigating unstable localized environmental storms", bits:, threat: [4] },
+            { title: "45. Having credit card ledger credentials leaked", bits:, threat: [7] },
+            { title: "46. Restoring baseline parameters in empty forests", bits:, threat: [] },
+            { title: "47. Placed on restrictive system corporate blacklist", bits:, threat: [1, 7] },
+            { title: "48. Finalizing structural multi-bit simulator code", bits:, threat: [] },
+            { title: "49. Attending direct assembly community discussions", bits:, threat: [] },
+            { title: "50. Facing physical mortality decay transitions", bits:, threat: [4] }
         ];
 
         let liveState = {};
         let registerDensityArray = new Array(128).fill(0);
+        let explicitCollisionPoints = {}; 
         let totalSimulatedRuns = 0;
-        
-        // Compliance tracker metrics across historical generations
-        let generationalMetricsLog = [];
 
         const canvas = document.getElementById("scopeCanvas");
         const ctx = canvas.getContext("2d");
-
-        function initAppWorkspace() {
+        function buildWorkspace() {
             const container = document.getElementById("switchboard-target");
             container.innerHTML = "";
-            FULL_EXISTENZ_SCHEMA.forEach(item => {
+            IMMUTABLE_ARCHITECTURE.forEach(item => {
                 liveState[item.bit] = item.active;
                 const row = document.createElement("div");
                 row.className = "bit-row";
                 row.innerHTML = `
                     <span class="bit-tag">b${item.bit.toString().padStart(3, '0')}</span>
-                    <span class="bit-name" style="color: ${item.cat==='shield'?'var(--green)':item.cat==='ripple'?'#8e8eaf':'#fff'}">${item.name}</span>
+                    <span class="bit-name" style="color: ${item.cat==='shield'?'var(--green)':'#fff'}">${item.name}</span>
                     <span class="bit-metric-box" id="metric-readout-${item.bit}">0 hits</span>
                     <label class="switch">
-                        <input type="checkbox" ${item.active ? 'checked' : ''} id="switch-${item.bit}" onchange="toggleBitState(${item.bit})">
+                        <input type="checkbox" ${item.active ? 'checked' : ''} id="switch-${item.bit}" onchange="toggleBitField(${item.bit})">
                         <span class="slider"></span>
                     </label>
                 `;
                 container.appendChild(row);
             });
-            window.addEventListener('resize', fixCanvasSize);
-            fixCanvasSize();
-            requestAnimationFrame(renderSpectrumLoop);
+
+            const flowContainer = document.getElementById("ocean-flow-target");
+            flowContainer.innerHTML = "";
+            LIFE_OCEAN_FLOWS.forEach((flow, idx) => {
+                const el = document.createElement("div");
+                el.className = "flow-item";
+                el.innerHTML = `
+                    <span style="color:#fff; font-size:0.7rem; font-weight:bold;">${flow.title}</span>
+                    <button class="flow-btn" onclick="injectOceanWave(${idx})">Fire Flow</button>
+                `;
+                flowContainer.appendChild(el);
+            });
+
+            window.addEventListener('resize', fitCanvasToPanel);
+            fitCanvasToPanel();
+            requestAnimationFrame(renderSpectrumHeatmap);
         }
 
-        function toggleBitState(bit) {
+        function toggleBitField(bit) {
             liveState[bit] = document.getElementById(`switch-${bit}`).checked;
-            updateHardwareMetrics();
+            evaluateSystemMetrics();
         }
 
-        function fixCanvasSize() {
+        function fitCanvasToPanel() {
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
         }
 
-        function resetTelemetryTensors() {
+        function clearTelemetryArrays() {
             registerDensityArray.fill(0);
-            generationalMetricsLog = [];
+            explicitCollisionPoints = {};
             totalSimulatedRuns = 0;
             document.body.classList.remove("alarm-active");
-            document.getElementById("audit-report-target").innerHTML = "System idle. Run a 5-Generation compliance test to compile mathematical audit outcomes...";
-            updateHardwareMetrics();
+            evaluateSystemMetrics();
         }
-        // TIME-SERIES TIME ENGINE (Simulates 5 Generations under cascading environmental parameters)
-        function runGenerationalComplianceTest() {
-            resetTelemetryTensors();
-            const baseScale = parseInt(document.getElementById("scale-select").value);
+
+        function injectOceanWave(idx) {
+            const scale = parseInt(document.getElementById("scale-select").value);
+            const flow = LIFE_OCEAN_FLOWS[idx];
+            processTelemetryLoad(scale / 2, flow.bits, flow.threat);
+        }
+
+        function executeMatrixStressLoad() {
+            const scale = parseInt(document.getElementById("scale-select").value);
+            processTelemetryLoad(scale, [0,1,2,5], [3,5,7]); 
+        }
+
+        // TELEMETRY LOAD PROCESSOR & COLLISION INTERCEPT SEARCH MATH
+        function processTelemetryLoad(runs, targetBits, threatBits) {
+            totalSimulatedRuns += runs;
             
-            let currentDisabilityRate = parseFloat(document.getElementById("disability-pct").value) / 100;
-            let currentBrokenShieldRate = parseFloat(document.getElementById("brokenshield-pct").value) / 100;
+            const disabilityModifier = parseFloat(document.getElementById("disability-pct").value) / 100;
+            const brokenShieldModifier = parseFloat(document.getElementById("brokenshield-pct").value) / 100;
 
-            // Step sequentially through 5 generations (125-year time parameter loop)
-            for (let gen = 1; gen <= 5; gen++) {
-                let genRuns = baseScale * (1 + (gen * 0.05)); // Accounts for demographic population growth multipliers
-                totalSimulatedRuns += genRuns;
+            for (let i = 0; i < runs; i++) {
+                let nodeHasDisability = Math.random() < disabilityModifier;
+                let externalShieldsFailing = Math.random() < brokenShieldModifier;
 
-                let genCollisionsCount = 0;
-                let genShieldSaves = 0;
+                // Process foundational active switch registrations
+                targetBits.forEach(b => { if (liveState[b]) registerDensityArray[b]++; });
 
-                for (let i = 0; i < genRuns; i++) {
-                    // Generational inheritance accumulation checks
-                    let inheritedVulnerability = (gen > 1 && genCollisionsCount > (baseScale * 0.1));
-                    let adjustedDisabilityRisk = inheritedVulnerability ? Math.min(0.9, currentDisabilityRate + 0.08) : currentDisabilityRate;
-                    let adjustedShieldBreakerRisk = Math.min(0.95, currentBrokenShieldRate + (gen * 0.02)); // Compounding structural drift over time
-
-                    let sampleHasDisability = Math.random() < adjustedDisabilityRisk;
-                    let systemicShieldsFailing = Math.random() < adjustedShieldBreakerRisk;
-
-                    // Standard execution tracks
-                    if (liveState) registerDensityArray++;
-                    if (liveState) registerDensityArray++;
-                    if (liveState) registerDensityArray++;
-
-                    if (sampleHasDisability && liveState) {
-                        registerDensityArray++;
-                        
-                        // Scenario simulation: Encountering ableism or property locks under load
-                        if (Math.random() < 0.35) {
-                            if (liveState && !systemicShieldsFailing) {
-                                registerDensityArray++; // Shield successfully absorbs threat energy
-                                genShieldSaves++;
-                            } else {
-                                // Unshielded threats generate direct register collisions across channels
-                                registerDensityArray += 5; // b5 Ableism register collision
-                                registerDensityArray += 4; // b3 Psychological load spillover
-                                registerDensityArray += 3; // b7 Resource locking noise
-                                genCollisionsCount++;
-                            }
-                        }
-                    }
-
-                    // Macro ripple lane registrations
-                    if (liveState) registerDensityArray++;
-                    if (Math.random() < 0.2) registerDensityArray++;
+                if (nodeHasDisability && liveState[5]) {
+                    registerDensityArray[5]++; // DISABILITY track active
                 }
 
-                // Append historical markers for audit compilation tracking
-                generationalMetricsLog.push({
-                    generation: gen,
-                    runs: genRuns,
-                    collisions: genCollisionsCount,
-                    saves: genShieldSaves,
-                    leakRatio: genCollisionsCount / genRuns
+                // Evaluate intersecting multi-bit active threat matrices
+                threatBits.forEach(t => {
+                    let shieldProtected = false;
+                    
+                    if (t === 5 && liveState[22] && !externalShieldsFailing) shieldProtected = true; // Discrimination protections
+                    if (t === 7 && liveState[26] && !externalShieldsFailing) shieldProtected = true; // Acquired property locks
+                    if (t === 3 && liveState[24] && !externalShieldsFailing) shieldProtected = true; // Cyber network shielding
+
+                    if (!shieldProtected) {
+                        registerDensityArray[t] += 4; // High impact collision energy spike
+                        
+                        // MULTI-BIT INTERCEPT CAPTURE: Test if multiple threat flags intersect concurrently
+                        threatBits.forEach(innerT => {
+                            if (t !== innerT) {
+                                let collisionKey = `b${Math.min(t, innerT)} ↔ b${Math.max(t, innerT)}`;
+                                explicitCollisionPoints[collisionKey] = (explicitCollisionPoints[collisionKey] || 0) + 1;
+                            }
+                        });
+                    } else {
+                        registerDensityArray[20]++; // Divert to generic safety tracking register
+                    }
                 });
             }
-
-            compileAuditReport();
-            updateHardwareMetrics();
+            evaluateSystemMetrics();
         }
 
-        // SAFETY COMPLIANCE REPORT COMPILER
-        function compileAuditReport() {
-            const reportTarget = document.getElementById("audit-report-target");
-            let outputHtml = `<h3>⚡ EXISTENZ 5-GENERATION SAFETY AUDIT COMPLETED</h3>`;
-            
-            let cumulativeCollisions = 0;
-            let structuralBreachDetected = false;
-
-            generationalMetricsLog.forEach(g => {
-                cumulativeCollisions += g.collisions;
-                let complianceStatus = g.leakRatio < 0.05 ? `<span class="audit-pass">PASS</span>` : `<span class="audit-fail">FAIL</span>`;
-                if (g.leakRatio >= 0.05) structuralBreachDetected = true;
-
-                outputHtml += `
-                    <div><strong>Generation ${g.generation} (Year +${g.generation * 25}):</strong> 
-                    Runs: ${Math.floor(g.runs).toLocaleString()} | 
-                    Collisions: ${g.collisions.toLocaleString()} | 
-                    Status: ${complianceStatus} (Leak: ${(g.leakRatio * 100).toFixed(2)}%)</div>
-                `;
-            });
-
-            outputHtml += `<br><h3>📌 FORENSIC CONCLUSION SUMMARY</h3>`;
-            if (structuralBreachDetected) {
-                outputHtml += `
-                    <div class="audit-fail">❌ HIGH RISK ARCHITECTURAL CRITIQUE:</div>
-                    <div>Compounding generational data drift has breached safety thresholds. Lack of insulated shielding layers causes ableism collision parameters to bleed into upper networks, threatening population-scale social stability. Protect core registers immediately.</div>
-                `;
-            } else {
-                outputHtml += `
-                    <div class="audit-pass">✅ SECURE ARCHITECTURAL PRIMITIVE LATTICE:</div>
-                    <div>Orthogonal vector bounds remained watertight across 125 historical simulation steps. System isolation features handled demographic expansion patterns safely. Verified compliant.</div>
-                `;
-            }
-
-            reportTarget.innerHTML = outputHtml;
-        }
-
-        function updateHardwareMetrics() {
+        function evaluateSystemMetrics() {
             document.getElementById("total-processed-counter").innerText = totalSimulatedRuns.toLocaleString();
             
+            // Compute real-time hardware, bandwidth, and overrun overheads
+            let activeChannels = registerDensityArray.filter(h => h > 0).length;
             let totalHitsSum = registerDensityArray.reduce((a, b) => a + b, 0);
+            
             let cpuMflops = (totalHitsSum * 0.00002).toFixed(2);
             let bandwidthMbs = (totalHitsSum * 0.00004).toFixed(2);
             
-            let rawOverrunBytes = Math.max(0, (totalHitsSum * 0.00003) - 200);
+            // Bandwidth Overrun Metric: Triggers above a baseline channel saturation profile
+            let rawOverrunBytes = Math.max(0, (totalHitsSum * 0.00003) - 250);
             let overrunMbs = totalSimulatedRuns > 0 ? rawOverrunBytes.toFixed(2) : "0.00";
 
             document.getElementById("cpu-power-metric").innerText = `${cpuMflops} MFLOPs`;
             document.getElementById("bandwidth-metric").innerText = `${bandwidthMbs} MB/s`;
             document.getElementById("overrun-metric").innerText = `${overrunMbs} MB`;
 
-            FULL_EXISTENZ_SCHEMA.forEach(item => {
+            // Display intercepted simultaneous collision points
+            const logBox = document.getElementById("collision-log-target");
+            let sortedCollisions = Object.entries(explicitCollisionPoints).sort((a,b) => b[1] - a[1]);
+            if (sortedCollisions.length > 0) {
+                logBox.innerHTML = sortedCollisions.map(c => `<div>⚠️ Overlap [${c[0]}]: ${c[1].toLocaleString()} occurrences</div>`).join("");
+            } else {
+                logBox.innerHTML = "No active collisions tracked. System clear.";
+            }
+
+            let peakValue = Math.max(...registerDensityArray, 1);
+            let extremePeakPct = totalSimulatedRuns > 0 ? ((peakValue / totalSimulatedRuns) * 100).toFixed(1) : "0.0";
+            document.getElementById("highest-spike-label").innerText = `${extremePeakPct}%`;
+
+            IMMUTABLE_ARCHITECTURE.forEach(item => {
                 const el = document.getElementById(`metric-readout-${item.bit}`);
                 if (el) el.innerText = `${registerDensityArray[item.bit].toLocaleString()} hits`;
             });
 
+            // Set system boundaries status review preview
             let preview = [];
             for (let b = 127; b >= 0; b--) preview.push(registerDensityArray[b] > 0 ? "1" : "0");
             document.getElementById("binary-stream-box").innerText = preview.slice(-64).join("").match(/.{1,8}/g).join(" ");
 
-            if (parseFloat(overrunMbs) > 100.0) {
+            if (parseFloat(overrunMbs) > 100.0 || parseFloat(extremePeakPct) > 12.0) {
                 document.body.classList.add("alarm-active");
             } else {
                 document.body.classList.remove("alarm-active");
             }
         }
 
-        function renderSpectrumLoop(timestamp) {
+        function renderSpectrumHeatmap(timestamp) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const totalLanes = 128;
-            const separation = 2;
-            const barW = (canvas.width - (totalLanes * separation)) / totalLanes;
-            const currentPeak = Math.max(...registerDensityArray, 1);
+            const spacer = 2;
+            const barW = (canvas.width - (totalLanes * spacer)) / totalLanes;
+            const absoluteMax = Math.max(...registerDensityArray, 1);
 
             for (let i = 0; i < totalLanes; i++) {
-                let hits = registerDensityArray[i];
-                let ratio = hits / currentPeak;
-                let x = i * (barW + separation);
+                let currentHits = registerDensityArray[i];
+                let ratio = currentHits / absoluteMax;
+                let x = i * (barW + spacer);
 
-                let fillStyle = "rgba(10, 10, 34, 0.2)";
-                if (hits > 0) {
-                    let intensity = Math.min(1, hits / (totalSimulatedRuns * 0.08 || 1));
-                    let r = Math.floor(intensity * 255);
-                    let g = Math.floor((1 - intensity) * 230);
+                let fillStyle = "rgba(10, 10, 34, 0.2)"; // Deep blue calm baseline
+                if (currentHits > 0) {
+                    let heat = Math.min(1, currentHits / (totalSimulatedRuns * 0.08 || 1));
+                    let r = Math.floor(heat * 255);
+                    let g = Math.floor((1 - heat) * 230);
                     let b = 255;
-                    fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    fillStyle = `rgb(${r}, ${g}, ${b})`; // Dynamic transition to hot pink
                 }
 
                 let finalH = 4 + (ratio * (canvas.height - 35));
@@ -406,10 +440,10 @@
                     ctx.fillText(`b${i}`, x, canvas.height - 4);
                 }
             }
-            requestAnimationFrame(renderSpectrumLoop);
+            requestAnimationFrame(renderSpectrumHeatmap);
         }
 
-        initAppWorkspace();
+        buildWorkspace();
     </script>
 </body>
 </html>
