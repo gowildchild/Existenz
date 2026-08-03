@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en-BE">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Existenz Platform Matrix Simulator | Gunther | FWC v0.84</title>
+    <style>
+        :root {
+            --cyan: #00f0ff;
+            --green: #00ffaa;
+            --pink: #ff00aa;
+            --bg: #030305;
+            --panel: #09090f;
+            --border: #141424;
+        }
+        body {
+            background-color: var(--bg); color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+            margin: 0; padding: 10px; box-sizing: border-box;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+            border: 2px solid var(--green); transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        body.alarm-active { 
+            border-color: var(--pink) !important;
+            animation: redAlertFlash 1.5s infinite alternate; 
+        }
+        @keyframes redAlertFlash {
+            0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); }
+            100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); }
+        }
+        #loading-universe {
+            position: fixed; top:0; left:0; width:100vw; height:100vh;
+            background: #000000; z-index: 9999; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .loading-text { color: var(--cyan); font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 15px; }
+        .loading-bar { width: 200px; height: 2px; background: #111; border-radius: 2px; overflow: hidden; position: relative; }
+        .loading-bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--pink); animation: sweep 1.5s infinite linear; }
+        @keyframes sweep { 0% { left: -50%; } 100% { left: 100%; } }
+        
+        header { border-bottom: 2px solid var(--cyan); padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
+        h1 { margin: 0; color: var(--cyan); font-size: 1.2rem; font-weight: 800; }
+        
+        .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; flex-grow: 1; min-height: 0; }
+        .column { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+
+        .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; min-height: 0; }
+        .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
+        .scrollable-content { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
+        
+        .bit-row { display: flex; align-items: center; justify-content: space-between; padding: 5px; border-bottom: 1px solid #0f0f1c; font-size: 0.75rem; }
+        .switch { position: relative; display: inline-block; width: 34px; height: 16px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #202030; transition: .2s; border-radius: 16px; }
+        .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--cyan); }
+        input:checked + .slider:before { transform: translateX(18px); }
+        
+        .raw-string { background: #020204; border-left: 3px solid var(--pink); padding: 5px; font-size: 0.7rem; color: #8e8eaf; font-family: monospace; word-break: break-all; margin-top: 5px; }
+        .btn { background: #0f0f1b; border: 1px solid var(--cyan); color: white; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-family: monospace; transition: 0.1s; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .btn:hover { background: var(--cyan); color: black; font-weight: bold; }
+        .btn-active { background: var(--pink) !important; border-color: #fff !important; }
+        
+        .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.75rem; color: var(--cyan); }
+        .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
+        
+        .scenarios-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; flex-shrink: 0; }
+        
+        #matrix-vis-container { width: 100%; height: 100%; min-height: 280px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; background: #020205; border-radius: 4px; border: 1px solid var(--border); }
+        svg { width: 100%; height: 100%; }
+        
+        .intro-box { background: rgba(0, 255, 170, 0.02); border: 1px solid #102a20; padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.7rem; line-height: 1.3; color: #b5c5b5; }
+        .alert-item { font-size: 0.7rem; padding: 4px; border-left: 2px solid var(--pink); margin-bottom: 3px; background: rgba(255,0,170,0.03); color: #ffb3df; }
+
+        @media (max-width: 768px) {
+            body { height: auto; overflow: auto; }
+            .grid { grid-template-columns: 1fr; }
+            .scenarios-grid { grid-template-columns: repeat(2, 1fr); }
+            #matrix-vis-container { height: 320px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Unified Existenz Network Header Bar -->
+    <div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px;">
+        <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;">Simulator</a> | 
+        <a href="/Existenz/apps/lifetime/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> [ 
+        <a href="/Existenz/apps/timelines/" style="color: #FD028E; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;">TimeLine</a> ] 
+        <a href="https://github.com" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">GitHub</a> | 
+        <a href="https://github.comtree/main/examples" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
+        <a href="https://github.comtree/main/struct" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
+    </div>
+
+    <!-- Application Loader -->
+    <div id="loading-universe">
+        <div class="loading-text">ISOLATING COGNITIVE SPACE</div>
+        <div class="loading-bar"></div>
+    </div>
+
+    <header>
+        <h1>PLATO FIELDS // EXISTENZ ARCHITECTURE SIMULATOR</h1>
+        <div style="font-size: 0.7rem; color: #6e6eaf;" id="sys-clock">SYSTEM ONLINE</div>
+    </header>
+
+    <div class="grid">
+        <!-- LEFT COLUMN: CONTROL ARRAYS -->
+        <div class="column">
+            <div class="panel" style="flex-grow: 2;">
+                <h2>128-BIT CORE REGISTER FIELD (BITS 0 - 64)</h2>
+                <div class="intro-box">
+                    Flip parameters manually to calculate canary thresholds. Orthogonal layers protect the baseline geometric origin (Bit-0) from structural overruns.
+                </div>
+                <div class="scrollable-content" id="bit-register-container"></div>
+            </div>
+            
+            <div class="panel" style="flex-grow: 1;">
+                <h2>30 RELEVANT ACOUSTIC NOISE PROFILE ARRAYS</h2>
+                <div class="scrollable-content scenarios-grid" id="scenarios-container"></div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: INTERACTIVE HELIX & DATA PAYLOADS -->
+        <div class="column">
+            <div class="panel" style="flex-grow: 3;">
+                <h2>3D GEOMETRIC FIBONACCI COHESION LAYER (SVG RENDER)</h2>
+                <div id="matrix-vis-container">
+                    <svg id="matrix-svg" viewBox="0 0 500 400">
+                        <g id="helix-path-group"></g>
+                        <g id="nodes-group"></g>
+                    </svg>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.65rem; color: #8e8eaf;">
+                    <span>[Toggle parameters on left to calculate multi-point asymmetrical collisions]</span>
+                    <span id="scale-indicator">FIBONACCI RADIUS: LOGARITHMIC</span>
+                </div>
+            </div>
+
+            <div class="panel" style="flex-grow: 1;">
+                <h2>REAL-TIME DIAGNOSTIC HARDWARE PAYLOAD OVERLAYS</h2>
+                <div class="formula-box">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; gap: 5px;">
+                        <div>
+                            <div style="font-size: 0.6rem; color: #8e8eaf;">COMPUTATIONAL POWER</div>
+                            <div class="metric-val" id="power-val">0.10 W</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.6rem; color: #8e8eaf;">BANDWIDTH OVERRUN</div>
+                            <div class="metric-val" id="bandwidth-val">0.02 kbps</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.6rem; color: #8e8eaf;">CELL NETWORK LINKS</div>
+                            <div class="metric-val" id="connections-val">12 / 12</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size: 0.7rem; color: #b5c5b5; margin-bottom: 2px; font-weight: bold;">DETECTOR STATE CRITICAL CANARIES:</div>
+                <div class="scrollable-content" id="alert-logs" style="max-height: 70px;"></div>
+                <div class="raw-string" id="raw-mask-output">REGISTRY STRING MASK: 0x0000000000000000</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const BitRegistry = {
+            0: "EXISTENCE (Baseline Origin Axis)",
+            1: "AUTONOMY (Sovereign Choice Coordinates)",
+            2: "INTEGRITY (Moral Character Integrity Core)",
+            3: "PSYCHOLOGY (Internal Mind Processing)",
+            4: "PHYSICAL (Biological Body Vessel)",
+            5: "DISABILITY (Atypical Processing Balance Coordinate)",
+            6: "DEVELOPMENT (Creative/Intellectual Growth)",
+            7: "PROPERTY (Asset and Resource Protections)",
+            8: "PRESENCE (Spatiotemporal Trajectory)",
+            16: "TRUST_SYSTEMIC (Verifiable Ledger Protocol)",
+            17: "TRUST_CONDITIONAL (Transactional Agreements)",
+            20: "SHIELD_HUMAN_RIGHTS / TRUST_BROKEN_INSTITUTIONAL",
+            21: "SHIELD_BASIC_RIGHTS",
+            22: "SHIELD_ASYLUM_RIGHTS / TRUST_BROKEN_SAFETY",
+            23: "SHIELD_DISCRIMINATION_RIGHTS",
+            24: "SHIELD_ONLINE_RIGHTS / TRUST_BROKEN_DIGITAL",
+            25: "SHIELD_EXPLOITATION_RIGHTS",
+            26: "SHIELD_AQUIRED_RIGHTS / TRUST_BROKEN_CORE",
+            28: "SHIELD_FORENSIC_RIGHTS",
+            30: "SHIELD_AQUIRED_TRUST",
+            32: "THREAT_ABLEISM (Systemic Hostile Attack Ingress)"
+        };
+
+        const AcousticNoiseProfiles = [
+            { name: "Corporate Resource Lock", bits: [7, 17] },
+            { name: "Proxy Ableism Exploitation", bits: [5, 6, 32] },
+            { name: "Online Hate Mob Raid", bits: [3, 24] },
+            { name: "Institutional Coercion Loop", bits: [1, 20] },
+            { name: "Character Assassination", bits: [2, 20] },
+            { name: "Atypical Processing Drain", bits: [5, 7, 32] },
+            { name: "Sovereign Layer Protection Failure", bits: [22] },
+            { name: "Algorithmic Extraction Surge", bits: [6, 7] },
+            { name: "Deep Personal Betrayal", bits: [26] },
+            { name: "Surveillance Congestion Flow", bits: [8, 16] },
+            { name: "Asymmetrical Resource Extraction", bits: [6, 7] },
+            { name: "Systemic Integrity Erasure", bits: [1, 2] },
+            { name: "Hired Physical Agression Ingress", bits: [0, 4] },
+            { name: "Neurotypical Social Gaslighting", bits: [3, 5, 32] },
+            { name: "Crypto-Asset Property Attack", bits: [6, 7] },
+            { name: "Public Sector Security Failure", bits: [16, 20] },
+            { name: "Digital Isolation / Quarantine", bits: [3, 24] },
+            { name: "Extreme Shouting Populous Flow", bits: [1, 16] },
+            { name: "Vessel of Fools Smear Campaign", bits: [2, 3] },
+            { name: "Forced Efficiency Blueprint Clamp", bits: [1, 5] },
+            { name: "Asymmetrical Contract Drift", bits: [7, 17] },
+            { name: "Predatory Optimization Inversion", bits: [1, 3] },
+            { name: "Total Systemic Crash Cascade", bits: [1, 3, 7] },
+            { name: "Forensic Invalidation Matrix", bits: [24, 26] },
+            { name: "Autonomy Restriction Sequence", bits: [1, 5] },
+            { name: "Weaponized Stupidity Override", bits: [2, 16] },
+            { name: "Proxy Bullying Resource Tap", bits: [5, 7, 32] },
+            { name: "Platonic Axis Target Raid", bits: [2, 26] },
+            { name: "Immediate Spacetime Shadowing", bits: [4, 8] },
+            { name: "Extreme-Wing Popularity Contest", bits: [1, 20] }
+        ];
+
+        let activeBits = new Set();
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loading-universe');
+                loader.style.opacity = '0';
+                loader.style.visibility = 'hidden';
+            }, 600);
+
+            buildRegisterFields();
+            buildScenarioButtons();
+            render3DSpiral();
+            updateCalculations();
+            
+            setInterval(() => {
+                document.getElementById('sys-clock').innerText = "FWC SECURITY PROTOCOL CORE RE-CHECK: " + new Date().toISOString().slice(11,19) + " UTC";
+            }, 1000);
+        });
+
+        function buildRegisterFields() {
+            const container = document.getElementById('bit-register-container');
+            for (let i = 0; i <= 64; i++) {
+                const row = document.createElement('div');
+                row.className = 'bit-row';
+                const label = BitRegistry[i] ? `<strong>Bit ${i}</strong> — ${BitRegistry[i]}` : `Bit ${i} (Unassigned Tiers)`;
+                
+                row.innerHTML = `
+                    <span>${label}</span>
+                    <label class="switch">
+                        <input type="checkbox" id="bit-chk-${i}" onchange="toggleBit(${i}, this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                `;
+                container.appendChild(row);
+            }
+        }
+
+        function buildScenarioButtons() {
+            const container = document.getElementById('scenarios-container');
+            AcousticNoiseProfiles.forEach((p, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.id = `profile-btn-${idx}`;
+                btn.innerText = `${idx + 1}. ${p.name}`;
+                btn.onclick = () => toggleProfile(idx, p.bits);
+                container.appendChild(btn);
+            });
+        }
+
+        function toggleBit(bit, isChecked) {
+            if (isChecked) activeBits.add(bit);
+            else activeBits.delete(bit);
+            updateCalculations();
+        }
+
+        function toggleProfile(idx, bits) {
+            const btn = document.getElementById(`profile-btn-${idx}`);
+            const isActivating = !btn.classList.contains('btn-active');
+            
+            document.querySelectorAll('.btn').forEach(b => b.classList.remove('btn-active'));
+            document.querySelectorAll('.bit-row input').forEach(chk => chk.checked = false);
+            activeBits.clear();
+
+            if (isActivating) {
+                btn.classList.add('btn-active');
+                bits.forEach(b => {
+                    activeBits.add(b);
+                    const chk = document.getElementById(`bit-chk-${b}`);
+                    if (chk) chk.checked = true;
+                });
+            }
+            updateCalculations();
+        }
+
+        function updateCalculations() {
+            const totalActive = activeBits.size;
+            const powerConsumption = (0.10 + (totalActive * 0.005)).toFixed(3);
+            const dataBandwidth = (0.02 + (totalActive * 2.85)).toFixed(2);
+            const totalConnections = Math.max(1, 12 - Math.floor(totalActive / 3));
+
+            document.getElementById('power-val').innerText = `${powerConsumption} W`;
+            document.getElementById('bandwidth-val').innerText = `${dataBandwidth} kbps`;
+            document.getElementById('connections-val').innerText = `${totalConnections} / 12`;
+
+            const logsContainer = document.getElementById('alert-logs');
+            logsContainer.innerHTML = '';
+            let collisions = [];
+
+            if (activeBits.has(5) && activeBits.has(32)) {
+                collisions.push("CANARY RED: Bit-32 Ableism exploitation directly intersecting Bit-5 Disability tier.");
+            }
+            if (activeBits.has(1) && activeBits.has(20)) {
+                collisions.push("CANARY AMBER: Bit-20 Institutional Overrun constraining Bit-1 Autonomy Field.");
+            }
+            if (activeBits.has(2) && activeBits.has(26)) {
+                collisions.push("CANARY CRITICAL: Bit-26 Deep personal betrayal breaking Core Integrity axis.");
+            }
+            if (totalActive >= 6) {
+                collisions.push(`CONGESTION OVERRUN: ${totalActive} parallel fields active. Upper register spectrum choked.`);
+            }
+
+            if (collisions.length > 0) {
+                collisions.forEach(c => {
+                    const el = document.createElement('div');
+                    el.className = 'alert-item';
+                    el.innerText = `>> [ALERT] ${c}`;
+                    logsContainer.appendChild(el);
+                });
+                document.body.classList.add('alarm-active');
+            } else {
+                document.body.classList.remove('alarm-active');
+                logsContainer.innerHTML = '<div style="color: #6e6e8f; font-size: 0.7rem; font-style: italic;">No structural anomalies detected. Geometry clear.</div>';
+            }
+
+            let upper = 0n;
+            activeBits.forEach(b => { upper |= (1n << BigInt(b)); });
+            let representation = upper.toString(16).toUpperCase().padStart(16, '0');
+            document.getElementById('raw-mask-output').innerText = `REGISTRY STRING MASK: 0x${representation}`;
+
+            render3DSpiral();
+        }
+
+        function render3DSpiral() {
+            const pathGroup = document.getElementById('helix-path-group');
+            const nodesGroup = document.getElementById('nodes-group');
+            pathGroup.innerHTML = '';
+            nodesGroup.innerHTML = '';
+
+            const cx = 250, cy = 200;
+            const b = 0.14;
+            let pathD = "";
+
+            for (let i = 0; i <= 65; i++) {
+                let theta = i * 0.28;
+                let r = 8 * Math.exp(b * theta);
+                let x = cx + r * Math.cos(theta);
+                let y = cy + r * Math.sin(theta) - (i * 1.4);
+
+                if (i === 0) pathD += `M ${x} ${y}`;
+                else pathD += ` L ${x} ${y}`;
+
+                const isFieldActive = activeBits.has(i);
+                let color = "#114466";
+                let radius = 3;
+                let stroke = "none";
+
+                if (isFieldActive) {
+                    color = "#00ffaa";
+                    radius = 5.5;
+                    stroke = "var(--cyan)";
+                }
+
+                if (i === 5 && activeBits.has(5) && activeBits.has(32)) color = "var(--pink)";
+                if (i === 32 && activeBits.has(5) && activeBits.has(32)) color = "var(--pink)";
+
+                const circle = document.createElementNS("http://w3.org", "circle");
+                circle.setAttribute("cx", x);
+                circle.setAttribute("cy", y);
+                circle.setAttribute("r", radius);
+                circle.setAttribute("fill", color);
+                if (isFieldActive) {
+                    circle.setAttribute("stroke", stroke);
+                    circle.setAttribute("stroke-width", "2");
+                }
+                nodesGroup.appendChild(circle);
+
+                if (BitRegistry[i] && (i <= 8 || isFieldActive)) {
+                    const txt = document.createElementNS("http://w3.org", "text");
+                    txt.setAttribute("x", x + 8);
+                    txt.setAttribute("y", y + 3);
+                    txt.setAttribute("fill", isFieldActive ? "#ffffff" : "#447799");
+                    txt.setAttribute("font-size", isFieldActive ? "9.5px" : "8px");
+                    txt.setAttribute("font-family", "monospace");
+                    txt.textContent = `B${i}`;
+                    nodesGroup.appendChild(txt);
+                }
+            }
+
+            const path = document.createElementNS("http://w3.org", "path");
+            path.setAttribute("d", pathD);
+            path.setAttribute("fill", "none");
+            path.setAttribute("stroke", "rgba(0, 240, 255, 0.25)");
+            path.setAttribute("stroke-width", "1");
+            pathGroup.appendChild(path);
+        }
+    </script>
+</body>
+</html>
