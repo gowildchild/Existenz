@@ -33,7 +33,8 @@
         .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; text-transform: uppercase; }
         .scrollable-content { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
         
-        .bit-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; border-bottom: 1px solid #0f0f1c; font-size: 0.72rem; }
+        /* Dashboard Telemetry Switch Rows */
+        .bit-row { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; border-bottom: 1px solid #0f0f1c; font-size: 0.72rem; }
         .bit-tag { font-family: monospace; color: var(--cyan); width: 35px; flex-shrink: 0; }
         .bit-name { flex-grow: 1; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; padding-right: 5px;}
         .bit-metric-box { font-family: monospace; color: var(--green); margin-right: 15px; font-weight: bold; width: 85px; text-align: right; }
@@ -49,7 +50,7 @@
         .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.72rem; color: var(--cyan); line-height: 1.2;}
         .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
         
-        #spectrum-container { width: 100%; height: 100%; min-height: 160px; background: #010103; border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
+        #spectrum-container { width: 100%; height: 100%; min-height: 180px; background: #010103; border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
         canvas { display: block; width: 100%; height: 100%; }
         
         .controls-row { display: flex; gap: 5px; margin-bottom: 5px; flex-shrink: 0; align-items: center; }
@@ -58,14 +59,14 @@
         input[type="number"] { width: 50px; }
         button:hover { border-color: var(--cyan); color: var(--cyan); }
         
-        .audit-report-view { background: #020205; border: 1px solid #112; padding: 8px; font-family: monospace; font-size: 0.7rem; color: #b5c5b5; max-height: 155px; overflow-y: auto; line-height: 1.35; }
+        .audit-report-view { background: #020205; border: 1px solid #112; padding: 8px; font-family: monospace; font-size: 0.7rem; color: #b5c5b5; max-height: 140px; overflow-y: auto; line-height: 1.35; }
         .audit-pass { color: var(--green); font-weight: bold; }
         .audit-fail { color: var(--pink); font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <!-- Header Block -->
+    <!-- Target Clone of System Navigation Header -->
     <div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0;">
         <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;">Simulator</a> | 
         <a href="/Existenz/apps/lifetime/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> [ 
@@ -74,18 +75,18 @@
         <a href="https://github.comtree" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
         <a href="https://github.comtree" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
     </div>
+
     <div class="grid">
-        <!-- Left Column: Controls, Variables, and Primitive Registry Switches -->
+        <!-- Left Workspace Column -->
         <div class="column">
             <div class="panel" style="flex-shrink: 0;">
-                <h2>Generary Engine Controls (5 Generations / 125 Years)</h2>
+                <h2>Canary Simulation Controller</h2>
                 <div class="controls-row" style="flex-wrap: wrap; gap: 8px;">
                     <div class="control-group">
                         <label>Base Scale per Gen</label>
                         <select id="scale-select">
                             <option value="50000" selected>Standard Track (50k / Gen)</option>
                             <option value="500000">Heavy Urban Load (500k / Gen)</option>
-                            <option value="2000000">Nation Scale (2M / Gen)</option>
                         </select>
                     </div>
                     <div class="control-group">
@@ -96,15 +97,15 @@
                         <label>Broken Shield Base %</label>
                         <input type="number" id="brokenshield-pct" min="0" max="100" value="25">
                     </div>
-                    <div style="display: flex; gap: 4px; align-items: flex-end; margin-top: auto;">
+                    <div style="display: flex; gap: 4px; align-items: flex-end; margin-top: auto; margin-left: auto;">
                         <button onclick="runGenerationalComplianceTest()" style="border-color: var(--cyan); color: var(--cyan);">⚡ Run 5-Gen Audit</button>
                         <button onclick="resetTelemetryTensors()" style="color: var(--pink);">Clear</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Compliance Audit Report Viewport Container -->
-            <div class="panel" style="flex-shrink: 0; min-height: 190px;">
+            <!-- Active Audit History Terminal -->
+            <div class="panel" style="flex-shrink: 0; min-height: 165px;">
                 <h2>Safety Compliance Audit Report</h2>
                 <div class="audit-report-view" id="audit-report-target">
                     System idle. Run a 5-Generation compliance test to compile mathematical audit outcomes...
@@ -112,11 +113,11 @@
             </div>
 
             <div class="panel" style="flex-grow: 1;">
-                <h2>1. Full Existenz Schema Core Registries & Active Load Metrics</h2>
+                <h2>1. Immutable Core Registries & Active Load Metrics</h2>
                 <div class="scrollable-content" id="switchboard-target"></div>
             </div>
         </div>
-        <!-- Right Column: Visual Spectrum Canvas and Hardware Counters -->
+        <!-- Right Analytics Display Column -->
         <div class="column">
             <div class="panel" style="flex-grow: 1.2;">
                 <h2>2. Spatiotemporal Generational Spectrum Monitor</h2>
@@ -128,8 +129,8 @@
             <div class="panel" style="flex-shrink: 0;">
                 <h2>3. Cross-Generation Computational Overrun Meters</h2>
                 <div class="formula-box">
-                    𝚲𝐑drift = 𝚿realist(Gen1→5) - 𝚿ideal(Lattice) <br>
-                    Time Variable: 125 Years Lifecycle Horizon. 5 Generations processing across Base-2 space.
+                    𝚫𝐑drift = 𝚿realist(Gen1→5) - 𝚿ideal(Lattice) <br>
+                    Progress Milestones: EQ_I (Individual Core) | EQ_W (World Peace) | EQ_C (Collective)
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 5px;">
@@ -175,27 +176,17 @@
             { bit: 22, name: "SHIELD_DISCRIMINATION_RIGHTS", cat: "shield", active: false },
             { bit: 24, name: "SHIELD_BASIC_RIGHTS", cat: "shield", active: true },
             { bit: 26, name: "SHIELD_AQUIRED_RIGHTS", cat: "shield", active: true },
-            { bit: 30, name: "SHIELD_AQUIRED_TRUST", cat: "shield", active: false },
-            { bit: 31, name: "STATE_EQI", cat: "shield", active: false },
-            // Ripples / Blast Radius Coordinates
-            { bit: 64, name: "STATE_EQW", cat: "ripple", active: false },
-            { bit: 65, name: "RIPPLE_PARTNER", cat: "ripple", active: false },
-            { bit: 66, name: "RIPPLE_HOUSEHOLD_MARRIAGE", cat: "ripple", active: false },
-            { bit: 67, name: "RIPPLE_FAMILY", cat: "ripple", active: false },
-            { bit: 68, name: "RIPPLE_FRIENDS", cat: "ripple", active: false },
-            { bit: 69, name: "RIPPLE_PEERS", cat: "ripple", active: false },
-            { bit: 70, name: "RIPPLE_SUPPORT", cat: "ripple", active: false },
-            { bit: 74, name: "RIPPLE_SOCIETY", cat: "ripple", active: false },
-            { bit: 75, name: "RIPPLE_CORPORATE", cat: "ripple", active: false },
-            { bit: 76, name: "RIPPLE_GOVERNED", cat: "ripple", active: false },
-	    { bit: 127, name: "EQC", cat: "ripple", active: false },
+
+            // Condensed Symmetrical Progress Horizons
+            { bit: 31, name: "EQ_I_INDIVIDUAL_CORE_LIMIT", cat: "anchor", active: true },
+            { bit: 64, name: "EQ_W_WORLD_PEACE_ANCHOR", cat: "anchor", active: true },
+            { bit: 127, name: "EQ_C_COLLECTIVE_THRESHOLD", cat: "anchor", active: true }
         ];
 
-        let liveState = {};
         let registerDensityArray = new Array(128).fill(0);
         let totalSimulatedRuns = 0;
         
-        // Compliance tracker metrics across historical generations
+        // Active history list tracking generational compliance metrics
         let generationalMetricsLog = [];
 
         const canvas = document.getElementById("scopeCanvas");
@@ -205,12 +196,11 @@
             const container = document.getElementById("switchboard-target");
             container.innerHTML = "";
             FULL_EXISTENZ_SCHEMA.forEach(item => {
-                liveState[item.bit] = item.active;
                 const row = document.createElement("div");
                 row.className = "bit-row";
                 row.innerHTML = `
                     <span class="bit-tag">b${item.bit.toString().padStart(3, '0')}</span>
-                    <span class="bit-name" style="color: ${item.cat==='shield'?'var(--green)':item.cat==='ripple'?'#8e8eaf':'#fff'}">${item.name}</span>
+                    <span class="bit-name" style="color: ${item.cat==='shield'?'var(--green)':item.cat==='anchor'?'var(--pink)':'#fff'}">${item.name}</span>
                     <span class="bit-metric-box" id="metric-readout-${item.bit}">0 hits</span>
                     <label class="switch">
                         <input type="checkbox" ${item.active ? 'checked' : ''} id="switch-${item.bit}" onchange="toggleBitState(${item.bit})">
@@ -225,7 +215,10 @@
         }
 
         function toggleBitState(bit) {
-            liveState[bit] = document.getElementById(`switch-${bit}`).checked;
+            const item = FULL_EXISTENZ_SCHEMA.find(x => x.bit === bit);
+            if (item) {
+                item.active = document.getElementById(`switch-${bit}`).checked;
+            }
             updateHardwareMetrics();
         }
 
@@ -236,66 +229,71 @@
 
         function resetTelemetryTensors() {
             registerDensityArray.fill(0);
-            generationalMetricsLog = [];
+            generationalMetricsLog = []; // Clears the active tracking list history
             totalSimulatedRuns = 0;
             document.body.classList.remove("alarm-active");
             document.getElementById("audit-report-target").innerHTML = "System idle. Run a 5-Generation compliance test to compile mathematical audit outcomes...";
             updateHardwareMetrics();
         }
-        // TIME-SERIES TIME ENGINE (Simulates 5 Generations under cascading environmental parameters)
         function runGenerationalComplianceTest() {
-            resetTelemetryTensors();
+            registerDensityArray.fill(0);
+            generationalMetricsLog = []; // Re-initializes clean for a new simulation run
+            totalSimulatedRuns = 0;
+
             const baseScale = parseInt(document.getElementById("scale-select").value);
-            
             let currentDisabilityRate = parseFloat(document.getElementById("disability-pct").value) / 100;
             let currentBrokenShieldRate = parseFloat(document.getElementById("brokenshield-pct").value) / 100;
 
-            // Step sequentially through 5 generations (125-year time parameter loop)
             for (let gen = 1; gen <= 5; gen++) {
-                let genRuns = baseScale * (1 + (gen * 0.05)); // Accounts for demographic population growth multipliers
+                let genRuns = baseScale * (1 + (gen * 0.05));
                 totalSimulatedRuns += genRuns;
 
                 let genCollisionsCount = 0;
                 let genShieldSaves = 0;
 
                 for (let i = 0; i < genRuns; i++) {
-                    // Generational inheritance accumulation checks
-                    let inheritedVulnerability = (gen > 1 && genCollisionsCount > (baseScale * 0.1));
-                    let adjustedDisabilityRisk = inheritedVulnerability ? Math.min(0.9, currentDisabilityRate + 0.08) : currentDisabilityRate;
-                    let adjustedShieldBreakerRisk = Math.min(0.95, currentBrokenShieldRate + (gen * 0.02)); // Compounding structural drift over time
+                    let adjustedDisabilityRisk = currentDisabilityRate;
+                    let adjustedShieldBreakerRisk = Math.min(0.95, currentBrokenShieldRate + (gen * 0.02));
 
                     let sampleHasDisability = Math.random() < adjustedDisabilityRisk;
                     let systemicShieldsFailing = Math.random() < adjustedShieldBreakerRisk;
 
-                    // Standard execution tracks
-                    if (liveState) registerDensityArray++;
-                    if (liveState) registerDensityArray++;
-                    if (liveState) registerDensityArray++;
+                    const existenceActive = FULL_EXISTENZ_SCHEMA.find(x => x.bit === 0)?.active;
+                    const autonomyActive = FULL_EXISTENZ_SCHEMA.find(x => x.bit === 1)?.active;
+                    const integrityActive = FULL_EXISTENZ_SCHEMA.find(x => x.bit === 2)?.active;
+                    const disabilityActive = FULL_EXISTENZ_SCHEMA.find(x => x.bit === 5)?.active;
+                    const shieldExploitActive = FULL_EXISTENZ_SCHEMA.find(x => x.bit === 26)?.active;
 
-                    if (sampleHasDisability && liveState) {
-                        registerDensityArray++;
+                    if (existenceActive) registerDensityArray[0]++;
+                    if (autonomyActive) registerDensityArray[1]++;
+                    if (integrityActive) registerDensityArray[2]++;
+
+                    if (sampleHasDisability && disabilityActive) {
+                        registerDensityArray[5]++;
                         
-                        // Scenario simulation: Encountering ableism or property locks under load
                         if (Math.random() < 0.35) {
-                            if (liveState && !systemicShieldsFailing) {
-                                registerDensityArray++; // Shield successfully absorbs threat energy
+                            if (shieldExploitActive && !systemicShieldsFailing) {
+                                registerDensityArray[26]++; 
                                 genShieldSaves++;
                             } else {
-                                // Unshielded threats generate direct register collisions across channels
-                                registerDensityArray += 5; // b5 Ableism register collision
-                                registerDensityArray += 4; // b3 Psychological load spillover
-                                registerDensityArray += 3; // b7 Resource locking noise
+                                // Dynamic unshielded friction traffic falls onto the array targets
+                                registerDensityArray[5] += 5; // Ableism crash
+                                registerDensityArray[3] += 4; // Psychological load leak
+                                registerDensityArray[7] += 3; // Property lock noise
                                 genCollisionsCount++;
                             }
                         }
                     }
 
-                    // Macro ripple lane registrations
-                    if (liveState) registerDensityArray++;
-                    if (Math.random() < 0.2) registerDensityArray++;
+                    // Feed active progress horizons down to the density metrics
+                    FULL_EXISTENZ_SCHEMA.forEach(item => {
+                        if (item.cat === 'anchor' && item.active) {
+                            registerDensityArray[item.bit]++;
+                        }
+                    });
                 }
 
-                // Append historical markers for audit compilation tracking
+                // Push compiled row statistics into the history list container
                 generationalMetricsLog.push({
                     generation: gen,
                     runs: genRuns,
@@ -308,17 +306,12 @@
             compileAuditReport();
             updateHardwareMetrics();
         }
-
-        // SAFETY COMPLIANCE REPORT COMPILER
         function compileAuditReport() {
             const reportTarget = document.getElementById("audit-report-target");
             let outputHtml = `<h3>⚡ EXISTENZ 5-GENERATION SAFETY AUDIT COMPLETED</h3>`;
-            
-            let cumulativeCollisions = 0;
             let structuralBreachDetected = false;
 
             generationalMetricsLog.forEach(g => {
-                cumulativeCollisions += g.collisions;
                 let complianceStatus = g.leakRatio < 0.05 ? `<span class="audit-pass">PASS</span>` : `<span class="audit-fail">FAIL</span>`;
                 if (g.leakRatio >= 0.05) structuralBreachDetected = true;
 
@@ -334,7 +327,7 @@
             if (structuralBreachDetected) {
                 outputHtml += `
                     <div class="audit-fail">❌ HIGH RISK ARCHITECTURAL CRITIQUE:</div>
-                    <div>Compounding generational data drift has breached safety thresholds. Lack of insulated shielding layers causes ableism collision parameters to bleed into upper networks, threatening population-scale social stability. Protect core registers immediately.</div>
+                    <div>Compounding generational data drift has breached safety thresholds. Lack of insulated shielding layers causes ableism collision parameters to pierce upper networks, threatening population-scale social stability. Protect core registers immediately.</div>
                 `;
             } else {
                 outputHtml += `
@@ -342,7 +335,6 @@
                     <div>Orthogonal vector bounds remained watertight across 125 historical simulation steps. System isolation features handled demographic expansion patterns safely. Verified compliant.</div>
                 `;
             }
-
             reportTarget.innerHTML = outputHtml;
         }
 
@@ -390,7 +382,7 @@
 
                 let fillStyle = "rgba(10, 10, 34, 0.2)";
                 if (hits > 0) {
-                    let intensity = Math.min(1, hits / (totalSimulatedRuns * 0.08 || 1));
+                    let intensity = Math.min(1, hits / (currentPeak * 0.8 || 1));
                     let r = Math.floor(intensity * 255);
                     let g = Math.floor((1 - intensity) * 230);
                     let b = 255;
