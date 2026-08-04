@@ -27,17 +27,22 @@
             0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); }
             100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); }
         }
-        .grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 10px; flex-grow: 1; min-height: 0; margin-top: 5px;}
+        .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; flex-grow: 1; min-height: 0; margin-top: 5px;}
         .column { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
         .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; min-height: 0; }
         .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; text-transform: uppercase; }
         .scrollable-content { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
         
-        /* Dashboard Telemetry Switch Rows */
-        .bit-row { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; border-bottom: 1px solid #0f0f1c; font-size: 0.72rem; }
-        .bit-tag { font-family: monospace; color: var(--cyan); width: 35px; flex-shrink: 0; }
-        .bit-name { flex-grow: 1; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; padding-right: 5px;}
-        .bit-metric-box { font-family: monospace; color: var(--green); margin-right: 15px; font-weight: bold; width: 85px; text-align: right; }
+        /* Layered Local Switch Row Bars */
+        .bit-row { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; border-bottom: 1px solid #0f0f1c; font-size: 0.72rem; overflow: hidden; background: rgba(5,5,12,0.3); margin-bottom: 2px; border-radius: 4px; }
+        .energy-bar-bg { position: absolute; bottom: 0; left: 0; height: 3px; width: 100%; display: flex; background: #111; z-index: 1; }
+        .bar-green { height: 100%; background: var(--green); transition: width 0.1s linear; }
+        .bar-blue { height: 100%; background: var(--cyan); transition: width 0.1s linear; }
+        .bar-red { height: 100%; background: var(--pink); transition: width 0.1s linear; }
+        
+        .bit-tag { font-family: monospace; color: var(--cyan); width: 35px; z-index: 2; }
+        .bit-name { flex-grow: 1; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; padding-right: 5px; z-index: 2; }
+        .bit-metric-box { font-family: monospace; color: var(--green); margin-right: 15px; font-weight: bold; width: 90px; text-align: right; z-index: 2; }
         
         .switch { position: relative; display: inline-block; width: 34px; height: 16px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -46,11 +51,10 @@
         input:checked + .slider { background-color: var(--cyan); }
         input:checked + .slider:before { transform: translateX(18px); }
         
-        .raw-string { background: #020204; border-left: 3px solid var(--pink); padding: 6px; font-size: 0.65rem; color: #8e8eaf; font-family: monospace; word-break: break-all; margin-top: 5px; }
         .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.72rem; color: var(--cyan); line-height: 1.2;}
         .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
         
-        #spectrum-container { width: 100%; height: 100%; min-height: 180px; background: #010103; border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
+        #vis-container { width: 100%; height: 100%; min-height: 200px; background: #010103; border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
         canvas { display: block; width: 100%; height: 100%; }
         
         .controls-row { display: flex; gap: 5px; margin-bottom: 5px; flex-shrink: 0; align-items: center; }
@@ -59,14 +63,15 @@
         input[type="number"] { width: 50px; }
         button:hover { border-color: var(--cyan); color: var(--cyan); }
         
-        .audit-report-view { background: #020205; border: 1px solid #112; padding: 8px; font-family: monospace; font-size: 0.7rem; color: #b5c5b5; max-height: 140px; overflow-y: auto; line-height: 1.35; }
+        .audit-report-view { background: #020205; border: 1px solid #112; padding: 8px; font-family: monospace; font-size: 0.7rem; color: #b5c5b5; max-height: 130px; overflow-y: auto; line-height: 1.35; }
         .audit-pass { color: var(--green); font-weight: bold; }
         .audit-fail { color: var(--pink); font-weight: bold; }
     </style>
 </head>
+
 <body>
 
-    <!-- Target Clone of System Navigation Header -->
+    <!-- Header Navigation Cloned Exactly -->
     <div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0;">
         <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;">Simulator</a> | 
         <a href="/Existenz/apps/lifetime/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> [ 
@@ -77,69 +82,75 @@
     </div>
 
     <div class="grid">
-        <!-- Left Workspace Column -->
+        <!-- Left Panel Workspace -->
         <div class="column">
             <div class="panel" style="flex-shrink: 0;">
-                <h2>Canary Simulation Controller</h2>
+                <h2>Canary Controller & Time-Warp Metrics</h2>
                 <div class="controls-row" style="flex-wrap: wrap; gap: 8px;">
                     <div class="control-group">
-                        <label>Base Scale per Gen</label>
+                        <label>Planetary Scale</label>
                         <select id="scale-select">
-                            <option value="50000" selected>Standard Track (50k / Gen)</option>
-                            <option value="500000">Heavy Urban Load (500k / Gen)</option>
+                            <option value="100000" selected>City (100K)</option>
+                            <option value="500000">Large City (500K)</option>
+                            <option value="1000000">Huge City (1M)</option>
+                            <option value="5000000">Small Country (5M)</option>
                         </select>
                     </div>
                     <div class="control-group">
-                        <label>Disability Baseline %</label>
-                        <input type="number" id="disability-pct" min="0" max="100" value="16">
-                    </div>
-                    <div class="control-group">
-                        <label>Broken Shield Base %</label>
-                        <input type="number" id="brokenshield-pct" min="0" max="100" value="25">
+                        <label>Speed Warp</label>
+                        <select id="warp-select" onchange="modifyExecutionWarpVelocity()">
+                            <option value="1.0">1.0x Realtime</option>
+                            <option value="0.8">0.8x Warp</option>
+                            <option value="0.6">0.6x Warp</option>
+                            <option value="0.5">0.5x Balanced</option>
+                            <option value="0.4">0.4x Track</option>
+                            <option value="0.2">0.2x Slow</option>
+                            <option value="0.05">0.05x Deep Analysis</option>
+                        </select>
                     </div>
                     <div style="display: flex; gap: 4px; align-items: flex-end; margin-top: auto; margin-left: auto;">
-                        <button onclick="runGenerationalComplianceTest()" style="border-color: var(--cyan); color: var(--cyan);">⚡ Run 5-Gen Audit</button>
-                        <button onclick="resetTelemetryTensors()" style="color: var(--pink);">Clear</button>
+                        <button onclick="triggerTwelveGenerationLifeTest()" style="border-color: var(--cyan); color: var(--cyan);">⚡ Run 12-Gen Audit</button>
+                        <button onclick="purgeTensors()" style="color: var(--pink);">Clear</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Active Audit History Terminal -->
-            <div class="panel" style="flex-shrink: 0; min-height: 165px;">
-                <h2>Safety Compliance Audit Report</h2>
+            <!-- 12-Generation Compliance Report Output -->
+            <div class="panel" style="flex-shrink: 0; min-height: 155px;">
+                <h2>12-Generation Safety Compliance Report (1:1 Threat Plane)</h2>
                 <div class="audit-report-view" id="audit-report-target">
-                    System idle. Run a 5-Generation compliance test to compile mathematical audit outcomes...
+                    Awaiting 12-generation clock initialization loop...
                 </div>
             </div>
 
             <div class="panel" style="flex-grow: 1;">
-                <h2>1. Immutable Core Registries & Active Load Metrics</h2>
+                <h2>1. Symmetrical Registries & Active Vitality Energy Bars</h2>
                 <div class="scrollable-content" id="switchboard-target"></div>
             </div>
         </div>
-        <!-- Right Analytics Display Column -->
+        <!-- Right Panel Workspace -->
         <div class="column">
             <div class="panel" style="flex-grow: 1.2;">
-                <h2>2. Spatiotemporal Generational Spectrum Monitor</h2>
-                <div id="spectrum-container">
-                    <canvas id="scopeCanvas"></canvas>
+                <h2>2. 3D Fibonacci Spiral Canary Sphere Matrix</h2>
+                <div id="vis-container">
+                    <canvas id="sphereCanvas"></canvas>
                 </div>
             </div>
 
             <div class="panel" style="flex-shrink: 0;">
-                <h2>3. Cross-Generation Computational Overrun Meters</h2>
+                <h2>3. Lifeless Clerk Arbitrator Performance Log</h2>
                 <div class="formula-box">
-                    𝚫𝐑drift = 𝚿realist(Gen1→5) - 𝚿ideal(Lattice) <br>
-                    Progress Milestones: EQ_I (Individual Core) | EQ_W (World Peace) | EQ_C (Collective)
+                    𝚫𝚿canary = 𝐕ideal(All 1s) ⊕ 𝐕telemetry <br>
+                    Time Constant: 12 Generations (300 Years Lifecycle Domain).
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 5px;">
                     <div>
-                        <span style="font-size:0.68rem; color:#8e8eaf;">Generational Processing Cost:</span><br>
+                        <span style="font-size:0.68rem; color:#8e8eaf;">Computational Footprint:</span><br>
                         <span class="metric-val" id="cpu-power-metric" style="color: var(--green);">0.00 MFLOPs</span>
                     </div>
                     <div>
-                        <span style="font-size:0.68rem; color:#8e8eaf;">Total Active Vector Bandwidth:</span><br>
+                        <span style="font-size:0.68rem; color:#8e8eaf;">Active Data Bandwidth:</span><br>
                         <span class="metric-val" id="bandwidth-metric" style="color: var(--cyan);">0.00 MB/s</span>
                     </div>
                 </div>
@@ -150,7 +161,7 @@
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 6px;">
-                    <span style="font-size:0.68rem; color:#8e8eaf;">Total Lifecycle Runs Evaluated:</span>
+                    <span style="font-size:0.68rem; color:#8e8eaf;">Total Transactions Evaluated:</span>
                     <span class="metric-val" id="total-processed-counter" style="font-size: 0.9rem;">0</span>
                 </div>
                 <div class="raw-string" id="binary-stream-box">00000000...</div>
@@ -158,9 +169,7 @@
         </div>
     </div>
     <script>
-        // FULL EXTENDED IMMUTABLE ARCHITECTURE BASELINE (CORE, SHIELDS, RIPPLES)
         const FULL_EXISTENZ_SCHEMA = [
-            // ExistentialCore Primitives
             { bit: 0, name: "EXISTENCE", cat: "pillar", active: true },
             { bit: 1, name: "AUTONOMY", cat: "pillar", active: true },
             { bit: 2, name: "INTEGRITY", cat: "pillar", active: true },
@@ -170,236 +179,275 @@
             { bit: 6, name: "DEVELOPMENT", cat: "pillar", active: false },
             { bit: 7, name: "PROPERTY", cat: "pillar", active: false },
             { bit: 8, name: "PRESENCE", cat: "pillar", active: false },
-
-            // Shield Structures
+            
             { bit: 20, name: "SHIELD_HUMAN_RIGHTS", cat: "shield", active: false },
-            { bit: 22, name: "SHIELD_DISCRIMINATION_RIGHTS", cat: "shield", active: false },
-            { bit: 24, name: "SHIELD_BASIC_RIGHTS", cat: "shield", active: true },
+            { bit: 21, name: "SHIELD_BASIC_RIGHTS", cat: "shield", active: false },
+            { bit: 22, name: "SHIELD_ASYLUM_RIGHTS", cat: "shield", active: true },
+            { bit: 23, name: "SHIELD_DISCRIMINATION_RIGHTS", cat: "shield", active: false },
+            { bit: 24, name: "SHIELD_ONLINE_RIGHTS", cat: "shield", active: true },
+            { bit: 25, name: "SHIELD_EXPLOITATION_RIGHTS", cat: "shield", active: false },
             { bit: 26, name: "SHIELD_AQUIRED_RIGHTS", cat: "shield", active: true },
-
-            // Condensed Symmetrical Progress Horizons
-            { bit: 31, name: "EQ_I_INDIVIDUAL_CORE_LIMIT", cat: "anchor", active: true },
-            { bit: 64, name: "EQ_W_WORLD_PEACE_ANCHOR", cat: "anchor", active: true },
-            { bit: 127, name: "EQ_C_COLLECTIVE_THRESHOLD", cat: "anchor", active: true }
+            { bit: 28, name: "SHIELD_FORENSIC_RIGHTS", cat: "shield", active: false },
+            { bit: 30, name: "SHIELD_AQUIRED_TRUST", cat: "shield", active: false },
+            
+            { bit: 64, name: "RIPPLE_INDIVIDUAL", cat: "ripple", active: false },
+            { bit: 65, name: "RIPPLE_PARTNER", cat: "ripple", active: false },
+            { bit: 66, name: "RIPPLE_HOUSEHOLD_MARRIAGE", cat: "ripple", active: false },
+            { bit: 67, name: "RIPPLE_FAMILY", cat: "ripple", active: false },
+            { bit: 68, name: "RIPPLE_FRIENDS", cat: "ripple", active: false },
+            { bit: 69, name: "RIPPLE_PEERS", cat: "ripple", active: false },
+            { bit: 70, name: "RIPPLE_SUPPORT", cat: "ripple", active: false },
+            { bit: 74, name: "RIPPLE_SOCIETY", cat: "ripple", active: false },
+            { bit: 75, name: "RIPPLE_CORPORATE", cat: "ripple", active: false },
+            { bit: 76, name: "RIPPLE_GOVERNED", cat: "ripple", active: false }
         ];
 
-        let registerDensityArray = new Array(128).fill(0);
+
+        const LIFE_OCEAN_FLOWS = [
+            { title: "1. Born into the world", bits: [0, 1, 2, 8, 24], threat: [0], desc: "Initial biological registry point" },
+            { title: "2. Neurodivergence diagnosis (AuDHD)", bits: [0, 3, 5, 6, 22], threat: [3, 5, 6], desc: "Atypical structural verification space" },
+            { title: "3. Learning to read and write", bits: [1, 6], threat: [127], desc: "Development layer initialization" },
+            { title: "4. Opening your first bank account", bits: [1, 7, 26], threat: [7], desc: "Property vector activation" },
+            { title: "5. Chronic illness onset", bits: [0, 4, 5, 22], threat: [4, 5], desc: "Physical constraint tracking" },
+            { title: "6. Getting target-harrased online", bits: [2, 3, 24], threat: [2, 3], desc: "Online proxy mob action" },
+            { title: "7. Moving to a new rented apartment", bits: [1, 7, 8], threat: [7], desc: "Spatiotemporal coordinate shift" },
+            { title: "8. Getting married", bits: [1, 2, 30], threat: [127], desc: "Voluntary core alliance binding" },
+            { title: "9. Unfairly fired from job via HR", bits: [1, 5, 7, 22], threat: [1, 5, 7], desc: "Corporate ableism resource locks" },
+            { title: "10. Suffering server hard drive theft", bits: [2, 6, 7, 26], threat: [2, 6, 7], desc: "Direct lifework plundering event" },
+            { title: "11. Walking alone through public square", bits: [0, 8], threat: [127], desc: "Real-time presence tracking" },
+            { title: "12. Speaking up against corruption", bits: [1, 2, 7, 26], threat: [1, 2, 7], desc: "Moral integrity assertion under load" },
+            { title: "13. Sudden internet infrastructure outage", bits: [1, 6, 24], threat: [1, 6], desc: "Digital safety communication cutoff" },
+            { title: "14. Suffering proxy bullying via bad actors", bits: [2, 3, 5, 22], threat: [2, 3, 5], desc: "Neurotypical group harassment dynamics" },
+            { title: "15. Graduating university", bits: [1, 6], threat: [127], desc: "Intellectual optimization expansion" },
+            { title: "16. Filing taxes to government bureau", bits: [1, 8], threat: [127], desc: "Administrative tracking parameters" },
+            { title: "17. Breaking an arm or physical limb", bits: [0, 4], threat: [4], desc: "Temporary biological configuration drop" },
+            { title: "18. Experiencing sensory overload", bits: [3, 5, 22], threat: [3, 5], desc: "Atypical processing register spikes" },
+            { title: "19. Getting a personal creative burnout", bits: [3, 4], threat: [127], desc: "Psychological resilience exhaustion" },
+            { title: "20. Signing an NDA contract", bits: [1, 2], threat: [1], desc: "Sovereign autonomy containment" },
+            { title: "21. Buying your own server hardware", bits: [1, 7, 24, 26], threat: [127], desc: "Physical infrastructure asset lock" },
+            { title: "22. Being shadowed by hired agents", bits: [0, 2, 4, 8, 20], threat: [0, 2, 4], desc: "Direct physical threat tracking" },
+            { title: "23. Sleep deprivation cycles", bits: [3, 4], threat: [3, 4], desc: "Systemic recovery rate decay" },
+            { title: "24. Receiving an inheritance from ancestors", bits: [1, 7, 26], threat: [127], desc: "Property baseline accumulation" },
+            { title: "25. Experiencing hyper-focus development", bits: [1, 6], threat: [127], desc: "Advanced pattern-recognition loading" },
+            { title: "26. Getting target audited by banks", bits: [1, 7, 26], threat: [1, 7], desc: "Capitalistic resource grid locks" },
+            { title: "27. Creating an open-source library", bits: [1, 6, 26], threat: [127], desc: "Distributing logical assets outward" },
+            { title: "28. Losing a close childhood friend", bits: [3, 30], threat: [3], desc: "Voluntary relationship layer drop" },
+            { title: "29. Applying for asylum safety layers", bits: [1, 2, 20], threat: [127], desc: "Sovereign backup breaker trigger" },
+            { title: "30. Enduring systematic legal gaslighting", bits: [1, 2, 3, 20], threat: [1, 2, 3], desc: "Institutional distortion metrics" },
+            { title: "31. Becoming a parent", bits: [0, 1, 2], threat: [127], desc: "Biological generation tracking expansion" },
+            { title: "32. Buying grocery food essentials", bits: [0, 4], threat: [127], desc: "Basic maintenance resource flow" },
+            { title: "33. Experiencing aging changes", bits: [0, 4], threat: [127], desc: "Linear spatiotemporal decay functions" },
+            { title: "34. Facing character defamation lines", bits: [2, 3, 30], threat: [2, 3], desc: "Intentional character assassination vector" },
+            { title: "35. Getting an advanced medical scan", bits: [0, 4], threat: [127], desc: "Biometric health status auditing" },
+            { title: "36. Publishing security research paper", bits: [1, 2, 6, 26], threat: [127], desc: "Exposing algorithmic noise models" },
+            { title: "37. Moving to another state/country", bits: [0, 1, 8, 20], threat: [127], desc: "Global sovereign boundary update" },
+            { title: "38. Suffering an active panic attack", bits: [3], threat: [3], desc: "Immediate internal load safety limits" },
+            { title: "39. Receiving anonymous email threats", bits: [1, 2, 7, 24], threat: [1, 2, 7], desc: "Online threat parameter intrusion" },
+            { title: "40. Winning a prolonged lawsuit", bits: [1, 2, 20], threat: [127], desc: "Forced legal boundary restoration" },
+            { title: "41. Finding a high-alignment alliance partner", bits: [1, 2, 30], threat: [127], desc: "Core trust validation binding" },
+            { title: "42. Being micro-managed by superiors", bits: [1, 3], threat: [1, 3], desc: "Direct constraint tracking on choices" },
+            { title: "43. Learning a new computer language", bits: [1, 6], threat: [127], desc: "Systemizer logic layout optimization" },
+            { title: "44. Getting caught in physical natural storm", bits: [0, 4], threat: [4], desc: "Environmental hardware stress tracking" },
+            { title: "45. Having credit card details leaked", bits: [7, 24], threat: [7], desc: "Digital property vector leak" },
+            { title: "46. Finding peace in silent nature settings", bits: [0, 3, 8], threat: [127], desc: "Global acoustic noise reduction" },
+            { title: "47. Being blacklisted by corporate networks", bits: [1, 6, 7, 26], threat: [1, 6, 7], desc: "Sovereign containment strategies" },
+            { title: "48. Designing an immutable tool structure", bits: [1, 6], threat: [127], desc: "Deploying permanent logical fields" },
+            { title: "49. Attending local civic town hall meeting", bits: [1, 8], threat: [127], desc: "Macro pop community registration" },
+            { title: "50. Facing old age with broken health", bits: [0, 4], threat: [0, 4], desc: "Final spatiotemporal execution drop" }
+        ];
+
+        let registerDensityArray = new Float64Array(128);
+        let liveBitMetrics = {};
         let totalSimulatedRuns = 0;
-        
-        // Active history list tracking generational compliance metrics
-        let generationalMetricsLog = [];
+        let finalReportLog = [];
 
-        const canvas = document.getElementById("scopeCanvas");
+        // Throttled clock variables
+        let clockTimerTicker = null;
+        let targetGenerationIndex = 1;
+        let calculatedWarpVelocity = 1.0;
+
+        const canvas = document.getElementById("sphereCanvas");
         const ctx = canvas.getContext("2d");
-
         function initAppWorkspace() {
             const container = document.getElementById("switchboard-target");
             container.innerHTML = "";
             FULL_EXISTENZ_SCHEMA.forEach(item => {
+                liveBitMetrics[item.bit] = { green: 100, blue: 0, red: 0 };
                 const row = document.createElement("div");
                 row.className = "bit-row";
                 row.innerHTML = `
                     <span class="bit-tag">b${item.bit.toString().padStart(3, '0')}</span>
                     <span class="bit-name" style="color: ${item.cat==='shield'?'var(--green)':item.cat==='anchor'?'var(--pink)':'#fff'}">${item.name}</span>
-                    <span class="bit-metric-box" id="metric-readout-${item.bit}">0 hits</span>
-                    <label class="switch">
-                        <input type="checkbox" ${item.active ? 'checked' : ''} id="switch-${item.bit}" onchange="toggleBitState(${item.bit})">
-                        <span class="slider"></span>
-                    </label>
+                    <span class="bit-metric-box" id="metric-${item.bit}">0 hits</span>
+                    <div class="energy-bar-bg">
+                        <div class="bar-green" id="bg-green-${item.bit}" style="width: 100%"></div>
+                        <div class="bar-blue" id="bg-blue-${item.bit}" style="width: 0%"></div>
+                        <div class="bar-red" id="bg-red-${item.bit}" style="width: 0%"></div>
+                    </div>
                 `;
                 container.appendChild(row);
             });
-            window.addEventListener('resize', fixCanvasSize);
-            fixCanvasSize();
-            requestAnimationFrame(renderSpectrumLoop);
+            window.addEventListener('resize', adaptCanvasLimits);
+            adaptCanvasBounds();
+            requestAnimationFrame(renderFibonacciSphereMatrixFrame);
         }
 
-        function toggleBitState(bit) {
-            const item = FULL_EXISTENZ_SCHEMA.find(x => x.bit === bit);
-            if (item) {
-                item.active = document.getElementById(`switch-${bit}`).checked;
+        function modifyExecutionWarpVelocity() {
+            calculatedWarpVelocity = parseFloat(document.getElementById("warp-select").value);
+            if (clockTimerTicker !== null) {
+                // Instantly re-map clock intervals to follow the current warp setting
+                clearInterval(clockTimerTicker);
+                clockTimerTicker = setInterval(executeSingleGenerationCycle, 1200 * calculatedWarpVelocity);
             }
-            updateHardwareMetrics();
         }
 
-        function fixCanvasSize() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
+        function triggerTwelveGenerationLifeTest() {
+            purgeTensors();
+            document.getElementById("audit-report-target").innerHTML = "Initializing 12-Generation Time Loop... Watch the sphere lattice shift.";
+            targetGenerationIndex = 1;
+            
+            // Initiate the loop using the configured speed setting
+            clockTimerTicker = setInterval(executeSingleGenerationCycle, 1200 * calculatedWarpVelocity);
         }
 
-        function resetTelemetryTensors() {
-            registerDensityArray.fill(0);
-            generationalMetricsLog = []; // Clears the active tracking list history
-            totalSimulatedRuns = 0;
-            document.body.classList.remove("alarm-active");
-            document.getElementById("audit-report-target").innerHTML = "System idle. Run a 5-Generation compliance test to compile mathematical audit outcomes...";
-            updateHardwareMetrics();
-        }
-        function runGenerationalComplianceTest() {
-            registerDensityArray.fill(0);
-            generationalMetricsLog = []; // Re-initializes clean for a new simulation run
-            totalSimulatedRuns = 0;
+        function executeSingleGenerationCycle() {
+            if (targetGenerationIndex > 12) {
+                clearInterval(clockTimerTicker);
+                clockTimerTicker = null;
+                return;
+            }
 
-            const baseScale = parseInt(document.getElementById("scale-select").value);
-            let currentDisabilityRate = parseFloat(document.getElementById("disability-pct").value) / 100;
-            let currentBrokenShieldRate = parseFloat(document.getElementById("brokenshield-pct").value) / 100;
+            const scale = parseFloat(document.getElementById("scale-select").value);
+            let genRuns = scale * (1 + (targetGenerationIndex * 0.03));
+            totalSimulatedRuns += genRuns;
 
-            for (let gen = 1; gen <= 5; gen++) {
-                let genRuns = baseScale * (1 + (gen * 0.05));
-                totalSimulatedRuns += genRuns;
+            let collisions = 0;
 
-                let genCollisionsCount = 0;
-                let genShieldSaves = 0;
+            for (let i = 0; i < genRuns; i++) {
+                // Evaluate an environmental load flow template
+                let flow = LIFE_OCEAN_FLOWS[Math.floor(Math.random() * LIFE_OCEAN_FLOWS.length)];
+                
+                FULL_EXISTENZ_SCHEMA.forEach(item => {
+                    // Inject uncompromised baseline pulses to eliminate the 0-hit bug
+                    registerDensityArray[item.bit] += 10;
+                    liveBitMetrics[item.bit].green += 10;
 
-                for (let i = 0; i < genRuns; i++) {
-                    let adjustedDisabilityRisk = currentDisabilityRate;
-                    let adjustedShieldBreakerRisk = Math.min(0.95, currentBrokenShieldRate + (gen * 0.02));
-
-                    let sampleHasDisability = Math.random() < adjustedDisabilityRisk;
-                    let systemicShieldsFailing = Math.random() < adjustedShieldBreakerRisk;
-
-                    const existenceActive = FULL_EXISTENZ_SCHEMA.find(x => x.bit === 0)?.active;
-                    const autonomyActive = FULL_EXISTENZ_SCHEMA.find(x => x.bit === 1)?.active;
-                    const integrityActive = FULL_EXISTENZ_SCHEMA.find(x => x.bit === 2)?.active;
-                    const disabilityActive = FULL_EXISTENZ_SCHEMA.find(x => x.bit === 5)?.active;
-                    const shieldExploitActive = FULL_EXISTENZ_SCHEMA.find(x => x.bit === 26)?.active;
-
-                    if (existenceActive) registerDensityArray[0]++;
-                    if (autonomyActive) registerDensityArray[1]++;
-                    if (integrityActive) registerDensityArray[2]++;
-
-                    if (sampleHasDisability && disabilityActive) {
-                        registerDensityArray[5]++;
-                        
-                        if (Math.random() < 0.35) {
-                            if (shieldExploitActive && !systemicShieldsFailing) {
-                                registerDensityArray[26]++; 
-                                genShieldSaves++;
-                            } else {
-                                // Dynamic unshielded friction traffic falls onto the array targets
-                                registerDensityArray[5] += 5; // Ableism crash
-                                registerDensityArray[3] += 4; // Psychological load leak
-                                registerDensityArray[7] += 3; // Property lock noise
-                                genCollisionsCount++;
-                            }
-                        }
+                    let hitByThreat = flow.threat.includes(item.bit);
+                    if (hitByThreat) {
+                        registerDensityArray[item.bit] += 50;
+                        liveBitMetrics[item.bit].red += 50;
+                        collisions++;
+                    } else if (flow.bits.includes(item.bit)) {
+                        registerDensityArray[item.bit] += 25;
+                        liveBitMetrics[item.bit].blue += 25;
                     }
-
-                    // Feed active progress horizons down to the density metrics
-                    FULL_EXISTENZ_SCHEMA.forEach(item => {
-                        if (item.cat === 'anchor' && item.active) {
-                            registerDensityArray[item.bit]++;
-                        }
-                    });
-                }
-
-                // Push compiled row statistics into the history list container
-                generationalMetricsLog.push({
-                    generation: gen,
-                    runs: genRuns,
-                    collisions: genCollisionsCount,
-                    saves: genShieldSaves,
-                    leakRatio: genCollisionsCount / genRuns
                 });
             }
 
-            compileAuditReport();
-            updateHardwareMetrics();
+            finalReportLog.push({ gen: targetGenerationIndex, runs: genRuns, count: collisions });
+            renderAuditSummaryLog();
+            processMetersLog();
+            
+            targetGenerationIndex++;
         }
-        function compileAuditReport() {
-            const reportTarget = document.getElementById("audit-report-target");
-            let outputHtml = `<h3>⚡ EXISTENZ 5-GENERATION SAFETY AUDIT COMPLETED</h3>`;
-            let structuralBreachDetected = false;
-
-            generationalMetricsLog.forEach(g => {
-                let complianceStatus = g.leakRatio < 0.05 ? `<span class="audit-pass">PASS</span>` : `<span class="audit-fail">FAIL</span>`;
-                if (g.leakRatio >= 0.05) structuralBreachDetected = true;
-
-                outputHtml += `
-                    <div><strong>Generation ${g.generation} (Year +${g.generation * 25}):</strong> 
-                    Runs: ${Math.floor(g.runs).toLocaleString()} | 
-                    Collisions: ${g.collisions.toLocaleString()} | 
-                    Status: ${complianceStatus} (Leak: ${(g.leakRatio * 100).toFixed(2)}%)</div>
-                `;
+        function renderAuditSummaryLog() {
+            const target = document.getElementById("audit-report-target");
+            let html = `<h3>⚡ SAFETY AUDIT COMPLETED UP TO GEN ${targetGenerationIndex}</h3>`;
+            
+            finalReportLog.forEach(g => {
+                let ratio = g.count / (g.runs * 16);
+                let pct = (ratio * 100).toFixed(2);
+                let pass = ratio < 0.05 ? `<span class="audit-pass">PASS</span>` : `<span class="audit-fail">FAIL</span>`;
+                html += `<div>Gen ${g.gen}: Runs: ${Math.floor(g.runs).toLocaleString()} | Leak: ${pct}% | Status: ${pass}</div>`;
             });
-
-            outputHtml += `<br><h3>📌 FORENSIC CONCLUSION SUMMARY</h3>`;
-            if (structuralBreachDetected) {
-                outputHtml += `
-                    <div class="audit-fail">❌ HIGH RISK ARCHITECTURAL CRITIQUE:</div>
-                    <div>Compounding generational data drift has breached safety thresholds. Lack of insulated shielding layers causes ableism collision parameters to pierce upper networks, threatening population-scale social stability. Protect core registers immediately.</div>
-                `;
-            } else {
-                outputHtml += `
-                    <div class="audit-pass">✅ SECURE ARCHITECTURAL PRIMITIVE LATTICE:</div>
-                    <div>Orthogonal vector bounds remained watertight across 125 historical simulation steps. System isolation features handled demographic expansion patterns safely. Verified compliant.</div>
-                `;
-            }
-            reportTarget.innerHTML = outputHtml;
+            target.innerHTML = html;
         }
 
-        function updateHardwareMetrics() {
-            document.getElementById("total-processed-counter").innerText = totalSimulatedRuns.toLocaleString();
+        function processMetersLog() {
+            document.getElementById("total-processed-counter").innerText = Math.floor(totalSimulatedRuns).toLocaleString();
+            let sum = registerDensityArray.reduce((a, b) => a + b, 0);
             
-            let totalHitsSum = registerDensityArray.reduce((a, b) => a + b, 0);
-            let cpuMflops = (totalHitsSum * 0.00002).toFixed(2);
-            let bandwidthMbs = (totalHitsSum * 0.00004).toFixed(2);
-            
-            let rawOverrunBytes = Math.max(0, (totalHitsSum * 0.00003) - 200);
-            let overrunMbs = totalSimulatedRuns > 0 ? rawOverrunBytes.toFixed(2) : "0.00";
-
-            document.getElementById("cpu-power-metric").innerText = `${cpuMflops} MFLOPs`;
-            document.getElementById("bandwidth-metric").innerText = `${bandwidthMbs} MB/s`;
-            document.getElementById("overrun-metric").innerText = `${overrunMbs} MB`;
+            document.getElementById("cpu-power-metric").innerText = `${(sum * 0.00001).toFixed(2)} MFLOPs`;
+            document.getElementById("bandwidth-metric").innerText = `${(sum * 0.00002).toFixed(2)} MB/s`;
+            document.getElementById("overrun-metric").innerText = `${Math.max(0, (sum * 0.000015) - 100).toFixed(2)} MB`;
 
             FULL_EXISTENZ_SCHEMA.forEach(item => {
-                const el = document.getElementById(`metric-readout-${item.bit}`);
-                if (el) el.innerText = `${registerDensityArray[item.bit].toLocaleString()} hits`;
+                document.getElementById(`metric-${item.bit}`).innerText = `${Math.floor(registerDensityArray[item.bit]).toLocaleString()} hits`;
+                
+                let total = liveBitMetrics[item.bit].green + liveBitMetrics[item.bit].blue + liveBitMetrics[item.bit].red || 1;
+                document.getElementById(`bg-green-${item.bit}`).style.width = `${(liveBitMetrics[item.bit].green / total) * 100}%`;
+                document.getElementById(`bg-blue-${item.bit}`).style.width = `${(liveBitMetrics[item.bit].blue / total) * 100}%`;
+                document.getElementById(`bg-red-${item.bit}`).style.width = `${(liveBitMetrics[item.bit].red / total) * 100}%`;
             });
-
-            let preview = [];
-            for (let b = 127; b >= 0; b--) preview.push(registerDensityArray[b] > 0 ? "1" : "0");
-            document.getElementById("binary-stream-box").innerText = preview.slice(-64).join("").match(/.{1,8}/g).join(" ");
-
-            if (parseFloat(overrunMbs) > 100.0) {
-                document.body.classList.add("alarm-active");
-            } else {
-                document.body.classList.remove("alarm-active");
-            }
         }
 
-        function renderSpectrumLoop(timestamp) {
+        // 3D FIBONACCI SPHERE RENDER ENGINE
+        function renderFibonacciSphereMatrixFrame(time) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const totalLanes = 128;
-            const separation = 2;
-            const barW = (canvas.width - (totalLanes * separation)) / totalLanes;
-            const currentPeak = Math.max(...registerDensityArray, 1);
+            
+            let cx = canvas.width / 2;
+            let cy = canvas.height / 2;
+            let rSphere = Math.min(cx, cy) * 0.75;
+            
+            let totalPoints = 128;
+            let goldenRatioAngle = Math.PI * (3 - Math.sqrt(5)); // Majestic Fibonacci Curve Step
+            let rotationAngle = time * 0.0005;
 
-            for (let i = 0; i < totalLanes; i++) {
-                let hits = registerDensityArray[i];
-                let ratio = hits / currentPeak;
-                let x = i * (barW + separation);
+            for (let i = 0; i < totalPoints; i++) {
+                // Calculate 3D sphere coordinate geometry positions
+                let y = 1 - (i / (totalPoints - 1)) * 2; 
+                let radiusAtY = Math.sqrt(1 - y * y); 
+                let theta = i * goldenRatioAngle + rotationAngle;
+                
+                let x = Math.cos(theta) * radiusAtY;
+                let z = Math.sin(theta) * radiusAtY;
 
-                let fillStyle = "rgba(10, 10, 34, 0.2)";
-                if (hits > 0) {
-                    let intensity = Math.min(1, hits / (currentPeak * 0.8 || 1));
+                // Project 3D space into 2D screenspace coordinate tracking bounds
+                let x2d = cx + x * rSphere;
+                let y2d = cy + y * rSphere;
+                
+                // Map node size based on depth profile (Z-axis)
+                let pointRadius = (z + 1) * 3 + 1;
+                
+                // Determine node color maps based on your active simulation array
+                let fill = "rgba(0, 240, 255, 0.2)"; // Idle blue
+                let density = registerDensityArray[i % 128];
+                
+                if (density > 0) {
+                    let totalMax = Math.max(...registerDensityArray, 1);
+                    let intensity = density / totalMax;
                     let r = Math.floor(intensity * 255);
-                    let g = Math.floor((1 - intensity) * 230);
-                    let b = 255;
-                    fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    let g = Math.floor((1 - intensity) * 240);
+                    fill = `rgba(${r}, ${g}, 255, ${(z + 1.2) * 0.4})`; // Dynamic fade on rotation
                 }
 
-                let finalH = 4 + (ratio * (canvas.height - 35));
-                ctx.fillStyle = fillStyle;
-                ctx.fillRect(x, canvas.height - finalH, barW, finalH);
-
-                if (i % 32 === 0) {
-                    ctx.fillStyle = "#4e4e6e";
-                    ctx.font = "9px monospace";
-                    ctx.fillText(`b${i}`, x, canvas.height - 4);
-                }
+                ctx.beginPath();
+                ctx.arc(x2d, y2d, pointRadius, 0, Math.PI * 2);
+                ctx.fillStyle = fill;
+                ctx.fill();
             }
-            requestAnimationFrame(renderSpectrumLoop);
+
+            let preview = Array.from(registerDensityArray).slice(0, 64).map(h => h > 0 ? "1" : "0");
+            document.getElementById("binary-stream-box").innerText = preview.join("").match(/.{1,8}/g).join(" ");
+
+            requestAnimationFrame(renderFibonacciSphereMatrixFrame);
+        }
+
+        function adaptCanvasLimits() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        function adaptCanvasBounds() { adaptCanvasLimits(); }
+
+        function purgeTensors() {
+            if (clockTimerTicker !== null) { clearInterval(clockTimerTicker); clockTimerTicker = null; }
+            registerDensityArray.fill(0);
+            totalSimulatedRuns = 0;
+            finalReportLog = [];
+            FULL_EXISTENZ_SCHEMA.forEach(item => {
+                liveBitMetrics[item.bit] = { green: 100, blue: 0, red: 0 };
+            });
+            processMetersLog();
         }
 
         initAppWorkspace();
