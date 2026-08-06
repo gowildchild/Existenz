@@ -1,82 +1,40 @@
-name: Existenz Core Automated Matrix Compiler
+name: Existenz Core Emergency JSON Defect Finder
 
 on:
   push:
     paths:
       - 'apps/master_existenz/**'
-      - '!apps/master_existenz/generated_outputs/**'
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
-  compile-matrix:
+  locate-defect:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Repository Base
         uses: actions/checkout@v4
-        with:
-          # Securely passes the native runner token into Git's local configuration map
-          token: ${{ github.token }}
-          persist-credentials: true
 
-      - name: Initialize Stable Python Runtime Environment
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Compile Cross-Platform Bitmask Target Libraries
+      - name: Execute Cloud Diagnostic Syntax Inspection
         run: |
           cd apps/master_existenz
-          python build_existenz.py
-
-      # This sequence uses the standard, validated internal token to execute the push
-      - name: Synchronize and Commit Generated System Artifacts
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Stage both your compiled output folder and the new formatted file
-          git add apps/master_existenz/generated_outputs/* || true
-          git add apps/master_existenz/existenzCoreDone.json || true
-          
-          if git diff --staged --quiet; then
-            echo "No variations detected. State remains immutable."
-          else
-            # [skip ci] informs GitHub's servers to completely ignore this commit
-            git commit -m "Automated build: Updated configurations [skip ci]"
-            git push
-          fi
-
-  deploy-site:
-    runs-on: ubuntu-latest
-    needs: compile-matrix
-    if: always()
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}    
-    steps:
-      - name: Checkout Source Repository Base
-        uses: actions/checkout@v4
-        with:
-          token: ${{ github.token }}
-          persist-credentials: true
-
-      - name: Setup GitHub Pages Configuration
-        uses: actions/configure-pages@v4
-
-      - name: Package and Upload Site Directory Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'apps/master_existenz/generated_outputs'
-
-      - name: Deploy Production Artifact Live to Pages Server
-        id: deployment
-        uses: actions/deploy-pages@v4
+          python -c '
+          import json, os
+          target = "existenzCoreMaster.json"
+          if not os.path.exists(target):
+              print(f"[-] Cannot find {target}"); exit(1)
+          with open(target, "r", encoding="utf-8") as f:
+              payload = f.read()
+          try:
+              json.loads(payload)
+              print("[+] SUCCESS: The file is 100% syntactically perfect!")
+          except json.JSONDecodeError as e:
+              print("\n" + "!"*60 + "\n💥 CRITICAL JSON SYNTAX ERROR LOCATED!\n" + f"Reason: {e.msg}\nLine: {e.lineno}\nColumn: {e.colno}\n" + "!"*60)
+              lines = payload.splitlines()
+              start = max(0, e.lineno - 4)
+              end = min(len(lines), e.lineno + 4)
+              print("\n--- EXACT RAW CODE VISUALIZER ---")
+              for i in range(start, end):
+                  ln = i + 1
+                  marker = ">>> " if ln == e.lineno else "    "
+                  print(f"{marker}Line {ln:03d}: {lines[i]}")
+              print("----------------------------------\n")
+          '
