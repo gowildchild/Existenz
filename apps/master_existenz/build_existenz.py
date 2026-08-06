@@ -1,108 +1,82 @@
 import os
 import json
 
-# =====================================================================
-# 1. DYNAMIC DOT-NOTATION TREE PARSER (Fixed Segment Indexing)
-# =====================================================================
-def get_dynamic_path(data, segments, output_tree):
+def walk_tree(source_node, segments, target_tree):
     """
-    Recursively walks through source data matching dot-notation tokens,
-    including wildcards (*), and reproduces the filtered output tree.
+    Recursively pulls targeted layers out of source_node based on path segments.
+    Recreates wildcards (*) and nested keys seamlessly inside target_tree.
     """
     if not segments:
         return
-        
-    current_seg = segments[0]
-    remaining_segs = segments[1:]
-    
-    # Handle Wildcards (*) dynamically
-    if current_seg == "*":
-        if isinstance(data, dict):
-            for key, val in data.items():
-                if not remaining_segs:
-                    output_tree[key] = val
+
+    current_key = segments[0]
+    next_segments = segments[1:]
+
+    # Handle wildcard nodes (*)
+    if current_key == "*":
+        if isinstance(source_node, dict):
+            for key, val in source_node.items():
+                if not next_segments:
+                    target_tree[key] = val
                 else:
-                    if key not in output_tree:
-                        output_tree[key] = {}
-                    get_dynamic_path(val, remaining_segs, output_tree[key])
+                    if key not in target_tree:
+                        target_tree[key] = {}
+                    walk_tree(val, next_segments, target_tree[key])
         return
 
-    # Handle Explicit Keys dynamically
-    if isinstance(data, dict) and current_seg in data:
-        target_val = data[current_seg]
-        if not remaining_segs:
-            output_tree[current_seg] = target_val
+    # Handle exact lookup names
+    if isinstance(source_node, dict) and current_key in source_node:
+        val = source_node[current_key]
+        if not next_segments:
+            target_tree[current_key] = val
         else:
-            if current_seg not in output_tree:
-                output_tree[current_seg] = {}
-            get_dynamic_path(target_val, remaining_segs, output_tree[current_seg])
+            if current_key not in target_tree:
+                target_tree[current_key] = {}
+            walk_tree(val, next_segments, target_tree[current_key])
 
-def compile_dynamic_export(spec_data, profile_rules, active_level):
-    """Reads selection rules array from profiles and filters data dynamically."""
-    rules = profile_rules.get(active_level, [])
-    filtered_output = {}
-    
-    for rule in rules:
-        segments = rule.split(".")
-        get_dynamic_path(spec_data, segments, filtered_output)
-        
-    return filtered_output
-
-# =====================================================================
-# 2. FILE INGESTION & PIPELINE RUNNER
-# =====================================================================
 def main():
     out_dir = "generated_outputs"
     os.makedirs(out_dir, exist_ok=True)
-    
-    # Define your source specification file and profile rules explicitly
-    MASTER_FILE = "existenzCoreMaster.json"
-    PROFILE_FILE = "existenzProfiles.json"
-    
-    master_spec = {}
-    
-    print("=== [1/3] Starting Explicit Specification Ingestion ===")
-    
-    # 1. Load the Master Spec Document
-    if os.path.exists(MASTER_FILE):
-        try:
-            with open(MASTER_FILE, "r", encoding="utf-8") as f:
-                master_spec = json.load(f)
-            print(f" -> Successfully imported master file: '{MASTER_FILE}'")
-        except Exception as e:
-            print(f" [!] Error parsing JSON format in file '{MASTER_FILE}': {e}")
-            return
-    else:
-        print(f" [!] Critical Error: Expected master file '{MASTER_FILE}' was not found in path.")
-        return
 
-    # 2. Load the Profiling Filter Templates
-    if not os.path.exists(PROFILE_FILE):
-        print(f" [!] Critical Error: Profile definition file '{PROFILE_FILE}' is missing.")
+    master_file = "existenzCoreMaster.json"
+    profiles_file = "existenzProfiles.json"
+
+    # 1. Ingest Master Specification File
+    if not os.path.exists(master_file):
+        print(f"[-] Critical Error: Missing '{master_file}' file.")
         return
         
-    try:
-        with open(PROFILE_FILE, "r", encoding="utf-8") as f:
-            profile_rules = json.load(f)
-        print(f" -> Successfully imported filters from: '{PROFILE_FILE}'")
-    except Exception as e:
-        print(f" [!] Error parsing JSON format in file '{PROFILE_FILE}': {e}")
-        return
+    with open(master_file, "r", encoding="utf-8") as f:
+        master_data = json.load(f)
+    print(f"[+] Successfully loaded data layout master: {master_file}")
 
-    # Target output profile configuration level: compact | light | basic | detailed
-    target_profile = "detailed" 
-    
-    print(f"\n=== [2/3] Executing Dynamic Profile Filtering ===")
-    print(f" -> Active Profile Strategy: [{target_profile.upper()}]")
-    result = compile_dynamic_export(master_spec, profile_rules, target_profile)
-    
-    # 3. Save the Filtered Node Tree
-    out_path = os.path.join(out_dir, "existenz_core.json")
-    with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=4)
+    # 2. Ingest Profile Configuration Paths
+    if not os.path.exists(profiles_file):
+        print(f"[-] Critical Error: Missing '{profiles_file}' configuration file.")
+        return
         
-    print(f"\n=== [3/3] Export Processing Complete ===")
-    print(f" -> Filtered data successfully dumped to target file: {out_path}")
+    with open(profiles_file, "r", encoding="utf-8") as f:
+        profiles_config = json.load(f)
+    print(f"[+] Successfully loaded filtering profiles: {profiles_file}")
+
+    # Set selection depth profile: compact | light | basic | detailed
+    active_profile = "detailed"
+    rules = profiles_config.get(active_profile, [])
+    
+    print(f"[*] Processing Dynamic Export filtering for level: [{active_profile.upper()}]")
+    
+    # 3. Filter Matrix Tree Nodes
+    output_result = {}
+    for rule in rules:
+        path_parts = rule.split(".")
+        walk_tree(master_data, path_parts, output_result)
+
+    # 4. Dump Final Clean Structured JSON file
+    final_output_path = os.path.join(out_dir, "existenz_core.json")
+    with open(final_output_path, "w", encoding="utf-8") as f:
+        json.dump(output_result, f, indent=4)
+
+    print(f"[+] Matrix Generation completed. Filtered records written to: {final_output_path}")
 
 if __name__ == "__main__":
     main()
