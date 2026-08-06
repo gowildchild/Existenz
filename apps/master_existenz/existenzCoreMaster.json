@@ -195,31 +195,35 @@
     "Function": {
 	      "fold":	{ 
 			  "0":	{"NONE":		"0x0001FFVV"		},
-			  "1":	{"IS_ALPHA":	"0x010040415AVV"	},	// 64	[0x41,0x5A]
-			  "2":	{"IS_UPPER":    "0x02000920VV"		},	// 10	09	20
-			  "3":	{"IS_ALPHA_UP": "0x030064VV"		},	// 09	20
-			  "4":	{"TO_LOWER":	"0x04000220VV"		},	// 02	20
-			  "8":	{"TO_UPPER":	"0x040001DFVV"		},	// 01	09	20
-			  "16":	{"IS_IMMUTABLE":"0xF00301VV"		}	// 03	01
-					},
-	     "order":	[	self.structure.ExistentialFunction.fold,			
-						self.structure.ExistentialFunction.instruct,
-						self.structure.ExistentialFunction.operator,		
-						self.structure.ExistentialFunction.range, 
-						self.structure.ExistentialProtect.Lo,				
-						self.structure.ExistentialProtect.Hi,
-						self.structure.ExistentialFunction.fold,
-					],
-    },
+			  "1":	{"IS_ALPHA":	"0x010040415AVV"	},	
+			  "2":	{"IS_UPPER":    "0x02000920VV"		},	
+			  "3":	{"IS_ALPHA_UP": "0x030064VV"		},	
+			  "4":	{"TO_LOWER":	"0x04000220VV"		},	
+			  "8":	{"TO_UPPER":	"0x040001DFVV"		},	
+			  "16":	{"IS_IMMUTABLE":"0xF00301VV"		}	
+					}
+    }
   },
   "structuralLanguage": {
-
-	"ExistentialPlatoS": {	"TR":"The Republic",	"Ls":"Laws",	"Ps":"Phaedrus",	"Po":"Phaedo",	"GV":"Gunther",	"Co":"Crito", "Ts":"Thimaeus"	},
-    "ExistentialTier": {		"CORE":		"CORE Engine",		"PILLAR":"PILLARS of Existence",		"RIGHT":	"RIGHTS Institutional",
-								"SHIELD":	"SHIELDS Existenz",	"CANARY":"SHIELDS Canary",				"WATCHDOG":	"SHIELDS Watchdog",
-								"AQUIRED":	"SHIELDS Acquired"																								},
-
-    "ExistentialPlato": {
+		"ExistentialPlatoS":{	
+								"TR":"The Republic",	
+								"Ls":"Laws",	
+								"Ps":"Phaedrus",	
+								"Po":"Phaedo",	
+								"GV":"Gunther",	
+								"Co":"Crito", 
+								"Ts":"Thimaeus"	
+							},
+		"ExistentialTier": 	{		
+								"CORE":		"CORE Engine",		
+								"PILLAR":"PILLARS of Existence",		
+								"RIGHT":	"RIGHTS Institutional",
+								"SHIELD":	"SHIELDS Existenz",	
+								"CANARY":"SHIELDS Canary",				
+								"WATCHDOG":	"SHIELDS Watchdog",
+								"AQUIRED":	"SHIELDS Acquired"
+							},
+	"ExistentialPlato":   {
 		"EXISTENCE":	{	"S":	"TR",
 							"I":	"The beginning is the most important part of the work.",
 							"D":	"Existence is the zero-point baseline. It is the initial spark of biological presence in the universe upon which all other layers are built."
@@ -230,7 +234,7 @@
 						},
 		"INTEGRITY":	{	"S":	"TR", 
 							"I":	"The wholeness of character has nothing to do with the wholeness of body and typicality of mind",
-							"D":	"Good actions give strength to ourselves and inspire good actions in others",	
+							"D":	"Good actions give strength to ourselves and inspire good actions in others"	
 						},
 		"PSYCHOLOGY":	{	"S":	"Ps",
 							"I":	"Reality is created by the mind, we can change our reality by changing our mind",
@@ -288,7 +292,7 @@
 							"I":	"The pursuit of the whole is love",					
 							"D":	"Absolute Trust is not a given right"
 						},
-		"HUMAN_SAFETY":	{	"S":	"Co"
+		"HUMAN_SAFETY":	{	"S":	"Co",
 							"I":	"A state or a man is only truly safe when surrounded by walls of unyielding justice and sound reason"
 						},
         "HUMAN_EQ":		{	"S":	"Ts",
@@ -390,7 +394,8 @@
 								"Q":	"Has a systemic boundary breach forced an absolute baseline (trust) crisis?"
 							}
     },
-    "ExistentialThreat": {
+
+	"ExistentialThreat": {
 		"THREAT_AUTONOMY":              {"B": 1,   "D": "Constraint on choice"							},
 		"THREAT_INTEGRITY":             {"B": 2,   "D": "Character assassination attempt"				},
 		"THREAT_PSYCHOLOGY":            {"B": 3,   "D": "Infiltration of mental peace"					},
@@ -406,10 +411,10 @@
 		"THREAT_CANARY_TRUST_HUMAN":    {"B": 30,  "D": "Direct mark on human trust canary"				},
 		"THREAT_CANARY_TRUST_ABSOLUTE": {"B": 32,  "D": "Direct mark on absolute trust canary"			},
 		"THREAT_EQUILIBRIUM":           {"B": 127, "D": "Direct mark on systemic boundary breach canary"}
-    },
-  },
-  "ExistenzCoreAddon": {
-    "ExistentialTrust": {
+    	}
+  	},
+    "ExistenzCoreAddon": {
+      "ExistentialTrust": {
 		"TRUST_SYSTEMIC":				{"B": 16,  "D": "Infrastructure verification"					},
 		"TRUST_CONDITIONAL":			{"B": 17,  "D": "Transactional contracts"						},
 		"TRUST_BROKEN_INSTITUTIONAL":	{"B": 20,  "D": "Minor breach of public trust"					},
@@ -421,8 +426,9 @@
 		"TRUST_HUMAN":					{"B": 30,  "D": "Human trust"									},
 		"TRUST_ABSOLUTE":				{"B": 32,  "D": "Absolute trust"								},
 		"EQUILIBRIUM_PERSONAL":			{"B": 127, "D": "Sovereign user-chosen anchor factor"			}
-    },
-    "ExistentialCanary": {
+	  }
+	},
+	"ExistentialCanary": {
 		"RELATION":						{"B": 15,  "T": "immutable", "V": "CANARY_RELATION"				},
 		"RIGHTS_SHIELDS":				{"B": 16,  "T": "immutable", "V": "CANARY_RIGHTS_SHIELD"		},
 		"RIGHTS_HUMAN":					{"B": 20,  "T": "immutable", "V": "CANARY_RIGHTS_HUMAN"			},
@@ -434,44 +440,5 @@
 		"HUMAN_ABSOLUTE":				{"B": 31,  "T": "latchable", "V": "CANARY_TRUST_ABSOLUTE"		},
 		"HUMAN_SAFETY":					{"B": 46,  "T": "latchable", "V": "CANARY_TRUST_SAFETY"			},
 		"HUMAN_EQ":						{"B": 127, "T": "latchable", "V": "CANARY_EQUILIBRIUM"			}
-      }
-  },
-  "integrity": {
-		"ExistentialProtect": {
-			"policy": "immutable",
-			"range": 32,
-			"qbit": "B",
-			"quse": "1:1",
-			"sign": "sha256",
-			"hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-		},
-		"ExistentialInstruction": {
-			"policy": "immutable",
-			"range": 84,
-			"sign": "sha256",
-			"hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-		},
-		"ExistentialFunction": {
-			"policy": "immutable",
-			"range": 128,
-			"sign": "sha256",
-			"hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-		},  
-		"ExistentialTier": {
-	       "policy": "immutable",
-			"range": [0..24],
-	 		 "qbit": "B",
-			 "quse": "1:1",
-			"sign": "sha256",
-			"hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-		},
-		"ExistentialCore": {
-			"policy": "immutable",
-			"range": [0..24],
-			"qbit": "B",
-			"quse": "1:1",
-			"sign": "sha256",
-			"hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-		}
-  }
+    }
 }
