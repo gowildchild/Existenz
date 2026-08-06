@@ -93,11 +93,23 @@ def main():
     profiles_file = "existenzProfiles.json"
 
     # 1. Ingest Master Core Schema Data
+    # 1. Ingest and Automatically Sanitize Master Data Layout
     if not os.path.exists(master_file):
-        print(f"[-] Critical Error: Missing master metadata data source file '{master_file}'")
+        print(f"[-] Critical Error: Missing master file '{master_file}'")
         return
+        
     with open(master_file, "r", encoding="utf-8") as f:
-        master_data = json.load(f)
+        raw_content = f.read()
+        
+    # Automatically strip trailing whitespace lines to stabilize spacing
+    sanitized_content = "\n".join([line.rstrip() for line in raw_content.splitlines()])
+    
+    try:
+        master_data = json.loads(sanitized_content)
+        print(f"[+] Successfully loaded and sanitized data layout master: {master_file}")
+    except json.JSONDecodeError as e:
+        print(f"[-] Decoder Exception: {e}")
+        return
 
     # 2. Ingest Profile Configuration Paths 
     if not os.path.exists(profiles_file):
