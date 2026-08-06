@@ -10,9 +10,13 @@
 		"size":					128,
 		"slug":					"existenzCore",
 		"type":					"immutable",
-		"poweruse":				{"w": 1e-7, "s": "uW", "d": "< 1uW (Sub-Microwatt)"}
+		"poweruse":				{
+									"w": 1e-7, 
+									"s": "uW", 
+									"d": "< 1uW (Sub-Microwatt)"
+								}
   	},
-  	"ExistenzCore": {
+	"ExistenzCore": {
 		"ExistentialMirror": {
 			"NONE":				{"B": 0,   "D": "0:0"			},
 			"CORE":				{"B": 1,   "D": "1:0"			},
@@ -124,7 +128,7 @@
 		}
   },
   "ExistenzFramework":	{
-		"Action": {
+		"Action": 	{
 			"SPECIAL":  { "0": "NONE",	"1": "BOUND",   "2": "IMMUTABLE",	"4": "CLAIMABLE",   "8": "INHERET",		"16": "VERIFY",		"32": "SIGNED"			},
 			"DURESS":   { "0": "NONE",	"1": "FAKE_OK", "2": "TRIGGER",		"4": "DELAY",       "8": "DEADMAN",		"16": "PANIC",		"32": "CORE.SPECIAL"	},        
 			"CANARY":   { "0": "NONE",	"1": "CORE",    "2": "WATCHDOG",	"4": "CANARY",      "8": "PRIVATE",		"16": "CORE.DURESS","32": "CORE.SPECIAL"	},
@@ -133,21 +137,13 @@
 			"RANGE":    { "0": "NONE",	"1": "VALUE",   "2": "RANGED",		"4": "MIN",         "8": "MAX",								"32": "CORE.SPECIAL"	},
 			"BITCHECK":	{ "0": "NONE",	"1": "DEC",	    "2": "BIT",			"4": "MIN",			"8": "MAX",			"16": "IS_OK",		"32": "IS_SAFE"			}
 		},
-		"Scope": {
+		"Scope": 	{
 			"SCOPE":	{ "0": "CORE",	"1": "RIGHT",	"2": "THREAT",		"4": "SHIELD",		"8": "ADDON",		"16": "CANARY",		"32": "SPECIAL"		},
 			"DOMAIN":	{ "0": "CORE",	"1": "PERSON",	"2": "CIRCLE",		"4": "WORLD",		"8": "API",			"16": "CANARY",		"32": "SPECIAL"		},
 			"PROTECT":	{ "0": "NONE",	"1": "READ",	"2": "WRITE",		"4": "CHANGE",		"8": "PRIVACY",		"16": "CANARY",		"32": "SPECIAL"		},
 			"VALUE":	{ "0": "NONE",	"1": "START",	"2": "STOP",		"4": "RANGE",		"8": "PRIVACY",		"16": "CANARY",		"32": "SPECIAL"		}
 		},
 		"Dimension": {
-			"CORE_4D":   [ "self.immutable.CORE.BOUNDARIES", "self.immutable.CORE.PRIVACY", "self.immutable.CORE.CANARY", "self.immutable.CORE.SPECIAL" ],
-			"CORE_3D":   [ "self.immutable.CORE.PRIVACY",    "self.immutable.CORE.CANARY",  "self.immutable.CORE.SPECIAL" ],
-			"CORE_2D":   [ "self.immutable.CORE.CANARY",     "self.immutable.CORE.SPECIAL" ],
-			"CORE_1D":   [ "self.immutable.CORE.SPECIAL" ],
-			"SCOPE":     [ "self.immutable.STRUCT.SCOPE",     "self.immutable.DIMENSION.CORE_2D" ],
-			"DOMAIN":    [ "self.immutable.STRUCT.DOMAIN",    "self.immutable.DIMENSION.CORE_2D" ],
-			"PROTECT":   [ "self.immutable.STRUCT.PROTECT",   "self.immutable.DIMENSION.CORE_3D" ],
-			"VALUE":     [ "self.immutable.STRUCT.VALUE",     "self.immutable.DIMENSION.CORE_4D" ],
 			"DEFAULTS":  { "0": 11, "1": 31, "2": 63, "3": 0, "4": 2, "5": 9 }
 		},
 		"ExistentialCoreBasic": {
