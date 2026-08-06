@@ -7,6 +7,7 @@
 **Target Research Group:** Distributed Systems Engineering / Applied Cryptography and Privacy Labs  
 **License:** Open-Source Non-Commercial Freedom (The "Pay Up or Face the Math" Enterprise Provision)  
 **Section:** Spatiotemporal Biometric Convergence (SBC) Introspection, Classical Harmony & Mathematical Rights of Nature
+**SIMULATORS ARE AVAILABLE AT:** [Plato in 3DATA](https://gowildchild.github.io/Existenz/) | [Time Lines](https://gowildchild.github.io/Existenz/apps/timelines/) | [Human Rights](https://gowildchild.github.io/Existenz/apps/human-rights/) | [LifeTime](https://gowildchild.github.io/Existenz/apps/lifetime/) | [Extra Colliding](https://gowildchild.github.io/Existenz/apps/extra-colliding/) | [Plato Fields](https://gowildchild.github.io/Existenz/apps/plato-fields/) | [Safety-Audit](https://gowildchild.github.io/Existenz/apps/safety-audit/) [Structures](https://github.com/gowildchild/Existenz/struct) | [Examples](https://github.com/gowildchild/Existenz/tree/main/examples)
 ---
 
 ## 1 | The Written Word and the Burden of Inheritance
@@ -341,16 +342,6 @@ Copyright © 2026 Gunther Voet. All Rights Reserved.
 This documentation and the underlying reference code are free software: you can redistribute them and/or modify them under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 This architecture is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-**SIMULATORS ARE AVAILABLE AT:**
-https://gowildchild.github.com/Existenz/apps/human-rights/
-https://gowildchild.github.com/Existenz/apps/extra-colliding/
-https://gowildchild.github.com/Existenz/apps/plato-fields/
-https://gowildchild.github.com/Existenz/apps/safety-audit/
-https://gowildchild.github.com/Existenz/apps/timelines/
-https://gowildchild.github.com/Existenz/apps/lifetime/
-
-
 
 ---
 
