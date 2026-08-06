@@ -21,6 +21,12 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Hook Interactive Debug Shell Session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          # This limits access to your GitHub username profile for maximum security
+          limit-access-to-actor: true
+
       # Step inside the folder explicitly to generate the files locally
       - name: Compile Cross-Platform Bitmask Target Libraries
         run: |
