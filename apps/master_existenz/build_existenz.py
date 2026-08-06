@@ -1,119 +1,41 @@
 import os
 import json
-import datetime
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
-# =====================================================================
-# 1. UNIVERSAL TREE WALKER
-# =====================================================================
 def walk_tree(source_node, segments, target_tree):
-    """
-    Recursively pulls targeted layers out of source_node based on path segments.
-    Recreates wildcards (*) and nested keys seamlessly inside target_tree.
-    """
-    if not segments:
-        return
-
-    current_key = segments
+    """Recursively pulls targeted paths out of source node layout maps."""
+    if not segments: return
+    current_key = segments[0]
     next_segments = segments[1:]
 
-    # Handle wildcard nodes (*)
     if current_key == "*":
         if isinstance(source_node, dict):
-            for key, val in source_node.items():
-                if not next_segments:
-                    target_tree[key] = val
+            for k, v in source_node.items():
+                if not next_segments: target_tree[k] = v
                 else:
-                    if key not in target_tree:
-                        target_tree[key] = {}
-                    walk_tree(val, next_segments, target_tree[key])
+                    if k not in target_tree: target_tree[k] = {}
+                    walk_tree(v, next_segments, target_tree[k])
         return
 
-    # Handle exact lookup names
     if isinstance(source_node, dict) and current_key in source_node:
         val = source_node[current_key]
-        if not next_segments:
-            target_tree[current_key] = val
+        if not next_segments: target_tree[current_key] = val
         else:
-            if current_key not in target_tree:
-                target_tree[current_key] = {}
+            if current_key not in target_tree: target_tree[current_key] = {}
             walk_tree(val, next_segments, target_tree[current_key])
 
-
-# =====================================================================
-# 2. MODULAR EXPORT PIPELINES (With Active Timestamp Injections)
-# =====================================================================
-def export_to_json(filtered_tree, output_path, timestamp):
-    """Writes the filtered configuration tree into clean JSON with an active timestamp."""
-    # Inject the runtime timestamp directly into the top level or meta block if present
-    if "meta" in filtered_tree:
-        filtered_tree["meta"]["compiled_at"] = timestamp
-    else:
-        filtered_tree["compiled_at"] = timestamp
-
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(filtered_tree, f, indent=4)
-    print(f"[+] JSON Document generated and overwritten at: {output_path}")
-
 def dict_to_xml_element(tag_name, d):
-    """Helper to dynamically convert a filtered dictionary branch into XML elements."""
+    """Converts filtered dictionaries into valid nested XML elements."""
     element = ET.Element(tag_name)
     if isinstance(d, dict):
-        for key, val in d.items():
-            if not isinstance(val, (dict, list)):
-                element.set(str(key), str(val))
-            elif isinstance(val, dict):
-                child = dict_to_xml_element(str(key), val)
-                element.append(child)
+        for k, v in d.items():
+            if not isinstance(v, (dict, list)): element.set(str(k), str(v))
+            elif isinstance(v, dict): element.append(dict_to_xml_element(str(k), v))
     else:
         element.text = str(d)
     return element
 
-def generate_beautified_reference():
-    """
-    Ingests the master specification data, recursively alphabetises every object 
-    branch, and dumps a perfectly spaced layout to 'existenzCoreDone.json'.
-    The original file remains completely unaltered.
-    """
-    master_file = "existenzCoreMaster.json"
-    output_file = "existenzCoreDone.json"
-    
-    if not os.path.exists(master_file):
-        print(f"[-] Cannot locate configuration source: {master_file}")
-        return
-
-    with open(master_file, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    # Write the sorted and beautifully indented tree to the new filename
-    with open(output_file, "w", encoding="utf-8") as f:
-        # sort_keys=True alphabetises everything; indent=4 formats spacing perfectly
-        json.dump(data, f, indent=4, sort_keys=True)
-        
-    print(f"[+] Isolated layout sorting complete. reference file generated at: {output_file}")
-
-
-def export_to_xml(filtered_tree, output_path, timestamp, project_name="Existenz"):
-    """Converts the filtered configuration tree into formatted XML layout strings with a timestamp."""
-    # Inject the runtime timestamp directly into the root element attributes
-    root_element = ET.Element("existenz", project=project_name, compiled_at=timestamp)
-    
-    for key, content in filtered_tree.items():
-        node = dict_to_xml_element(key, content)
-        root_element.append(node)
-        
-    raw_str = ET.tostring(root_element, encoding="utf-8")
-    parsed_xml = minidom.parseString(raw_str)
-    pretty_xml = parsed_xml.toprettyxml(indent="    ")
-    
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write(pretty_xml)
-    print(f"[+] XML Document generated and overwritten at: {output_path}")
-
-# =====================================================================
-# 3. PIPELINE ORCHESTRATOR
-# =====================================================================
 def main():
     out_dir = "generated_outputs"
     os.makedirs(out_dir, exist_ok=True)
@@ -121,78 +43,48 @@ def main():
     master_file = "existenzCoreMaster.json"
     profiles_file = "existenzProfiles.json"
 
-    # Generate a precise UTC ISO 8601 timestamp string
-    current_timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
-
-    with open(master_file, "r", encoding="utf-8") as f:
-        raw_text = f.read()
-    try:
-        master_data = json.loads(raw_text)
-        print("[+] JSON parsed successfully! No syntax errors found.")
-    except json.JSONDecodeError as e:
-        print("\n" + "!" * 60)
-        print(f"[!] JSON SYNTAX ERROR DETECTED!")
-        print(f"    Error Message: {e.msg}")
-        print(f"    Line Number:   {e.lineno}")
-        print(f"    Column Number: {e.colno}")
-        print(f"    Character Pos: {e.pos}")
-        print("!" * 60)
-        
-        # Pull the exact surrounding lines so you can see the issue instantly
-        lines = raw_text.splitlines()
-        start_line = max(0, e.lineno - 4)
-        end_line = min(len(lines), e.lineno + 4)
-        
-        print("\n--- ERROR CONTEXT VISUALIZER ---")
-        for idx in range(start_line, end_line):
-            line_num = idx + 1
-            marker = ">>> " if line_num == e.lineno else "    "
-            print(f"{marker}Line {line_num:03d}: {lines[idx]}")
-        print("--------------------------------\n")
-        return  # Stop execution gracefully so the pipeline doesn't choke
-    
-    # 1. Ingest Master Core Schema Data
-    if not os.path.exists(master_file):
-        print(f"[-] Critical Error: Missing master file '{master_file}'")
-        return
+    # 1. Ingest Master Core Schema
     with open(master_file, "r", encoding="utf-8") as f:
         master_data = json.load(f)
 
-#    # 🚀 DROP THE BEAUTIFICATION TRIGGER RIGHT HERE
-#    print("[*] Generating formatted specification copy...")
-#    with open("existenzCoreDone.json", "w", encoding="utf-8") as f_done:
-#        json.dump(master_data, f_done, indent=4, sort_keys=True)
-#    print("[+] Perfect format duplicate exported to: existenzCoreDone.json")    
-    
-    # 2. Ingest Profile Configuration Paths 
+    # 💾 TASK A: Export perfectly alphabetised layout copy to existenzCoreDone.json
+    with open("existenzCoreDone.json", "w", encoding="utf-8") as f_done:
+        json.dump(master_data, f_done, indent=4, sort_keys=True)
+    print("[+] Formatted reference file generated: existenzCoreDone.json")
+
+    # 2. Ingest Profile Configuration Paths
     if not os.path.exists(profiles_file):
-        print(f"[-] Critical Error: Missing profiles file '{profiles_file}'")
+        print("[-] Skipping multi-language compilation: existenzProfiles.json not present.")
         return
+
     with open(profiles_file, "r", encoding="utf-8") as f:
         profiles_config = json.load(f)
 
-    project_slug = master_data.get("project", "Existenz")
     active_profile = "detailed"
     rules = profiles_config.get(active_profile, [])
-    
-    print(f"=== Running Multi-Pipeline Exporter [Profile: {active_profile.upper()}] ===")
-    print(f" -> Generation Timestamp: {current_timestamp}\n")
+    project_slug = master_data.get("project", "Existenz")
 
-    # 3. Core Universal Filter Run
+    # 3. Dynamic Filter Walking Sweeping
     filtered_tree = {}
     for rule in rules:
-        path_parts = rule.split(".")
-        walk_tree(master_data, path_parts, filtered_tree)
+        walk_tree(master_data, rule.split("."), filtered_tree)
 
-    # 4. Trigger Modulator File Writes
-    json_out_path = os.path.join(out_dir, "existenz_core.json")
-    xml_out_path = os.path.join(out_dir, "existenz_core.xml")
+    # 💾 TASK B: Output Filtered JSON Asset
+    json_path = os.path.join(out_dir, "existenz_core.json")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(filtered_tree, f, indent=4, sort_keys=True)
 
-    # Write files out using overwrite tracking
-    export_to_json(filtered_tree, json_out_path, current_timestamp)
-    export_to_xml(filtered_tree, xml_out_path, current_timestamp, project_slug)
+    # 💾 TASK C: Output Filtered XML Asset
+    xml_path = os.path.join(out_dir, "existenz_core.xml")
+    root_el = ET.Element("existenz", project=project_slug)
+    for k, content in filtered_tree.items():
+        root_el.append(dict_to_xml_element(k, content))
+    
+    pretty_xml = minidom.parseString(ET.tostring(root_el, encoding="utf-8")).toprettyxml(indent="    ")
+    with open(xml_path, "w", encoding="utf-8") as f:
+        f.write(pretty_xml)
 
-    print(f"\n[+] Processing finished. Cache broken via active timestamping.")
+    print("[+] All structural compilation exports finished successfully!")
 
 if __name__ == "__main__":
     main()
