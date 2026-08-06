@@ -1,9 +1,10 @@
-name: Existenz Core Automated Matrix Compiler & Site Deployer
+name: Existenz Core Automated Matrix Compiler
 
 on:
   push:
     paths:
       - 'apps/master_existenz/**'
+      - '!apps/master_existenz/generated_outputs/**'
   workflow_dispatch:
 
 permissions:
@@ -42,12 +43,15 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
+          # Stage both your compiled output folder and the new formatted file
           git add apps/master_existenz/generated_outputs/* || true
+          git add apps/master_existenz/existenzCoreDone.json || true
           
           if git diff --staged --quiet; then
             echo "No variations detected. State remains immutable."
           else
-            git commit -m "Automated build: Updated dynamic core profiles and templates"
+            # [skip ci] informs GitHub's servers to completely ignore this commit
+            git commit -m "Automated build: Updated configurations [skip ci]"
             git push
           fi
 
