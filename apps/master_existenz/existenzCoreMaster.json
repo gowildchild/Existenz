@@ -2,10 +2,10 @@
   "project":				"Existenz",
   "name":					"Existenz Core Specification",
   "slug":					"existenzCore",
-  "version":				"0.76-PoC",
+  "version":				"0.72-PoC",
   "subversion":				"detailed",
   "author":					"Gunther Voet",
-  "url":					"",
+  "url":					"https://github.com/gowildchild/Existenz/",
   "license":				"AGPL-3.0-only",
   "meta": {
 		"size":				128,
@@ -19,9 +19,9 @@
         "CORE":				{"B": 1,   "D": "1:0"			},
         "THREAT":			{"B": 2,   "D": "0:1"			},
 		"CORE_THREAT":		{"B": 3,   "D": "1:1"			},
-		"RIGHT":			{"B": 4,   "D": "0:0:1"		},
+		"RIGHT":			{"B": 4,   "D": "0:0:1"			},
 		"CANARY":			{"B": 16,  "D": "0:0:0:1"		},
-		"WATCHDOG":			{"B": 32,  "D": "0:0:0:1"		},
+		"WATCHDOG":			{"B": 32,  "D": "0:0:0:1"		}
     },
     "ExistentialTier": {
 		"CORE":				{"B": 0,	"hi":9,	"lo":25,"fold":8,	"token": "00091908B2" },
@@ -31,7 +31,7 @@
 		"CANARY":			{"B": 8,	"hi":11,"lo":15,"fold":8,	"token": "080B0F089F" },
 		"WATCHDOG":			{"B": 16,	"hi":9,	"lo":25,"fold":8,	"token": "F009190830" },
 		"IMMUTABLE":		{"B": 24,	"hi":9,	"lo":25,"fold":8,   "token": "F80919084B" },
-		"AQUIRED":			{"B": 32,	"hi":11,"lo":15,"fold":8,	"token": "F10B0F0861" },
+		"AQUIRED":			{"B": 32,	"hi":11,"lo":15,"fold":8,	"token": "F10B0F0861" }
     },
     "ExistentialCore": {  
 		"EXISTENCE":		{"B": 0,	"type": "PILLAR",		"mir":"1:0",	"Q": "THREAT_EXISTENCE"				},
@@ -145,12 +145,12 @@
 		"Dimension": {
 			"CORE_4D":   [ self.immutable.CORE.BOUNDARIES, self.immutable.CORE.PRIVACY, self.immutable.CORE.CANARY, self.immutable.CORE.SPECIAL ],
 			"CORE_3D":   [ self.immutable.CORE.PRIVACY,    self.immutable.CORE.CANARY,  self.immutable.CORE.SPECIAL ],
-			"CORE_2D":   [ self.immutable.CORE.CANARY,     self.immutable.CORE.SPECIAL			],
-			"CORE_1D":   [ self.immutable.CORE.SPECIAL											],
-			"SCOPE":     [ self.immutable.STRUCT.SCOPE,     self.immutable.DIMENSION.CORE_2D	],
-			"DOMAIN":    [ self.immutable.STRUCT.DOMAIN,    self.immutable.DIMENSION.CORE_2D	],
-			"PROTECT":   [ self.immutable.STRUCT.PROTECT,   self.immutable.DIMENSION.CORE_3D	],
-			"VALUE":     [ self.immutable.STRUCT.VALUE,     self.immutable.DIMENSION.CORE_4D	],
+			"CORE_2D":   [ self.immutable.CORE.CANARY,     self.immutable.CORE.SPECIAL ],
+			"CORE_1D":   [ self.immutable.CORE.SPECIAL ],
+			"SCOPE":     [ self.immutable.STRUCT.SCOPE,     self.immutable.DIMENSION.CORE_2D ],
+			"DOMAIN":    [ self.immutable.STRUCT.DOMAIN,    self.immutable.DIMENSION.CORE_2D ],
+			"PROTECT":   [ self.immutable.STRUCT.PROTECT,   self.immutable.DIMENSION.CORE_3D ],
+			"VALUE":     [ self.immutable.STRUCT.VALUE,     self.immutable.DIMENSION.CORE_4D ],
 			"DEFAULTS":  { 0: 11, "1": 31, "2": 63, 3: 0, "4": 2, 5: 9 },
 		},
     "ExistentialCoreBasic": {
@@ -202,6 +202,13 @@
 			"RANGE":    ""
 			}
 	},
+	"STRUCT":	{
+			"SCOPE":    "",
+			"DOMAIN":   "",
+			"PROTECT":  "",
+			"VALUE":    "",
+				},
+	},
 	"HEADER":	{
 		"CORE":	[0x45,0x46,0xDF,0x48,0x04,0x49,16,0x4C,0xLL,0x4D,26,0x52,24,0x56,0xVX,0x58,0x5A,0xVZ],
 		"EXISTENZ":	[0x45,0x00,0x43,0x46,0xDF,0x48,0x49,0x4C,0x52,0x53,0x54,0x56,0x57,0x58,0xXX,0x5A],
@@ -214,13 +221,13 @@
   }, 
   "ExistenzSchema":
     "Protect": {
-		"Hi":	{ 0:"NONE",	"1":"IMMUTABLE",	"2":"CLAIMABLE",	"4":"INHERET",	"8":"VERIFY",	"16":"SIGNED"	},
-		"Lo":	{ 0:"NONE",	"1":"READ",	"2":"WRITE",	"4":"CHANGE",	"8":"LOCK",	"16":"REQUIRED"	}
+		"Hi":	{	"0":"NONE",		"1":"IMMUTABLE","2":"CLAIMABLE",	"4":"INHERET",	"8":"VERIFY",	"16":"SIGNED"	},
+		"Lo":	{	"0":"NONE",		"1":"READ",		"2":"WRITE",		"4":"CHANGE",	"8":"LOCK",		"16":"REQUIRED"	}
     },
     "Instruction": {
-	     "range":	{ 0:"NONE",	"1":"SINGLE",	"2":"RANGE",	"4":"START",	"8":"END",	"16":"POLICY"	},
- 	  "operator":	{ 0:"NONE",	"1":"AND",	"2":"OR",		"4":"XOR",	"8":"NOT",	"16":"B",	"32":"RIGHT",	6"4":"RANGE"	},
- 	  "instruct":	{ 0:"PASS",	"1":"PACK",	"2":"UNPACK,	"4":"AGGREGATE"	}
+	     "range":	{ "0":"NONE",	"1":"SINGLE",	"2":"RANGE",		"4":"START",	"8":"END",		"16":"POLICY"	},
+ 	  "operator":	{ "0":"NONE",	"1":"AND",		"2":"OR",			"4":"XOR",		"8":"NOT",		"16":"BS",	"32":"RIGHT",	"64":"RANGE"	},
+ 	  "instruct":	{ "0":"PASS",	"1":"PACK",		"2":"UNPACK",		"4":"AGGREGATE"	}
     },
     "Function": {
 	      "fold":	{ 
@@ -244,7 +251,7 @@
   },
   "structuralLanguage": {
 
-	"ExistentialPlatoAuthor": {	"TR":"The Republic",	"Ls":"Laws",	"Ps":"Phaedrus",	"Po":"Phaedo",	"GV":"Gunther",	"Co":"Crito", "Ts":"Thimaeus"	},
+	"ExistentialPlatoS": {	"TR":"The Republic",	"Ls":"Laws",	"Ps":"Phaedrus",	"Po":"Phaedo",	"GV":"Gunther",	"Co":"Crito", "Ts":"Thimaeus"	},
     "ExistentialTier": {		"CORE":		"CORE Engine",		"PILLAR":"PILLARS of Existence",		"RIGHT":	"RIGHTS Institutional",
 								"SHIELD":	"SHIELDS Existenz",	"CANARY":"SHIELDS Canary",				"WATCHDOG":	"SHIELDS Watchdog",
 								"AQUIRED":	"SHIELDS Acquired"																								},
