@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Existenz | Visual Collision Analyzer | Gunther v0.3</title>
+<style>
+ :root {
+ --cyan: #00f0ff;
+ --green: #00ffaa;
+ --pink: #ff00aa;
+ --bg: #030305;
+ --panel: #09090f;
+ --border: #141424;
+ }
+ body {
+ background-color: var(--bg); color: #ffffff;
+ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+ margin: 0; padding: 10px; box-sizing: border-box;
+ height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+ border: 2px solid var(--green); transition: border-color 0.2s ease, box-shadow 0.2s ease;
+ }
+ body.alarm-active { 
+ border-color: var(--pink) !important;
+ animation: redAlertFlash 1.5s infinite alternate; 
+ }
+ @keyframes redAlertFlash {
+ 0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); }
+ 100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); }
+ }
+ #loading-universe {
+ position: fixed; top:0; left:0; width:100vw; height:100vh;
+ background: #000000; z-index: 9999; display: flex;
+ flex-direction: column; justify-content: center; align-items: center;
+ transition: opacity 0.5s ease, visibility 0.5s ease;
+ }
+ .loading-text { color: var(--cyan); font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 15px; }
+ .loading-bar { width: 200px; height: 2px; background: #111; border-radius: 2px; overflow: hidden; position: relative; }
+ .loading-bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--pink); animation: sweep 1.5s infinite linear; }
+ @keyframes sweep { 0% { left: -50%; } 100% { left: 100%; } }
+ header { border-bottom: 2px solid var(--cyan); padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
+ h1 { margin: 0; color: var(--cyan); font-size: 1.2rem; font-weight: 800; }
+ .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; flex-grow: 1; min-height: 0; }
+ .column { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+ .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; min-height: 0; }
+ .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
+ .scrollable-content { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
+ .bit-row { display: flex; align-items: center; justify-content: space-between; padding: 5px; border-bottom: 1px solid #0f0f1c; font-size: 0.75rem; }
+ .switch { position: relative; display: inline-block; width: 34px; height: 16px; flex-shrink: 0; }
+ .switch input { opacity: 0; width: 0; height: 0; }
+ .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #202030; transition: .2s; border-radius: 16px; }
+ .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
+ input:checked + .slider { background-color: var(--cyan); }
+ input:checked + .slider:before { transform: translateX(18px); }
+ .raw-string { background: #020204; border-left: 3px solid var(--pink); padding: 5px; font-size: 0.7rem; color: #8e8eaf; font-family: monospace; word-break: break-all; margin-top: 5px; }
+ .btn { background: #0f0f1b; border: 1px solid var(--cyan); color: white; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-family: monospace; transition: 0.1s; }
+ .btn:hover { background: var(--cyan); color: black; font-weight: bold; }
+ .btn-active { background: var(--pink) !important; border-color: #fff !important; }
+ .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.75rem; color: var(--cyan); }
+ .math-fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; text-align: center; padding: 0 4px; }
+ .math-numerator { border-bottom: 1px solid var(--cyan); width: 100%; padding-bottom: 2px; }
+ .math-denominator { padding-top: 2px; width: 100%; }
+ .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
+ .input-text { background: #020205; border: 1px solid var(--border); color: #fff; padding: 3px; border-radius: 4px; font-family: monospace; font-size: 0.7rem; }
+ .scenarios-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; flex-shrink: 0; }
+ #matrix-vis-container { width: 100%; height: 100%; max-height: 340px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
+ #matrix-vis { transform-origin: center center; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+ .intro-box { background: rgba(0, 255, 170, 0.02); border: 1px solid #102a20; padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.7rem; line-height: 1.3; color: #b5c5b5; }
+        body {
+            background: #09090f;
+            color: #00f0ff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            margin: 0;
+        }
+        h2 {
+            border-bottom: 1px solid #141424;
+            padding-bottom: 10px;
+            color: #ff00aa;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .panel {
+            background: #000000;
+            border: 1px solid #141424;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .controls {
+            flex: 1;
+            max-width: 380px;
+        }
+        .canvas-area {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bit-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .bit-row input {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        canvas {
+            background: #020205;
+            border: 1px solid #00f0ff;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+        .log-panel {
+            width: 100%;
+            margin-top: 15px;
+            background: #000;
+            border: 1px solid #141424;
+            height: 180px;
+            overflow-y: auto;
+            padding: 10px;
+            box-sizing: border-box;
+            font-size: 11px;
+        }
+        .log-entry {
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .critical { color: #ff007f; font-weight: bold; }
+        .info { color: #8e8eaf; }
+        .success { color: #39ff14; }  
+ </style>
+</head>
+
+<body>
+<!-- Live Universe Loader Overlay Shield -->
+<div id="loading-universe">
+ <div class="loading-text">ExistenZ  - + - Loading Universe  - | -  Please Wait</div>
+ <div class="loading-bar"></div>
+</div>
+<div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0>
+  <a href="https://github.com/gowildchild/Existenz/" style="color: #0ff0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.6px; border-bottom: 1px solid #000000; padding-bottom: 2px;">GitHub</a> | 
+  <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;" title="See now how humanity could thrive, or fail, backed by the old Gods of science!">Plato 3DATA</a> | 
+  <a href="/Existenz/apps/human-rights/"  style="color: #ffffff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="Human Rights for all the ages, including the dark ages!">Human Rights</a>
+ [ <a hfef="/Existenz/apps/collisions/"  style="color: #FD028E; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="The quest for collissions on the canvas of Deogenes">Collisions</a> ] 
+  <a href="/Existenz/apps/lifetime/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> | 
+  <a href="/Existenz/apps/extra-colliding/" style="color: #FD028E; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="This is a human quest to find the collissions that matter!">Extra-Colliding</a> | 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/examples" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/struct" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
+</div> 
+<header>
+<div><h1>Existenz | Human-Rights - Not again the dark ages! | GV v0.30</h1></div>
+<div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[<a href="/">CORE</a>: V0.30 THREAT-MATRIX]</div>
+</header>
+  
+    <h2>Visual Collision Analyzer</h2>
+    <div style="font-size: 12px; color: #8e8eaf; margin-bottom: 15px;">
+        Connected directly to raw core architecture repository boundaries. Turn on your testing protocols to scan active intersections.
+    </div>
+
+    <div class="container">
+        <!-- Left Selection Controls -->
+        <div class="panel controls">
+            <h3 style="margin-top:0; color:#39ff14; font-size:14px;">Protocol Bit Activation</h3>
+            <div id="bit-selectors">Loading structural repository bits...</div>
+            <button id="reset-btn" disabled style="margin-top:15px; width:100%; padding:6px; background:transparent; border:1px solid #ff00aa; color:#ff00aa; font-family:monospace; cursor:not-allowed; font-weight:bold; border-radius:3px;">RESET ALL BITS</button>
+        </div>
+
+        <!-- Right Mapping Screen -->
+        <div class="canvas-area">
+            <canvas id="matrixMap" width="500" height="500"></canvas>
+            <div id="collisionLogs" class="log-panel"></div>
+        </div>
+    </div>
+
+<!-- Using type="module" to enable import statements seamlessly -->
+<script type="module">
+    // Direct link conversion from github branch to raw CDN module asset
+    import { ExistentialCore, ExistentialThreat, ExistentialRipple } from 'https://cdn.jsdelivr.net/gh/gowildchild/Existenz@main/struct/existenz_core.js';
+
+    // Map out user-friendly labels matching your imported bit tokens
+    const protocolBits = [
+        { id: ExistentialCore.EXISTENCE, name: "BIT 1 (EXISTENCE)" },
+        { id: ExistentialCore.AUTONOMY, name: "BIT 2 (AUTONOMY)" },
+        { id: ExistentialCore.INTEGRITY, name: "BIT 4 (INTEGRITY)" },
+        { id: ExistentialCore.PSYCHOLOGY, name: "BIT 8 (PSYCHOLOGY)" },
+        { id: ExistentialCore.PHYSICAL, name: "BIT 16 (PHYSICAL)" },
+        { id: ExistentialCore.DISABILITY, name: "BIT 32 (DISABILITY)" },
+        { id: ExistentialCore.DEVELOPMENT, name: "BIT 64 (DEVELOPMENT)" },
+        { id: ExistentialCore.PROPERTY, name: "BIT 128 (PROPERTY)" },
+        { id: ExistentialCore.PRESENCE, name: "BIT 256 (PRESENCE)" }
+    ];
+
+    // Fixed coordinates for visual geometric representation
+    const bitCoordinates = {
+        [ExistentialCore.EXISTENCE]:   { x: 250, y: 70 },
+        [ExistentialCore.AUTONOMY]:    { x: 380, y: 140 },
+        [ExistentialCore.INTEGRITY]:   { x: 430, y: 270 },
+        [ExistentialCore.PSYCHOLOGY]:  { x: 350, y: 400 },
+        [ExistentialCore.PHYSICAL]:    { x: 250, y: 450 },
+        [ExistentialCore.DISABILITY]:  { x: 150, y: 400 },
+        [ExistentialCore.DEVELOPMENT]: { x: 70,  y: 270 },
+        [ExistentialCore.PROPERTY]:    { x: 120, y: 140 },
+        [ExistentialCore.PRESENCE]:    { x: 250, y: 260 }
+    };
+
+    let activeBits = new Set();
+    const canvas = document.getElementById('matrixMap');
+    const ctx = canvas.getContext('2d');
+
+    function pushConsoleLog(text, entryClass = 'info') {
+        const pane = document.getElementById('collisionLogs');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${entryClass}`;
+        entry.innerText = text;
+        pane.appendChild(entry);
+        pane.scrollTop = pane.scrollHeight;
+    }
+
+    function initUI() {
+        const container = document.getElementById('bit-selectors');
+        container.innerHTML = '';
+        
+        protocolBits.forEach(bit => {
+            const row = document.createElement('div');
+            row.className = 'bit-row';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `bit-${bit.id}`;
+            checkbox.value = bit.id;
+            checkbox.addEventListener('change', () => toggleBit(bit.id));
+            
+            const label = document.createElement('label');
+            label.htmlFor = `bit-${bit.id}`;
+            label.style.fontSize = '11px';
+            label.style.cursor = 'pointer';
+            label.innerText = bit.name;
+            
+            row.appendChild(checkbox);
+            row.appendChild(label);
+            container.appendChild(row);
+        });
+
+        const resetBtn = document.getElementById('reset-btn');
+        resetBtn.disabled = false;
+        resetBtn.style.cursor = 'pointer';
+        resetBtn.addEventListener('click', clearAllBits);
+
+        pushConsoleLog("System: Core architecture connected from repository layer successfully.", "success");
+        
+        // Auto check standard pairs to demonstrate activation mesh links
+        document.getElementById(`bit-${ExistentialCore.AUTONOMY}`).checked = true; toggleBit(ExistentialCore.AUTONOMY);
+        document.getElementById(`bit-${ExistentialCore.INTEGRITY}`).checked = true; toggleBit(ExistentialCore.INTEGRITY);
+    }
+
+    function toggleBit(bitId) {
+        if (activeBits.has(bitId)) {
+            activeBits.delete(bitId);
+        } else {
+            activeBits.add(bitId);
+        }
+        analyzeCollisions();
+    }
+
+    function clearAllBits() {
+        activeBits.clear();
+        protocolBits.forEach(bit => {
+            const el = document.getElementById(`bit-${bit.id}`);
+            if (el) el.checked = false;
+        });
+        analyzeCollisions();
+    }
+
+    function analyzeCollisions() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const logs = document.getElementById('collisionLogs');
+        const existingEntries = logs.querySelectorAll('.critical');
+        existingEntries.forEach(el => el.remove());
+
+        // 1. Plot baseline connection grid paths
+        ctx.strokeStyle = 'rgba(20, 20, 36, 0.4)';
+        ctx.lineWidth = 1;
+        protocolBits.forEach((b1, i) => {
+            protocolBits.forEach((b2, j) => {
+                if (i < j) {
+                    let p1 = bitCoordinates[b1.id];
+                    let p2 = bitCoordinates[b2.id];
+                    if (p1 && p2) {
+                        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                    }
+                }
+            });
+        });
+
+        const currentActiveArray = Array.from(activeBits);
+
+        // 2. Identify bit pair mesh overlap intersections
+        for (let i = 0; i < currentActiveArray.length; i++) {
+            for (let j = i + 1; j < currentActiveArray.length; j++) {
+                let bitX = currentActiveArray[i];
+                let bitY = currentActiveArray[j];
+                
+                let coordX = bitCoordinates[bitX];
+                let coordY = bitCoordinates[bitY];
+
+                if (coordX && coordY) {
+                    let dx = coordX.x - coordY.x;
+                    let dy = coordX.y - coordY.y;
+                    let distance = Math.hypot(dx, dy);
+
+                    let collisionThreshold = 220; 
+                    if (distance < collisionThreshold) {
+                        let impactPercentage = Math.round(((collisionThreshold - distance) / collisionThreshold) * 100);
+
+                        ctx.save();
+                        ctx.strokeStyle = 'rgba(255, 0, 170, 0.7)';
+                        ctx.lineWidth = 2;
+                        ctx.shadowColor = '#ff00aa';
+                        ctx.shadowBlur = 8;
+                        ctx.beginPath(); ctx.moveTo(coordX.x, coordX.y); ctx.lineTo(coordY.x, coordY.y); ctx.stroke();
+                        ctx.restore();
+
+                        pushConsoleLog(`🚨 PROTOCOL OVERLAP: BIT ${bitX} colliding with BIT ${bitY} for ${impactPercentage}% overlap stability`, 'critical');
+                    }
+                }
+            }
+        }
+
+        // 3. Highlight active nodes over map grid
+        protocolBits.forEach(bit => {
+            let pt = bitCoordinates[bit.id];
+            if (!pt) return;
+            let isActive = activeBits.has(bit.id);
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, isActive ? 8 : 5, 0, Math.PI * 2);
+            
+            if (isActive) {
+                ctx.fillStyle = '#39ff14';
+                ctx.shadowColor = '#39ff14';
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '10px monospace';
+                ctx.fillText(`[B:${bit.id}]`, pt.x + 12, pt.y + 4);
+            } else {
+                ctx.fillStyle = '#141424';
+                ctx.strokeStyle = '#4a5568';
+                ctx.lineWidth = 1;
+                ctx.fill();
+                ctx.stroke();
+            }
+            ctx.restore();
+        });
+    }
+
+    // Direct startup execution hook
+    initUI();
+
+
+<script>
+ window.addEventListener('load', () => {
+  initSwitches();
+  setTimeout(() => {
+   try {
+    const loader = document.getElementById('loading-universe');
+    if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
+   } catch(e) {     initUI();  }
+  }, 800);
+ });
+</script>
+</body>
+</html>  
+</script>
+</body>
+</html>
