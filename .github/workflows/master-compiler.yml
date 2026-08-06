@@ -10,18 +10,26 @@ jobs:
   compile-matrix:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Uses native GitHub Actions permissions to authenticate the push
+      contents: write
 
     steps:
       - name: Checkout Source Repository Base
         uses: actions/checkout@v4
         with:
-          persist-credentials: true  # This securely saves the default container authorization in the background
+          persist-credentials: true
 
       - name: Initialize Stable Python Runtime Environment
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
+      # 🔍 INJECT THE AUTOMATED JSON LINTER HERE
+      - name: Validate JSON Structure (Lint)
+        run: |
+          cd apps/master_existenz
+          echo "Linting master specification file..."
+          python -m json.tool existenzCoreMaster.json > /dev/null
+          echo "[+] JSON validation successful. No syntax errors found."
 
       - name: Compile Cross-Platform Bitmask Target Libraries
         run: |
@@ -30,17 +38,15 @@ jobs:
 
       - name: Synchronize and Commit Generated System Artifacts
         run: |
-          git config --global user.name "Existenz Automation Bot"
-          git config --global user.email "existenz-bot@://github.com"
+          # Use the official, validated GitHub automation bot identity
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # No remote URL rewrite. Git natively hooks into the actions/checkout authentication channel.
           git add apps/master_existenz/generated_outputs/* || true
-          git status
           
           if git diff --staged --quiet; then
             echo "No variations detected within register maps. Structural state remains immutable."
           else
             git commit -m "Automated build: Updated dynamic core profiles and templates"
-            # Push securely using the native container permissions token
             git push origin HEAD:${{ github.ref_name }}
           fi
