@@ -1,0 +1,8 @@
+This program had quite a lot of work in it. It is showing everything as realistic as possible, 
+there are a few bugs that have to be flattened out. Creating a few universes that can run on a mW
+is not so easy, when you don't find the right hooks ... 
+
+06/08/2026  v0.81    
+ - Threat Matrix Unification
+ - Bug solved in pillars that were not showing up well
+ - Pillar X,Y and Z are again the major important ones, the other ones are few numbers flat.
