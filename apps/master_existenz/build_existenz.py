@@ -124,6 +124,33 @@ def main():
     # Generate a precise UTC ISO 8601 timestamp string
     current_timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
+    with open(master_file, "r", encoding="utf-8") as f:
+        raw_text = f.read()
+    try:
+        master_data = json.loads(raw_text)
+        print("[+] JSON parsed successfully! No syntax errors found.")
+    except json.JSONDecodeError as e:
+        print("\n" + "!" * 60)
+        print(f"[!] JSON SYNTAX ERROR DETECTED!")
+        print(f"    Error Message: {e.msg}")
+        print(f"    Line Number:   {e.lineno}")
+        print(f"    Column Number: {e.colno}")
+        print(f"    Character Pos: {e.pos}")
+        print("!" * 60)
+        
+        # Pull the exact surrounding lines so you can see the issue instantly
+        lines = raw_text.splitlines()
+        start_line = max(0, e.lineno - 4)
+        end_line = min(len(lines), e.lineno + 4)
+        
+        print("\n--- ERROR CONTEXT VISUALIZER ---")
+        for idx in range(start_line, end_line):
+            line_num = idx + 1
+            marker = ">>> " if line_num == e.lineno else "    "
+            print(f"{marker}Line {line_num:03d}: {lines[idx]}")
+        print("--------------------------------\n")
+        return  # Stop execution gracefully so the pipeline doesn't choke
+    
     # 1. Ingest Master Core Schema Data
     if not os.path.exists(master_file):
         print(f"[-] Critical Error: Missing master file '{master_file}'")
@@ -131,11 +158,11 @@ def main():
     with open(master_file, "r", encoding="utf-8") as f:
         master_data = json.load(f)
 
-    # 🚀 DROP THE BEAUTIFICATION TRIGGER RIGHT HERE
-    print("[*] Generating formatted specification copy...")
-    with open("existenzCoreDone.json", "w", encoding="utf-8") as f_done:
-        json.dump(master_data, f_done, indent=4, sort_keys=True)
-    print("[+] Perfect format duplicate exported to: existenzCoreDone.json")    
+#    # 🚀 DROP THE BEAUTIFICATION TRIGGER RIGHT HERE
+#    print("[*] Generating formatted specification copy...")
+#    with open("existenzCoreDone.json", "w", encoding="utf-8") as f_done:
+#        json.dump(master_data, f_done, indent=4, sort_keys=True)
+#    print("[+] Perfect format duplicate exported to: existenzCoreDone.json")    
     
     # 2. Ingest Profile Configuration Paths 
     if not os.path.exists(profiles_file):
