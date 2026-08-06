@@ -10,38 +10,37 @@ jobs:
   compile-matrix:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write  # Uses native GitHub Actions permissions to authenticate the push
 
     steps:
       - name: Checkout Source Repository Base
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true  # This securely saves the default container authorization in the background
 
       - name: Initialize Stable Python Runtime Environment
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # Step inside the folder explicitly to generate the files locally
       - name: Compile Cross-Platform Bitmask Target Libraries
         run: |
           cd apps/master_existenz
           python build_existenz.py
 
-      # Perform the git operation directly from the root context using explicit folder paths
       - name: Synchronize and Commit Generated System Artifacts
         run: |
           git config --global user.name "Existenz Automation Bot"
-          git config --global user.email "existenz-bot@users.noreply.github.com"
+          git config --global user.email "existenz-bot@://github.com"
           
-          # Force add the generated output directory explicitly 
+          # No remote URL rewrite. Git natively hooks into the actions/checkout authentication channel.
           git add apps/master_existenz/generated_outputs/* || true
-          
-          # Debug step: print the status to the workflow log window so we can see what Git tracked
           git status
           
           if git diff --staged --quiet; then
             echo "No variations detected within register maps. Structural state remains immutable."
           else
             git commit -m "Automated build: Updated dynamic core profiles and templates"
+            # Push securely using the native container permissions token
             git push origin HEAD:${{ github.ref_name }}
           fi
