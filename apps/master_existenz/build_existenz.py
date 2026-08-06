@@ -1,8 +1,38 @@
 import os
 import json
-import xml.etree.ElementTree as ET
 from xml.dom import minidom
+import xml.etree.ElementTree as ET
+import html
 
+def dict_to_xml_element(tag_name, d):
+    """
+    Converts filtered dictionaries into valid nested XML elements,
+    safely escaping text characters to prevent syntax crashes.
+    """
+    # Clean the tag name to ensure characters like '0x' are allowed as XML tags
+    safe_tag = str(tag_name).replace("0x", "hex_")
+    element = ET.Element(safe_tag)
+    
+    if isinstance(d, dict):
+        for k, v in d.items():
+            # XML attributes must be valid strings and cannot contain raw illegal symbols
+            if not isinstance(v, (dict, list)):
+                # Escape standard symbols (& becomes &amp;, < becomes &lt;, etc.)
+                safe_val = html.escape(str(v))
+                safe_key = str(k).replace(".", "_") # XML keys cannot have dots
+                element.set(safe_key, safe_val)
+            elif isinstance(v, dict):
+                element.append(dict_to_xml_element(str(k), v))
+            elif isinstance(v, list):
+                # Handle array tracking nodes (like CORE_4D) cleanly inside XML loops
+                for idx, item in enumerate(v):
+                    child = ET.Element(f"item_{idx}")
+                    child.text = html.escape(str(item))
+                    element.append(child)
+    else:
+        element.text = html.escape(str(d))
+        
+    return element
 # Dunno if this one works 
 
 def walk_tree(source_node, segments, target_tree):
@@ -27,7 +57,7 @@ def walk_tree(source_node, segments, target_tree):
             if current_key not in target_tree: target_tree[current_key] = {}
             walk_tree(val, next_segments, target_tree[current_key])
 
-def dict_to_xml_element(tag_name, d):
+def dict_to_xml_element_old(tag_name, d):
     """Converts filtered dictionaries into valid nested XML elements."""
     element = ET.Element(tag_name)
     if isinstance(d, dict):
