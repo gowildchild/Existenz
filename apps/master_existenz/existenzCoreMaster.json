@@ -161,11 +161,11 @@
 			"TRUST":     "ExistentialTrust"
     },
     "ExistentialHeader": { 
-			"0x40": {"A": "A_VALUE_START",	"HEX":"40", "ACT":"RANGE",														"RQZ":"Z_VALUE_END"	},
-			"0x41": {"B": "BIT",			"HEX":"41",	"ACT":"VALUE",	"EFA.BITCHECK":51,					"EFS.VALUE":17						},
-			"0x42": {"C": "CANARY",			"HEX":"42",	"ACT":"VALUE",						"EFA.CANARY":4,	"EFS.VALUE":17,	"RQZ":	18			},
-			"0x45": {"E": "EXISTENZ",		"HEX":"45",	"ACT":"VALUE",														"RQZ":"Y_HEADER_END"},
-			"0x46": {"F": "FOLD",			"HEX":"46",	"ACT":"VALUE",														"RQZ":"FOLD_VALUE"	},
+			"0x40": {"A": "A_VALUE_START",	"HEX":"40", "ACT":"RANGE",	"RQZ":"Z_VALUE_END"	},
+			"0x41": {"B": "BIT",			"HEX":"41",	"ACT":"VALUE",	"EFA.BITCHECK":51,	"EFS.VALUE":17		},
+			"0x42": {"C": "CANARY",			"HEX":"42",	"ACT":"VALUE",	"EFA.CANARY":4,	"EFS.VALUE":17,	"RQZ":	18		},
+			"0x45": {"E": "EXISTENZ",		"HEX":"45",	"ACT":"VALUE",	"RQZ":"Y_HEADER_END"},
+			"0x46": {"F": "FOLD",			"HEX":"46",	"ACT":"VALUE",	"RQZ":"FOLD_VALUE"	},
 			"0xDF": {"ß": "FOLD_VALUE",		"HEX":"DF",	"ACT":"VALUE"},
 			"0x48": {"H": "HEADER",			"HEX":"48",	"ACT":"VALUE"},
 			"0x49": {"I": "IMMUTABLE",		"HEX":"49",	"ACT":"VALUE"},
@@ -177,52 +177,16 @@
 			"0x55": {"U": "UNIVERSAL",		"HEX":"55",	"ACT":"VALUE"},
 			"0x56": {"V": "VERIFY",			"HEX":"56",	"ACT":"VALUE"},
 			"0x57": {"W": "WATCHDOG",		"HEX":"57",	"ACT":"VALUE"},
-			"0x58": {"X": "X_SIGN_END",		"HEX":"58",	"ACT":"VALUE",	"REQ":"HEADER"},
-			"0x59": {"Y": "Y_HEADER_END",	"HEX":"59",	"ACT":"VALUE",	"REQ":"HEADER"			},
+			"0x58": {"X": "X_SIGN_END",		"HEX":"58",	"ACT":"VALUE",	"REQ":"HEADER" },
+			"0x59": {"Y": "Y_HEADER_END",	"HEX":"59",	"ACT":"VALUE",	"REQ":"HEADER"	},
 			"0x5A": {"Z": "Z_VALUE_END",	"HEX":"5A",	"ACT":"VALUE",	"REQ":"A_VALUE_START"	}
 	},
-    "ExistentialImmutability": {
-			"CORE":		[0x45,0x46,0xDF,0x48,0x04,0x49,16,0x4C,0xLL,0x4D,26,0x52,24,0x56,0xVX,0x58,0x5A,0xVZ],
-			"EXISTENZ":	[0x45,0x00,0x43,0x46,0xDF,0x48,0x49,0x4C,0x52,0x53,0x54,0x56,0x57,0x58,0xXX,0x5A],
-			"CORE_ALL":	[0x46,0x46,0xDF,0x48,0x04,0x49,16,0x4C,0xLL,0x52,24,0x56,0xVX,0x58,0x5A,0xVZ],
-			"CORE_TEST":["E",[0,15],[20,24],"I",83]],
-			"PILLAR":	["E",[0,15]],
-			"right":	["E",[20,24],[20,24],"R",XX]],
-			"threat":	["E",[0,15],[16,24]],
-            "fold":		{"0x46":"F","0xDF","V","0x43","C","0xXX"}
-    },
-    "ExistentialPolicy": {
-			"CORE":		{
-			"DEFAULTS": "",
-			"SPECIAL":  "",
-			"DURESS":   "",
-			"CANARY":   "",
-			"PRIVACY":  "",
-			"RANGE":    ""
-			}
-	},
-	"STRUCT":	{
-			"SCOPE":    "",
-			"DOMAIN":   "",
-			"PROTECT":  "",
-			"VALUE":    "",
-				},
-	},
-	"HEADER":	{
-		"CORE":	[0x45,0x46,0xDF,0x48,0x04,0x49,16,0x4C,0xLL,0x4D,26,0x52,24,0x56,0xVX,0x58,0x5A,0xVZ],
-		"EXISTENZ":	[0x45,0x00,0x43,0x46,0xDF,0x48,0x49,0x4C,0x52,0x53,0x54,0x56,0x57,0x58,0xXX,0x5A],
-		"ALL":	[0x46,0x46,0xDF,0x48,0x04,0x49,16,0x4C,0xLL,0x52,24,0x56,0xVX,0x58,0x5A,0xVZ]
-				},
-	},	
-	"DIMENSION":    "",
-	"ROOT":         "",
-	"META":         "",
-  }, 
-  "ExistenzSchema":
-    "Protect": {
+    "ExistenzSchema": {
+      "Protect": {
 		"Hi":	{	"0":"NONE",		"1":"IMMUTABLE","2":"CLAIMABLE",	"4":"INHERET",	"8":"VERIFY",	"16":"SIGNED"	},
 		"Lo":	{	"0":"NONE",		"1":"READ",		"2":"WRITE",		"4":"CHANGE",	"8":"LOCK",		"16":"REQUIRED"	}
-    },
+                 }
+	},
     "Instruction": {
 	     "range":	{ "0":"NONE",	"1":"SINGLE",	"2":"RANGE",		"4":"START",	"8":"END",		"16":"POLICY"	},
  	  "operator":	{ "0":"NONE",	"1":"AND",		"2":"OR",			"4":"XOR",		"8":"NOT",		"16":"BS",	"32":"RIGHT",	"64":"RANGE"	},
