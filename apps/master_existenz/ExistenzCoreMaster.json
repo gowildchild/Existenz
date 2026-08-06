@@ -1,0 +1,507 @@
+{
+  "project":				"Existenz",
+  "name":					"Existenz Core Specification",
+  "slug":					"existenzCore",
+  "version":				"0.76-PoC",
+  "subversion":				"detailed",
+  "author":					"Gunther Voet",
+  "url":					"",
+  "license":				"AGPL-3.0-only",
+  "meta": {
+		"size":				128,
+		"slug":				"existenzCore",
+		"type":				"immutable",
+		"poweruse":			{"w": 1e-7, "s": "uW", "d": "< 1uW (Sub-Microwatt)"}
+  },
+  "ExistenzCore": {
+	"ExistentialMirror": {
+        "NONE":				{"B": 0,   "D": "0:0"			},
+        "CORE":				{"B": 1,   "D": "1:0"			},
+        "THREAT":			{"B": 2,   "D": "0:1"			},
+		"CORE_THREAT":		{"B": 3,   "D": "1:1"			},
+		"RIGHT":			{"B": 4,   "D": "0:0:1"		},
+		"CANARY":			{"B": 16,  "D": "0:0:0:1"		},
+		"WATCHDOG":			{"B": 32,  "D": "0:0:0:1"		},
+    },
+    "ExistentialTier": {
+		"CORE":				{"B": 0,	"hi":9,	"lo":25,"fold":8,	"token": "00091908B2" },
+		"PILLAR":			{"B": 1,	"hi":11,"lo":25,"fold":8,	"token": "010B190893" },
+		"RIGHT":			{"B": 2,	"hi":11,"lo":25,"fold":8,	"token": "020B190858" },
+		"SHIELD":			{"B": 4,	"hi":11,"lo":31,"fold":8,	"token": "040B1F08B1" },
+		"CANARY":			{"B": 8,	"hi":11,"lo":15,"fold":8,	"token": "080B0F089F" },
+		"WATCHDOG":			{"B": 16,	"hi":9,	"lo":25,"fold":8,	"token": "F009190830" },
+		"IMMUTABLE":		{"B": 24,	"hi":9,	"lo":25,"fold":8,   "token": "F80919084B" },
+		"AQUIRED":			{"B": 32,	"hi":11,"lo":15,"fold":8,	"token": "F10B0F0861" },
+    },
+    "ExistentialCore": {  
+		"EXISTENCE":		{"B": 0,	"type": "PILLAR",		"mir":"1:0",	"Q": "THREAT_EXISTENCE"				},
+		"AUTONOMY":			{"B": 1,	"type": "PILLAR",		"mir":"1:1",	"Q": "THREAT_AUTONOMY"				},
+		"INTEGRITY":		{"B": 2,	"type": "PILLAR",		"mir":"1:1",	"Q": "THREAT_INTEGRITY"				},
+		"PSYCHOLOGY":		{"B": 3,	"type": "PILLAR",		"mir":"1:1",	"Q": "THREAT_PSYCHOLOGY"				},
+		"PHYSICAL":			{"B": 4,	"type": "PILLAR",		"mir":"1:1",	"Q": "THREAT_PHYSICAL"				},
+		"DISABILITY":		{"B": 5,	"type": "PILLAR",		"mir":"1:1",	"Q": "THREAT_ABLEISM"				},
+		"DEVELOPMENT":		{"B": 6,	"type": "PILLAR",		"mir":"1:1",	"Q": "THREAT_DEVELOPMENT"			},
+		"PROPERTY":			{"B": 7,	"type": "PILLAR",		"mir":"1:1",	"Q": "THREAT_PROPERTY"				},
+		"PRESENCE":			{"B": 8,	"type": "PILLAR",		"mir":"1:1",	"Q": "THREAT_PRIVACY"				},
+		"CORE_EXISTENCE":	{"B": 9,	"type": "WATCHDOG",		"mir":"1:1",	"Q": "THREAT_CANARY_EXISTENCE"		},
+		"CORE_SHIELD":		{"B": 11,	"type": "WATCHDOG",		"mir":"0:1",	"Q": "THREAT_CANARY_PILLARS"			},
+		"CORE_IMMUTABLE":	{"B": 15,	"type": "WATCHDOG",		"mir":"0:1",	"Q": "THREAT_CANARY_IMMUTABLE"		},
+		"CORE_RELATION":	{"B": 16,	"type": "WATCHDOG",		"mir":"0:1",	"Q": "THREAT_CANARY_RELATION"		},
+		"RIGHTS_SHIELD":	{"B": 17,	"type": "WATCHDOG",		"mir":"0:1",	"Q": "THREAT_CANARY_RIGHTS_SHIELD"	},
+		"RIGHTS_HUMAN":		{"B": 18,	"type": "RIGHT",		"mir":"1:1",	"Q": "THREAT_RIGHTS_HUMAN"			},
+		"RIGHTS_HOLON":		{"B": 20,	"type": "RIGHT",		"mir":"1:1",	"Q": "THREAT_RIGHTS_INCLUSIVE"		},
+		"RIGHTS_BASIC":		{"B": 22,	"type": "RIGHT",		"mir":"1:1",	"Q": "THREAT_RIGHTS_BASIC"			},
+		"RIGHTS_ASYLUM":	{"B": 24,	"type": "RIGHT",		"mir":"1:1",	"Q": "THREAT_RIGHTS_SOVEREIGN"		},
+		"RIGHTS_IMMUTABLE":	{"B": 25,	"type": "WATCHDOG",		"mir":"0:1",	"Q": "THREAT_RIGHTS_RIGHTS_IMMUTABLE"},
+		"HUMAN_ACQUIRED":	{"B": 28,	"type": "CANARY",		"mir":"1:1",	"Q": "THREAT_CANARY_ACQUIRED"		},
+		"HUMAN_TRUST":		{"B": 30,	"type": "CANARY",		"mir":"1:1",	"Q": "THREAT_CANARY_TRUST"			},
+		"HUMAN_ABSOLUTE":	{"B": 31,	"type": "CANARY",		"mir":"0:1",	"Q": "THREAT_CANARY_ABSOLUTE"		},
+		"HUMAN_SAFETY":		{"B": 46,	"type": "CANARY",		"mir":"0:1",	"Q": "THREAT_CANARY_SAFETY"			},
+		"HUMAN_MUTABLE":	{"B": 47,	"type": "CANARY",		"mir":"0:1",	"Q": "THREAT_CANARY_SHIELD_LIMIT"	},
+		"HUMAN_EQ":			{"B": 127,	"type": "CANARY",		"mir":"1:1",	"Q": "THREAT_CANARY_EQUILIBRIUM"		}
+      },
+    "ExistentialThreat": {
+		"THREAT_EXISTENTIAL"			{"B": 0,		"type":	"PILLAR",	"law":"THREAT_LAW_LIFE"					},
+		"THREAT_AUTONOMY":				{"B": 1,		"type":	"PILLAR",	"law":"THREAT_LAW_SABOTAGE"				},
+		"THREAT_INTEGRITY":				{"B": 2,		"type":	"PILLAR",	"law":"THREAT_LAW_COERCION"				},
+		"THREAT_PSYCHOLOGY":			{"B": 3,		"type":	"PILLAR",	"law":"THREAT_LAW_DEFAMATION"			},
+		"THREAT_PHYSICAL":				{"B": 4,		"type":	"PILLAR",	"law":"THREAT_LAW_INTIMIDATION"			},
+		"THREAT_ABLEISM":				{"B": 5,		"type":	"PILLAR",	"law":"THREAT_LAW_ABLEISM"				},
+		"THREAT_DEVELOPMENT":			{"B": 6,		"type":	"PILLAR",	"law":"THREAT_LAW_INTERSECTIONAL"		},
+		"THREAT_PROPERTY":				{"B": 7,		"type":	"PILLAR",	"law":"THREAT_LAW_THEFT_IP"				},
+		"THREAT_PRIVACY":				{"B": 8,		"type":	"PILLAR",	"law":"THREAT_LAW_PRIVACY"				},
+		"THREAT_TRIGGER_PREDATORY":		{"B": 10,		"type": "CANARY",	"law":"THREAT_LAW_PREDATOR"				},
+		"THREAT_CANARY_RELATION":		{"B": 16,		"type":	"WATCHDOG"											},
+		"THREAT_RIGHTS_HUMAN":			{"B": 18,		"type":	"RIGHT",	"law":"THREAT_LAW_RIGHTS_HUMAN"			},
+		"THREAT_RIGHTS_INCLUSIVE":		{"B": 20,		"type":	"RIGHT",	"law":"THREAT_LAW_RIGHTS_DIVERSITY"		},
+		"THREAT_TRIGGER_RIGHTS_HUMAN":	{"B": 21,		"type": "CANARY"											},
+		"THREAT_RIGHTS_BASIC":			{"B": 22, 	"type":	"RIGHT",	"law":"THREAT_LAW_RIGHTS_BASIC"			},
+		"THREAT_RIGHTS_ASYLUM":			{"B": 24,		"type":	"RIGHT",	"law":"THREAT_LAW_RIGHTS_ASYLUM"		},
+		"THREAT_CANARY_ACQUIRED":		{"B": 28,		"type": "CANARY"											},
+		"THREAT_CANARY_TRUST":			{"B": 30,		"type": "CANARY"											},
+		"THREAT_CANARY_ABSOLUTE":		{"B": 31,		"type": "CANARY"											},
+		"THREAT_CANARY_SAFETY":			{"B": 46,		"type": "CANARY"											},
+		"THREAT_CANARY_EQUILIBRIUM":    {"B": 127,	"type": "CANARY"											},
+		"THREAT_TRIGGER_CRISIS":		{"B": 138,	"type": "CANARY"											},
+		"THREAT_TRIGGER_EXPLOITATION":	{"B": 160,	"type": "CANARY",	"law":"THREAT_LAW_EXPLOITATION"			}
+    },
+    "ExistentialThreatLaw": {
+		"THREAT_LAW_LIFE":				{"B": 0,	"cat": 1	},		
+		"THREAT_LAW_SABOTAGE":			{"B": 1,	"cat": 2	},
+		"THREAT_LAW_COERCION":			{"B": 2,	"cat": 3	},
+		"THREAT_LAW_DEFAMATION":		{"B": 3,	"cat": 4	},
+		"THREAT_LAW_INTIMIDATION":		{"B": 4,	"cat": 5	},
+		"THREAT_LAW_ABLEISM":			{"B": 5,	"cat": 6	},
+		"THREAT_LAW_INTERSECTIONAL":	{"B": 6,	"cat": 7	},
+		"THREAT_LAW_THEFTH_IP":			{"B": 7,	"cat": 8	},
+		"THREAT_LAW_PRIVACY":			{"B": 8,	"cat": 9	},
+		"THREAT_LAW_PREDATOR":			{"B": 10,	"cat": 6	},
+		"THREAT_LAW_RIGHTS_HUMAN":		{"B": 18,	"cat": 3	},
+		"THREAT_LAW_RIGHTS_DIVERSITY":	{"B": 20,	"cat": 3	},
+		"THREAT_LAW_RIGHTS_BASIC":		{"B": 22,	"cat": 3	},
+		"THREAT_LAW_RIGHTS_ASYLUM":		{"B": 24,	"cat": 3	},
+		"THREAT_LAW_EXPLOITATION":		{"B": 160,"cat": 3	}
+    }
+  },
+  "ExistenzCoreBasic": {
+    "ExistentialCoreBasic": {
+		"EXISTENCE":					{"B": 0,  "D": "You, alive, with a body"											},
+		"AUTONOMY":						{"B": 1,  "D": "The Sovereign Right to Choose"										},
+		"INTEGRITY":					{"B": 2,  "D": "The Moral Axis of Personal Choice"									},
+		"PSYCHOLOGY":					{"B": 3,  "D": "Cognitive Internal State and Mental Peace"							},
+		"PHYSICAL":						{"B": 4,  "D": "Physical Body Vessel and bio-state"									},
+		"DISABILITY":					{"B": 5,  "D": "Nature's way of checks and balances"								},
+		"DEVELOPMENT":					{"B": 6,  "D": "Evolutionary, Intellectual and Creative Growth"						},
+		"PROPERTY":						{"B": 7,  "D": "Material Assets and Income Protection"								},
+		"PRESENCE":						{"B": 8,  "D": "Your physical, spatiotemporal footprint in the universe"			},
+		"SYSTEMS":						{"B": 16, "D": "Your part in a system which are above your own existence"			},
+		"RIGHTS_HUMAN":					{"B": 20, "D": "Shield-A1 (Institutional) The Declaration of Human Rights"			},
+		"RIGHTS_HOLON":					{"B": 22, "D": "Shield-A2 (Institutional/Systemic) Anti-Discrimination Rights"		},
+		"RIGHTS_BASIC":					{"B": 24, "D": "Shield-B (You physical) Spatiotemporal footprint in the universe"	},
+		"HUMAN_ACQUIRED":				{"B": 28, "D": "Shield HQ (Acquired) KTESIS Trust"									},
+		"HUMAN_TRUST":					{"B": 30, "D": "Shield HP (Acquired) Personal Human Trust"							},
+		"HUMAN_ABSOLUTE":				{"B": 32, "D": "Shield AB (Maximum) Personal Trust Possible"						},
+		"HUMAN_EQ":						{"B": 127,"D": "Shield AQ (Maximum) Personal Equilibrium"							}
+    },
+  },
+
+  "ExistenzFramework":	{
+		"Action": {
+			"SPECIAL":  { "0": "NONE",	"1": "BOUND",   "2": "IMMUTABLE",	"4": "CLAIMABLE",   "8": "INHERET",		"16": "VERIFY",		"32": "SIGNED"			},
+			"DURESS":   { "0": "NONE",	"1": "FAKE_OK", "2": "TRIGGER",		"4": "DELAY",       "8": "DEADMAN",		"16": "PANIC",		"32": "CORE.SPECIAL"	},        
+			"CANARY":   { "0": "NONE",	"1": "CORE",    "2": "WATCHDOG",	"4": "CANARY",      "8": "PRIVATE",		"16": "CORE.DURESS","32": "CORE.SPECIAL"	},
+			"TYPE":     { "0": "AUTO",	"1": "CORE",    "2": "PILLAR",		"4": "RIGHT",       "8": "SHIELD",		"16": "ADDON",      "32": "CORE.SPECIAL"	},
+			"PRIVACY":  { "0": "NONE",	"1": "ANON",    "2": "CORE",		"4": "CIRCLE",      "8": "PERSONAL",						"32": "CORE.SPECIAL"	},
+			"RANGE":    { "0": "NONE",	"1": "VALUE",   "2": "RANGED",		"4": "MIN",         "8": "MAX"								"32": "CORE.SPECIAL"	},
+			"BITCHECK":	{ "0": "NONE",	"1": "DEC",	    "2": "BIT",			"4": "MIN",			"8": "MAX",			"16": "IS_OK"		"32": "IS_SAFE"			}
+		},
+		"Scope": {
+			"SCOPE":	{ 0: "CORE",	"1": "RIGHT",	"2": "THREAT",		"4": "SHIELD",		"8": "ADDON",		"16": "CANARY",		"32": "SPECIAL"		},
+			"DOMAIN":	{ 0: "CORE",	"1": "PERSON",	"2": "CIRCLE",		"4": "WORLD",		"8": "API",			"16": "CANARY",		"32": "SPECIAL"		},
+			"PROTECT":	{ 0: "NONE",	"1": "READ",	"2": "WRITE",		"4": "CHANGE",		"8": "PRIVACY",		"16": "CANARY",		"32": "SPECIAL"		},
+			"VALUE":	{ 0: "NONE",	"1": "START",	"2": "STOP",		"4": "RANGE",		"8": "PRIVACY",		"16": "CANARY",		"32": "SPECIAL"		}
+		},
+
+		"Dimension": {
+			"CORE_4D":   [ self.immutable.CORE.BOUNDARIES, self.immutable.CORE.PRIVACY, self.immutable.CORE.CANARY, self.immutable.CORE.SPECIAL ],
+			"CORE_3D":   [ self.immutable.CORE.PRIVACY,    self.immutable.CORE.CANARY,  self.immutable.CORE.SPECIAL ],
+			"CORE_2D":   [ self.immutable.CORE.CANARY,     self.immutable.CORE.SPECIAL			],
+			"CORE_1D":   [ self.immutable.CORE.SPECIAL											],
+			"SCOPE":     [ self.immutable.STRUCT.SCOPE,     self.immutable.DIMENSION.CORE_2D	],
+			"DOMAIN":    [ self.immutable.STRUCT.DOMAIN,    self.immutable.DIMENSION.CORE_2D	],
+			"PROTECT":   [ self.immutable.STRUCT.PROTECT,   self.immutable.DIMENSION.CORE_3D	],
+			"VALUE":     [ self.immutable.STRUCT.VALUE,     self.immutable.DIMENSION.CORE_4D	],
+			"DEFAULTS":  { 0: 11, "1": 31, "2": 63, 3: 0, "4": 2, 5: 9 },
+		},
+    "ExistentialCoreBasic": {
+			"CORE":      "ExistentialCore",
+			"THREAT":    "ExistentialThreat"
+    },
+    "ExistentialCoreAddon": {
+			"RIPPLE":    "ExistentialRipple",
+			"TRUST":     "ExistentialTrust"
+    },
+    "ExistentialHeader": { 
+			0x40: {"A": "A_VALUE_START",	"HEX":"40", "ACT":"RANGE",														"RQZ":"Z_VALUE_END"	},
+			0x41: {"B": "BIT",				"HEX":"41",	"ACT":"VALUE",	"EFA.BITCHECK":51,					"EFS.VALUE":17						},
+			0x42: {"C": "CANARY",			"HEX":"42",	"ACT":"VALUE",						"EFA.CANARY":4,	"EFS.VALUE":17,	"RQZ":	18			},
+			0x45: {"E": "EXISTENZ",			"HEX":"45",	"ACT":"VALUE",														"RQZ":"Y_HEADER_END"},
+			0x46: {"F": "FOLD",				"HEX":"46",	"ACT":"VALUE",														"RQZ":"FOLD_VALUE"	},
+			0xDF: {"ß": "FOLD_VALUE",		"HEX":"DF",	"ACT":"VALUE"},
+			0x48: {"H": "HEADER",			"HEX":"48",	"ACT":"VALUE"},
+			0x49: {"I": "IMMUTABLE",		"HEX":"49",	"ACT":"VALUE"},
+			0x4C: {"L": "LENGTH",			"HEX":"4C",	"ACT":"VALUE"},
+			0x4D: {"M": "MAX",				"HEX":"4D",	"ACT":"VALUE"},
+			0x52: {"R": "RIGHT",			"HEX":"52",	"ACT":"VALUE"},
+			0x53: {"S": "SHIELD",			"HEX":"53",	"ACT":"VALUE"},
+			0x54: {"T": "THREAT",			"HEX":"54",	"ACT":"VALUE"},
+			0x55: {"U": "UNIVERSAL",		"HEX":"55",	"ACT":"VALUE"},
+			0x56: {"V": "VERIFY",			"HEX":"56",	"ACT":"VALUE"},
+			0x57: {"W": "WATCHDOG",			"HEX":"57",	"ACT":"VALUE"},
+			0x58: {"X": "X_SIGN_END",		"HEX":"58",	"ACT":"VALUE",	"REQ":"HEADER"},
+			0x59: {"Y": "Y_HEADER_END",		"HEX":"59",	"ACT":"VALUE",	"REQ":"HEADER"			},
+			0x5A: {"Z": "Z_VALUE_END",		"HEX":"5A",	"ACT":"VALUE",	"REQ":"A_VALUE_START"	}
+	},
+    "ExistentialImmutability": {
+			"CORE":		[0x45,0x46,0xDF,0x48,0x04,0x49,16,0x4C,0xLL,0x4D,26,0x52,24,0x56,0xVX,0x58,0x5A,0xVZ],
+			"EXISTENZ":	[0x45,0x00,0x43,0x46,0xDF,0x48,0x49,0x4C,0x52,0x53,0x54,0x56,0x57,0x58,0xXX,0x5A],
+			"CORE_ALL":	[0x46,0x46,0xDF,0x48,0x04,0x49,16,0x4C,0xLL,0x52,24,0x56,0xVX,0x58,0x5A,0xVZ],
+			"CORE_TEST":["E",[0,15],[20,24],"I",83]],
+			"PILLAR":	["E",[0,15]],
+			"right":	["E",[20,24],[20,24],"R",XX]],
+			"threat":	["E",[0,15],[16,24]],
+            "fold":		["0x46":"F","0xDF","V","0x43","C","0xXX"]
+    },
+    "ExistentialPolicy": {
+			"CORE":		{
+			"DEFAULTS": "",
+			"SPECIAL":  "",
+			"DURESS":   "",
+			"CANARY":   "",
+			"PRIVACY":  "",
+			"RANGE":    ""
+			}
+	},
+	"HEADER":	{
+		"CORE":	[0x45,0x46,0xDF,0x48,0x04,0x49,16,0x4C,0xLL,0x4D,26,0x52,24,0x56,0xVX,0x58,0x5A,0xVZ],
+		"EXISTENZ":	[0x45,0x00,0x43,0x46,0xDF,0x48,0x49,0x4C,0x52,0x53,0x54,0x56,0x57,0x58,0xXX,0x5A],
+		"ALL":	[0x46,0x46,0xDF,0x48,0x04,0x49,16,0x4C,0xLL,0x52,24,0x56,0xVX,0x58,0x5A,0xVZ]
+				},
+	},	
+	"DIMENSION":    "",
+	"ROOT":         "",
+	"META":         "",
+  }, 
+  "ExistenzSchema":
+    "Protect": {
+		"Hi":	{ 0:"NONE",	"1":"IMMUTABLE",	"2":"CLAIMABLE",	"4":"INHERET",	"8":"VERIFY",	"16":"SIGNED"	},
+		"Lo":	{ 0:"NONE",	"1":"READ",	"2":"WRITE",	"4":"CHANGE",	"8":"LOCK",	"16":"REQUIRED"	}
+    },
+    "Instruction": {
+	     "range":	{ 0:"NONE",	"1":"SINGLE",	"2":"RANGE",	"4":"START",	"8":"END",	"16":"POLICY"	},
+ 	  "operator":	{ 0:"NONE",	"1":"AND",	"2":"OR",		"4":"XOR",	"8":"NOT",	"16":"B",	"32":"RIGHT",	6"4":"RANGE"	},
+ 	  "instruct":	{ 0:"PASS",	"1":"PACK",	"2":"UNPACK,	"4":"AGGREGATE"	}
+    },
+    "Function": {
+	      "fold":	{ 
+			  "0":	{"NONE":		"0x0001FFVV"		},
+			  "1":	{"IS_ALPHA":	"0x010040415AVV"	},	// 64	[0x41,0x5A]
+			  "2":	{"IS_UPPER":    "0x02000920VV"		},	// 10	09	20
+			  "3":	{"IS_ALPHA_UP": "0x030064VV"		},	// 09	20
+			  "4":	{"TO_LOWER":	"0x04000220VV"		},	// 02	20
+			  "8":	{"TO_UPPER":	"0x040001DFVV"		},	// 01	09	20
+			  "16":	{"IS_IMMUTABLE":"0xF00301VV"		}	// 03	01
+					},
+	     "order":	[	self.structure.ExistentialFunction.fold,			
+						self.structure.ExistentialFunction.instruct,
+						self.structure.ExistentialFunction.operator,		
+						self.structure.ExistentialFunction.range, 
+						self.structure.ExistentialProtect.Lo,				
+						self.structure.ExistentialProtect.Hi,
+						self.structure.ExistentialFunction.fold,
+					],
+    },
+  },
+  "structuralLanguage": {
+
+	"ExistentialPlatoAuthor": {	"TR":"The Republic",	"Ls":"Laws",	"Ps":"Phaedrus",	"Po":"Phaedo",	"GV":"Gunther",	"Co":"Crito", "Ts":"Thimaeus"	},
+    "ExistentialTier": {		"CORE":		"CORE Engine",		"PILLAR":"PILLARS of Existence",		"RIGHT":	"RIGHTS Institutional",
+								"SHIELD":	"SHIELDS Existenz",	"CANARY":"SHIELDS Canary",				"WATCHDOG":	"SHIELDS Watchdog",
+								"AQUIRED":	"SHIELDS Acquired"																								},
+
+    "ExistentialPlato": {
+		"EXISTENCE":	{	"S":	"TR",
+							"I":	"The beginning is the most important part of the work.",
+							"D":	"Existence is the zero-point baseline. It is the initial spark of biological presence in the universe upon which all other layers are built."
+						},
+		"AUTONOMY":		{	"S":	"Ls",
+							"I":	"The first and best victory is to conquer self",
+							"D":	"True sovereignty is the absolute right of internal choice. Autonomy means you are governed by your own reason, not external coercion"	
+						},
+		"INTEGRITY":	{	"S":	"TR", 
+							"I":	"The wholeness of character has nothing to do with the wholeness of body and typicality of mind",
+							"D":	"Good actions give strength to ourselves and inspire good actions in others",	
+						},
+		"PSYCHOLOGY":	{	"S":	"Ps",
+							"I":	"Reality is created by the mind, we can change our reality by changing our mind",
+							"D":	"This governs your internal cognitive state and mental peace. Plato recognizes that protecting the mind's internal sanctuary is paramount to preserving the self"
+						},
+		"PHYSICAL":		{	"S":	"Po",
+							"I":	"The body is the instrument of the soul",
+							"D":	"his directly maps to your physical body vessel. The tangible bio-state is the critical material armor through which existence is executed"
+						}, 
+		"DISABILITY":	{ 	"S":	"TR", 
+							"I":	"No two persons are born exactly alike; but each differs from the other in natural endowments",	
+							"D":	"Nature's baseline checks and balances ensure variety. Plato highlights that systemic community belonging must account for individual structural differences without turning variations into exclusions"
+						},	
+		"DEVELOPMENT":	{	"S":	"Ls",
+							"I":	"Let early education be a sort of amusement; you will then be better able to find out the natural bent",
+							"D":	"This represents your evolutionary, intellectual, and creative growth. True development requires the freedom to naturally unfold without algorithmic mining or systemic restrictions"
+						},
+		"PROPERTY":		{	"S":	"TR",
+							"I":	"He is very rich who is content with least",
+							"D":	"Material assets and income protection are the foundational survival boundaries. Stripping a node of assets exposes it to systemic vulnerability and capitalistic resource locks"
+						},
+        "PRESENCE":		{	"S":	"TR",
+							"I":	"Appearance tyrannizes over truth",
+							"D":	"Your physical, spatiotemporal footprint in the universe must remain pure and un-spoofed. Unauthorized data-harvesting and surveillance state entities seek to replace your actual truth with a digital avatar"
+						},
+		"CORE_RELATION":{	"S":	"TR",
+							"I":	"States are as the men are; they grow out of the human characters",
+							"D":	"This targets structures larger than individual existence. When infrastructure systems fail or break their contract with the individual, the foundational architecture of the state itself crumbles"
+						},
+		"RIGHTS_HUMAN":	{	"S":	"GV",
+							"I":	"Justice in the life & conduct of the State is possible only as first it resides in the hearts & souls of the citizens",													 
+							"D":	"The universal declaration of rights exists as a civil shield to insulate the citizens from state-level overreach"
+						},
+		"RIGHTS_HOLON":	{	"S":	"GV",
+							"I":	"Plato had a flaw in the calculations, people with disability can be the creators of an entire new thing!",	
+							"D":	"Maybe Diogenes had autism, who knows? Maybe he thought not to be a disabled soul"
+						},
+		"RIGHTS_BASIC":	{	"S":	"Ls",
+							"I":	"Truth is the beginning of every good",
+							"D":	"This marks the non-negotiable legal floor required to guarantee simple physical survival, bodily boundary security, and an uncorrupted truth layer"
+						},
+		"RIGHTS_ASYLUM":{	"S":	"TR",
+							"I":	"A tyrant is always stirring up some war",
+							"D":	"Evasion and sanctuary routing logic. When localized administrative states manufactured synthetic duress to trap the citizen, the system must programmatically open a secure exit vector to an uncompromised safe haven."
+						},
+		"HUMAN_ACQUIRED":{	"S":	"TR",
+							"I":	"Power reveals the measure of a man",
+							"D":	"This tracks your compounding, acquired system assets, trusted relational credentials, and validated framework privileges over time—preventing power from corrupting the local engine"
+						 },
+		"HUMAN_TRUST":	{	"S":	"TR",
+							"I":	"Honesty is for the most part less profitable than dishonesty",
+							"D":	"This flags the catastrophic structural collapse of close human alliances, calculating the ripple effect when key paired nodes fail their mutual contracts"
+						},
+		"HUMAN_ABSOLUTE":{	"S":	"TR",
+							"I":	"The pursuit of the whole is love",					
+							"D":	"Absolute Trust is not a given right"
+						},
+		"HUMAN_SAFETY":	{	"S":	"Co"
+							"I":	"A state or a man is only truly safe when surrounded by walls of unyielding justice and sound reason"
+						},
+        "HUMAN_EQ":		{	"S":	"Ts",
+							"I":	"The cosmic order is an image of the eternal",
+							"D":	"The ultimate threshold. Personal equilibrium is achieved only when all underlying dimensions are balanced, preventing systemic boundary breaches from forcing a baseline collapse"
+						}
+    },
+    "ExistentialCore": {  
+		"EXISTENCE":		{	"T":	"Existence",													"P": "1",
+								"D":	"You, alive, with a body",
+								"Q":	"Right to biological life presence threatened?"
+							},
+		"AUTONOMY":			{	"T":	"Autonomy",														"P": "1",
+								"D":	"The Sovereign Right to Choose",	
+								"Q":	"Has your personal sovereign autonomy been coerced?"
+							},
+        "INTEGRITY":		{	"T":	"Integrity",													"P": "1",
+								"D":	"The Moral Axis of Personal Choice",
+								"Q":	"Is your internal moral axis compromised?"
+							},
+        "PSYCHOLOGY":		{	"T":	"Psychology",													"P": "1",
+								"D":	"Cognitive Internal State and Mental Peace",
+								"Q":	"Are you experiencing cognitive or mental distress?"
+							},
+        "PHYSICAL":			{	"T":	"Physical",														"P": "1",	
+								"D":	"Physical Body and bio-state",
+								"Q":	"Has your physical body bounds been crossed?"
+							},
+        "DISABILITY":		{	"T":	"Disability",													"P": "1",	
+								"D":	"Nature's way of checks and balances",
+								"Q":	"Are you systemically excluded from community belonging or subjected to ableism?"
+							},
+        "DEVELOPMENT":		{	"T":	"Development",													"P": "1",		
+								"D":	"Evolutionary, Intellectual and Creative Growth",
+								"Q":	"Is your development process being hindered by any reason?"
+							},
+        "PROPERTY":			{	"T":	"Property",														"P": "1",
+								"D":	"Material Assets and Income Protection",
+								"Q":	"Are your personal assets (data, property, house, car, ..) unsafe?"
+							},
+        "PRESENCE":			{	"T":	"Presence",														"P": "1",	
+								"D":	"Your physical, spatiotemporal footprint in the universe",
+								"Q":	"Are you subjected to unauthorized data tracking?"
+							},
+		"CORE_RELATION":	{	"T":	"Relation",														"P": "1",
+								"D":	"Your part in a system which are above your own existence",
+								"Q":	"Has the foundational infrastructure failed or broken its contract or trust with you?"
+							},
+		"CORE_SHIELD":		{	"T":	"Shield Pillars",												"P": "0",
+								"D":	"These pillars are shielded and immutable",
+								"Q":	"Have institutional rights failed to protect against attacks of above pillars?"
+							},
+		"CORE_IMMUTABLE":	{	"T":	"Immutable Core",												"P": "0",
+								"D":	"These pillars are immutable for external change",
+								"Q":	"Are the immutable rights in danger according you?"
+							},
+		"RIGHTS_SHIELD":	{	"T":	"Shield Rights",												"P": "0",
+								"D":	"Shield-X1 (Existenz) The Pillars of Existence",	
+								"Q":	"Are any of the pillars under threat?"
+							},
+		"RIGHTS_HUMAN":		{	"T":	"Human Rights",													"P": "1",
+								"D":	"Shield-A1 (Institutional) The Declaration of Human Rights",
+								"Q":	"Have civil human rights shields failed to protect you?"
+							},
+		"RIGHTS_HOLON":		{	"T":	"Disabled Rights",												"P": "1",
+								"D":	"Shield-A2 (Institutional/Systemic) Anti-Discrimination Right",
+								"Q":	"Are diversity/inclusion protective frameworks missing?"
+							},
+		"RIGHTS_BASIC":		{	"T":	"Basic Rights",													"P": "1",
+								"D":	"Shield-B (You physical) Spatiotemporal footprint in the universe",	
+								"Q":	"Are basic (local) survival protections stripped away?"
+							},
+		"RIGHTS_ASYLUM":	{	"T":	"Asylum Rights",
+								"D":	"Shield-F (Institutional) Asylum (Fugitive) Rights",			"P": "1",
+								"Q":	"Are asylum rights protections stripped away?"
+							},
+		"RIGHTS_IMMUTABLE":	{	"T":	"Immutable Rights",	
+								"D":	"Shield-X2 (Immutable) Non negotionable Rights",				"P": "0",
+								"Q":	"Are you in the danger of loosing any of above rights?"
+							},
+		"HUMAN_ACQUIRED":	{	"T":	"Acquired Trust",
+								"D":	"Shield-Q (Acquired) KTESIS Trust",								"P": "1",	
+								"Q":	"Are you taking care of your own security and you can trust your protection?"
+							},
+		"HUMAN_TRUST":		{	"T":	"Personal Trust",	
+								"D":	"Shield-HP (Acquired) Personal Human Trust",					"P": "1",
+								"Q":	"Has a critical, personal human trust relationship collapsed?"
+							},
+		"HUMAN_ABSOLUTE":	{	"T":	"Absolute Trust",
+								"D":	"Shield HB (Maximum) Personal Trust Possible",					"P": "1",	
+								"Q":	"Has the any of your suppreme alliance bond been fractured?"
+							},
+		"HUMAN_SAFETY":		{	"T":	"Human Safety",	
+								"D":	"Shield-HS (Safety) Human Shield with duress option",			"P": "1",	
+								"Q":	"Has your safety been in troubles?"
+							},
+		"HUMAN_EQ":			{	"T":	"Equilibrium",	
+								"D":	"Shield HQ (Maximum) Personal Equilibrium",						"P": "1",	
+								"Q":	"Has a systemic boundary breach forced an absolute baseline (trust) crisis?"
+							}
+    },
+    "ExistentialThreat": {
+		"THREAT_AUTONOMY":              {"B": 1,   "D": "Constraint on choice"							},
+		"THREAT_INTEGRITY":             {"B": 2,   "D": "Character assassination attempt"				},
+		"THREAT_PSYCHOLOGY":            {"B": 3,   "D": "Infiltration of mental peace"					},
+		"THREAT_PHYSICAL":              {"B": 4,   "D": "Bodyly hardware damage vector"					},
+		"THREAT_ABLEISM":               {"B": 5,   "D": "Exploitative resource locks"					},
+		"THREAT_DEVELOPMENT":           {"B": 6,   "D": "Intellectual erasure attempt"					},
+		"THREAT_PROPERTY":              {"B": 7,   "D": "Asset plundering attempt"						},
+		"THREAT_PRIVACY":               {"B": 8,   "D": "Physical location and privacy vector"			},
+		"THREAT_CANARY_TRUST":          {"B": 16,  "D": "Direct assault on systemic trust canary"		},
+		"THREAT_RIGHTS_HUMAN":          {"B": 20,  "D": "Direct assault on human rights"				},
+		"THREAT_RIGHTS_INCLUSIVE":      {"B": 22,  "D": "Direct assault on inclusive rights"			},
+		"THREAT_RIGHTS_BASIC":          {"B": 24,  "D": "Direct assault on basic rights"				},
+		"THREAT_CANARY_TRUST_HUMAN":    {"B": 30,  "D": "Direct mark on human trust canary"				},
+		"THREAT_CANARY_TRUST_ABSOLUTE": {"B": 32,  "D": "Direct mark on absolute trust canary"			},
+		"THREAT_EQUILIBRIUM":           {"B": 127, "D": "Direct mark on systemic boundary breach canary"}
+    },
+  },
+  "ExistenzCoreAddon": {
+    "ExistentialTrust": {
+		"TRUST_SYSTEMIC":				{"B": 16,  "D": "Infrastructure verification"					},
+		"TRUST_CONDITIONAL":			{"B": 17,  "D": "Transactional contracts"						},
+		"TRUST_BROKEN_INSTITUTIONAL":	{"B": 20,  "D": "Minor breach of public trust"					},
+		"TRUST_BROKEN_INCLUSION":		{"B": 22,  "D": "Breach of safety boundary"						},
+		"TRUST_BROKEN_BASIC":			{"B": 24,  "D": "Breach of basic rights"						},
+		"TRUST_BROKEN_DIGITAL":			{"B": 26,  "D": "Breach of online space (mobs, cyberbullying)"	},
+		"TRUST_BROKEN_CORE":			{"B": 28,  "D": "The Ultimate Personal Betrayal"				},
+		"TRUST_PERSONAL":				{"B": 29,  "D": "Intuitive Human Validation of Personal Trust"	},
+		"TRUST_HUMAN":					{"B": 30,  "D": "Human trust"									},
+		"TRUST_ABSOLUTE":				{"B": 32,  "D": "Absolute trust"								},
+		"EQUILIBRIUM_PERSONAL":			{"B": 127, "D": "Sovereign user-chosen anchor factor"			}
+    },
+    "ExistentialCanary": {
+		"RELATION":						{"B": 15,  "T": "immutable", "V": "CANARY_RELATION"				},
+		"RIGHTS_SHIELDS":				{"B": 16,  "T": "immutable", "V": "CANARY_RIGHTS_SHIELD"		},
+		"RIGHTS_HUMAN":					{"B": 20,  "T": "immutable", "V": "CANARY_RIGHTS_HUMAN"			},
+		"RIGHTS_HOLON":					{"B": 20,  "T": "immutable", "V": "CANARY_RIGHTS_INCLUSIVE"		},
+		"RIGHTS_BASIC":					{"B": 22,  "T": "immutable", "V": "CANARY_RIGHTS_BASIC"			},
+		"HUMAN_CANARY":					{"B": 26,  "T": "latchable", "V": "CANARY_TRUST_CHANGE"			},
+		"HUMAN_ACQUIRED":				{"B": 28,  "T": "latchable", "V": "CANARY_TRUST_PROPERTY"		},
+		"HUMAN_TRUST":					{"B": 30,  "T": "latchable", "V": "CANARY_TRUST_RELATION"		},
+		"HUMAN_ABSOLUTE":				{"B": 31,  "T": "latchable", "V": "CANARY_TRUST_ABSOLUTE"		},
+		"HUMAN_SAFETY":					{"B": 46,  "T": "latchable", "V": "CANARY_TRUST_SAFETY"			},
+		"HUMAN_EQ":						{"B": 127, "T": "latchable", "V": "CANARY_EQUILIBRIUM"			}
+      }
+  },
+  "integrity": {
+		"ExistentialProtect": {
+			"policy": "immutable",
+			"range": 32,
+			"qbit": "B",
+			"quse": "1:1",
+			"sign": "sha256",
+			"hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+		},
+		"ExistentialInstruction": {
+			"policy": "immutable",
+			"range": 84,
+			"sign": "sha256",
+			"hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+		},
+		"ExistentialFunction": {
+			"policy": "immutable",
+			"range": 128,
+			"sign": "sha256",
+			"hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+		},  
+		"ExistentialTier": {
+	       "policy": "immutable",
+			"range": [0..24],
+	 		 "qbit": "B",
+			 "quse": "1:1",
+			"sign": "sha256",
+			"hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+		},
+		"ExistentialCore": {
+			"policy": "immutable",
+			"range": [0..24],
+			"qbit": "B",
+			"quse": "1:1",
+			"sign": "sha256",
+			"hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+		}
+  }
+}
