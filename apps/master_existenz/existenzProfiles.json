@@ -5,7 +5,7 @@
     "meta.poweruse.*.S", "meta.poweruse.*.D", "ExistenzCore.ExistentialCore.*.B",
     "ExistenzCore.ExistentialCore.*.Q", "ExistenzCore.ExistentialCore.*.type",
     "ExistenzCore.ExistentialThreat.*.B", "ExistenzCore.ExistentialThreat.*.type",
-    "ExistenzCore.ExistentialCore.*.law",
+    "ExistenzCore.ExistentialCore.*.law"
   ],
   "light": [
     "project", "name", "slug", "version", "subversion", "author", "license",
