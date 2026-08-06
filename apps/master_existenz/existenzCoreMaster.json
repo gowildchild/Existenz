@@ -2,10 +2,9 @@
   "project":					"Existenz",
   "name":						"Existenz Core Specification",
   "slug":						"existenzCore",
-  "version":					"0.72-PoC",
+  "version":					"0.721-PoC",
   "subversion":					"detailed",
   "author":						"Gunther Voet",
-  "url":						"https://github.com/gowildchild/Existenz/",
   "license":					"AGPL-3.0-only",
   "meta": {
 		"size":					128,
@@ -21,8 +20,8 @@
 		"CORE_THREAT":		{"B": 3,   "D": "1:1"			},
 		"RIGHT":			{"B": 4,   "D": "0:0:1"			},
 		"CANARY":			{"B": 16,  "D": "0:0:0:1"		},
-		"WATCHDOG":			{"B": 32,  "D": "0:0:0:1"		}
-    },
+		"WATCHDOG":			{"B": 32,  "D": "0:0:0:1"	    }
+	},
     "ExistentialTier": {
 		"CORE":				{"B": 0,	"hi":9,	"lo":25,"fold":8,	"token": "00091908B2" },
 		"PILLAR":			{"B": 1,	"hi":11,"lo":25,"fold":8,	"token": "010B190893" },
