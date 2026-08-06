@@ -1,17 +1,21 @@
 import os
 import json
 
-def get_dynamic_path(data, path_segments, output_tree, current_out_level=None):
+# =====================================================================
+# 1. DYNAMIC DOT-NOTATION TREE PARSER (Fixed Segment Indexing)
+# =====================================================================
+def get_dynamic_path(data, segments, output_tree):
     """
-    Recursively walks through source data matching your exact dot-notation tokens,
-    including wildcards (*), and reproduces the filtered output structure dynamically.
+    Recursively walks through source data matching dot-notation tokens,
+    including wildcards (*), and reproduces the filtered output tree.
     """
-    if not path_segments:
+    if not segments:
         return
         
-    current_seg = path_segments[0]
-    remaining_segs = path_segments[1:]
+    current_seg = segments[0]
+    remaining_segs = segments[1:]
     
+    # Handle Wildcards (*) dynamically
     if current_seg == "*":
         if isinstance(data, dict):
             for key, val in data.items():
@@ -23,6 +27,7 @@ def get_dynamic_path(data, path_segments, output_tree, current_out_level=None):
                     get_dynamic_path(val, remaining_segs, output_tree[key])
         return
 
+    # Handle Explicit Keys dynamically
     if isinstance(data, dict) and current_seg in data:
         target_val = data[current_seg]
         if not remaining_segs:
@@ -43,40 +48,61 @@ def compile_dynamic_export(spec_data, profile_rules, active_level):
         
     return filtered_output
 
+# =====================================================================
+# 2. FILE INGESTION & PIPELINE RUNNER
+# =====================================================================
 def main():
     out_dir = "generated_outputs"
     os.makedirs(out_dir, exist_ok=True)
     
-    # 1. Dynamically merge any file ending in .json (except profiles and manifest data)
+    # Define your source specification file and profile rules explicitly
+    MASTER_FILE = "existenzCoreMaster.json"
+    PROFILE_FILE = "existenzProfiles.json"
+    
     master_spec = {}
-    for f_name in os.listdir("."):
-        if f_name.endswith(".json") and f_name not in ["existanzeProfiles.json", "package.json"]:
-            try:
-                with open(f_name, "r", encoding="utf-8") as f:
-                    master_spec.update(json.load(f))
-            except Exception as e:
-                print(f"[-] Failed parsing dynamic input {f_name}: {e}")
-
-    # 2. Load the dynamic filtering profiles
-    try:
-        with open("ExistenzProfiles.json", "r", encoding="utf-8") as f:
-            profile_rules = json.load(f)
-    except Exception as e:
-        print("[-] Error loading export_profiles.json profile rules config file.")
+    
+    print("=== [1/3] Starting Explicit Specification Ingestion ===")
+    
+    # 1. Load the Master Spec Document
+    if os.path.exists(MASTER_FILE):
+        try:
+            with open(MASTER_FILE, "r", encoding="utf-8") as f:
+                master_spec = json.load(f)
+            print(f" -> Successfully imported master file: '{MASTER_FILE}'")
+        except Exception as e:
+            print(f" [!] Error parsing JSON format in file '{MASTER_FILE}': {e}")
+            return
+    else:
+        print(f" [!] Critical Error: Expected master file '{MASTER_FILE}' was not found in path.")
         return
 
-    # Choose your active selection profile dynamically: "compact", "light", "basic", "detailed"
+    # 2. Load the Profiling Filter Templates
+    if not os.path.exists(PROFILE_FILE):
+        print(f" [!] Critical Error: Profile definition file '{PROFILE_FILE}' is missing.")
+        return
+        
+    try:
+        with open(PROFILE_FILE, "r", encoding="utf-8") as f:
+            profile_rules = json.load(f)
+        print(f" -> Successfully imported filters from: '{PROFILE_FILE}'")
+    except Exception as e:
+        print(f" [!] Error parsing JSON format in file '{PROFILE_FILE}': {e}")
+        return
+
+    # Target output profile configuration level: compact | light | basic | detailed
     target_profile = "detailed" 
     
-    print(f"[*] Dynamically compiling profile filter: '{target_profile}'")
+    print(f"\n=== [2/3] Executing Dynamic Profile Filtering ===")
+    print(f" -> Active Profile Strategy: [{target_profile.upper()}]")
     result = compile_dynamic_export(master_spec, profile_rules, target_profile)
     
-    # 3. Save clean dynamically outputted file
+    # 3. Save the Filtered Node Tree
     out_path = os.path.join(out_dir, "existenz_core.json")
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=4)
         
-    print(f"[+] Dynamic output successfully generated at: {out_path}")
+    print(f"\n=== [3/3] Export Processing Complete ===")
+    print(f" -> Filtered data successfully dumped to target file: {out_path}")
 
 if __name__ == "__main__":
     main()
