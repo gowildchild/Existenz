@@ -1,10 +1,11 @@
 import os
 import json
+import datetime
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
 # =====================================================================
-# 1. UNIVERSAL TREE WALKER (Using dot-notation paths)
+# 1. UNIVERSAL TREE WALKER
 # =====================================================================
 def walk_tree(source_node, segments, target_tree):
     """
@@ -14,7 +15,7 @@ def walk_tree(source_node, segments, target_tree):
     if not segments:
         return
 
-    current_key = segments[0]
+    current_key = segments
     next_segments = segments[1:]
 
     # Handle wildcard nodes (*)
@@ -40,23 +41,27 @@ def walk_tree(source_node, segments, target_tree):
             walk_tree(val, next_segments, target_tree[current_key])
 
 # =====================================================================
-# 2. MODULAR EXPORT PIPELINES (JSON & XML)
+# 2. MODULAR EXPORT PIPELINES (With Active Timestamp Injections)
 # =====================================================================
-def export_to_json(filtered_tree, output_path):
-    """Writes the filtered configuration tree directly into clean JSON."""
+def export_to_json(filtered_tree, output_path, timestamp):
+    """Writes the filtered configuration tree into clean JSON with an active timestamp."""
+    # Inject the runtime timestamp directly into the top level or meta block if present
+    if "meta" in filtered_tree:
+        filtered_tree["meta"]["compiled_at"] = timestamp
+    else:
+        filtered_tree["compiled_at"] = timestamp
+
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(filtered_tree, f, indent=4)
-    print(f"[+] JSON Document generated at: {output_path}")
+    print(f"[+] JSON Document generated and overwritten at: {output_path}")
 
 def dict_to_xml_element(tag_name, d):
-    """Helper to dynamically convert a filtered dictionary branch into neat XML elements."""
+    """Helper to dynamically convert a filtered dictionary branch into XML elements."""
     element = ET.Element(tag_name)
     if isinstance(d, dict):
         for key, val in d.items():
-            # If the child value is a primitive string/int, write it as an XML attribute
             if not isinstance(val, (dict, list)):
                 element.set(str(key), str(val))
-            # If it's a nested dictionary, parse it recursively as a child node
             elif isinstance(val, dict):
                 child = dict_to_xml_element(str(key), val)
                 element.append(child)
@@ -64,23 +69,22 @@ def dict_to_xml_element(tag_name, d):
         element.text = str(d)
     return element
 
-def export_to_xml(filtered_tree, output_path, project_name="Existenz"):
-    """Converts the filtered configuration tree into formatted XML layout strings."""
-    root_element = ET.Element("existenz", project=project_name)
+def export_to_xml(filtered_tree, output_path, timestamp, project_name="Existenz"):
+    """Converts the filtered configuration tree into formatted XML layout strings with a timestamp."""
+    # Inject the runtime timestamp directly into the root element attributes
+    root_element = ET.Element("existenz", project=project_name, compiled_at=timestamp)
     
-    # Process top level keys inside the filtered structural tree
     for key, content in filtered_tree.items():
         node = dict_to_xml_element(key, content)
         root_element.append(node)
         
-    # Beautify the raw XML string output (pretty print with spacing tabs)
     raw_str = ET.tostring(root_element, encoding="utf-8")
     parsed_xml = minidom.parseString(raw_str)
     pretty_xml = parsed_xml.toprettyxml(indent="    ")
     
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(pretty_xml)
-    print(f"[+] XML Document generated at: {output_path}")
+    print(f"[+] XML Document generated and overwritten at: {output_path}")
 
 # =====================================================================
 # 3. PIPELINE ORCHESTRATOR
@@ -92,42 +96,29 @@ def main():
     master_file = "existenzCoreMaster.json"
     profiles_file = "existenzProfiles.json"
 
+    # Generate a precise UTC ISO 8601 timestamp string
+    current_timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
     # 1. Ingest Master Core Schema Data
-    # 1. Ingest and Automatically Sanitize Master Data Layout
     if not os.path.exists(master_file):
         print(f"[-] Critical Error: Missing master file '{master_file}'")
         return
-        
     with open(master_file, "r", encoding="utf-8") as f:
-        raw_content = f.read()
-        
-    # Automatically strip trailing whitespace lines to stabilize spacing
-    sanitized_content = "\n".join([line.rstrip() for line in raw_content.splitlines()])
-    
-    try:
-        master_data = json.loads(sanitized_content)
-        print(f"[+] Successfully loaded and sanitized data layout master: {master_file}")
-    except json.JSONDecodeError as e:
-        print(f"[-] Decoder Exception: {e}")
-        return
+        master_data = json.load(f)
 
     # 2. Ingest Profile Configuration Paths 
     if not os.path.exists(profiles_file):
-        print(f"[-] Critical Error: Missing export rules definitions layout '{profiles_file}'")
+        print(f"[-] Critical Error: Missing profiles file '{profiles_file}'")
         return
     with open(profiles_file, "r", encoding="utf-8") as f:
         profiles_config = json.load(f)
 
-    # Extract target project name string dynamically out from master schema
     project_slug = master_data.get("project", "Existenz")
-
-    # Change active structure layer depth here: compact | light | basic | detailed
     active_profile = "detailed"
     rules = profiles_config.get(active_profile, [])
     
     print(f"=== Running Multi-Pipeline Exporter [Profile: {active_profile.upper()}] ===")
-    print(f" -> Source File: '{master_file}'")
-    print(f" -> Rules File:  '{profiles_file}'\n")
+    print(f" -> Generation Timestamp: {current_timestamp}\n")
 
     # 3. Core Universal Filter Run
     filtered_tree = {}
@@ -135,17 +126,15 @@ def main():
         path_parts = rule.split(".")
         walk_tree(master_data, path_parts, filtered_tree)
 
-    # 4. Trigger Target Architecture Modular Compilers simultaneously 
+    # 4. Trigger Modulator File Writes
     json_out_path = os.path.join(out_dir, "existenz_core.json")
     xml_out_path = os.path.join(out_dir, "existenz_core.xml")
 
-    # Execute JSON engine export
-    export_to_json(filtered_tree, json_out_path)
-    
-    # Execute XML engine export
-    export_to_xml(filtered_tree, xml_out_path, project_slug)
+    # Write files out using overwrite tracking
+    export_to_json(filtered_tree, json_out_path, current_timestamp)
+    export_to_xml(filtered_tree, xml_out_path, current_timestamp, project_slug)
 
-    print(f"\n[+] Processing finished. All structured targets written out.")
+    print(f"\n[+] Processing finished. Cache broken via active timestamping.")
 
 if __name__ == "__main__":
     main()
