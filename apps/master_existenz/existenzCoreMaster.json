@@ -1,17 +1,17 @@
 {
-  "project":				"Existenz",
-  "name":					"Existenz Core Specification",
-  "slug":					"existenzCore",
-  "version":				"0.72-PoC",
-  "subversion":				"detailed",
-  "author":					"Gunther Voet",
-  "url":					"https://github.com/gowildchild/Existenz/",
-  "license":				"AGPL-3.0-only",
+  "project":					"Existenz",
+  "name":						"Existenz Core Specification",
+  "slug":						"existenzCore",
+  "version":					"0.72-PoC",
+  "subversion":					"detailed",
+  "author":						"Gunther Voet",
+  "url":						"https://github.com/gowildchild/Existenz/",
+  "license":					"AGPL-3.0-only",
   "meta": {
-		"size":				128,
-		"slug":				"existenzCore",
-		"type":				"immutable",
-		"poweruse":			{"w": 1e-7, "s": "uW", "d": "< 1uW (Sub-Microwatt)"}
+		"size":					128,
+		"slug":					"existenzCore",
+		"type":					"immutable",
+		"poweruse":				{"w": 1e-7, "s": "uW", "d": "< 1uW (Sub-Microwatt)"}
   },
   "ExistenzCore": {
 	"ExistentialMirror": {
@@ -133,25 +133,25 @@
 			"TYPE":     { "0": "AUTO",	"1": "CORE",    "2": "PILLAR",		"4": "RIGHT",       "8": "SHIELD",		"16": "ADDON",      "32": "CORE.SPECIAL"	},
 			"PRIVACY":  { "0": "NONE",	"1": "ANON",    "2": "CORE",		"4": "CIRCLE",      "8": "PERSONAL",						"32": "CORE.SPECIAL"	},
 			"RANGE":    { "0": "NONE",	"1": "VALUE",   "2": "RANGED",		"4": "MIN",         "8": "MAX",								"32": "CORE.SPECIAL"	},
-			"BITCHECK":	{ "0": "NONE",	"1": "DEC",	    "2": "BIT",			"4": "MIN",			"8": "MAX",			"16": "IS_OK"		"32": "IS_SAFE"			}
+			"BITCHECK":	{ "0": "NONE",	"1": "DEC",	    "2": "BIT",			"4": "MIN",			"8": "MAX",			"16": "IS_OK",		"32": "IS_SAFE"			}
 		},
 		"Scope": {
-			"SCOPE":	{ 0: "CORE",	"1": "RIGHT",	"2": "THREAT",		"4": "SHIELD",		"8": "ADDON",		"16": "CANARY",		"32": "SPECIAL"		},
-			"DOMAIN":	{ 0: "CORE",	"1": "PERSON",	"2": "CIRCLE",		"4": "WORLD",		"8": "API",			"16": "CANARY",		"32": "SPECIAL"		},
-			"PROTECT":	{ 0: "NONE",	"1": "READ",	"2": "WRITE",		"4": "CHANGE",		"8": "PRIVACY",		"16": "CANARY",		"32": "SPECIAL"		},
-			"VALUE":	{ 0: "NONE",	"1": "START",	"2": "STOP",		"4": "RANGE",		"8": "PRIVACY",		"16": "CANARY",		"32": "SPECIAL"		}
+			"SCOPE":	{ "0": "CORE",	"1": "RIGHT",	"2": "THREAT",		"4": "SHIELD",		"8": "ADDON",		"16": "CANARY",		"32": "SPECIAL"		},
+			"DOMAIN":	{ "0": "CORE",	"1": "PERSON",	"2": "CIRCLE",		"4": "WORLD",		"8": "API",			"16": "CANARY",		"32": "SPECIAL"		},
+			"PROTECT":	{ "0": "NONE",	"1": "READ",	"2": "WRITE",		"4": "CHANGE",		"8": "PRIVACY",		"16": "CANARY",		"32": "SPECIAL"		},
+			"VALUE":	{ "0": "NONE",	"1": "START",	"2": "STOP",		"4": "RANGE",		"8": "PRIVACY",		"16": "CANARY",		"32": "SPECIAL"		}
 		},
 
 		"Dimension": {
-			"CORE_4D":   [ self.immutable.CORE.BOUNDARIES, self.immutable.CORE.PRIVACY, self.immutable.CORE.CANARY, self.immutable.CORE.SPECIAL ],
-			"CORE_3D":   [ self.immutable.CORE.PRIVACY,    self.immutable.CORE.CANARY,  self.immutable.CORE.SPECIAL ],
-			"CORE_2D":   [ self.immutable.CORE.CANARY,     self.immutable.CORE.SPECIAL ],
-			"CORE_1D":   [ self.immutable.CORE.SPECIAL ],
-			"SCOPE":     [ self.immutable.STRUCT.SCOPE,     self.immutable.DIMENSION.CORE_2D ],
-			"DOMAIN":    [ self.immutable.STRUCT.DOMAIN,    self.immutable.DIMENSION.CORE_2D ],
-			"PROTECT":   [ self.immutable.STRUCT.PROTECT,   self.immutable.DIMENSION.CORE_3D ],
-			"VALUE":     [ self.immutable.STRUCT.VALUE,     self.immutable.DIMENSION.CORE_4D ],
-			"DEFAULTS":  { 0: 11, "1": 31, "2": 63, 3: 0, "4": 2, 5: 9 }
+			"CORE_4D":   [ "self.immutable.CORE.BOUNDARIES", "self.immutable.CORE.PRIVACY", "self.immutable.CORE.CANARY", "self.immutable.CORE.SPECIAL" ],
+			"CORE_3D":   [ "self.immutable.CORE.PRIVACY",    "self.immutable.CORE.CANARY",  "self.immutable.CORE.SPECIAL" ],
+			"CORE_2D":   [ "self.immutable.CORE.CANARY",     "self.immutable.CORE.SPECIAL" ],
+			"CORE_1D":   [ "self.immutable.CORE.SPECIAL" ],
+			"SCOPE":     [ "self.immutable.STRUCT.SCOPE",     "self.immutable.DIMENSION.CORE_2D" ],
+			"DOMAIN":    [ "self.immutable.STRUCT.DOMAIN",    "self.immutable.DIMENSION.CORE_2D" ],
+			"PROTECT":   [ "self.immutable.STRUCT.PROTECT",   "self.immutable.DIMENSION.CORE_3D" ],
+			"VALUE":     [ "self.immutable.STRUCT.VALUE",     "self.immutable.DIMENSION.CORE_4D" ],
+			"DEFAULTS":  { "0": 11, "1": 31, "2": 63, "3": 0, "4": 2, "5": 9 }
 		},
     "ExistentialCoreBasic": {
 			"CORE":      "ExistentialCore",
