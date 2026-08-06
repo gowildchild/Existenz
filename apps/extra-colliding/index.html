@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Existenz Platform Matrix Simulator | Gunther | FWC v0.04</title>
+    <title>Existenz | The Quest for Finding Collissions | Gunther  v0.05</title>
     <style>
         :root {
             --cyan: #00f0ff;
@@ -70,17 +70,25 @@
 </head>
 
 <body>
-
-    <!-- Header Navigation Cloned Exactly -->
-    <div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0;">
-        <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;">Simulator</a> | 
-        <a href="/Existenz/apps/lifetime/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> [ 
-        <a href="/Existenz/apps/timelines/" style="color: #FD028E; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;">TimeLine</a> ] 
-        <a href="https://github.com" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">GitHub</a> | 
-        <a href="https://github.comtree" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
-        <a href="https://github.comtree" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
-    </div>
-
+<!-- Live Universe Loader Overlay Shield -->
+<div id="loading-universe">
+ <div class="loading-text">ExistenZ | Loading Universe | Please Hold</div>
+ <div class="loading-bar"></div>
+</div>
+<div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0>
+  <a href="https://github.com/gowildchild/Existenz/" style="color: #0ff0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.6px; border-bottom: 1px solid #000000; padding-bottom: 2px;">GitHub</a> | 
+  <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;" title="See now how humanity could thrive, or fall, backed by the old Gods of science!">TimeLines 3D</a> | 
+  <a href="/Existenz/apps/human-rights/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="Human Rights for all the ages, including the dark ages!">Human Rights</a> | 
+  <a hfef="/Existenz/apps/plato-fields/"  style="color: #FD028E; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="The quest for collissions on the canvas of Deogenes">Plato Fields</a>
+  <a href="/Existenz/apps/lifetime/" style="color: #B4005E; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="This started like a good idea and was finished to one of the better 3D ones!">LifeTime</a> | 
+=[ <a href="/Existenz/apps/extra-colliding/" style="color: #FD028E; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="This is a human quest to find the collissions that matter!">Extra-Colliding</a> ]= 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/examples" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/struct" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
+</div> 
+<header>
+<div><h1>Existenz | The Quest for Extra Collissions | GV v0.81a</h1></div>
+<div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[<a href="/">CORE</a>: V0.81 THREAT-MATRIX]</div>
+</header>
     <div class="grid">
         <!-- Left Panel Workspace -->
         <div class="column">
@@ -451,6 +459,15 @@
         }
 
         initAppWorkspace();
+        window.addEventListener('load', () => {
+        setTimeout(() => {
+         try {   
+           const loader = document.getElementById('loading-universe');
+           if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
+         } catch(e) { setTimelineMode('spiral'); }
+        }, 800);
+        });
+        
     </script>
 </body>
 </html>
