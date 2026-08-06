@@ -3,37 +3,51 @@ import json
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
 import html
+import re
 
 def dict_to_xml_element(tag_name, d):
     """
-    Converts filtered dictionaries into valid nested XML elements,
-    safely escaping text characters to prevent syntax crashes.
+    Converts filtered dictionaries into valid nested XML elements.
+    Ensures tag names and attributes strictly follow XML syntax rules.
     """
-    # Clean the tag name to ensure characters like '0x' are allowed as XML tags
-    safe_tag = str(tag_name).replace("0x", "hex_")
+    # 1. Clean the XML Tag Name (Must not start with numbers or contain spaces/dots)
+    safe_tag = str(tag_name).strip()
+    
+    # Replace illegal characters like dots or spaces with underscores
+    safe_tag = re.sub(r'[^a-zA-Z0-9_-]', '_', safe_tag)
+    
+    # If the tag starts with a number or an underscore-number, add a 'key_' prefix
+    if safe_tag[0].isdigit() or (safe_tag.startswith('_') and len(safe_tag) > 1 and safe_tag[1].isdigit()):
+        safe_tag = f"key_{safe_tag}"
+        
     element = ET.Element(safe_tag)
     
+    # 2. Process Attributes and Children
     if isinstance(d, dict):
         for k, v in d.items():
-            # XML attributes must be valid strings and cannot contain raw illegal symbols
             if not isinstance(v, (dict, list)):
-                # Escape standard symbols (& becomes &amp;, < becomes &lt;, etc.)
-                safe_val = html.escape(str(v))
-                safe_key = str(k).replace(".", "_") # XML keys cannot have dots
-                element.set(safe_key, safe_val)
+                # XML attribute keys also cannot contain dots or start with numbers safely
+                safe_attr_key = re.sub(r'[^a-zA-Z0-9_-]', '_', str(k))
+                if safe_attr_key[0].isdigit():
+                    safe_attr_key = f"attr_{safe_attr_key}"
+                
+                # Safely escape character symbols in the values
+                element.set(safe_attr_key, html.escape(str(v)))
             elif isinstance(v, dict):
                 element.append(dict_to_xml_element(str(k), v))
             elif isinstance(v, list):
-                # Handle array tracking nodes (like CORE_4D) cleanly inside XML loops
+                # Handle tracking arrays (like CORE_4D) cleanly
+                list_wrapper = ET.Element(re.sub(r'[^a-zA-Z0-9_-]', '_', f"array_{k}"))
                 for idx, item in enumerate(v):
                     child = ET.Element(f"item_{idx}")
                     child.text = html.escape(str(item))
-                    element.append(child)
+                    list_wrapper.append(child)
+                element.append(list_wrapper)
     else:
         element.text = html.escape(str(d))
         
     return element
-# Dunno if this one works 
+
 
 def walk_tree(source_node, segments, target_tree):
     """Recursively pulls targeted paths out of source node layout maps."""
