@@ -50,7 +50,7 @@ def main():
     # 1. Dynamically merge any file ending in .json (except profiles and manifest data)
     master_spec = {}
     for f_name in os.listdir("."):
-        if f_name.endswith(".json") and f_name not in ["export_profiles.json", "package.json"]:
+        if f_name.endswith(".json") and f_name not in ["existanzeProfiles.json", "package.json"]:
             try:
                 with open(f_name, "r", encoding="utf-8") as f:
                     master_spec.update(json.load(f))
