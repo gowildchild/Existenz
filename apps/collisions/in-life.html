@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Existenz | Collisions in Life | Simulator Bitshifting 1 | Gunther FWC v0.04</title>
+    <style>
+        :root {
+            --cyan: #00f0ff;
+            --green: #00ffaa;
+            --pink: #ff00aa;
+            --bg: #030305;
+            --panel: #09090f;
+            --border: #141424;
+        }
+        body {
+            background-color: var(--bg); color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+            margin: 0; padding: 10px; box-sizing: border-box;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+            border: 2px solid var(--green); transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        body.alarm-active { 
+            border-color: var(--pink) !important;
+            animation: redAlertFlash 1.5s infinite alternate; 
+        }
+        @keyframes redAlertFlash {
+            0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); }
+            100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); }
+        }
+        .grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 10px; flex-grow: 1; min-height: 0; margin-top: 5px;}
+        .column { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+        .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; min-height: 0; }
+        .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; text-transform: uppercase; }
+        .scrollable-content { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
+        
+        .bit-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px; border-bottom: 1px solid #0f0f1c; font-size: 0.72rem; }
+        .bit-tag { font-family: monospace; color: var(--cyan); width: 35px; flex-shrink: 0; }
+        .bit-name { flex-grow: 1; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; padding-right: 5px;}
+        .bit-metric-box { font-family: monospace; color: var(--green); margin-right: 15px; font-weight: bold; width: 85px; text-align: right; }
+        
+        .switch { position: relative; display: inline-block; width: 34px; height: 16px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #202030; transition: .2s; border-radius: 16px; }
+        .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--cyan); }
+        input:checked + .slider:before { transform: translateX(18px); }
+        
+        .raw-string { background: #020204; border-left: 3px solid var(--pink); padding: 6px; font-size: 0.65rem; color: #8e8eaf; font-family: monospace; word-break: break-all; margin-top: 5px; }
+        .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.72rem; color: var(--cyan); line-height: 1.2;}
+        .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
+        
+        #spectrum-container { width: 100%; height: 100%; min-height: 180px; background: #010103; border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
+        canvas { display: block; width: 100%; height: 100%; }
+        .intro-box { background: rgba(0, 255, 170, 0.02); border: 1px solid #102a20; padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.7rem; line-height: 1.3; color: #b5c5b5; }
+        
+        .controls-row { display: flex; gap: 5px; margin-bottom: 5px; flex-shrink: 0; }
+        select, button { background: #121220; border: 1px solid var(--border); color: #fff; font-family: monospace; font-size: 0.75rem; padding: 5px; cursor: pointer; border-radius: 4px; }
+        button:hover { border-color: var(--cyan); color: var(--cyan); }
+        
+        .ocean-flow-list { display: grid; grid-template-columns: 1fr; gap: 3px; font-size: 0.7rem; max-height: 140px; overflow-y: auto; border: 1px solid #111; padding: 4px; background: #020205; }
+        .flow-item { padding: 3px; border-bottom: 1px solid #0f0f15; display: flex; justify-content: space-between; }
+        .flow-btn { background: #151525; border: 1px solid #223; color: #8e8eaf; font-size: 0.65rem; padding: 1px 4px; cursor: pointer; }
+        .flow-btn:hover { color: var(--cyan); border-color: var(--cyan); }
+    </style>
+</head>
+<body>
+<!-- Live Universe Loader Overlay Shield -->
+<div id="loading-universe">
+ <div class="loading-text">ExistenZ | Loading Universe | Please Hold</div>
+ <div class="loading-bar"></div>
+</div>
+<div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0>
+  <a href="https://github.com/gowildchild/Existenz/" style="color: #0ff0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.6px; border-bottom: 1px solid #000000; padding-bottom: 2px;">GitHub</a> | 
+  <a href="/Existenz/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;" title="See now how humanity could thrive, or fail, backed by the old Gods of science!">TimeLines 3D</a> | 
+[ <a href="/Existenz/apps/human-rights/"  style="color: #ffffff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="Human Rights for all the ages, including the dark ages!">Human Rights</a> ]
+  <a hfef="/Existenz/apps/plato-fields/"  style="color: #FD028E; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="The quest for collissions on the canvas of Deogenes">Plato Fields</a>
+  <a href="/Existenz/apps/lifetime/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">simple-worldpop</a> | 
+  <a href="/Existenz/apps/extra-colliding/" style="color: #FD028E; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="This is a human quest to find the collissions that matter!">Extra-Colliding</a> | 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/examples" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/struct" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
+</div> 
+<header>
+<div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);">[<a href="/">CORE</a>: V0.04 RIPPLE-TESTS]</div>
+</header>
+    <div class="grid">
+        <!-- Left Column: Input Vectors and Live Control Engine -->
+        <div class="column">
+            <div class="panel" style="flex-shrink: 0;">
+                <h2>Canary Controller & Demographic Modifiers</h2>
+                <div class="controls-row" style="flex-wrap: wrap; gap: 8px;">
+                    <div class="control-group">
+                        <label>Scale Iterations</label>
+                        <select id="scale-select">
+                            <option value="10000">Micro Sample (10,000)</option>
+                            <option value="1000000" selected>Urban Stress (1,000,000)</option>
+                            <option value="11500000">Small Nation (11,500,000)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Disability Pop %</label>
+                        <input type="number" id="disability-pct" min="0" max="100" value="15">
+                    </div>
+                    <div class="control-group">
+                        <label>Broken Shield %</label>
+                        <input type="number" id="brokenshield-pct" min="0" max="100" value="30">
+                    </div>
+                    <div style="display: flex; gap: 4px; align-items: flex-end; margin-top: auto;">
+                        <button onclick="executeMatrixStressLoad()">⚡ Run Test</button>
+                        <button onclick="clearTelemetryArrays()" style="color: var(--pink);">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The 50 Real-Life Environmental Flow Tides Trigger Deck -->
+            <div class="panel" style="flex-shrink: 0; min-height: 160px;">
+                <h2>Natural Ocean Flows (50 Human Life Events)</h2>
+                <div class="ocean-flow-list" id="ocean-flow-target"></div>
+            </div>
+
+            <!-- Intercept Matrix Log -->
+            <div class="panel" style="flex-shrink: 0;">
+                <h2>Simultaneous Register Collision Points Detected</h2>
+                <div class="collision-log" id="collision-log-target">No active collisions tracked. System clear.</div>
+            </div>
+
+            <div class="panel" style="flex-grow: 1;">
+                <h2>1. Immutable Core Registries & Active Load Metrics</h2>
+                <div class="scrollable-content" id="switchboard-target"></div>
+            </div>
+        </div>
+        <!-- Right Column: Graphical Spectrum Grid and Bandwidth Meters -->
+        <div class="column">
+            <div class="panel" style="flex-grow: 1.2;">
+                <h2>2. Spatiotemporal Spectrum Heatmap Monitor</h2>
+                <div id="spectrum-container">
+                    <canvas id="scopeCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="panel" style="flex-shrink: 0;">
+                <h2>3. Computational Footprint & Bandwidth Meters</h2>
+                <div class="formula-box">
+                    𝚩𝖂limit = ℛlattice × 𝖡𝖂base 𝚫 𝚩𝖂overrun ⟹ 𝖲ystemic_𝖢ollapse<br>
+                    Red-out lines appear on spectrum monitor when register band density overruns allocated processing tunnels.
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 5px;">
+                    <div>
+                        <span style="font-size:0.68rem; color:#8e8eaf;">Computational Processing Power:</span><br>
+                        <span class="metric-val" id="cpu-power-metric" style="color: var(--green);">0.00 MFLOPs</span>
+                    </div>
+                    <div>
+                        <span style="font-size:0.68rem; color:#8e8eaf;">Active Telemetry Bandwidth:</span><br>
+                        <span class="metric-val" id="bandwidth-metric" style="color: var(--cyan);">0.00 MB/s</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #070204; padding: 4px; border: 1px solid #1f050d; border-radius: 4px;">
+                    <span style="font-size:0.7rem; color: #ffb3df; font-weight: bold;">BANDWIDTH OVERRUN VOLUME:</span>
+                    <span class="metric-val" id="overrun-metric" style="color: var(--pink);">0.00 MB</span>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 6px;">
+                    <span style="font-size:0.68rem; color:#8e8eaf;">Total Transactions Logged:</span>
+                    <span class="metric-val" id="total-processed-counter" style="font-size: 0.9rem;">0</span>
+                </div>
+                <div class="raw-string" id="binary-stream-box">00000000...</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // RECENTLY VERIFIED REPOSITORY ENTRIES FOR IMMUTABLE BLUEPRINT SPECIFICATIONS
+        const IMMUTABLE_ARCHITECTURE = [
+            // The 7 Natural Human Pillars (The Foundational Coordinates)
+            { bit: 0, name: "EXISTENCE", cat: "pillar", active: true },
+            { bit: 1, name: "AUTONOMY", cat: "pillar", active: true },
+            { bit: 2, name: "INTEGRITY", cat: "pillar", active: true },
+            { bit: 3, name: "PSYCHOLOGY", cat: "pillar", active: false },
+            { bit: 4, name: "PHYSICAL", cat: "pillar", active: false },
+            { bit: 5, name: "DISABILITY", cat: "pillar", active: true },
+            { bit: 6, name: "DEVELOPMENT", cat: "pillar", active: false },
+            { bit: 7, name: "PROPERTY", cat: "pillar", active: false },
+            { bit: 8, name: "PRESENCE", cat: "pillar", active: false },
+
+            // The external defense factors, protected SHIELD structures
+            { bit: 20, name: "SHIELD_HUMAN_RIGHTS", cat: "shield", active: false },
+            { bit: 22, name: "SHIELD_DISCRIMINATION_RIGHTS", cat: "shield", active: false },
+            { bit: 24, name: "SHIELD_BASIC_RIGHTS", cat: "shield", active: true },
+            
+            // The acquired micro-structural SHIELDS
+            { bit: 26, name: "SHIELD_AQUIRED_RIGHTS", cat: "shield", active: true },
+            { bit: 30, name: "SHIELD_AQUIRED_TRUST", cat: "shield", active: false }
+        ];
+
+        // Advanced Composite Threat Triggers from ExistentialThreat Spec
+        const THREAT_MATRIX = {
+            THREAT_EXISTENCE: 0, THREAT_AUTONOMY: 1, THREAT_INTEGRITY: 2,
+            THREAT_PSYCHOLOGY: 3, THREAT_PHYSICAL: 4, THREAT_ABLEISM: 5,
+            THREAT_DEVELOPMENT: 6, THREAT_PROPERTY: 7
+        };
+
+        // 50 Natural Ocean Flow Scenarios mapping environmental occurrences to bit clusters
+        const LIFE_OCEAN_FLOWS = [
+            { title: "1. Born into the world", bits: [0, 1, 2, 8, 24], threat: [0], desc: "Initial biological registry point" },
+            { title: "2. Neurodivergence diagnosis (AuDHD)", bits: [0, 3, 5, 6, 22], threat: [3, 5, 6], desc: "Atypical structural verification space" },
+            { title: "3. Learning to read and write", bits: [1, 6], threat: [127], desc: "Development layer initialization" },
+            { title: "4. Opening your first bank account", bits: [1, 7, 26], threat: [7], desc: "Property vector activation" },
+            { title: "5. Chronic illness onset", bits: [0, 4, 5, 22], threat: [4, 5], desc: "Physical constraint tracking" },
+            { title: "6. Getting target-harrased online", bits: [2, 3, 24], threat: [2, 3], desc: "Online proxy mob action" },
+            { title: "7. Moving to a new rented apartment", bits: [1, 7, 8], threat: [7], desc: "Spatiotemporal coordinate shift" },
+            { title: "8. Getting married", bits: [1, 2, 30], threat: [127], desc: "Voluntary core alliance binding" },
+            { title: "9. Unfairly fired from job via HR", bits: [1, 5, 7, 22], threat: [1, 5, 7], desc: "Corporate ableism resource locks" },
+            { title: "10. Suffering server hard drive theft", bits: [2, 6, 7, 26], threat: [2, 6, 7], desc: "Direct lifework plundering event" },
+            { title: "11. Walking alone through public square", bits: [0, 8], threat: [127], desc: "Real-time presence tracking" },
+            { title: "12. Speaking up against corruption", bits: [1, 2, 7, 26], threat: [1, 2, 7], desc: "Moral integrity assertion under load" },
+            { title: "13. Sudden internet infrastructure outage", bits: [1, 6, 24], threat: [1, 6], desc: "Digital safety communication cutoff" },
+            { title: "14. Suffering proxy bullying via bad actors", bits: [2, 3, 5, 22], threat: [2, 3, 5], desc: "Neurotypical group harassment dynamics" },
+            { title: "15. Graduating university", bits: [1, 6], threat: [127], desc: "Intellectual optimization expansion" },
+            { title: "16. Filing taxes to government bureau", bits: [1, 8], threat: [127], desc: "Administrative tracking parameters" },
+            { title: "17. Breaking an arm or physical limb", bits: [0, 4], threat: [4], desc: "Temporary biological configuration drop" },
+            { title: "18. Experiencing sensory overload", bits: [3, 5, 22], threat: [3, 5], desc: "Atypical processing register spikes" },
+            { title: "19. Getting a personal creative burnout", bits: [3, 4], threat: [127], desc: "Psychological resilience exhaustion" },
+            { title: "20. Signing an NDA contract", bits: [1, 2], threat: [1], desc: "Sovereign autonomy containment" },
+            { title: "21. Buying your own server hardware", bits: [1, 7, 24, 26], threat: [127], desc: "Physical infrastructure asset lock" },
+            { title: "22. Being shadowed by hired agents", bits: [0, 2, 4, 8, 20], threat: [0, 2, 4], desc: "Direct physical threat tracking" },
+            { title: "23. Sleep deprivation cycles", bits: [3, 4], threat: [3, 4], desc: "Systemic recovery rate decay" },
+            { title: "24. Receiving an inheritance from ancestors", bits: [1, 7, 26], threat: [127], desc: "Property baseline accumulation" },
+            { title: "25. Experiencing hyper-focus development", bits: [1, 6], threat: [127], desc: "Advanced pattern-recognition loading" },
+            { title: "26. Getting target audited by banks", bits: [1, 7, 26], threat: [1, 7], desc: "Capitalistic resource grid locks" },
+            { title: "27. Creating an open-source library", bits: [1, 6, 26], threat: [127], desc: "Distributing logical assets outward" },
+            { title: "28. Losing a close childhood friend", bits: [3, 30], threat: [3], desc: "Voluntary relationship layer drop" },
+            { title: "29. Applying for asylum safety layers", bits: [1, 2, 20], threat: [127], desc: "Sovereign backup breaker trigger" },
+            { title: "30. Enduring systematic legal gaslighting", bits: [1, 2, 3, 20], threat: [1, 2, 3], desc: "Institutional distortion metrics" },
+            { title: "31. Becoming a parent", bits: [0, 1, 2], threat: [127], desc: "Biological generation tracking expansion" },
+            { title: "32. Buying grocery food essentials", bits: [0, 4], threat: [127], desc: "Basic maintenance resource flow" },
+            { title: "33. Experiencing aging changes", bits: [0, 4], threat: [127], desc: "Linear spatiotemporal decay functions" },
+            { title: "34. Facing character defamation lines", bits: [2, 3, 30], threat: [2, 3], desc: "Intentional character assassination vector" },
+            { title: "35. Getting an advanced medical scan", bits: [0, 4], threat: [127], desc: "Biometric health status auditing" },
+            { title: "36. Publishing security research paper", bits: [1, 2, 6, 26], threat: [127], desc: "Exposing algorithmic noise models" },
+            { title: "37. Moving to another state/country", bits: [0, 1, 8, 20], threat: [127], desc: "Global sovereign boundary update" },
+            { title: "38. Suffering an active panic attack", bits: [3], threat: [3], desc: "Immediate internal load safety limits" },
+            { title: "39. Receiving anonymous email threats", bits: [1, 2, 7, 24], threat: [1, 2, 7], desc: "Online threat parameter intrusion" },
+            { title: "40. Winning a prolonged lawsuit", bits: [1, 2, 20], threat: [127], desc: "Forced legal boundary restoration" },
+            { title: "41. Finding a high-alignment alliance partner", bits: [1, 2, 30], threat: [127], desc: "Core trust validation binding" },
+            { title: "42. Being micro-managed by superiors", bits: [1, 3], threat: [1, 3], desc: "Direct constraint tracking on choices" },
+            { title: "43. Learning a new computer language", bits: [1, 6], threat: [127], desc: "Systemizer logic layout optimization" },
+            { title: "44. Getting caught in physical natural storm", bits: [0, 4], threat: [4], desc: "Environmental hardware stress tracking" },
+            { title: "45. Having credit card details leaked", bits: [7, 24], threat: [7], desc: "Digital property vector leak" },
+            { title: "46. Finding peace in silent nature settings", bits: [0, 3, 8], threat: [127], desc: "Global acoustic noise reduction" },
+            { title: "47. Being blacklisted by corporate networks", bits: [1, 6, 7, 26], threat: [1, 6, 7], desc: "Sovereign containment strategies" },
+            { title: "48. Designing an immutable tool structure", bits: [1, 6], threat: [127], desc: "Deploying permanent logical fields" },
+            { title: "49. Attending local civic town hall meeting", bits: [1, 8], threat: [127], desc: "Macro pop community registration" },
+            { title: "50. Facing old age with broken health", bits: [0, 4], threat: [0, 4], desc: "Final spatiotemporal execution drop" }
+        ];
+
+        let liveState = {};
+        let registerDensityArray = new Array(128).fill(0);
+        let explicitCollisionPoints = {}; 
+        let totalSimulatedRuns = 0;
+
+        const canvas = document.getElementById("scopeCanvas");
+        const ctx = canvas.getContext("2d");
+        function buildWorkspace() {
+            const container = document.getElementById("switchboard-target");
+            container.innerHTML = "";
+            IMMUTABLE_ARCHITECTURE.forEach(item => {
+                liveState[item.bit] = item.active;
+                const row = document.createElement("div");
+                row.className = "bit-row";
+                row.innerHTML = `
+                    <span class="bit-tag">b${item.bit.toString().padStart(3, '0')}</span>
+                    <span class="bit-name" style="color: ${item.cat==='shield'?'var(--green)':'#fff'}">${item.name}</span>
+                    <span class="bit-metric-box" id="metric-readout-${item.bit}">0 hits</span>
+                    <label class="switch">
+                        <input type="checkbox" ${item.active ? 'checked' : ''} id="switch-${item.bit}" onchange="toggleBitField(${item.bit})">
+                        <span class="slider"></span>
+                    </label>
+                `;
+                container.appendChild(row);
+            });
+
+            const flowContainer = document.getElementById("ocean-flow-target");
+            flowContainer.innerHTML = "";
+            LIFE_OCEAN_FLOWS.forEach((flow, idx) => {
+                const el = document.createElement("div");
+                el.className = "flow-item";
+                el.innerHTML = `
+                    <span style="color:#fff; font-size:0.7rem; font-weight:bold;">${flow.title}</span>
+                    <button class="flow-btn" onclick="injectOceanWave(${idx})">Fire Flow</button>
+                `;
+                flowContainer.appendChild(el);
+            });
+
+            window.addEventListener('resize', fitCanvasToPanel);
+            fitCanvasToPanel();
+            requestAnimationFrame(renderSpectrumHeatmap);
+        }
+
+        function toggleBitField(bit) {
+            liveState[bit] = document.getElementById(`switch-${bit}`).checked;
+            evaluateSystemMetrics();
+        }
+
+        function fitCanvasToPanel() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+
+        function clearTelemetryArrays() {
+            registerDensityArray.fill(0);
+            explicitCollisionPoints = {};
+            totalSimulatedRuns = 0;
+            document.body.classList.remove("alarm-active");
+            evaluateSystemMetrics();
+        }
+
+        function injectOceanWave(idx) {
+            const scale = parseInt(document.getElementById("scale-select").value);
+            const flow = LIFE_OCEAN_FLOWS[idx];
+            processTelemetryLoad(scale / 2, flow.bits, flow.threat);
+        }
+
+        function executeMatrixStressLoad() {
+            const scale = parseInt(document.getElementById("scale-select").value);
+            processTelemetryLoad(scale, [0,1,2,5], [3,5,7]); 
+        }
+
+        // TELEMETRY LOAD PROCESSOR & COLLISION INTERCEPT SEARCH MATH
+        function processTelemetryLoad(runs, targetBits, threatBits) {
+            totalSimulatedRuns += runs;
+            
+            const disabilityModifier = parseFloat(document.getElementById("disability-pct").value) / 100;
+            const brokenShieldModifier = parseFloat(document.getElementById("brokenshield-pct").value) / 100;
+
+            for (let i = 0; i < runs; i++) {
+                let nodeHasDisability = Math.random() < disabilityModifier;
+                let externalShieldsFailing = Math.random() < brokenShieldModifier;
+
+                // Process foundational active switch registrations
+                targetBits.forEach(b => { if (liveState[b]) registerDensityArray[b]++; });
+
+                if (nodeHasDisability && liveState[5]) {
+                    registerDensityArray[5]++; // DISABILITY track active
+                }
+
+                // Evaluate intersecting multi-bit active threat matrices
+                threatBits.forEach(t => {
+                    let shieldProtected = false;
+                    
+                    if (t === 5 && liveState[22] && !externalShieldsFailing) shieldProtected = true; // Discrimination protections
+                    if (t === 7 && liveState[26] && !externalShieldsFailing) shieldProtected = true; // Acquired property locks
+                    if (t === 3 && liveState[24] && !externalShieldsFailing) shieldProtected = true; // Cyber network shielding
+
+                    if (!shieldProtected) {
+                        registerDensityArray[t] += 4; // High impact collision energy spike
+                        
+                        // MULTI-BIT INTERCEPT CAPTURE: Test if multiple threat flags intersect concurrently
+                        threatBits.forEach(innerT => {
+                            if (t !== innerT) {
+                                let collisionKey = `b${Math.min(t, innerT)} ↔ b${Math.max(t, innerT)}`;
+                                explicitCollisionPoints[collisionKey] = (explicitCollisionPoints[collisionKey] || 0) + 1;
+                            }
+                        });
+                    } else {
+                        registerDensityArray[20]++; // Divert to generic safety tracking register
+                    }
+                });
+            }
+            evaluateSystemMetrics();
+        }
+
+        function evaluateSystemMetrics() {
+            document.getElementById("total-processed-counter").innerText = totalSimulatedRuns.toLocaleString();
+            
+            // Compute real-time hardware, bandwidth, and overrun overheads
+            let activeChannels = registerDensityArray.filter(h => h > 0).length;
+            let totalHitsSum = registerDensityArray.reduce((a, b) => a + b, 0);
+            
+            let cpuMflops = (totalHitsSum * 0.00002).toFixed(2);
+            let bandwidthMbs = (totalHitsSum * 0.00004).toFixed(2);
+            
+            // Bandwidth Overrun Metric: Triggers above a baseline channel saturation profile
+            let rawOverrunBytes = Math.max(0, (totalHitsSum * 0.00003) - 250);
+            let overrunMbs = totalSimulatedRuns > 0 ? rawOverrunBytes.toFixed(2) : "0.00";
+
+            document.getElementById("cpu-power-metric").innerText = `${cpuMflops} MFLOPs`;
+            document.getElementById("bandwidth-metric").innerText = `${bandwidthMbs} MB/s`;
+            document.getElementById("overrun-metric").innerText = `${overrunMbs} MB`;
+
+            // Display intercepted simultaneous collision points
+            const logBox = document.getElementById("collision-log-target");
+            let sortedCollisions = Object.entries(explicitCollisionPoints).sort((a,b) => b[1] - a[1]);
+            if (sortedCollisions.length > 0) {
+                logBox.innerHTML = sortedCollisions.map(c => `<div>⚠️ Overlap [${c[0]}]: ${c[1].toLocaleString()} occurrences</div>`).join("");
+            } else {
+                logBox.innerHTML = "No active collisions tracked. System clear.";
+            }
+
+            let peakValue = Math.max(...registerDensityArray, 1);
+            let extremePeakPct = totalSimulatedRuns > 0 ? ((peakValue / totalSimulatedRuns) * 100).toFixed(1) : "0.0";
+            document.getElementById("highest-spike-label").innerText = `${extremePeakPct}%`;
+
+            IMMUTABLE_ARCHITECTURE.forEach(item => {
+                const el = document.getElementById(`metric-readout-${item.bit}`);
+                if (el) el.innerText = `${registerDensityArray[item.bit].toLocaleString()} hits`;
+            });
+
+            // Set system boundaries status review preview
+            let preview = [];
+            for (let b = 127; b >= 0; b--) preview.push(registerDensityArray[b] > 0 ? "1" : "0");
+            document.getElementById("binary-stream-box").innerText = preview.slice(-64).join("").match(/.{1,8}/g).join(" ");
+
+            if (parseFloat(overrunMbs) > 100.0 || parseFloat(extremePeakPct) > 12.0) {
+                document.body.classList.add("alarm-active");
+            } else {
+                document.body.classList.remove("alarm-active");
+            }
+        }
+
+        function renderSpectrumHeatmap(timestamp) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const totalLanes = 128;
+            const spacer = 2;
+            const barW = (canvas.width - (totalLanes * spacer)) / totalLanes;
+            const absoluteMax = Math.max(...registerDensityArray, 1);
+
+            for (let i = 0; i < totalLanes; i++) {
+                let currentHits = registerDensityArray[i];
+                let ratio = currentHits / absoluteMax;
+                let x = i * (barW + spacer);
+
+                let fillStyle = "rgba(10, 10, 34, 0.2)"; // Deep blue calm baseline
+                if (currentHits > 0) {
+                    let heat = Math.min(1, currentHits / (totalSimulatedRuns * 0.08 || 1));
+                    let r = Math.floor(heat * 255);
+                    let g = Math.floor((1 - heat) * 230);
+                    let b = 255;
+                    fillStyle = `rgb(${r}, ${g}, ${b})`; // Dynamic transition to hot pink
+                }
+
+                let finalH = 4 + (ratio * (canvas.height - 35));
+                ctx.fillStyle = fillStyle;
+                ctx.fillRect(x, canvas.height - finalH, barW, finalH);
+
+                if (i % 32 === 0) {
+                    ctx.fillStyle = "#4e4e6e";
+                    ctx.font = "9px monospace";
+                    ctx.fillText(`b${i}`, x, canvas.height - 4);
+                }
+            }
+            requestAnimationFrame(renderSpectrumHeatmap);
+        }
+
+        buildWorkspace();
+    </script>
+</body>
+</html>
