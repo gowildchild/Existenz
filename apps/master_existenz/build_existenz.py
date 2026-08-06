@@ -40,6 +40,7 @@ def walk_tree(source_node, segments, target_tree):
                 target_tree[current_key] = {}
             walk_tree(val, next_segments, target_tree[current_key])
 
+
 # =====================================================================
 # 2. MODULAR EXPORT PIPELINES (With Active Timestamp Injections)
 # =====================================================================
@@ -68,6 +69,30 @@ def dict_to_xml_element(tag_name, d):
     else:
         element.text = str(d)
     return element
+
+def generate_beautified_reference():
+    """
+    Ingests the master specification data, recursively alphabetises every object 
+    branch, and dumps a perfectly spaced layout to 'existenzCoreDone.json'.
+    The original file remains completely unaltered.
+    """
+    master_file = "existenzCoreMaster.json"
+    output_file = "existenzCoreDone.json"
+    
+    if not os.path.exists(master_file):
+        print(f"[-] Cannot locate configuration source: {master_file}")
+        return
+
+    with open(master_file, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # Write the sorted and beautifully indented tree to the new filename
+    with open(output_file, "w", encoding="utf-8") as f:
+        # sort_keys=True alphabetises everything; indent=4 formats spacing perfectly
+        json.dump(data, f, indent=4, sort_keys=True)
+        
+    print(f"[+] Isolated layout sorting complete. reference file generated at: {output_file}")
+
 
 def export_to_xml(filtered_tree, output_path, timestamp, project_name="Existenz"):
     """Converts the filtered configuration tree into formatted XML layout strings with a timestamp."""
@@ -106,6 +131,12 @@ def main():
     with open(master_file, "r", encoding="utf-8") as f:
         master_data = json.load(f)
 
+    # 🚀 DROP THE BEAUTIFICATION TRIGGER RIGHT HERE
+    print("[*] Generating formatted specification copy...")
+    with open("existenzCoreDone.json", "w", encoding="utf-8") as f_done:
+        json.dump(master_data, f_done, indent=4, sort_keys=True)
+    print("[+] Perfect format duplicate exported to: existenzCoreDone.json")    
+    
     # 2. Ingest Profile Configuration Paths 
     if not os.path.exists(profiles_file):
         print(f"[-] Critical Error: Missing profiles file '{profiles_file}'")
