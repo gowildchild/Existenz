@@ -21,7 +21,7 @@
     "project", "name", "slug", "version", "subversion", "author", "license",
     "meta.*", 
     "ExistenzCore.ExistentialCore.*.B",  "ExistenzCore.ExistentialTier.*.B", 
-    "ExistenzCore.ExistentialCore.*.Q",  "ExistenzCore.ExistentialTier.*.token"
+    "ExistenzCore.ExistentialCore.*.Q",  "ExistenzCore.ExistentialTier.*.token",
     "ExistenzCore.ExistentialCore.*.type", 
     "ExistenzCore.ExistentialCore.*.mir",
     "ExistenzCore.ExistentialThreat.*.B",
