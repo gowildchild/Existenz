@@ -122,9 +122,8 @@
 		"HUMAN_TRUST":					{"B": 30, "D": "Shield HP (Acquired) Personal Human Trust"							},
 		"HUMAN_ABSOLUTE":				{"B": 32, "D": "Shield AB (Maximum) Personal Trust Possible"						},
 		"HUMAN_EQ":						{"B": 127,"D": "Shield AQ (Maximum) Personal Equilibrium"							}
-    },
+    }
   },
-
   "ExistenzFramework":	{
 		"Action": {
 			"SPECIAL":  { "0": "NONE",	"1": "BOUND",   "2": "IMMUTABLE",	"4": "CLAIMABLE",   "8": "INHERET",		"16": "VERIFY",		"32": "SIGNED"			},
