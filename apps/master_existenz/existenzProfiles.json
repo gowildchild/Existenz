@@ -1,0 +1,55 @@
+{
+  "compact": [
+    "project", "name", "slug", "version", "subversion", "author", "license",
+    "meta.size", "meta.slug", "url", "meta.size", "meta.slug", "meta.type", "meta.poweruse.*.W",
+    "meta.poweruse.*.S", "meta.poweruse.*.D", "ExistenzCore.ExistentialCore.*.B",
+    "ExistenzCore.ExistentialCore.*.Q", "ExistenzCore.ExistentialCore.*.type",
+    "ExistenzCore.ExistentialThreat.*.B", "ExistenzCore.ExistentialThreat.*.type",
+    "ExistenzCore.ExistentialCore.*.law",
+  ],
+  "light": [
+    "project", "name", "slug", "version", "subversion", "author", "license",
+    "meta.size", "meta.slug", "url","meta.size", "meta.slug", "meta.type", "meta.poweruse.*.W",
+    "meta.poweruse.*.S", "meta.poweruse.*.D", "ExistenzCore.ExistentialCore.*.B",
+    "ExistenzCore.ExistentialCore.*.Q", "ExistenzCore.ExistentialCore.*.type",
+    "ExistenzCore.ExistentialThreat.*.B", "ExistenzCore.ExistentialThreat.*.type",
+    "ExistenzCore.ExistentialCore.*.law","ExistenzCore.ExistentialCore.*.B",
+    "ExistenzCore.ExistentialCore.*.type", "ExistenzCore.ExistentialTier.*.B",
+    "ExistenzCore.ExistentialTier.*.token"
+  ],
+  "basic": [
+    "project", "name", "slug", "version", "subversion", "author", "license",
+    "meta.*", 
+    "ExistenzCore.ExistentialCore.*.B",  "ExistenzCore.ExistentialTier.*.B", 
+    "ExistenzCore.ExistentialCore.*.Q",  "ExistenzCore.ExistentialTier.*.token"
+    "ExistenzCore.ExistentialCore.*.type", 
+    "ExistenzCore.ExistentialCore.*.mir",
+    "ExistenzCore.ExistentialThreat.*.B",
+    "ExistenzCore.ExistentialThreat.*.D"
+  ],
+  "detailed": [
+    "project", "name", "slug", "version", "subversion", "author", "license",
+    "meta.*",
+    "ExistenzCore.ExistentialCore.*.B",
+    "ExistenzCore.ExistentialCore.*.Q",
+    "ExistenzCore.ExistentialCore.*.type",
+    "ExistenzCore.ExistentialCore.*.mir",
+    "ExistenzCore.ExistentialThreat.*.*",
+    "ExistenzCore.ExistentialThreatLaw.*.*",
+    "structuralLanguage.ExistentialCore.*.T",
+    "structuralLanguage.ExistentialCore.*.P",
+    "structuralLanguage.ExistentialCore.*.D",
+    "structuralLanguage.ExistentialCore.*.Q",
+    "structuralLanguage.ExistentialPlato.*.S",
+    "structuralLanguage.ExistentialPlato.*.I",
+    "structuralLanguage.ExistentialPlato.*.D",
+    "structuralLanguage.ExistentialPlatoS.*",
+    "structuralLanguage.ExistentialTier.*.*",
+    "ExistenzFramework.Action.*.*",
+    "ExistenzFramework.Scope.*.*",
+    "ExistenzFramework.Dimension.*.*",
+    "ExistenzSchema.Protect.*.*",
+    "ExistenzSchema.Instruction.*.*",
+    "ExistenzSchema.Function.*.*"
+  ]
+}
