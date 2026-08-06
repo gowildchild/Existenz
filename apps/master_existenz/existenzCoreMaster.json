@@ -61,7 +61,7 @@
 		"HUMAN_EQ":			{"B": 127,	"type": "CANARY",		"mir":"1:1",	"Q": "THREAT_CANARY_EQUILIBRIUM"		}
       },
     "ExistentialThreat": {
-		"THREAT_EXISTENTIAL"			{"B": 0,		"type":	"PILLAR",	"law":"THREAT_LAW_LIFE"					},
+		"THREAT_EXISTENTIAL":			{"B": 0,		"type":	"PILLAR",	"law":"THREAT_LAW_LIFE"					},
 		"THREAT_AUTONOMY":				{"B": 1,		"type":	"PILLAR",	"law":"THREAT_LAW_SABOTAGE"				},
 		"THREAT_INTEGRITY":				{"B": 2,		"type":	"PILLAR",	"law":"THREAT_LAW_COERCION"				},
 		"THREAT_PSYCHOLOGY":			{"B": 3,		"type":	"PILLAR",	"law":"THREAT_LAW_DEFAMATION"			},
