@@ -5,6 +5,8 @@
 # Released under strict Non-Commercial Open-Source License terms.
 # Commercial use requires immediate written license and explicit payment.
 # ==========================================================================
+# WARNING! DEPRECATED: LEGACY STRUCTURE v0.60-v0.75
+#
 */
 #ifndef EXISTENZ_CORE_H
 #define EXISTENZ_CORE_H
@@ -21,7 +23,7 @@ typedef enum {
     CORE_DEVELOPMENT                  = 1ULL << 6,
     CORE_PROPERTY                     = 1ULL << 7,
     CORE_PRESENCE                     = 1ULL << 8,
-    SHIELD_HUMAN_RIGHTS          = 1ULL << 20,
+    SHIELD_HUMAN_RIGHTS               = 1ULL << 20,
     SHIELD_DISCRIMINATION_RIGHTS = 1ULL << 22,
     SHIELD_BASIC_RIGHTS          = 1ULL << 24,
     SHIELD_AQUIRED_RIGHTS        = 1ULL << 26,
