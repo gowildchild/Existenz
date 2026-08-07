@@ -129,7 +129,7 @@ The progressive escalation of system betrayal and subsequent shield invalidation
 
 $$\mathcal{T}_{\text{broken}}(b) = \sum_{k=0}^{3} 2^{20 + 2k} \cdot \delta_{b, \, 20 + 2k}$$
 
-The absolute operational consequence of this state activation forces the immediate collapse of the corresponding defensive perimeter to a zero-state, dropping protection layers without exception:\(\mathcal{S}_{\text{shield}}(b)\rightarrow 0\quad \forall \quad b\in \{20,22,24,26\}\)
+The absolute operational consequence of this state activation forces the immediate collapse of the corresponding defensive perimeter to a zero-state, dropping protection layers without exception:(\mathcal{S}_{\text{shield}}(b)\rightarrow 0\quad \forall \quad b\in \{20,22,24,26\}\)
 
 $$\mathcal{S}_{\text{shield}}(b) \to 0 \quad \forall \quad b \in \{20, 22, 24, 26\}$$
 
@@ -188,76 +188,196 @@ $$\mathcal{S}_{\text{state}} = \left( \mathcal{M}_{\text{exist}} \land \neg\left
 ```python
 # ==========================================================================
 # THE EXISTENZ PLATFORM (PROTOTYPE ARCHITECTURE CORE, 128-BIT MATRIX)
-# Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
+# Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
 # Released under strict Non-Commercial Open-Source License terms.
 # Commercial use requires immediate written license and explicit payment.
 # ==========================================================================
+#  VERSION: v0.76a
+#
 from enum import IntFlag
 class ExistentialCore(IntFlag):
-    # The 7 Natural Human Pillars (The Foundational Coordinates) 
-    EXISTENCE   = 1 << 0  # 1   You, alive, with a body
-    AUTONOMY    = 1 << 1  # 2   The Sovereign Right to Choose
-    INTEGRITY   = 1 << 2  # 4   The Moral Axis of Personal Choice 
-    PSYCHOLOGY  = 1 << 3  # 8   Cognitive Internal State and Mental Peace
-    PHYSICAL    = 1 << 4  # 16  Physical Body Vessel and bio-state
-    DISABILITY  = 1 << 5  # 32  Nature's way of checks and balances
-    DEVELOPMENT = 1 << 6  # 64  Evolutionary, Intellectual and Creative Growth
-    PROPERTY    = 1 << 7  # 128 Material Assets and Income Protection
-    PRESENCE    = 1 << 8  # 256 Real-Time Spacetime Footprint
 
-    # The external defense factors, protected SHIELD structures
-    SHIELD_HUMAN_RIGHTS          = 1 << 20 # 1048576 Shield A (Institutional)
-    SHIELD_DISCRIMINATION_RIGHTS = 1 << 22 # 8388608 Shield B3 (Systemic)
-    SHIELD_BASIC_RIGHTS          = 1 << 24 # 2097152 Shield B (Institutional)
-    # The acquired micro-structural SHIELDS
-    SHIELD_AQUIRED_RIGHTS        = 1 << 26 # 67108864 Shield D (Acquired by alliance)
-    SHIELD_AQUIRED_TRUST         = 1 << 30 # 1073741824 Shield E (Human Action)
+    # THE LOWER 16-BITS:  IMMUTABLE   7 Human Pillars of existence!
 
-class ExistentialThreat(IntFlag):
-    # 100% Mathematically Honest Threat Matrix (Flawless 1:1 Mirror Alignment)
-    THREAT_EXISTENCE   = 1 << 0  # 1   direct life / mercenary violence
-    THREAT_AUTONOMY    = 1 << 1  # 2   choice / administrative coercion
-    THREAT_INTEGRITY   = 1 << 2  # 4   moral axis / character assassination
-    THREAT_PSYCHOLOGY  = 1 << 3  # 8   mental peace / cyber-bullying
-    THREAT_PHYSICAL    = 1 << 4  # 16  bodily safety / hired physical agents
-    THREAT_ABLEISM     = 1 << 5  # 32  hostile counter-attack against DISABILITY
-    THREAT_DEVELOPMENT = 1 << 6  # 64  growth / algorithmic mining / asset stripping
-    THREAT_PROPERTY    = 1 << 7  # 128 assets / capitalistic resource locks
+    EXISTENCE               = 1 << 0    # 1     PILLAR  You, alive, with a body
+    AUTONOMY                = 1 << 1    # 2     PILLAR  The Sovereign Right to Choose
+    INTEGRITY               = 1 << 2    # 4     PILLAR  The Moral Axis of Personal Choice
+    CANARY_1_SOVEREIGN      = 1 << 3    # 8     WATCHDOG
+    PSYCHOLOGY              = 1 << 4    # 16    PILLAR  Cognitive Internal State and Mental Peace
+    PHYSICAL                = 1 << 5    # 32    PILLAR  Physical Body Vessel and bio-state
+    DISABILITY              = 1 << 6    # 64    PILLAR  Nature's way of checks and balances
+    DEVELOPMENT             = 1 << 7    # 128   PILLAR  Evolutionary, Intellectual and Creative Growth
+    PROPERTY                = 1 << 8    # 256   PILLAR  Material Assets and Income Protection
+    CANARY_2_SOMATIC        = 1 << 9    # 512   CANARY  WATCHDOG_SOMATIC
+    PRESENCE                = 1 << 10   # 1024  PILLAR  Real-Time Spacetime Footprint
+    CANARY_3_SYSTEMIC       = 1 << 13   # 8128  CANARY  WATCHDOG_EVOLUTION
 
-    # Advanced Composite State Triggers
-    TRIGGER_EXPLOITATION   = THREAT_ABLEISM | THREAT_PROPERTY
-    TRIGGER_PREDATORY       = THREAT_PSYCHOLOGY | THREAT_AUTONOMY
-    TRIGGER_SYSTEMSCRISIS  = THREAT_AUTONOMY | THREAT_PSYCHOLOGY | THREAT_PROPERTY
+    # THE HIGHER 8-BITS:  IMMUTABLE   Legal SHIELDS by external defense factors
+
+    CANARY_4_PERSONAL       = 1 << 17   # 131072     CANARY  WATCHDOG_PERSONAL	
+    SHIELD_RIGHTS_HUMAN     = 1 << 20   # 1048576    SHIELD-A  (Institutional)
+    SHIELD_RIGHTS_INCLUSIVE = 1 << 22   # 4194304    SHIELD-A2 (Systemic)
+    CANARY_5_RIGHTS         = 1 << 23   # 8388608    CANARY  WATCHDOG_RIGHTS
+    SHIELD_RIGHTS_BASIC     = 1 << 24   # 16777216   SHIELD-B  (Institutional) 
+    SHIELD_RIGHTS_ASYLUM    = 1 << 26   # 67108864   SHIELD-A3 (Institutional)
+    CANARY_6_CIVIC          = 1 << 27   # 134217728  CANARY  WATCHDOG_CIVILIAN
+    SHIELD_IMMUTABLE_END    = 1 << 31   # 2147483648 END OF IMMUTABLE STRUCTURE
+
+    # CANARIES FOR STRUCTURAL MANIPULATION
+
+    CANARY_S_IMMUTABLE      = 0x80000401
+    CANARY_S_STATE          = 0x455005F7
+    CANARY_S_COLLIDE        = 0x88822208
+ 
+    # SIGNATURES FOR IMMUTABLE STRUCTURE, CORE STRUCTURE AND CHAINED SIGNATURE
+
+    SIGN_CORE_EXISTENZ      = 0x5beba3df
+    SIGN_CORE_IMMUTABLE     = 0x6d44968d
+    SIGN_CORE_EXISTENTIAL   = 0x18641470
+    SIGN_CORES_CHAINED	    = 0xa62b1b36
+
+    @classmethod
+    def canary_integrity(cls, active_register_state: int) -> bool:
+        """
+        Instantaneous single-cycle check. Returns True if completely untampered.
+        Fails (False) if any data spills into the forbidden watchdog gates.
+        """
+	    sign_existenz        = "5beba3df48dfcb7cf800c14fba00a297e594d2105da6d4484bc871ef494dbd42"
+	    sign_immutable       = "18641470fa93489814467d58fa05ef44c35c3b99912788e0b67277d33d9691b0"
+	    sign_structure       = "6d44968d7d1d9d85546928e57d9924f7ab5cf0682bfd7e1d7de690e086347438"
+	    sign_corechain       = "a62b1b3636f328f413d78964724838da1cf464972e27301048ca0ef3df503cd2" 
+        return (active_register_state & cls.CANARY_S_COLLIDE) == 0
+
+    @classmethod
+    def canary_pristine(cls, active_register_state: int) -> bool:
+        """
+        Compares the operational registry directly against the ideal system vector.
+        """
+        return active_register_state == cls.CANARY_S_STATE
+
+
+class ExistentialCoreThreat(IntFlag):
+    """
+    1:1 Symmetrical Mirror of ExistentialCore.
+    Defines immediate critical attacks on the 
+    ExistentialCoreThreat pillars as THREAT_LABEL.
+    """
+    THREAT_NONE			= 0
+    THREAT_EXISTENCE	    = 1 << 0
+    THREAT_AUTONOMY		    = 1 << 1
+    THREAT_INTEGRITY	    = 1 << 2
+    THREAT_PSYCHOLOGY	    = 1 << 4
+    THREAT_PHYSICAL		    = 1 << 5
+    THREAT_ABLEISM		    = 1 << 6
+    THREAT_DEVELOPMENT	    = 1 << 7
+    THREAT_PROPERTY		    = 1 << 8
+    THREAT_PRESENCE		    = 1 << 10
+
+    THREAT_RIGHTS_HUMAN		= 1 << 20
+    THREAT_RIGHTS_INCLUSIVE	= 1 << 22
+    THREAT_RIGHTS_BASIC		= 1 << 24
+    THREAT_RIGHTS_ASYLUM	= 1 << 26
+    THREAT_IMMUTABLE_END	= 1 << 31
+
+    THREAT_RIGHTS_LEGAL		= {
+    	1 << 0:  "LEGAL_CAT1_MURDER",
+	    1 << 1:  "LEGAL_CAT2_PHYSICAL_VIOLATION",
+	    1 << 2:  "LEGAL_CAT3_COERSION",
+	    1 << 3:  "LEGAL_CAT4_CHARACTER_ASSASINATION",
+	    1 << 4:  "LEGAL_CAT5_PSYCHOLOGICAL_INTIMIDATION",
+	    1 << 5:  "LEGAL_CAT6_ABLEISM",
+	    1 << 6:  "LEGAL_CAT7_INTERSECTIONAL_BIAS",
+	    1 << 7:  "LEGAL_CAT8_INTELLECTUAL_PIRACY",
+	    1 << 8:  "LEGAL_CAT9_THEFTH",
+	    1 << 13: "LEGAL_CAN1_SYSTEMCRISIS",
+	    1 << 14: "LEGAL_CAN2_EXPLOITATION",
+	    1 << 20: "LEGAL_CAN3_HUMAN",
+	    1 << 20: "LEGAL_CAN4_INCLUSION",
+	    1 << 40: "LEGAL_CAN5_PREDATORY"
+    },
+
+    SIGN_THREAT_RIGHTS_LEGAL = 0x7f4a218d
+    SIGN_THREAT_EXISTENZ     = 0x5beba3df
+    SIGN_THREAT_IMMUTABLE    = 0x6d44968d
+    SIGN_THREAT_EXISTENTIAL  = 0x18641470
+    SIGN_THREAT_CHAINED	     = 0xa62b1b36
+
+   @classmethod
+    def verify_legal_map_integrity(cls) -> bool:
+        """
+        Deterministically verifies that the forensic translation map has not 
+        been altered by external code injection or memory manipulation.
+        Executes entirely in constant time.
+        """
+        # 1. Flatten the map into a deterministic, unspaced string
+        serialized_map = "".join(f"{k}:{v}" for k, v in sorted(cls.THREAT_RIGHTS_LEGAL.items()))
+        payload_bytes = serialized_map.encode('utf-8')
+        
+        # 2. Use the framework master key anchor as the signature salt
+        anchor_key = b"EX25IMMUT32CORE7617"
+        computed_hash = hmac.new(anchor_key, payload_bytes, hashlib.sha256).digest()
+        computed_token = computed_hash[:4].hex()
+        
+        # 3. Verify against the cold-compiled literal constant
+        expected_token = hex(cls.SIGN_THREAT_RIGHTS_LEGAL)[2:]
+        return hmac.compare_digest(computed_token, expected_token)
+
+
+class ExistentialCoreThreatBirds(IntFlag):
+
+    ## This file is still under simulation, it might be changed later
+
+    CANARY_1_SOVEREIGN      = 1 << 3
+    CANARY_2_SOMATIC        = 1 << 9
+    CANARY_3_SYSTEMIC       = 1 << 13
+    CANARY_4_PERSONAL       = 1 << 17
+    CANARY_5_RIGHTS         = 1 << 23
+    CANARY_6_CIVIC          = 1 << 27
+
 
 class ExistentialRipple(IntFlag):
+    
+    ## This file is still under simulation, it might be changed after
+
     # The Social Blast Radius Expanded in Clean Base-2 Symmetry
-    INDIVIDUAL         = 1 << 0  # 1   The Micro Core / The Sovereign Human
-    PARTNER            = 1 << 1  # 2   Secondary Core Alliance / The One 
-    HOUSEHOLD_MARRIAGE = 1 << 2  # 4   The Domestic Micro-Environment
-    FAMILY             = 1 << 3  # 8   Biological and Selected Kinship Net
-    FRIENDS            = 1 << 4  # 16  Voluntary Non-Kinship Alliances
-    PEERS              = 1 << 5  # 32  Professional and Local Social Circle
-    SUPPORT            = 1 << 6  # 64  Care frameworks
+
+    INDIVIDUAL			        = 1 << 0  # 1    The Micro Core / The Sovereign Human
+    PARTNER			            = 1 << 1  # 2    Secondary Core Alliance / The One 
+    HOUSEHOLD_MARRIAGE	        = 1 << 2  # 4    The Domestic Micro-Environment
+    FAMILY			            = 1 << 4  # 16   Biological and Selected Kinship Net
+    FRIENDS			            = 1 << 5  # 32   Voluntary Non-Kinship Alliances
+    PEERS			            = 1 << 6  # 64   Professional and Local Social Circle
+    SUPPORT			            = 1 << 7  # 128  Care frameworks
 
     # Macro Environments and Structural Network Horizons
-    SOCIETY            = 1 << 10 # 1024 Local Cultural and Civic Population
-    CORPORATE          = 1 << 11 # 2048 Commercial Conglomerates
-    GOVERNED           = 1 << 12 # 4096 Public Infrastructure / National
+
+    SOCIETY			            = 1 << 10 # 1024 Local Cultural and Civic Population
+    CORPORATE			        = 1 << 11 # 2048 Commercial Conglomerates
+    GOVERNED			        = 1 << 12 # 4096 Public Infrastructure / National
 
     # Systemic Trust Layers (Contractual, Verifiable, Structural) 
-    TRUST_SYSTEMIC    = 1 << 16 # 65536 Infrastructure verification
-    TRUST_CONDITIONAL = 1 << 17 # 131072 Prof-contracts / Transactional 
+
+    TRUST_SYSTEMIC		        = 1 << 16 # 65536 Infrastructure verification
+    TRUST_CONDITIONAL	        = 1 << 17 # 131072 Prof-contracts / Transactional 
+
     # The Cascading Trust-Breaker Matrix (Perfect 1:1 Shield Alignment) 
-    TRUST_BROKEN_INSTITUTIONAL = 1 << 20 # 1048576 Minor breach of public trust
-    TRUST_BROKEN_SAFETY        = 1 << 22 # 4194304 Breach of safety boundary
-    TRUST_BROKEN_DIGITAL       = 1 << 24 # 16777216 Breach of online space
-    TRUST_BROKEN_CORE          = 1 << 26 # 67108864 The Ultimate Personal Betrayal
+
+    TRUST_BROKEN_INSTITUTIONAL	= 1 << 20 # 1048576 Minor breach of public trust
+    TRUST_BROKEN_SAFETY		    = 1 << 22 # 4194304 Breach of safety boundary
+    TRUST_BROKEN_DIGITAL	    = 1 << 24 # 16777216 Breach of online space
+    TRUST_BROKEN_CORE		    = 1 << 26 # 67108864 The Ultimate Personal Betrayal
+
     # The Forensic Dead-Bolt Activation Matrix (Calculated via Bitwise OR) 
-    TRUST_BROKEN_LOCKOUT       = TRUST_BROKEN_CORE | TRUST_BROKEN_DIGITAL 
+    
+    TRUST_BROKEN_LOCKOUT	    = TRUST_BROKEN_CORE | TRUST_BROKEN_DIGITAL 
 
     # The Binary Supreme Personal Trust Seals (The Unassailable Core) 
-    TRUST_PERSONAL = 1 << 29 # 536870912 Intuitive Human Validation 
-    TRUST_ABSOLUTE = 1 << 30 # 1073741824 The Supreme Alliance Apex Bond
+
+    TRUST_PERSONAL		        = 1 << 29 # 536870912 Intuitive Human Validation 
+    TRUST_ABSOLUTE		        = 1 << 30 # 1073741824 The Supreme Alliance Apex Bond
+
+
+
 ```
 
 ## 7.1 | Architectural Shift: The Deprecation of Legacy Registers
