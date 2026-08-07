@@ -5,7 +5,7 @@
 **Protocol Version:** 128-Bit Immutable ExistenceCore Matrix
 **Generated At:** 2026-08-07T01:48:59.635Z
 
-## 📜 EXISTENZ PROTOCOL & FORENSIC INSTRUCTIONS
+## 📜 EXISTENZ PROTOCOL, SHIELDS, CONSULT & FORENSIC INSTRUCTIONS
 > **Human Rights Core Directives:**
 > - **Bit-0 (Existence):** Cat-1 Threats are Physical threats on life are flagged here.
 > - **Bit-1 (Autonomy):** Cat-2 Threats are Physical Sabotage, Coercing, Blackmailing and forcing and manipulation are strictly flagged.
