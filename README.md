@@ -343,6 +343,15 @@ This documentation and the underlying reference code are free software: you can 
 
 This architecture is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
+### 10 | Changelog
+ - v0.65          Decision that it needs to be as immutable as human rights.
+ - v0.69          Refactoring the bits from 1,2,3,4,5,6,7,8 to 2,4,6,8,10,12,14,16 or 1,3,5,7,9,11,13,15 does not bring any difference and does not support an autonomous canary bird.
+ - v0.70PoC       This was almost going to be it, till I talked to Google to make an app with the structure and the persona was bringing me in a shroud of doubt.
+                  I was thinking in my own situation, but on-line it needs zero-trust, without upgrades because that also requires trust.
+ - v0.701-v0.709  Finally my models, simulations and all that have brought me to the conclusion that the basic structure doesn't work sufficient enough in a digital world full of strangers.
+ - v0.75          It has changed to various combinations but there were always collisions which were not meant to be. Because I tried to model math to an ideal optimistic look. Math is not optimistic, it can be however positive.
+ - v0.76a         The hammer has fallen, Existenz v0.75 has been put legacy, because it's now in an early stage, nobody gets affected
+   
 ---
 
 ### Commercial Licensing Matrix
