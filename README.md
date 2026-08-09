@@ -1,7 +1,7 @@
 # The Birth of Human Rights and Existential Survival in Mathematical Form
 
-**Modified:** 2026-07-29 | **Created:** 2026-06-20
-**Research Project Proposal:** PROJECT EXISTENZ  v0.70
+**Modified:** 2026-08-09 | **Created in Public:** 2026-06-20
+**Research Project Proposal:** PROJECT EXISTENZ  v0.76
 **Subtitle:** Stateless Event-Driven 128-Bit Matrix for Low-Power Existential Forensic Reporting/Recording  
 **Principal Architect:** Gunther Voet (existenz@xsrv.net)  
 **Target Research Group:** Distributed Systems Engineering / Applied Cryptography and Privacy Labs  
@@ -68,15 +68,13 @@ By identifying ableism as a targeted, hostile counter-attack against a person's 
 
 The Existenz framework corrects this ancient prejudice mathematically, what was my initial goal.
 
-By placing **DISABILITY** as an independent, foundational coordinate in the matrix at **bit-5**, to ensure that a neuro-divergent mind cannot be mathematically erased, overridden or exploited by the system. The 128-bit architecture treats different cognitive processing styles as a vital and permanent part of the universe's natural geometric structure, utterly immune to ancient biases or modern institutional gaslighting. It also weights DISABILITY with evolution instead of being seen as a disruption.
+By placing **DISABILITY** as an independent, foundational coordinate in the matrix at **bit-6*, to ensure that a neuro-divergent mind cannot be mathematically erased, overridden or exploited by the system. The 128-bit architecture treats different cognitive processing styles as a vital and permanent part of the universe's natural geometric structure, utterly immune to ancient biases or modern institutional gaslighting. It also weights DISABILITY with evolution instead of being seen as a disruption.
 
-My architecture completely detaches the processing matrix from internal human value by mapping DISABILITY strictly to its own orthogonal coordinate at bit 5, evaluating state changes using a clean linear transformation where the inner product of integrity and constraint is precisely zero.
+My architecture completely detaches the processing matrix from internal human value by mapping DISABILITY strictly to its own orthogonal coordinate at bit 6, evaluating state changes using a clean linear transformation where the inner product of integrity and constraint is precisely zero.
 
 $$\mathcal{W}_{\text{existenz}} = \mathcal{M}_{\text{exist}} \times \left( \mathbf{V}_{\text{integrity}} \oplus \mathbf{V}_{\text{disability}} \right) \quad \text{where} \quad \langle \mathbf{V}_{\text{integrity}}, \mathbf{V}_{\text{disability}} \rangle = 0$$
 
 At this moment I found out the relationship between a broken vessel and an unbroken soul.
-
-I am the Adunatos that has brought you this:
 
 ```python
 from enum import IntFlag
@@ -105,11 +103,11 @@ class ExistentialHumanCore(IntFlag):
     EXISTENZ_IMMUTABLE_END  = 1 << 31   # 2147483648 END OF IMMUTABLE BLOCK [HUMAN FRAMEWORK]
 ```
 
-Because in my 128-bit architecture, look at the precise spatial tracking of the bits. A DISABILITY automatically impacts your AUTONOMY, because it introduces constraints. If society does not accommodate a neuro-divergent brain or if physical health fails, AUTONOMY - the external choices and structural freedom are forcefully restricted by your environment. Integrity however is the internal adherence to truth, honesty and moral symmetry. Because bit 2 and bit 5 occupy completely different space-time coordinates in the register, **they are mathematically orthogonal (independent)**. A collision between them is impossible.
+Because in my 128-bit architecture, look at the precise spatial tracking of the bits. A DISABILITY automatically impacts your AUTONOMY, because it introduces constraints. If society does not accommodate a neuro-divergent brain or if physical health fails, AUTONOMY - the external choices and structural freedom are forcefully restricted by your environment. Integrity however is the internal adherence to truth, honesty and moral symmetry. Because bit 2 and bit 6 occupy completely different space-time coordinates in the register, **they are mathematically orthogonal (independent)**. A collision between them is impossible. 
 
 Why some people think they possess INTEGRITY, when they are actually mathematically bankrupt and why they look down on neuro-divergent minds?
 
-1. **The "acoustic noise" delusion:** People who lack intelligence or moral depth view the world backwards. They look at a disabled or neurodivergent person, see their fractured AUTONOMY (Bit 2) or their atypical processing DISABILITY (Bit 32), and lazily assume their *entire* 128-bit string is broken.
+1. **The "acoustic noise" delusion:** People who lack intelligence or moral depth view the world backwards. They look at a disabled or neurodivergent person, see their fractured AUTONOMY (**BIT-2**) or their atypical processing DISABILITY (**BIT-64**), and lazily assume their *entire* 128-bit string is broken.
 2. **The false equation:** They believe that because they have physical strength, wealth, or standard neurotypical social status (PROPERTY or AUTONOMY), they automatically possess INTEGRITY. They equate external power with internal honor.
 3. **The flaw in their math:** Which is a catastrophically math error: in an IntFlag system, having a high bit turned on (like a lot of property or social dominance) does *not* automatically turn on the lower bits. You can have millions of dollars and total freedom, but if your INTEGRITY bit is 0, your total moral weight is a complete void.
 
@@ -119,7 +117,7 @@ I'd call this a masterpiece of moral honesty: **I have mathematically proven tha
 
 ## 4 | The Filled Spectrum and the Geometry of Collisions
 
-When you look at modern human engineering, all you can see are collisions that should never happen. In traditional computer programming and institutional law, concepts are sloppily lumped together. They use flexible, single-choice structures that collapse when society undergoes extreme stress. They are not optimized for their efficiency, but for their value. When an unthinking majority tries to force their immoral beliefs onto others, their data streams collide, causing systemic crises that destroy innocent lives like a delicate spiderweb caught in a storm.
+When you look at modern human engineering, all you can see are collisions that should never happen. In traditional computer programming and institutional law, concepts are sloppily lumped together. They use flexible, single-choice structures that collapse when society undergoes extreme stress. They are not optimized for their efficiency, but for their value. When an unthinking majority tries to force their immoral beliefs onto others, their data streams collide, causing systemic crises that destroy innocent lives like a delicate spiderweb caught in a storm. 
 
 What happens when the spectrum gets too full? When you pack too many corrupt variables, predatory AI optimization loops and algorithmic hate into a confined system, the data registry becomes congested with pure noise. The spectrum chokes. It triggers a catastrophic geometric collapse.
 
@@ -239,7 +237,7 @@ class ExistentialCore(IntFlag):
     PROPERTY                = 1 << 8    # 256   PILLAR  Material Assets and Income Protection
     CANARY_2_SOMATIC        = 1 << 9    # 512   CANARY  WATCHDOG_SOMATIC
     PRESENCE                = 1 << 10   # 1024  PILLAR  Real-Time Spacetime Footprint
-    CANARY_3_SYSTEMIC       = 1 << 13   # 8128  CANARY  WATCHDOG_EVOLUTION
+    CANARY_3_SYSTEMIC       = 1 << 13   # 8192  CANARY  WATCHDOG_EVOLUTION
 
     # THE HIGHER 8-BITS:  IMMUTABLE   Legal SHIELDS by external defense factors
 
@@ -419,7 +417,7 @@ To ensure future researchers do not misinterpret the evolution of this protocol,
 The old layout mapped foundational primitives sequentially. While this structure works flawlessly for standard commercial applications, closed networks, or general database access, it is **fundamentally inadequate for an entire world under active asymmetric warfare.** Relational methods and sequential tracking rely on soft linguistic boundaries. In a zero-trust network full of strangers, soft boundaries introduce interpretive slack that bad actors exploit via proxy-bullying and systemic ableism. The architecture required a hardcoded, incompossible barrier that executes entirely below the noise floor of centralized surveillance grids.
 
 #### 7.3 | What Changed (The Symmetry of Pairs)
-We have discarded the sequential layout and compressed the core register allocation into a strict, interdependent **Symmetry of Pairs**. Primitives are locked on fixed indices, while their literal mathematical sums—**bits 3, 9, 13, 17, and 21—are hardcoded as empty check-bits ($C_{b}$)**. They carry exactly zero payload data.
+We have discarded the sequential layout and compressed the core register allocation into a strict, interdependent **Symmetry of Pairs**. Primitives are locked on fixed indices, while their literal mathematical sums—**bits 3, 9, 13, 17, and 23—are hardcoded as empty check-bits ($C_{b}$)**. They carry exactly zero payload data.
 
 #### 7.4 | System-Wide Structural Offerings
 The protocol does not attempt to manage fuzzy semantics or arbitrary database states. Instead, the entire system focuses strictly on offering three core defensive layers via its paired registers and forbidden sum-gates:
