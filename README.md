@@ -1,13 +1,13 @@
 # The Birth of Human Rights and Existential Survival in Mathematical Form
 
-**Modified:** 2026-08-09 | **Created in Public:** 2026-06-20
-**Research Project Proposal:** PROJECT EXISTENZ  v0.76
-**Subtitle:** Stateless Event-Driven 128-Bit Matrix for Low-Power Existential Forensic Reporting/Recording  
-**Principal Architect:** Gunther Voet (existenz@xsrv.net)  
-**Target Research Group:** Distributed Systems Engineering / Applied Cryptography and Privacy Labs  
-**License:** Open-Source Non-Commercial Freedom (The "Pay Up or Face the Math" Enterprise Provision)  
-**Section:** Spatiotemporal Biometric Convergence (SBC) Introspection, Classical Harmony & Mathematical Rights of Nature
-**SIMULATORS ARE AVAILABLE AT:** [Plato in 3DATA](https://gowildchild.github.io/Existenz/) | [Time Lines](https://gowildchild.github.io/Existenz/apps/timelines/) | [Human Rights](https://gowildchild.github.io/Existenz/apps/human-rights/) | [LifeTime](https://gowildchild.github.io/Existenz/apps/lifetime/) | [Extra Colliding](https://gowildchild.github.io/Existenz/apps/extra-colliding/) | [Plato Fields](https://gowildchild.github.io/Existenz/apps/plato-fields/) | [Safety-Audit](https://gowildchild.github.io/Existenz/apps/safety-audit/) [Structures](https://github.com/gowildchild/Existenz/struct) | [Examples](https://github.com/gowildchild/Existenz/tree/main/examples)
+*Modified:* 2026-08-09 | *Created in Public:* 2026-06-20
+*Research Project Proposal:* PROJECT EXISTENZ  v0.76a
+*Subtitle:* Stateless Event-Driven 128-Bit Matrix for Low-Power Existential Forensic Reporting/Recording  
+*Principal Architect:* Gunther Voet (existenz@xsrv.net)  
+*Target Research Group:* Distributed Systems Engineering / Applied Cryptography and Privacy Labs  
+*License:* Open-Source Non-Commercial Freedom (The "Pay Up or Face the Math" Enterprise Provision)  
+*Section:* Spatiotemporal Biometric Convergence (SBC) Introspection, Classical Harmony & Mathematical Rights of Nature
+*SIMULATORS ARE AVAILABLE AT:* [Plato in 3DATA](https://gowildchild.github.io/Existenz/) | [Time Lines](https://gowildchild.github.io/Existenz/apps/timelines/) | [Human Rights](https://gowildchild.github.io/Existenz/apps/human-rights/) | [LifeTime](https://gowildchild.github.io/Existenz/apps/lifetime/) | [Extra Colliding](https://gowildchild.github.io/Existenz/apps/extra-colliding/) | [Plato Fields](https://gowildchild.github.io/Existenz/apps/plato-fields/) | [Safety-Audit](https://gowildchild.github.io/Existenz/apps/safety-audit/) [Structures](https://github.com/gowildchild/Existenz/struct) | [Examples](https://github.com/gowildchild/Existenz/tree/main/examples)
 ---
 
 ## 1 | The Written Word and the Burden of Inheritance
