@@ -53,27 +53,6 @@ class existentialCoreThreat(IntFlag):
     SIGN_THREAT_EXISTENTIAL  = 0x18641470
     SIGN_THREAT_CHAINED	     = 0xa62b1b36
 
-   @classmethod
-    def verify_legal_map_integrity(cls) -> bool:
-        """
-        Deterministically verifies that the forensic translation map has not 
-        been altered by external code injection or memory manipulation.
-        Executes entirely in constant time.
-        """
-        # 1. Flatten the map into a deterministic, unspaced string
-        serialized_map = "".join(f"{k}:{v}" for k, v in sorted(cls.THREAT_RIGHTS_LEGAL.items()))
-        payload_bytes = serialized_map.encode('utf-8')
-        
-        # 2. Use the framework master key anchor as the signature salt
-        anchor_key = b"EX25IMMUT32CORE7617"
-        computed_hash = hmac.new(anchor_key, payload_bytes, hashlib.sha256).digest()
-        computed_token = computed_hash[:4].hex()
-        
-        # 3. Verify against the cold-compiled literal constant
-        expected_token = hex(cls.SIGN_THREAT_RIGHTS_LEGAL)[2:]
-        return hmac.compare_digest(computed_token, expected_token)
-
-
 class existentialCoreThreatBirds(IntFlag):
     CANARY_1_SOVEREIGN      = 1 << 3
     CANARY_2_SOMATIC        = 1 << 9
