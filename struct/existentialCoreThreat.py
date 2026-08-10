@@ -13,24 +13,24 @@ class existentialCoreThreat(IntFlag):
     Defines immediate critical attacks on the 
     ExistentialCoreThreat pillars as THREAT_LABEL.
     """
-    THREAT_NONE				= 0
-    THREAT_EXISTENCE		= 1 << 0
-    THREAT_AUTONOMY			= 1 << 1
-    THREAT_INTEGRITY		= 1 << 2
-    THREAT_PSYCHOLOGY		= 1 << 4
-    THREAT_PHYSICAL			= 1 << 5
-    THREAT_ABLEISM			= 1 << 6
-    THREAT_DEVELOPMENT		= 1 << 7
-    THREAT_PROPERTY			= 1 << 8
-    THREAT_PRESENCE			= 1 << 10
+    THREAT_NONE             = 0
+    THREAT_EXISTENCE        = 1 << 0
+    THREAT_AUTONOMY         = 1 << 1
+    THREAT_INTEGRITY        = 1 << 2
+    THREAT_PSYCHOLOGY       = 1 << 4
+    THREAT_PHYSICAL         = 1 << 5
+    THREAT_ABLEISM          = 1 << 6
+    THREAT_DEVELOPMENT      = 1 << 7
+    THREAT_PROPERTY         = 1 << 8
+    THREAT_PRESENCE         = 1 << 10
 
-    THREAT_RIGHTS_HUMAN		= 1 << 20
-    THREAT_RIGHTS_INCLUSIVE	= 1 << 22
-    THREAT_RIGHTS_BASIC		= 1 << 24
-    THREAT_RIGHTS_ASYLUM	= 1 << 26
-    THREAT_IMMUTABLE_END	= 1 << 31
+    THREAT_RIGHTS_HUMAN     = 1 << 20
+    THREAT_RIGHTS_INCLUSIVE = 1 << 22
+    THREAT_RIGHTS_BASIC     = 1 << 24
+    THREAT_RIGHTS_ASYLUM    = 1 << 26
+    THREAT_IMMUTABLE_END    = 1 << 31
 
-    THREAT_RIGHTS_LEGAL		= {
+    THREAT_RIGHTS_LEGAL     = {
     	1 << 0:  "LEGAL_CAT1_MURDER",
 		1 << 1:  "LEGAL_CAT2_PHYSICAL_VIOLATION",
 		1 << 2:  "LEGAL_CAT3_COERSION",
