@@ -4,7 +4,7 @@
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
 # v0.76f
-# Veritas - Public Security Guardian
+# Veritas - Public Security Guardian - final Check.
 import hmac
 import hashlib
 from struct.structures import existentialCore, existentialCoreThreat
