@@ -54,7 +54,7 @@ class existentialCore(IntFlag):
     SIGN_CORE_EXISTENZ      = 0x5beba3df
     SIGN_CORE_IMMUTABLE     = 0x6d44968d
     SIGN_CORE_EXISTENTIAL   = 0x18641470
-	  SIGN_CORE_CANARY        = 0xc01eca1e
+	SIGN_CORE_CANARY        = 0xc01eca1e
     SIGN_CORES_CHAINED	    = 0xaa12b934
    
     @classmethod
