@@ -14,7 +14,6 @@ class existentialCoreThreat(IntFlag):
     ExistentialCoreThreat pillars as THREAT_LABEL.
     """
 
-    _ignore_                = "THREAT_RIGHTS_LEGAL"
     THREAT_NONE             = 0
     THREAT_EXISTENCE        = 1 << 0
     THREAT_AUTONOMY         = 1 << 1
