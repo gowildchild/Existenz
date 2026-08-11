@@ -1,0 +1,84 @@
+name: Existenz Platform Genesis CI
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+
+jobs:
+  validate-and-compile:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code Blueprint
+      uses: actions/checkout@v4
+
+    - name: Initialize Python Runtime
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    # Step 3: Determine Operational Mode from the Lockfile
+    - name: Parse Pipeline Operational Mode
+      id: mode_check
+      run: |
+        if [ -f "struct/.existentialLock" ]; then
+          # Read the first line, strip whitespace, and convert to lowercase
+          MODE=$(head -n 1 struct/.existentialLock | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
+          echo "Found lockfile. Selected Mode: $MODE"
+        else
+          MODE="compile"
+          echo "No lockfile detected. Defaulting to Mode: $MODE"
+        fi
+        # Save the mode variable to the GitHub Actions environment map
+        echo "RUN_MODE=$MODE" >> $GITHUB_ENV
+
+    # Step 4: Standalone Cryptographic Hash Audit (Skipped if fully locked)
+    - name: Run Standalone Cryptographic Hash Audit
+      if: env.RUN_MODE != 'locked'
+      run: |
+        python struct/tools/check_integrity_hashes.py
+
+    # Step 5: Execute Suite and Compile Structures (Skipped if fully locked)
+    - name: Run Core Suite and Compile Universal Data Structures
+      if: env.RUN_MODE != 'locked'
+      run: |
+        python struct/tools/compile_structures.py
+
+    # Step 6: Assert Schema and Code Generation Success (Skipped if fully locked)
+    - name: Assert Schema and Code Generation Success
+      if: env.RUN_MODE != 'locked'
+      run: |
+        test -f struct/json/existentialCore.json
+        test -f struct/xml/existentialCore.xml
+        test -f struct/languages/rust/mod.rs
+        test -f struct/languages/cpp/existential_core.hpp
+        test -f struct/languages/php/ExistentialCore.php
+        test -f struct/languages/perl/ExistentialCore.pm
+        echo "[+] Sandbox compilation and schema verification successful."
+
+    # Step 7: Conditional Repository Sync Phase (ONLY fires in compile mode)
+    - name: Commit and Push Generated Structures (Mode Checked)
+      if: env.RUN_MODE == 'compile'
+      run: |
+        echo "[*] Compile mode active. Synchronizing repository files..."
+        git config --global user.name "Existenz Platform Bot"
+        git config --global user.email "bot@existenz.platform"
+        
+        git add struct/json/ struct/xml/ struct/languages/
+        
+        if git diff --staged --quiet; then
+          echo "[+] No structural changes detected. Skipping push."
+        else
+          git commit -m "automation: freeze universal cross-language structures [skip ci]"
+          git push
+        fi
+
+    # Step 8: Log Output for Integrity Check Mode
+    - name: Terminate Integrity Check Isolation Log
+      if: env.RUN_MODE == 'integritycheck'
+      run: |
+        echo "[*] Pipeline Status: Mode [INTEGRITYCHECK] complete."
+        echo "[+] Results: System signatures and NAND gates verified clean."
+        echo "[+] Notice: Repository commit bypassed intentionally to protect active deployment."
