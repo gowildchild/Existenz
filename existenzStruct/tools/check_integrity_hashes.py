@@ -24,13 +24,17 @@ if REPO_ROOT not in sys.path:
 try:
     # --- FIXED: ABSOLUTE NAMESPACE IMPORTS ROUTED CORRECTLY ---
     from existenzStruct.existentialCoreCheck import (
-        PLATFORM_ANCHOR_KEY, 
-        SIGNATURE_CORE_EXISTENZ
+        existentialCoreCheckMagic, 
+        existentialCoreCheckSignature
     )
-    from existenzStruct.master.existentialCore import existentialCore
+    from existenzStruct.master.existentialCore import (
+        existentialCore,
+        existentialCoreSignature
+    )
     from existenzStruct.master.existentialCoreThreat import (
-        existentialCoreThreat, 
-        THREAT_RIGHTS_LEGAL
+        existentialCoreThreat,
+        existentialCoreThreatSignature,
+        existentialCoreThreatLegal
     )
 except ImportError as e:
     print(f"[-] Execution Error: Missing structural components. {e}")
@@ -43,17 +47,17 @@ def verify_structural_hashes() -> bool:
     
     # 1. Enforce strict matching on the multi-class layout sequence
     core_meanings = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
-    threat_meanings = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCoreThreat.__members__.items()) if k != "THREAT_RIGHTS_LEGAL")
+    threat_meanings = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCoreThreat.__members__.items()))
     
     fused_blueprint = f"{core_meanings}||{threat_meanings}"
     payload_bytes = fused_blueprint.encode('utf-8')
     
     # Compute the live HMAC of the code layouts using your master hardware anchor
-    computed_hash = hmac.new(PLATFORM_ANCHOR_KEY, payload_bytes, hashlib.sha256).digest()
+    computed_hash = hmac.new(existentialCoreCheckMagic, payload_bytes, hashlib.sha256).digest()
     live_token = computed_hash[:4].hex()
     
     print("[*] Stage 1: Evaluating core layout structure...")
-    expected_core_link = hex(existentialCore.SIGN_CORES_CHAINED)[2:]
+    expected_core_link = hex(existentialCore.existentialCoreSignature)[2:]
     
     if hmac.compare_digest(live_token, expected_core_link):
         print(f"  [+] Passed: Core blueprints match compiled chain token (0x{live_token}).")
@@ -65,12 +69,12 @@ def verify_structural_hashes() -> bool:
 
     # 2. Enforce structural validation over the Threat Legal Map dictionary content
     print("[*] Stage 2: Evaluating forensic threat legal translation mapping...")
-    serialized_map = "".join(f"{k}:{v}" for k, v in sorted(THREAT_RIGHTS_LEGAL.items()))
+    serialized_map = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items()))
     map_bytes = serialized_map.encode('utf-8')
     
-    computed_map_hash = hmac.new(PLATFORM_ANCHOR_KEY, map_bytes, hashlib.sha256).digest()
+    computed_map_hash = hmac.new(existentialCoreCheckMagic, map_bytes, hashlib.sha256).digest()
     live_map_token = computed_map_hash[:4].hex()
-    expected_map_link = hex(existentialCoreThreat.SIGN_THREAT_RIGHTS_LEGAL)[2:]
+    expected_map_link = hex(existentialCoreThreat.existentialCoreThreatLegal)[2:]
     
     if hmac.compare_digest(live_map_token, expected_map_link):
         print(f"  [+] Passed: Threat legal map matches compiled signature (0x{live_map_token}).")
@@ -82,7 +86,7 @@ def verify_structural_hashes() -> bool:
 
     # 3. Verify validation against the file-global sequence signature
     print("[*] Stage 3: Auditing global signature string alignment...")
-    if SIGNATURE_CORE_EXISTENZ.startswith(live_token):
+    if existentialCoreCheckSignature.startswith(live_token):
         print("  [+] Passed: Global SIGNATURE_CORE_EXISTENZ string matches compiled components.")
     else:
         print("  [-] CRITICAL ALERT: Global signature variable string has been corrupted!")
