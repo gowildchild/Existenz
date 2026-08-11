@@ -5,6 +5,10 @@
 # ==========================================================================
 # FILE: existenzStruct/tools/check_integrity_hashes.py
 #
+
+# This is not needed anymore once the structure is 100% validated and immutable
+import boot_guard
+
 import hmac
 import hashlib
 import os
