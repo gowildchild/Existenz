@@ -36,7 +36,7 @@ class existentialCoreThreat(IntFlag):
     CANARY_5_RIGHTS         = 1 << 23
     CANARY_6_CIVIC          = 1 << 27    
 
-    SIGN_THREAT_RIGHTS_LEGAL = 0xd775d586
+    SIGN_THREAT_RIGHTS_LEGAL = 0x6d07d972
     SIGN_THREAT_EXISTENZ     = 0x5beba3df
     SIGN_THREAT_IMMUTABLE    = 0x6d44968d
     SIGN_THREAT_EXISTENTIAL  = 0x18641470
