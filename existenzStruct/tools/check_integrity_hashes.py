@@ -74,7 +74,7 @@ def verify_structural_hashes() -> bool:
     
     computed_map_hash = hmac.new(existentialCoreCheckMagic, map_bytes, hashlib.sha256).digest()
     live_map_token = computed_map_hash[:4].hex()
-    expected_map_link = hex(existentialCoreThreat.existentialCoreThreatLegal)[2:]
+    expected_map_link = hex(existentialCoreThreat.SIGN_THREAT_RIGHTS_LEGAL)[2:]
     
     if hmac.compare_digest(live_map_token, expected_map_link):
         print(f"  [+] Passed: Threat legal map matches compiled signature (0x{live_map_token}).")
