@@ -54,5 +54,5 @@ class existentialCore(IntFlag):
 
 
 # This one is lonely because of a circular math paradox!
-existentialCoreSign      = 0x67800156
-existentialCoreSignature = "ee189e7640ae7a1001a1d60e0c6a9fb873ef3cb12af8d938e583c27dc3526401"
+existentialCoreSign      = 0x22023c14
+existentialCoreSignature = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
