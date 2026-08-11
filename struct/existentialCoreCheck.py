@@ -7,8 +7,8 @@
 # Veritas - Public Security Guardian - final Check.
 import hmac
 import hashlib
-from existentialCore import existentialCore
-from existentialCoreThreat import existentialCoreThreat
+from struct.master.existentialCore import existentialCore
+from struct.master.existentialCoreThreat import existentialCoreThreat
 
 # ==========================================================================
 # CRITICAL FILE-GLOBAL ARCHITECTURAL ANCHORS
