@@ -9,19 +9,22 @@ import hashlib
 import os
 import sys
 
-# Locate the absolute system workspace root directory cleanly
+# 1. Locate the absolute repository root path on the remote virtual machine
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
-# --- AIRTIGHT COLLISION FIX APPLIED HERE ---
-# Force Python to evaluate your local struct/master path FIRST before its built-ins
+# 2. Extract the direct path to your master blueprint folder
 MASTER_PATH = os.path.join(REPO_ROOT, "struct", "master")
+
+# 3. CRITICAL NAME-COLLISION FIX: Insert MASTER_PATH at position 0!
+# This tells Python to prioritize looking for files inside your master/ directory
+# BEFORE it scans any built-in system paths or name-blocked namespaces.
 if MASTER_PATH not in sys.path:
     sys.path.insert(0, MASTER_PATH)
 
 try:
-    # We strip out the "struct.master" namespace prefix entirely!
-    # By importing straight from the injected master directory scope,
-    # the name block disappears, and it pulls your real file variables.
+    # We remove "struct.master." entirely from the import line.
+    # Because master/ is now your primary search domain, Python directly links
+    # to your neighbor file 'existentialCores.py' with zero conflicts.
     from existentialCores import (
         PLATFORM_ANCHOR_KEY, 
         SIGNATURE_CORE_EXISTENZ,
@@ -32,14 +35,12 @@ except ImportError as e:
     print(f"[-] Execution Error: Missing structural components. {e}")
     sys.exit(1)
 
-
 def verify_structural_hashes() -> bool:
     print("==================================================================")
     print("[*] LAUNCHING EXISTENZ INTEGRITY SCAN")
     print("==================================================================")
     
     # 1. Enforce strict matching on the multi-class layout sequence
-    # This serializes the names and structural weights of both classes
     core_meanings = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
     threat_meanings = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCoreThreat.__members__.items()) if k != "THREAT_RIGHTS_LEGAL")
     
@@ -51,7 +52,6 @@ def verify_structural_hashes() -> bool:
     live_token = computed_hash[:4].hex()
     
     print("[*] Stage 1: Evaluating core layout structure...")
-    # The expected terminal link from Option A is 0xca3e7ec2
     expected_core_link = hex(existentialCore.SIGN_CORES_CHAINED)[2:]
     
     if hmac.compare_digest(live_token, expected_core_link):
@@ -94,3 +94,4 @@ def verify_structural_hashes() -> bool:
 if __name__ == "__main__":
     secure = verify_structural_hashes()
     sys.exit(0 if secure else 1)
+
