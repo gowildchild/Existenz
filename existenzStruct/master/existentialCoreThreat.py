@@ -42,17 +42,17 @@ class existentialCoreThreat(IntFlag):
     SIGN_THREAT_EXISTENTIAL  = 0x18641470
     SIGN_THREAT_CANARY       = 0xc01eca1e
 
-existentialCoreThreatLegal  = {
+existentialCoreThreatLegal = {
     existentialCoreThreat.THREAT_EXISTENCE:        "LEGAL_CAT1_MURDER",
     existentialCoreThreat.THREAT_AUTONOMY:         "LEGAL_CAT2_PHYSICAL_VIOLATION",
     existentialCoreThreat.THREAT_INTEGRITY:        "LEGAL_CAT3_COERSION",
-    1 << 3:                                        "LEGAL_CAT4_CHARACTER_ASSASINATION",
+    existentialCoreThreat.CANARY_1_SOVEREIGN:      "LEGAL_CAT4_CHARACTER_ASSASINATION",
     existentialCoreThreat.THREAT_PSYCHOLOGY:       "LEGAL_CAT5_PSYCHOLOGICAL_INTIMIDATION",
-    existentialCoreThreat.THREAT_PHYSICAL:         "LEGAL_CAT6_PHYSICAL_VIOLATION", 
+    existentialCoreThreat.THREAT_PHYSICAL:         "LEGAL_CAT2_PHYSICAL_VIOLATION",
     existentialCoreThreat.THREAT_ABLEISM:          "LEGAL_CAT6_ABLEISM",
     existentialCoreThreat.THREAT_DEVELOPMENT:      "LEGAL_CAT8_INTELLECTUAL_PIRACY",
     existentialCoreThreat.THREAT_PROPERTY:         "LEGAL_CAT9_THEFTH",
-    1 << 13:                                       "LEGAL_CAN1_SYSTEMCRISIS",
+    existentialCoreThreat.CANARY_3_SYSTEMIC:       "LEGAL_CAN1_SYSTEMCRISIS",
     1 << 14:                                       "LEGAL_CAN2_EXPLOITATION",
     existentialCoreThreat.THREAT_RIGHTS_HUMAN:     "LEGAL_CAN3_HUMAN",
     existentialCoreThreat.THREAT_RIGHTS_INCLUSIVE: "LEGAL_CAN4_INCLUSION",
