@@ -4,6 +4,7 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
 # ==========================================================================
 # FILE: struct/tools/check_integrity_hashes.py
+#
 import hmac
 import hashlib
 import os
@@ -94,4 +95,3 @@ def verify_structural_hashes() -> bool:
 if __name__ == "__main__":
     secure = verify_structural_hashes()
     sys.exit(0 if secure else 1)
-
