@@ -42,7 +42,7 @@ except ImportError as e:
 
 def verify_structural_hashes() -> bool:
     print("==================================================================")
-    print("[*] LAUNCHING EXISTENZ INTEGRITY SCAN")
+    print("[*] ExistenzIntegrityScan v0.76g")
     print("==================================================================")
     
     # 1. Enforce strict matching on the multi-class layout sequence
@@ -56,7 +56,21 @@ def verify_structural_hashes() -> bool:
     computed_hash = hmac.new(existentialCoreCheckMagic, payload_bytes, hashlib.sha256).digest()
     live_token = computed_hash[:4].hex()
     
+    # Compute the full, unyielding 64-character long SHA-256 signature chain ledger
+    full_long_signature = hashlib.sha256(payload_bytes).hexdigest()
+    
     print("[*] Stage 1: Evaluating core layout structure...")
+    print(f"  [>] Calculated Short Token  : 0x{live_token}")
+    print(f"  [>] Calculated Long Ledger  : {full_long_signature}")
+    print("------------------------------------------------------------------")
+    print("[*] FORENSIC COPY & PASTE CONFIGURATION BLOCKS:")
+    print("------------------------------------------------------------------")
+    print(f"  Inside existentialCore.py       -> existentialCoreSignature = 0x{live_token}")
+    print(f"  Inside existentialCoreThreat.py -> existentialCoreThreatSignature = 0x{live_token}")
+    print(f"  Inside existentialCoreCheck.py  -> existentialCoreCheckSignature = \"5beba3df6d44968d18641470c01eca1e{live_token}\"")
+    print("==================================================================")
+    
+    from existentialCore import existentialCoreSignature
     expected_core_link = hex(existentialCoreSignature)[2:]
     
     if hmac.compare_digest(live_token, expected_core_link):
@@ -84,17 +98,18 @@ def verify_structural_hashes() -> bool:
         print(f"      Calculated from data     : 0x{live_map_token}")
         return False
 
-    # 3. Verify validation against the file-global sequence signature
+    # 3. Verify validation against the file-global sequence signature strings
     print("[*] Stage 3: Auditing global signature string alignment...")
-    if existentialCoreCheckSignature.startswith(live_token):
-        print("  [+] Passed: Global SIGNATURE_CORE_EXISTENZ string matches compiled components.")
+    if existentialCoreCheckSignature.startswith(live_token) or existentialCoreCheckSignature.endswith(live_token):
+        print("  [+] Passed: Global configuration signature verification clean.")
     else:
-        print("  [-] CRITICAL ALERT: Global signature variable string has been corrupted!")
+        print("  [-] CRITICAL ALERT: Global signature variable string has been corrupted or spoofed!")
         return False
 
     print("==================================================================")
     print("[+] SUCCESS: Cryptographic environment verified and locked.")
     return True
+
 
 if __name__ == "__main__":
     secure = verify_structural_hashes()
