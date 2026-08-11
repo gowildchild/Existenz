@@ -9,9 +9,9 @@
 # v0.76f - exactly the same as existentialCoreImport.py ; just shorter
 #
 import sys
-from existentialCore import existentialCore
-from existentialCoreThreat import existentialCoreThreat
-from existentialCoreCheck import existentialCoreCheck, PLATFORM_VERSION
+from existenzStruct.master.existentialCore import existentialCore
+from existenzStruct.master.existentialCoreThreat import existentialCoreThreat
+from existenzStruct.existentialCoreCheck import existentialCoreCheck, PLATFORM_VERSION
 
 # ==========================================================================
 # AUTOMATED RUNTIME INITIALIZATION AUTO-CHECK
