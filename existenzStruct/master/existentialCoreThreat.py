@@ -59,4 +59,4 @@ existentialCoreThreatLegal = {
     1 << 40:                                       "LEGAL_CAN5_PREDATORY"
 }
 
-existentialCoreThreatSignature = 0x4acaddf8
+existentialCoreThreatSignature = 0x12ed44e4
