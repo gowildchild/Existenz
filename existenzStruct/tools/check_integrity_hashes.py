@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # ==========================================================================
-# THE EXISTENZ PLATFORM (REPO tools / Check Hashes v0.76f)
+# THE EXISTENZ PLATFORM (REPO tools / Check Hashes v0.76g)
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
 # ==========================================================================
-# FILE: struct/tools/check_integrity_hashes.py
+# FILE: existenzStruct/tools/check_integrity_hashes.py
 #
 import hmac
 import hashlib
@@ -13,27 +13,20 @@ import sys
 # 1. Locate the absolute repository root path on the remote virtual machine
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
-# 2. Extract the direct path to the main struct/ directory and master/ directory
-STRUCT_ROOT_PATH = os.path.join(REPO_ROOT, "struct")
-MASTER_PATH      = os.path.join(REPO_ROOT, "struct", "master")
-
-# 3. CRITICAL NAME-COLLISION BYPASS
-# Inject BOTH folder pathways at position 0. This forces the interpreter to locate
-# your files natively by their short filenames, completely ignoring the built-in library module.
-if STRUCT_ROOT_PATH not in sys.path:
-    sys.path.insert(0, STRUCT_ROOT_PATH)
-if MASTER_PATH not in sys.path:
-    sys.path.insert(0, MASTER_PATH)
+# 2. Inject the project workspace root into Python's top-level search path
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
 
 try:
-    # Because existentialCores.py sits one level lower inside struct/,
-    # and your structures sit inside master/, this clean import line will
-    # now resolve flawlessly across all execution environments.
-    from existentialCores import (
+    # --- FIXED: ABSOLUTE NAMESPACE IMPORTS ROUTED CORRECTLY ---
+    from existenzStruct.existentialCoreCheck import (
         PLATFORM_ANCHOR_KEY, 
-        SIGNATURE_CORE_EXISTENZ,
-        existentialCore, 
-        existentialCoreThreat
+        SIGNATURE_CORE_EXISTENZ
+    )
+    from existenzStruct.master.existentialCore import existentialCore
+    from existenzStruct.master.existentialCoreThreat import (
+        existentialCoreThreat, 
+        THREAT_RIGHTS_LEGAL
     )
 except ImportError as e:
     print(f"[-] Execution Error: Missing structural components. {e}")
@@ -68,7 +61,7 @@ def verify_structural_hashes() -> bool:
 
     # 2. Enforce structural validation over the Threat Legal Map dictionary content
     print("[*] Stage 2: Evaluating forensic threat legal translation mapping...")
-    serialized_map = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreat.THREAT_RIGHTS_LEGAL.items()))
+    serialized_map = "".join(f"{k}:{v}" for k, v in sorted(THREAT_RIGHTS_LEGAL.items()))
     map_bytes = serialized_map.encode('utf-8')
     
     computed_map_hash = hmac.new(PLATFORM_ANCHOR_KEY, map_bytes, hashlib.sha256).digest()
