@@ -34,17 +34,13 @@ jobs:
         # Save the mode variable to the GitHub Actions environment map
         echo "RUN_MODE=$MODE" >> $GITHUB_ENV
 
-    # Step 4: Standalone Cryptographic Hash Audit (Localized Execution Context)
+    # Step 4: Standalone Cryptographic Hash Audit (Absolute Root Context)
     - name: Run Standalone Cryptographic Hash Audit
       if: env.RUN_MODE != 'locked'
       run: |
-        # Change directory straight into your isolated package vault root folder.
-        # This aligns Python's working execution pointer directly with your files!
-        cd existenzStruct
-        
-        # Inject the current folder path natively into the prioritized search path
-        PYTHONPATH="." python tools/check_integrity_hashes.py
-
+        # Inject the physical repository root natively into Python's search path
+        # This allows absolute paths (existenzStruct.master...) to resolve flawlessly!
+        PYTHONPATH="${GITHUB_WORKSPACE}" python existenzStruct/tools/check_integrity_hashes.py
 
     # Step 5: Execute Suite and Compile Structures (Skipped if fully locked)
     - name: Run Core Suite and Compile Universal Data Structures
