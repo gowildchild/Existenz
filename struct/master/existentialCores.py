@@ -1,5 +1,6 @@
 # ==========================================================================
-# THE EXISTENZ PLATFORM (AUTOMATED GENESIS INITIALIZATION & IMPORT HUB)
+# THE EXISTENZ PLATFORM v0.76f
+# (existentialCore + existentialCoreThreat + existentialCoreCheck)
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
 # Released under strict Non-Commercial Open-Source License terms.
 # Commercial use requires immediate written license and explicit payment.
@@ -8,9 +9,9 @@
 # v0.76f - exactly the same as existentialCoreImport.py ; just shorter
 #
 import sys
-from struct.existentialCore import existentialCore
-from struct.existentialCoreThreat import existentialCoreThreat
-from struct.existentialCoreCheck import existentialCoreCheck, PLATFORM_VERSION
+from struct.master.existentialCore import existentialCore
+from struct.master.existentialCoreThreat import existentialCoreThreat
+from struct.master.existentialCoreCheck import existentialCoreCheck, PLATFORM_VERSION
 
 # ==========================================================================
 # AUTOMATED RUNTIME INITIALIZATION AUTO-CHECK
