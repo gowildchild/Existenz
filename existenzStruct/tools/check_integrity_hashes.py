@@ -26,15 +26,19 @@ try:
         existentialCoreCheckMagic, 
         existentialCoreCheckSignature
     )
+    # --- FIXED: ADDED THE MISSING SIGN/SIGNATURE HOOK VARIABLES HERE ---
     from existenzStruct.master.existentialCore import (
         existentialCore,
+        existentialCoreSign,
         existentialCoreSignature
     )
     from existenzStruct.master.existentialCoreThreat import (
-        existentialCoreThreat,
-        existentialCoreThreatSignature,
+        existentialCoreThreat, 
+        existentialCoreThreatSign,
+        existentialCoreThreatSignature, 
         existentialCoreThreatLegal
     )
+    
 except ImportError as e:
     print(f"[-] Execution Error: Missing structural components. {e}")
     sys.exit(1)
