@@ -59,5 +59,17 @@ existentialCoreThreatLegal = {
     1 << 40:                                       "LEGAL_CAN5_PREDATORY"
 }
 
-existentialCoreThreatSign      = 0x67800156
-existentialCoreThreatSignature = "ee189e7640ae7a1001a1d60e0c6a9fb873ef3cb12af8d938e583c27dc3526401"
+
+# ==========================================================================
+# UNIVERSAL CRYPTOGRAPHIC BOUNDARY VAULT (CONSOLIDATED STRUCTURE)
+# ==========================================================================
+class existentialCoreThreatSignatures:
+    """Consolidated hardware-salted cryptographic locks for the threat ecosystem."""
+    existentialCoreThreatSign                = 0x57c413f8
+    existentialCoreThreatSignature           = "57c413f8531731df0d2f09a260ea36c7e49269348b553fdeeaa2dd11e7bc4bb9"
+    existentialCoreThreatLegalSign           = 0x6d07d972
+    existentialCoreThreatLegalSignature      = "6d07d97272d414f966ea7a9d7b2956b96541fecbcb9079f375408a62b3b6bd6e"
+    existentialCoreThreatStructuresSign      = 0x759533df
+    existentialCoreThreatStructuresSignature = "759533dfd2a276046bc62985b17df7cefb999a1c3a07b7b983e5ee278d80302d"
+
+
