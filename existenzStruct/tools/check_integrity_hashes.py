@@ -30,9 +30,8 @@ try:
     )
     from existenzStruct.master.existentialCoreThreat import (
         existentialCoreThreat, 
-        existentialCoreThreatSign,
-        existentialCoreThreatSignature, 
-        existentialCoreThreatLegal
+        existentialCoreThreatLegal,
+        existentialCoreThreatSignatures 
     )
 except ImportError as e:
     print(f"[-] Execution Error: Missing structural components. {e}")
@@ -43,7 +42,8 @@ def verify_structural_hashes() -> bool:
     print("[*] ExistenzIntegrityScan v0.76g")
     print("==================================================================")
     
-    # 1. CORE PILLARS LAYER (The Human Rights Sanctuary)
+    # --- YOUR PERFECTED REALIGNMENT CHUNK ---
+    # 1. Enforce strict matching on the multi-class layout sequence
     core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
     core_structure_payload = core_structure.encode('utf-8')
     core_structure_signature = hmac.new(existentialCoreCheckMagic, core_structure_payload, hashlib.sha256).hexdigest()
@@ -73,7 +73,7 @@ def verify_structural_hashes() -> bool:
     check_structures_signature = hmac.new(existentialCoreCheckMagic, check_structures_payload, hashlib.sha256).hexdigest()
     check_structures_sign = check_structures_signature[:8]
     
-    # --- TABULAR DIAGNOSTIC INTERFACE ---
+    # --- DIAGNOSTIC LOGS ALIGNED TO YOUR EXACT VARIABLES ---
     print("[*] Stage 1: Evaluating core layout structure...")
     print("------------------------------------------------------------------")  
     print(f"  [>] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
@@ -83,12 +83,13 @@ def verify_structural_hashes() -> bool:
     print("------------------------------------------------------------------")
     print(f"  Inside existentialCore.py       -> existentialCoreSign = 0x{core_structure_sign}")
     print(f"                                  -> existentialCoreSignature = \"{core_structure_signature}\"")
-    print(f"  Inside existentialCoreThreat.py -> existentialCoreThreatSign = 0x{threat_structure_sign}")
-    print(f"                                  -> existentialCoreThreatSignature = \"{threat_structure_signature}\"")
-    print(f"                                  -> existentialCoreThreatLegalSign = 0x{threat_legal_structure_sign}")
-    print(f"                                  -> existentialCoreThreatLegalSignature = \"{threat_legal_structure_signature}\"")
-    print(f"                                  -> existentialCoreThreatStructuresSign = 0x{threat_structures_sign}")
-    print(f"                                  -> existentialCoreThreatStructuresSignature = \"{threat_structures_signature}\"")
+    print(f"  Inside existentialCoreThreat.py -> class existentialCoreThreatSignatures:")
+    print(f"                                         existentialCoreThreatSign                = 0x{threat_structure_sign}")
+    print(f"                                         existentialCoreThreatSignature           = \"{threat_structure_signature}\"")
+    print(f"                                         existentialCoreThreatLegalSign           = 0x{threat_legal_structure_sign}")
+    print(f"                                         existentialCoreThreatLegalSignature      = \"{threat_legal_structure_signature}\"")
+    print(f"                                         existentialCoreThreatStructuresSign      = 0x{threat_structures_sign}")
+    print(f"                                         existentialCoreThreatStructuresSignature = \"{threat_structures_signature}\"")
     print(f"  Inside existentialCoreCheck.py  -> existentialCoreCheckSign = 0x{check_structures_sign}")
     print(f"                                  -> existentialCoreCheckSignature = \"{existentialCoreCheckSignature}\"")
     print("==================================================================")
@@ -104,7 +105,8 @@ def verify_structural_hashes() -> bool:
     if not hmac.compare_digest(core_structure_signature, existentialCoreSignature):
         print("  [-] CRITICAL ALERT: Core structural collision attack or alteration detected!")
         return False
-    if not hmac.compare_digest(threat_structure_signature, existentialCoreThreatSignature):
+    # FIXED: Realigned to natively look inside your new structural class object container
+    if not hmac.compare_digest(threat_structure_signature, existentialCoreThreatSignatures.existentialCoreThreatSignature):
         print("  [-] CRITICAL ALERT: Threat layer structural alteration detected!")
         return False
     print("  [+] Passed: Deep 256-bit long signatures verified clean. Collision risk is 0%.")
@@ -127,7 +129,8 @@ def verify_structural_hashes() -> bool:
 
     # --- STAGE 3: SYMMETRY HANDSHAKE ---
     print("[*] Stage 3: Cross-examining three-way absolute system symmetry...")
-    if hmac.compare_digest(hex(existentialCoreSign), hex(existentialCoreThreatSign)) and \
+    # FIXED: Realigned Handshake loop validation to check against your structured class attribute numbers
+    if hmac.compare_digest(hex(existentialCoreSign), hex(existentialCoreThreatSignSignatures := existentialCoreThreatSignatures.existentialCoreThreatSign)) and \
        hmac.compare_digest(hex(existentialCoreSign), hex(existentialCoreCheckSign)):
         print(f"  [+] Passed: 1:1 Symmetrical Handshake verified absolute (0x{check_structures_sign}).")
     else:
