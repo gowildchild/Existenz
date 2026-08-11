@@ -9,9 +9,15 @@
 # v0.76f - exactly the same as existentialCoreImport.py ; just shorter
 #
 import sys
-from existenzStruct.existentialCoreCheck import existentialCoreCheck, PLATFORM_ANCHOR_KEY, SIGNATURE_CORE_EXISTENZ, PLATFORM_VERSION
+from existenzStruct.existentialCoreCheck import (
+    existentialCoreCheck, 
+    existentialCoreCheckMagic, 
+    existentialCoreCheckSignature,
+    existentialCoreCheckVersion
+)
+
 from existenzStruct.master.existentialCore import existentialCore
-from existenzStruct.master.existentialCoreThreat import existentialCoreThreat, THREAT_RIGHTS_LEGAL
+from existenzStruct.master.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal
 
 
 # ==========================================================================
@@ -47,5 +53,5 @@ __all__ = [
     'existentialCore',
     'existentialCoreThreat',
     'existentialCoreCheck',
-    'PLATFORM_VERSION'
+    'existentialCoreCheckVersion'
 ]
