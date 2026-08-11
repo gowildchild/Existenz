@@ -13,19 +13,22 @@ import sys
 # 1. Locate the absolute repository root path on the remote virtual machine
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
-# 2. Extract the direct path to your master blueprint folder
-MASTER_PATH = os.path.join(REPO_ROOT, "struct", "master")
+# 2. Extract the direct path to the main struct/ directory and master/ directory
+STRUCT_ROOT_PATH = os.path.join(REPO_ROOT, "struct")
+MASTER_PATH      = os.path.join(REPO_ROOT, "struct", "master")
 
-# 3. CRITICAL NAME-COLLISION FIX: Insert MASTER_PATH at position 0!
-# This tells Python to prioritize looking for files inside your master/ directory
-# BEFORE it scans any built-in system paths or name-blocked namespaces.
+# 3. CRITICAL NAME-COLLISION BYPASS
+# Inject BOTH folder pathways at position 0. This forces the interpreter to locate
+# your files natively by their short filenames, completely ignoring the built-in library module.
+if STRUCT_ROOT_PATH not in sys.path:
+    sys.path.insert(0, STRUCT_ROOT_PATH)
 if MASTER_PATH not in sys.path:
     sys.path.insert(0, MASTER_PATH)
 
 try:
-    # We remove "struct.master." entirely from the import line.
-    # Because master/ is now your primary search domain, Python directly links
-    # to your neighbor file 'existentialCores.py' with zero conflicts.
+    # Because existentialCores.py sits one level lower inside struct/,
+    # and your structures sit inside master/, this clean import line will
+    # now resolve flawlessly across all execution environments.
     from existentialCores import (
         PLATFORM_ANCHOR_KEY, 
         SIGNATURE_CORE_EXISTENZ,
