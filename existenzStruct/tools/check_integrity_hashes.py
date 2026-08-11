@@ -119,14 +119,20 @@ def verify_structural_hashes() -> bool:
     
     # RULE 1: The Short Sign must be the EXACT tail of the Long Signature
     if not existentialCoreCheckSignature.endswith(short_sign_hex):
-        print("  [-] CRITICAL ALERT: Architectural misalignment! Short sign is not the tail of the long signature.")
+        print("  [-] CRITICAL ALERT: Architectural misalignment inside existentialCoreCheck.py!")
+        print(f"      config Sign parameter (Tail) : {short_sign_hex}")
+        print(f"      config Signature whole string: {existentialCoreCheckSignature}")
+        print("      [!] Error: The Sign integer must match the literal end of the Signature string.")
         return False
         
-    # RULE 2: The calculated live master token must match that exact tail
+    # RULE 2: The calculated live token from Stage 1 must match that exact tail
     if hmac.compare_digest(check_structures_sign, short_sign_hex):
         print(f"  [+] Passed: Unified sequence signature string verified clean (Tail: 0x{check_structures_sign}).")
     else:
-        print("  [-] CRITICAL ALERT: Live layout calculation does not match the frozen tracking signature!")
+        print("  [-] CRITICAL ALERT: Live layout tracking chain token drift exposed!")
+        print(f"      Expected Suffix inside file  : {short_sign_hex}")
+        print(f"      Calculated from live memory  : {check_structures_sign}")
+        print(f"      [=] Action Required          : Update existentialCoreCheckSignature to end with '{check_structures_sign}'")
         return False
 
     # --- STAGE 3: SYMMETRY HANDSHAKE ---
