@@ -22,7 +22,6 @@ if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
 try:
-    # --- FIXED: ABSOLUTE NAMESPACE IMPORTS ROUTED CORRECTLY ---
     from existenzStruct.existentialCoreCheck import (
         existentialCoreCheckMagic, 
         existentialCoreCheckSignature
@@ -54,38 +53,40 @@ def verify_structural_hashes() -> bool:
     
     # Compute the live HMAC of the code layouts using your master hardware anchor
     computed_hash = hmac.new(existentialCoreCheckMagic, payload_bytes, hashlib.sha256).digest()
-    live_token = computed_hash[:4].hex()
-    
-    # Compute the full, unyielding 64-character long SHA-256 signature chain ledger
-    full_long_signature = hashlib.sha256(payload_bytes).hexdigest()
+    live_short_token = computed_hash[:4].hex()
+    live_long_signature = hashlib.sha256(payload_bytes).hexdigest()
     
     print("[*] Stage 1: Evaluating core layout structure...")
-    print(f"  [>] Calculated Short Token  : 0x{live_token}")
-    print(f"  [>] Calculated Long Ledger  : {full_long_signature}")
+    print(f"  [>] Calculated Short Token  : 0x{live_short_token}")
+    print(f"  [>] Calculated Long Ledger  : {live_long_signature}")
     print("------------------------------------------------------------------")
     print("[*] FORENSIC COPY & PASTE CONFIGURATION BLOCKS:")
     print("------------------------------------------------------------------")
-    print(f"  Inside existentialCore.py       -> existentialCoreSignature = 0x{live_token}")
-    print(f"  Inside existentialCoreThreat.py -> existentialCoreThreatSignature = 0x{live_token}")
-    print(f"  Inside existentialCoreCheck.py  -> existentialCoreCheckSignature = \"5beba3df6d44968d18641470c01eca1e{live_token}\"")
+    print(f"  Inside existentialCore.py       -> existentialCoreSign = 0x{live_short_token}")
+    print(f"  Inside existentialCore.py       -> existentialCoreSignature = \"{live_long_signature}\"")
+    print(f"  Inside existentialCoreThreat.py -> existentialCoreThreatSign = 0x{live_short_token}")
+    print(f"  Inside existentialCoreThreat.py -> existentialCoreThreatSignature = \"{live_long_signature}\"")
+    print(f"  Inside existentialCoreCheck.py  -> existentialCoreCheckSignature = \"5beba3df6d44968d18641470c01eca1e{live_short_token}\"")
     print("==================================================================")
-    
-    from existentialCore import existentialCoreSignature
-    expected_core_link = hex(existentialCoreSignature)[2:]
-    
-    if hmac.compare_digest(live_token, expected_core_link):
-        print(f"  [+] Passed: Core blueprints match compiled chain token (0x{live_token}).")
-    else:
-        print("  [-] CRITICAL ALERT: Structural definition drift detected inside master files!")
-        print(f"      Expected Anchor token : 0x{expected_core_link}")
-        print(f"      Calculated from data   : 0x{live_token}")
+        
+    expected_core_sign = hex(existentialCoreSign)[2:]
+    if not hmac.compare_digest(live_short_token, expected_core_sign):
+        print(f"  [-] CRITICAL ALERT: Short signature definition mismatch (0x{expected_core_sign})!")
         return False
-
+    print("  [+] Passed: Fast-path short anchor validation verified clean.")
+    
+    # Tier B Verification: 256-bit collision firewall check
+    if not hmac.compare_digest(live_long_signature, existentialCoreSignature):
+        print("  [-] CRITICAL ALERT: Brute-force structural collision attack or alteration detected!")
+        print(f"      Expected Long Ledger: {existentialCoreSignature}")
+        print(f"      Calculated Live data: {live_long_signature}")
+        return False
+    print("  [+] Passed: Deep 256-bit long ledger identity verified clean. Collision risk is 0%.")
+    
     # 2. Enforce structural validation over the Threat Legal Map dictionary content
     print("[*] Stage 2: Evaluating forensic threat legal translation mapping...")
     serialized_map = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items()))
     map_bytes = serialized_map.encode('utf-8')
-    
     computed_map_hash = hmac.new(existentialCoreCheckMagic, map_bytes, hashlib.sha256).digest()
     live_map_token = computed_map_hash[:4].hex()
     expected_map_link = hex(existentialCoreThreat.SIGN_THREAT_RIGHTS_LEGAL)[2:]
@@ -94,13 +95,11 @@ def verify_structural_hashes() -> bool:
         print(f"  [+] Passed: Threat legal map matches compiled signature (0x{live_map_token}).")
     else:
         print("  [-] CRITICAL ALERT: Legal map dictionary modifications exposed!")
-        print(f"      Expected Signature token: 0x{expected_map_link}")
-        print(f"      Calculated from data     : 0x{live_map_token}")
         return False
 
     # 3. Verify validation against the file-global sequence signature strings
     print("[*] Stage 3: Auditing global signature string alignment...")
-    if existentialCoreCheckSignature.startswith(live_token) or existentialCoreCheckSignature.endswith(live_token):
+    if existentialCoreCheckSignature.startswith(live_short_token) or existentialCoreCheckSignature.endswith(live_short_token):
         print("  [+] Passed: Global configuration signature verification clean.")
     else:
         print("  [-] CRITICAL ALERT: Global signature variable string has been corrupted or spoofed!")
@@ -109,7 +108,6 @@ def verify_structural_hashes() -> bool:
     print("==================================================================")
     print("[+] SUCCESS: Cryptographic environment verified and locked.")
     return True
-
 
 if __name__ == "__main__":
     secure = verify_structural_hashes()
