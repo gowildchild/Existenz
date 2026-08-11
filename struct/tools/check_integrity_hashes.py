@@ -4,18 +4,25 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
 # ==========================================================================
 # FILE: struct/tools/check_integrity_hashes.py
-#
 import hmac
 import hashlib
 import os
 import sys
 
+# Locate the absolute system workspace root directory cleanly
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-if REPO_ROOT not in sys.path:
-    sys.path.insert(0, REPO_ROOT)
+
+# --- AIRTIGHT COLLISION FIX APPLIED HERE ---
+# Force Python to evaluate your local struct/master path FIRST before its built-ins
+MASTER_PATH = os.path.join(REPO_ROOT, "struct", "master")
+if MASTER_PATH not in sys.path:
+    sys.path.insert(0, MASTER_PATH)
 
 try:
-    from struct.master.existentialCores import (
+    # We strip out the "struct.master" namespace prefix entirely!
+    # By importing straight from the injected master directory scope,
+    # the name block disappears, and it pulls your real file variables.
+    from existentialCores import (
         PLATFORM_ANCHOR_KEY, 
         SIGNATURE_CORE_EXISTENZ,
         existentialCore, 
@@ -24,6 +31,7 @@ try:
 except ImportError as e:
     print(f"[-] Execution Error: Missing structural components. {e}")
     sys.exit(1)
+
 
 def verify_structural_hashes() -> bool:
     print("==================================================================")
