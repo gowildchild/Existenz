@@ -57,7 +57,7 @@ def verify_structural_hashes() -> bool:
     live_token = computed_hash[:4].hex()
     
     print("[*] Stage 1: Evaluating core layout structure...")
-    expected_core_link = hex(existentialCore.existentialCoreSignature)[2:]
+    expected_core_link = hex(existentialCoreSignature)[2:]
     
     if hmac.compare_digest(live_token, expected_core_link):
         print(f"  [+] Passed: Core blueprints match compiled chain token (0x{live_token}).")
