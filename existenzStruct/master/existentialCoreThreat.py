@@ -4,16 +4,14 @@
 # Released under strict Non-Commercial Open-Source License terms.
 # Commercial use requires immediate written license and explicit payment.
 # ==========================================================================
-# VERSION: v0.76f
+# VERSION: v0.76g
 #
 from enum import IntFlag
 class existentialCoreThreat(IntFlag):
     """
     1:1 Symmetrical Mirror of ExistentialCore.
-    Defines immediate critical attacks on the 
-    ExistentialCoreThreat pillars as THREAT_LABEL.
+    Defines immediate critical attacks and their corresponding system watchdogs.
     """
-
     THREAT_NONE             = 0
     THREAT_EXISTENCE        = 1 << 0
     THREAT_AUTONOMY         = 1 << 1
@@ -31,14 +29,20 @@ class existentialCoreThreat(IntFlag):
     THREAT_RIGHTS_ASYLUM    = 1 << 26
     THREAT_IMMUTABLE_END    = 1 << 31
 
+    CANARY_1_SOVEREIGN      = 1 << 3
+    CANARY_2_SOMATIC        = 1 << 9
+    CANARY_3_SYSTEMIC       = 1 << 13
+    CANARY_4_PERSONAL       = 1 << 17
+    CANARY_5_RIGHTS         = 1 << 23
+    CANARY_6_CIVIC          = 1 << 27    
+
     SIGN_THREAT_RIGHTS_LEGAL = 0xd775d586
     SIGN_THREAT_EXISTENZ     = 0x5beba3df
     SIGN_THREAT_IMMUTABLE    = 0x6d44968d
     SIGN_THREAT_EXISTENTIAL  = 0x18641470
     SIGN_THREAT_CANARY       = 0xc01eca1e
-    SIGN_THREAT_CHAINED      = 0xca3e7ec2
 
-THREAT_RIGHTS_LEGAL = {
+existentialCoreThreatLegal  = {
     existentialCoreThreat.THREAT_EXISTENCE:        "LEGAL_CAT1_MURDER",
     existentialCoreThreat.THREAT_AUTONOMY:         "LEGAL_CAT2_PHYSICAL_VIOLATION",
     existentialCoreThreat.THREAT_INTEGRITY:        "LEGAL_CAT3_COERSION",
@@ -55,11 +59,4 @@ THREAT_RIGHTS_LEGAL = {
     1 << 40:                                       "LEGAL_CAN5_PREDATORY"
 }
 
-
-#class existentialCoreThreatBirds(IntFlag):
-#    CANARY_1_SOVEREIGN      = 1 << 3
-#    CANARY_2_SOMATIC        = 1 << 9
-#    CANARY_3_SYSTEMIC       = 1 << 13
-#    CANARY_4_PERSONAL       = 1 << 17
-#    CANARY_5_RIGHTS         = 1 << 23
-#    CANARY_6_CIVIC          = 1 << 27
+existentialCoreThreatSignature = 0x4acaddf8
