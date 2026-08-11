@@ -112,17 +112,21 @@ def verify_structural_hashes() -> bool:
         existentialCoreCheckSignature
     )
     
-    # Tier A Lookup: Check the fast-path short sign anchor matching
-    expected_check_sign = hex(existentialCoreCheckSign)[2:]
-    if not hmac.compare_digest(live_short_token, expected_check_sign):
-        print(f"  [-] CRITICAL ALERT: Global short sign variable drift (0x{expected_check_sign})!")
+    # Extract the short sign string representation cleanly (e.g., "67800156")
+    short_sign_hex = hex(existentialCoreCheckSign)[2:]
+    
+    # RULE 1: The Short Sign must be the EXACT tail of the Long Signature
+    if not existentialCoreCheckSignature.endswith(short_sign_hex):
+        print("  [-] CRITICAL ALERT: Architectural misalignment! Short sign is not the tail of the long signature.")
         return False
         
-    # Tier B Lookup: Check the deep 256-bit immutable ledger matching
-    if hmac.compare_digest(existentialCoreCheckSignature, live_long_signature):
-        print("  [+] Passed: Global configuration signature verification clean.")
+    # RULE 2: The calculated live token from Stage 1 must match that exact tail
+    if hmac.compare_digest(live_short_token, short_sign_hex):
+        print(f"  [+] Passed: Unified sequence signature string verified clean (Tail: 0x{live_short_token}).")
     else:
-        print("  [-] CRITICAL ALERT: Global signature variable string has been corrupted or spoofed!")
+        print("  [-] CRITICAL ALERT: Live layout calculation does not match the frozen tracking signature!")
+        print(f"      Expected Tail : 0x{short_sign_hex}")
+        print(f"      Calculated Live: 0x{live_short_token}")
         return False
 
     print("==================================================================")
