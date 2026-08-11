@@ -6,9 +6,6 @@
 # FILE: existenzStruct/tools/check_integrity_hashes.py
 #
 
-# This is not needed anymore once the structure is 100% validated and immutable
-# import boot_guard
-
 import hmac
 import hashlib
 import os
@@ -22,11 +19,12 @@ if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
 try:
+    # --- FIXED: HOISTED COMPLETELY TO GLOBAL SCOPE TO ELIMINATE THE UNBOUNDLOCALERROR ---
     from existenzStruct.existentialCoreCheck import (
         existentialCoreCheckMagic, 
+        existentialCoreCheckSign,
         existentialCoreCheckSignature
     )
-    # --- FIXED: ADDED THE MISSING SIGN/SIGNATURE HOOK VARIABLES HERE ---
     from existenzStruct.master.existentialCore import (
         existentialCore,
         existentialCoreSign,
@@ -38,7 +36,6 @@ try:
         existentialCoreThreatSignature, 
         existentialCoreThreatLegal
     )
-    
 except ImportError as e:
     print(f"[-] Execution Error: Missing structural components. {e}")
     sys.exit(1)
@@ -73,6 +70,7 @@ def verify_structural_hashes() -> bool:
     print(f"  Inside existentialCore.py       -> existentialCoreSignature = \"{live_long_signature}\"")
     print(f"  Inside existentialCoreThreat.py -> existentialCoreThreatSign = 0x{live_short_token}")
     print(f"  Inside existentialCoreThreat.py -> existentialCoreThreatSignature = \"{live_long_signature}\"")
+    print(f"  Inside existentialCoreCheck.py  -> existentialCoreCheckSign = 0x{live_short_token}")
     print(f"  Inside existentialCoreCheck.py  -> existentialCoreCheckSignature = \"5beba3df6d44968d18641470c01eca1e{live_short_token}\"")
     print("==================================================================")
         
@@ -107,12 +105,7 @@ def verify_structural_hashes() -> bool:
     # 3. Verify validation against the file-global sequence signature strings
     print("[*] Stage 3: Auditing global signature string alignment...")
     
-    from existenzStruct.existentialCoreCheck import (
-        existentialCoreCheckSign, 
-        existentialCoreCheckSignature
-    )
-    
-    # Extract the short sign string representation cleanly (e.g., "67800156")
+    # --- FIXED: LATE IMPORT DROPPED TO AVOID OVERWRITING RESOLUTION REGISTER ---
     short_sign_hex = hex(existentialCoreCheckSign)[2:]
     
     # RULE 1: The Short Sign must be the EXACT tail of the Long Signature
