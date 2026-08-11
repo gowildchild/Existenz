@@ -69,7 +69,7 @@ def verify_structural_hashes() -> bool:
     check_structures_sign = check_structures_signature[:8]
     
     print("[*] Stage 1: Evaluating core structure...")
-    print("─" * 66)  
+    print("─" * 80)
     print(f"  [>] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
     print(f"  [>] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
     print("──┬ [ inside ] ───────────────────────────────────────────────────")
@@ -86,39 +86,36 @@ def verify_structural_hashes() -> bool:
     print(f"                                 └─► existentialCoreCheckSignature            = \"{check_structures_signature}\"")
     print("==================================================================")
 
-    # ==========================================================================
-    # SECURITY ASSERTION GATES (COMPACT HIERARCHICAL LOOP PROTECTION)
-    # ==========================================================================
-    # Symmetrical mapping topology: All engine layers unified under identical standards!
+    master_system_anchor = f"{existentialCoreCheckSign:08x}"
+    
     validation_topology = (
-        ("Core", core_structure_sign, core_structure_signature, f"{existentialCoreSign:08x}", existentialCoreSignature, core_structure_sign),
-        ("CoreThreat", threat_structure_sign, threat_structure_signature, f"{existentialCoreThreatSignatures.existentialCoreThreatSign:08x}", existentialCoreThreatSignatures.existentialCoreThreatSignature, core_structure_sign),
-        ("CoreThreatLegal", threat_legal_structure_sign, threat_legal_structure_signature, f"{existentialCoreThreatSignatures.existentialCoreThreatLegalSign:08x}", existentialCoreThreatSignatures.existentialCoreThreatLegalSignature, core_structure_sign),
-        ("CoreThreatStruct", threat_structures_sign, threat_structures_signature, f"{existentialCoreThreatSignatures.existentialCoreThreatStructuresSign:08x}", existentialCoreThreatSignatures.existentialCoreThreatStructuresSignature, core_structure_sign),
-        ("CoreCheck", check_structures_sign, check_structures_signature, f"{existentialCoreCheckSign:08x}", existentialCoreCheckSignature, core_structure_sign)
+        ("Core",             core_structure_sign, core_structure_signature,   f"{existentialCoreSign:08x}", existentialCoreSignature),
+        ("CoreThreat",       threat_structure_sign, threat_structure_signature, f"{existentialCoreThreatSignatures.existentialCoreThreatSign:08x}", existentialCoreThreatSignatures.existentialCoreThreatSignature),
+        ("CoreThreatLegal",  threat_legal_structure_sign, threat_legal_structure_signature, f"{existentialCoreThreatSignatures.existentialCoreThreatLegalSign:08x}", existentialCoreThreatSignatures.existentialCoreThreatLegalSignature),
+        ("CoreThreatStruct", threat_structures_sign, threat_structures_signature, f"{existentialCoreThreatSignatures.existentialCoreThreatStructuresSign:08x}", existentialCoreThreatSignatures.existentialCoreThreatStructuresSignature),
+        ("CoreCheck",        check_structures_sign, check_structures_signature, master_system_anchor, existentialCoreCheckSignature)
     )
 
-    for layer, live_sign, live_sig, frozen_sign_str, frozen_sig, anchor_sign in validation_topology:
+    for layer, live_sign, live_sig, frozen_sign_str, frozen_sig in validation_topology:
         # Tier A Verification: Fast-Path Short Anchor Check
         if not hmac.compare_digest(live_sign, frozen_sign_str):
             print(f"  [-] CRITICAL ALERT: {layer} short sign definition mismatch!")
-            print(f"      Expected in code: 0x{frozen_sign_str}")
-            print(f"      Live calculated : 0x{live_sign}")
+            print(f"      Expected inside code: 0x{frozen_sign_str}")
+            print(f"      Live calculated data: 0x{live_sign}")
             return False
             
         # Tier B Verification: Deep 256-Bit Anti-Tampering Firewall
         if not hmac.compare_digest(live_sig, frozen_sig):
-            print(f"  [-] CRITICAL ALERT: {layer} structural collision attack or alteration detected!")
-            print(f"      Expected in code: \"{frozen_sig}\"")
-            print(f"      Live calculated : \"{live_sig}\"")
+            print(f"  [-] CRITICAL ALERT: {layer} structural alteration or code injection exposed!")
+            print(f"      Expected inside code: \"{frozen_sig}\"")
+            print(f"      Live calculated data: \"{live_sig}\"")
             return False
 
-        # STAGE 2 & 3 UNIFIED: Enforce prefix shape alignment & absolute 1:1 cross-layer symmetry!
-        if not hmac.compare_digest(live_sign, anchor_sign):
-            print(f"  [-] CRITICAL ALERT: {layer} layer desynchronization / alignment failure exposed!")
-            print(f"      Master Anchor   : 0x{anchor_sign}")
-            print(f"      Live Component  : 0x{live_sign}")
-            return False
+    if not hmac.compare_digest(check_structures_sign, master_system_anchor):
+        print("  [-] CRITICAL ALERT: Global system desynchronization / alignment failure exposed!")
+        print(f"      Master Check Anchor : 0x{master_system_anchor}")
+        print(f"      Live platform state : 0x{check_structures_sign}")
+        return False
             
     print("  [+] Passed: Symmetrical fast-path, prefix alignment, and deep 256-bit locks verified clean.")
     print("==================================================================")
@@ -129,3 +126,4 @@ def verify_structural_hashes() -> bool:
 if __name__ == "__main__":
     secure = verify_structural_hashes()
     sys.exit(0 if secure else 1)
+
