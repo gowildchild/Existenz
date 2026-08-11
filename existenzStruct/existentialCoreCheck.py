@@ -119,10 +119,10 @@ class existentialCoreCheck:
         """
         Deterministically verifies the threat map has not been tampered with.
         """
-        serialized_map = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreat.THREAT_RIGHTS_LEGAL.items()))
+        # FIXED: Targets the module-level existentialCoreThreatLegal name variable directly
+        serialized_map = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items()))
         payload_bytes = serialized_map.encode('utf-8')
         
-        # Explicit reference loop to capture file-global scope configuration value safely
         computed_hash = hmac.new(existentialCoreCheckMagic, payload_bytes, hashlib.sha256).digest()
         computed_token = computed_hash[:4].hex()
         
