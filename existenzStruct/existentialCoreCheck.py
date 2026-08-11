@@ -3,7 +3,7 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
-# v0.76f
+# v0.76g
 # Veritas - Public Security Guardian - final Check.
 import hmac
 import hashlib
@@ -13,9 +13,9 @@ from existenzStruct.master.existentialCoreThreat import existentialCoreThreat
 # ==========================================================================
 # CRITICAL FILE-GLOBAL ARCHITECTURAL ANCHORS
 # ==========================================================================
-PLATFORM_VERSION        = "v0.76f"
-PLATFORM_ANCHOR_KEY     = b"EX25IMMUT32CORE7617"
-SIGNATURE_CORE_EXISTENZ = "5beba3df6d44968d18641470c01eca1eca3e7ec2"
+existentialCoreCheckVersion    = "v0.76g"
+existentialCoreCheckMagic      = b"EX25IMMUT32CORE7617"
+existentialCoreCheckSignature  = "5beba3df6d44968d18641470c01eca1eca3e7ec2"
 
 
 class existentialCoreCheck:
@@ -123,8 +123,7 @@ class existentialCoreCheck:
         payload_bytes = serialized_map.encode('utf-8')
         
         # Explicit reference loop to capture file-global scope configuration value safely
-        anchor_salt = PLATFORM_ANCHOR_KEY
-        computed_hash = hmac.new(anchor_salt, payload_bytes, hashlib.sha256).digest()
+        computed_hash = hmac.new(existentialCoreCheckMagic, payload_bytes, hashlib.sha256).digest()
         computed_token = computed_hash[:4].hex()
         
         expected_token = hex(existentialCoreThreat.SIGN_THREAT_RIGHTS_LEGAL)[2:]
