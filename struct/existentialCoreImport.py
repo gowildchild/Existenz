@@ -7,8 +7,8 @@
 # FILE: struct/existentialCoreImport.py
 #
 import sys
-from struct.existentialCore import existentialCore
-from struct.existentialCoreThreat import existentialCoreThreat
+from struct.master.existentialCore import existentialCore
+from struct.master.existentialCoreThreat import existentialCoreThreat
 from struct.existentialCoreCheck import existentialCoreCheck, PLATFORM_VERSION
 
 # ==========================================================================
