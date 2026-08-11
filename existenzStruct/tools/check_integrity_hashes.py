@@ -5,7 +5,6 @@
 # ==========================================================================
 # FILE: existenzStruct/tools/check_integrity_hashes.py
 #
-
 import hmac
 import hashlib
 import os
@@ -19,7 +18,6 @@ if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
 try:
-    # --- FIXED: HOISTED COMPLETELY TO GLOBAL SCOPE TO ELIMINATE THE UNBOUNDLOCALERROR ---
     from existenzStruct.existentialCoreCheck import (
         existentialCoreCheckMagic, 
         existentialCoreCheckSign,
@@ -45,48 +43,59 @@ def verify_structural_hashes() -> bool:
     print("[*] ExistenzIntegrityScan v0.76g")
     print("==================================================================")
     
+    # --- YOUR PERFECTED REALIGNMENT CHUNK ---
     # 1. Enforce strict matching on the multi-class layout sequence
-    core_meanings = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
-    threat_meanings = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCoreThreat.__members__.items()))
+    core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
+    core_structure_payload = core_structure.encode('utf-8')
+    core_structure_signature = hashlib.sha256(core_structure_payload).hexdigest()
+    core_structure_sign = hmac.new(existentialCoreCheckMagic, core_structure_payload, hashlib.sha256).digest()[:4].hex()
     
-    fused_blueprint = f"{core_meanings}||{threat_meanings}"
-    payload_bytes = fused_blueprint.encode('utf-8')
+    # 2. Isolate and serialize the pure Threat text layout meanings
+    threat_structure       = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCoreThreat.__members__.items()))
+    threat_legal_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items()))
+    threat_structures      = f"{threat_structure}||{threat_legal_structure}"
+    threat_structures_payload = threat_structures.encode('utf-8')
+    threat_structures_signature = hashlib.sha256(threat_structures_payload).hexdigest()
+    threat_structures_sign = hmac.new(existentialCoreCheckMagic, threat_structures_payload, hashlib.sha256).digest()[:4].hex()
+
+    # 3. Compute the live short verification tokens
+    fused_structures = f"{core_structure}||{threat_structures}"
+    fused_structures_signature = hmac.new(existentialCoreCheckMagic, fused_structures.encode('utf-8'), hashlib.sha256).digest()
+    fused_structures_sign = fused_structures_signature[:4].hex()
     
-    # Compute the live HMAC of the code layouts using your master hardware anchor
-    computed_hash = hmac.new(existentialCoreCheckMagic, payload_bytes, hashlib.sha256).digest()
-    live_short_token = computed_hash[:4].hex()
-    live_long_signature = hashlib.sha256(payload_bytes).hexdigest()
-    
+    # --- DIAGNOSTIC LOGS ALIGNED TO YOUR EXACT VARIABLES ---
     print("[*] Stage 1: Evaluating core layout structure...")
-    print(f"  [>] Calculated Short Sign     : 0x{live_short_token}")
-    print(f"  [>] Calculated Long Ledger     : {live_long_signature}")
     print("------------------------------------------------------------------")  
-    print(f"  [>] existentialCoreCheckMagic     : {existentialCoreCheckMagic}")
-    print(f"  [>] existentialCoreCheckSignature : {existentialCoreCheckSignature}")
+    print(f"  [>] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
+    print(f"  [>] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
     print("------------------------------------------------------------------")
-    print("[*] FORENSIC COPY & PASTE CONFIGURATION BLOCKS:")
+    print("[*] ANTI-COLLISION COPY & PASTE INSTRUCTIONS:")
     print("------------------------------------------------------------------")
-    print(f"  Inside existentialCore.py       -> existentialCoreSign = 0x{live_short_token}")
-    print(f"  Inside existentialCore.py       -> existentialCoreSignature = \"{live_long_signature}\"")
-    print(f"  Inside existentialCoreThreat.py -> existentialCoreThreatSign = 0x{live_short_token}")
-    print(f"  Inside existentialCoreThreat.py -> existentialCoreThreatSignature = \"{live_long_signature}\"")
-    print(f"  Inside existentialCoreCheck.py  -> existentialCoreCheckSign = 0x{live_short_token}")
-    print(f"  Inside existentialCoreCheck.py  -> existentialCoreCheckSignature = \"5beba3df6d44968d18641470c01eca1e{live_short_token}\"")
+
+    print(f"  Inside existentialCore.py       -> existentialCoreSign = 0x{core_structure_sign}")
+    print(f"                                  -> existentialCoreSignature = \"{core_structure_signature}\"")
+    print(f"  Inside existentialCoreThreat.py -> existentialCoreThreatSign = 0x{threat_structures_sign}")
+    print(f"                                  -> existentialCoreThreatSignature = \"{threat_structures_signature}\"")
+    print(f"  Inside existentialCoreCheck.py  -> existentialCoreCheckSign = 0x{fused_structures_sign}")
+    print(f"                                  -> existentialCoreCheckSignature = \"{existentialCoreCheckSignature}\"")
     print("==================================================================")
+
         
+    # --- TIER A ALIGNED TO YOUR SHORT TOKEN VARIABLE ---
     expected_core_sign = hex(existentialCoreSign)[2:]
-    if not hmac.compare_digest(live_short_token, expected_core_sign):
+    if not hmac.compare_digest(fused_structures_sign, expected_core_sign):
         print(f"  [-] CRITICAL ALERT: Short signature definition mismatch (0x{expected_core_sign})!")
         return False
     print("  [+] Passed: Fast-path short anchor validation verified clean.")
     
-    # Tier B Verification: 256-bit collision firewall check
-    if not hmac.compare_digest(live_long_signature, existentialCoreSignature):
-        print("  [-] CRITICAL ALERT: Brute-force structural collision attack or alteration detected!")
-        print(f"      Expected Long Ledger: {existentialCoreSignature}")
-        print(f"      Calculated Live data: {live_long_signature}")
+    # --- TIER B ALIGNED TO YOUR LONG SIGNATURE VARIABLES ---
+    if not hmac.compare_digest(core_structure_signature, existentialCoreSignature):
+        print("  [-] CRITICAL ALERT: Core structural collision attack or alteration detected!")
         return False
-    print("  [+] Passed: Deep 256-bit long ledger identity verified clean. Collision risk is 0%.")
+    if not hmac.compare_digest(threat_structures_signature, existentialCoreThreatSignature):
+        print("  [-] CRITICAL ALERT: Threat structural collision attack or alteration detected!")
+        return False
+    print("  [+] Passed: Deep 256-bit long signatures verified clean. Collision risk is 0%.")
     
     # 2. Enforce structural validation over the Threat Legal Map dictionary content
     print("[*] Stage 2: Evaluating forensic threat legal translation mapping...")
@@ -104,8 +113,6 @@ def verify_structural_hashes() -> bool:
 
     # 3. Verify validation against the file-global sequence signature strings
     print("[*] Stage 3: Auditing global signature string alignment...")
-    
-    # --- FIXED: LATE IMPORT DROPPED TO AVOID OVERWRITING RESOLUTION REGISTER ---
     short_sign_hex = hex(existentialCoreCheckSign)[2:]
     
     # RULE 1: The Short Sign must be the EXACT tail of the Long Signature
@@ -114,12 +121,19 @@ def verify_structural_hashes() -> bool:
         return False
         
     # RULE 2: The calculated live token from Stage 1 must match that exact tail
-    if hmac.compare_digest(live_short_token, short_sign_hex):
-        print(f"  [+] Passed: Unified sequence signature string verified clean (Tail: 0x{live_short_token}).")
+    if hmac.compare_digest(fused_structures_sign, short_sign_hex):
+        print(f"  [+] Passed: Unified sequence signature string verified clean (Tail: 0x{fused_structures_sign}).")
     else:
         print("  [-] CRITICAL ALERT: Live layout calculation does not match the frozen tracking signature!")
-        print(f"      Expected Tail : 0x{short_sign_hex}")
-        print(f"      Calculated Live: 0x{live_short_token}")
+        return False
+
+    # 4. Stage 4: Cross-examining three-way absolute system symmetry
+    print("[*] Stage 4: Cross-examining three-way absolute system symmetry...")
+    if hmac.compare_digest(hex(existentialCoreSign), hex(existentialCoreThreatSign)) and \
+       hmac.compare_digest(hex(existentialCoreSign), hex(existentialCoreCheckSign)):
+        print(f"  [+] Passed: 1:1 Symmetrical Handshake verified absolute (0x{fused_structures_sign}).")
+    else:
+        print("  [-] CRITICAL ALERT: System desynchronization detected between core layers!")
         return False
 
     print("==================================================================")
