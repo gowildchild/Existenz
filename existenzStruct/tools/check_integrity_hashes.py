@@ -61,8 +61,11 @@ def verify_structural_hashes() -> bool:
     live_long_signature = hashlib.sha256(payload_bytes).hexdigest()
     
     print("[*] Stage 1: Evaluating core layout structure...")
-    print(f"  [>] Calculated Short Token  : 0x{live_short_token}")
-    print(f"  [>] Calculated Long Ledger  : {live_long_signature}")
+    print(f"  [>] Calculated Short Sign     : 0x{live_short_token}")
+    print(f"  [>] Calculated Long Ledger     : {live_long_signature}")
+    print("------------------------------------------------------------------")  
+    print(f"  [>] existentialCoreCheckMagic     : {existentialCoreCheckMagic}")
+    print(f"  [>] existentialCoreCheckSignature : {existentialCoreCheckSignature}")
     print("------------------------------------------------------------------")
     print("[*] FORENSIC COPY & PASTE CONFIGURATION BLOCKS:")
     print("------------------------------------------------------------------")
@@ -103,7 +106,20 @@ def verify_structural_hashes() -> bool:
 
     # 3. Verify validation against the file-global sequence signature strings
     print("[*] Stage 3: Auditing global signature string alignment...")
-    if existentialCoreCheckSignature.startswith(live_short_token) or existentialCoreCheckSignature.endswith(live_short_token):
+    
+    from existenzStruct.existentialCoreCheck import (
+        existentialCoreCheckSign, 
+        existentialCoreCheckSignature
+    )
+    
+    # Tier A Lookup: Check the fast-path short sign anchor matching
+    expected_check_sign = hex(existentialCoreCheckSign)[2:]
+    if not hmac.compare_digest(live_short_token, expected_check_sign):
+        print(f"  [-] CRITICAL ALERT: Global short sign variable drift (0x{expected_check_sign})!")
+        return False
+        
+    # Tier B Lookup: Check the deep 256-bit immutable ledger matching
+    if hmac.compare_digest(existentialCoreCheckSignature, live_long_signature):
         print("  [+] Passed: Global configuration signature verification clean.")
     else:
         print("  [-] CRITICAL ALERT: Global signature variable string has been corrupted or spoofed!")
