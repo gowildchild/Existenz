@@ -7,7 +7,8 @@
 # Veritas - Public Security Guardian - final Check.
 import hmac
 import hashlib
-from struct.structures import existentialCore, existentialCoreThreat
+from struct.master.existentialCore import existentialCore
+from struct.master.existentialCoreThreat import existentialCoreThreat
 
 # ==========================================================================
 # CRITICAL FILE-GLOBAL ARCHITECTURAL ANCHORS
@@ -16,7 +17,8 @@ PLATFORM_VERSION        = "v0.76f"
 PLATFORM_ANCHOR_KEY     = b"EX25IMMUT32CORE7617"
 SIGNATURE_CORE_EXISTENZ = "5beba3df6d44968d18641470c01eca1eca3e7ec2"
 
-class existentialCoreIntegrity:
+
+class existentialCoreCheck:
     """
     Public-facing validation gatekeeper. Cross-examines live register states
     against the clean room master structure definitions.
@@ -100,7 +102,6 @@ class existentialCoreIntegrity:
         Sentinel Master Firewall. Keeps the full string signatures 
         directly inside the method code segment to protect them from memory hacks.
         """
-        # Kept at the exact operational spot for the public check
         sign_existenz        = "5beba3df48dfcb7cf800c14fba00a297e594d2105da6d4484bc871ef494dbd42"
         sign_immutable       = "18641470fa93489814467d58fa05ef44c35c3b99912788e0b67277d33d9691b0"
         sign_structure       = "6d44968d7d1d9d85546928e57d9924f7ab5cf0682bfd7e1d7de690e086347438"
@@ -121,7 +122,9 @@ class existentialCoreIntegrity:
         serialized_map = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreat.THREAT_RIGHTS_LEGAL.items()))
         payload_bytes = serialized_map.encode('utf-8')
         
-        computed_hash = hmac.new(PLATFORM_ANCHOR_KEY, payload_bytes, hashlib.sha256).digest()
+        # Explicit reference loop to capture file-global scope configuration value safely
+        anchor_salt = PLATFORM_ANCHOR_KEY
+        computed_hash = hmac.new(anchor_salt, payload_bytes, hashlib.sha256).digest()
         computed_token = computed_hash[:4].hex()
         
         expected_token = hex(existentialCoreThreat.SIGN_THREAT_RIGHTS_LEGAL)[2:]
