@@ -46,7 +46,8 @@ jobs:
     - name: Run Core Suite and Compile Universal Data Structures
       if: env.RUN_MODE != 'locked'
       run: |
-        python existenzStruct/tools/core_build.py
+        python existenzStruct/tools/core_build.py -stage check
+        python existenzStruct/tools/core_build.py -stage compile
 
     # Step 6: Assert Schema and Code Generation Success (Skipped if fully locked)
     #- name: Assert Schema and Code Generation Success
@@ -68,7 +69,7 @@ jobs:
         git config --global user.name "Existenz Platform Bot"
         git config --global user.email "bot@existenz.platform"
         
-     #   git add existenzStruct/json/ existenzStruct/xml/ existenzStruct/languages/
+        git add dist/
         
         if git diff --staged --quiet; then
           echo "[+] No structural changes detected. Skipping push."
