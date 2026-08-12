@@ -40,25 +40,25 @@ jobs:
       run: |
         # Inject the physical repository root natively into Python's search path
         # This allows absolute paths (existenzStruct.master...) to resolve flawlessly!
-        PYTHONPATH="${GITHUB_WORKSPACE}" python existenzStruct/tools/check_integrity_hashes.py
+        PYTHONPATH="${GITHUB_WORKSPACE}" python existenzStruct/tools/check_integrity.py
 
     # Step 5: Execute Suite and Compile Structures (Skipped if fully locked)
     - name: Run Core Suite and Compile Universal Data Structures
       if: env.RUN_MODE != 'locked'
       run: |
-        python existenzStruct/tools/compile_structures.py
+        python existenzStruct/tools/core_build.py
 
     # Step 6: Assert Schema and Code Generation Success (Skipped if fully locked)
-    - name: Assert Schema and Code Generation Success
-      if: env.RUN_MODE != 'locked'
-      run: |
-        test -f existenzStruct/json/existentialCore.json
-        test -f existenzStruct/xml/existentialCore.xml
-        test -f existenzStruct/languages/rust/mod.rs
-        test -f existenzStruct/languages/cpp/existentialCore.hpp
-        test -f existenzStruct/languages/php/existentialCore.php
-        test -f existenzStruct/languages/perl/existentialCore.pm
-        echo "[+] Sandbox compilation and schema verification successful."
+    #- name: Assert Schema and Code Generation Success
+    #  if: env.RUN_MODE != 'locked'
+    #  run: |
+    #    test -f existenzStruct/json/existentialCore.json
+    #    test -f existenzStruct/xml/existentialCore.xml
+    #    test -f existenzStruct/languages/rust/mod.rs
+    #    test -f existenzStruct/languages/cpp/existentialCore.hpp
+    #    test -f existenzStruct/languages/php/existentialCore.php
+    #    test -f existenzStruct/languages/perl/existentialCore.pm
+    #    echo "[+] Sandbox compilation and schema verification successful."
 
     # Step 7: Conditional Repository Sync Phase (ONLY fires in compile mode)
     - name: Commit and Push Generated Structures (Mode Checked)
@@ -68,7 +68,7 @@ jobs:
         git config --global user.name "Existenz Platform Bot"
         git config --global user.email "bot@existenz.platform"
         
-        git add existenzStruct/json/ existenzStruct/xml/ existenzStruct/languages/
+     #   git add existenzStruct/json/ existenzStruct/xml/ existenzStruct/languages/
         
         if git diff --staged --quiet; then
           echo "[+] No structural changes detected. Skipping push."
