@@ -6,7 +6,7 @@
 # Commercial use requires immediate written license and explicit payment.
 # ==========================================================================
 # FILE: struct/existentialCores.py
-# v0.76f - exactly the same as existentialCoreImport.py ; just shorter
+# v0.76f -- exactly the same as existentialCoreImport.py ; just shorter
 #
 import sys
 from existenzStruct.existentialCoreCheck import (
