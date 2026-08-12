@@ -80,7 +80,17 @@
         .log-threat { border-left-color: #e53e3e; color: #fc8181; background: rgba(229,62,62,0.05); }
         .log-birth { border-left-color: #3182ce; color: #63b3ed; }
         .log-shift { border-left-color: #ecc94b; color: #f6e05e; }
-        
+        #loading-universe {
+        position: fixed; top:0; left:0; width:100vw; height:100vh;
+        background: #000000; z-index: 9999; display: flex;
+        flex-direction: column; justify-content: center; align-items: center;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .loading-text { color: var(--cyan); font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 15px; }
+        .loading-bar { width: 200px; height: 2px; background: #111; border-radius: 2px; overflow: hidden; position: relative; }
+        .loading-bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--pink); animation: sweep 1.5s infinite linear; }
+        @keyframes sweep { 0% { left: -50%; } 100% { left: 100%; } }
+        header { border-bottom: 2px solid var(--cyan); padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
         .btn { 
             background: #2b6cb0; 
             color: white; 
@@ -128,7 +138,23 @@
     </style>
 </head>
 <body>
-
+<header>
+<div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0>
+  <a href="https://github.com/gowildchild/Existenz/" style="color: #0ff0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.6px; border-bottom: 1px solid #000000; padding-bottom: 2px;">GitHub</a> | 
+  <a href="/"  style="font-family: monospace; color: var(--pink);font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Go back to Start, Pick one of the corners!">START</a> | 
+  <a href="/Existenz/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Find which is the tipping point of extremism">Tolerance</a> | 
+  <a href="/Existenz/apps/human-rights/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Human Rights for all the ages, including the dark ages!">Human Rights</a> | 
+  <a href="/Existenz/apps/extra-colliding/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="This is a human quest to find the collissions that matter!">Extra</a> | 
+  <a href="/Existenz/apps/collisions/in-life.html" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="Collisions in Life!">In Life</a> -X- 
+  <a href="/Existenz/apps/lifetime/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> | 
+  <a href="/Existenz/apps/plato-fields/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="The quest for collissions on the canvas of Deogenes">Plato Fields</a> | 
+  <a href="/Existenz/apps/simulation-4D" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="See now how humanity could thrive, or fail, backed by the old Gods of science!">Plato 4D</a> | 
+  <a href="/Existenz/apps/audit-world/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Audit World</a> |
+  <a href="https://github.com/gowildchild/Existenz" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;" title="Get more info now!">Git</a> : 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/examples" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/struct" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
+</div>
+</header>
     <!-- Left Control Panel -->
     <div id="sidebar">
         <h2 style="margin: 0; color: #63b3ed; font-size: 18px; letter-spacing: 1px;">EXISTENZ MATRIX</h2>
@@ -537,6 +563,16 @@
     initPopulation();
     pushLog("Existenz Core initialized. 50 individuals loaded across timeline.", "log-birth");
     updateSimulation();
+
+
+          window.addEventListener('load', () => {
+         setTimeout(() => {
+         try {
+           const loader = document.getElementById('loading-universe');
+           if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 1500); }
+         } catch(e) { updateSimulation(); }
+        }, 1600);
+       });   
 </script>
 </body>
 </html>
