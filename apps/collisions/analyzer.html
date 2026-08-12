@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Protocol Matrix Bit Collision Analyzer (Core Connected)</title>
+    <style>
+        body {
+            background: #09090f;
+            color: #00f0ff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            margin: 0;
+        }
+        h2 {
+            border-bottom: 1px solid #141424;
+            padding-bottom: 10px;
+            color: #ff00aa;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .panel {
+            background: #000000;
+            border: 1px solid #141424;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .controls {
+            flex: 1;
+            max-width: 380px;
+        }
+        .canvas-area {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bit-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .bit-row input {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        canvas {
+            background: #020205;
+            border: 1px solid #00f0ff;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+        .log-panel {
+            width: 100%;
+            margin-top: 15px;
+            background: #000;
+            border: 1px solid #141424;
+            height: 180px;
+            overflow-y: auto;
+            padding: 10px;
+            box-sizing: border-box;
+            font-size: 11px;
+        }
+        .log-entry {
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .critical { color: #ff007f; font-weight: bold; }
+        .info { color: #8e8eaf; }
+        .success { color: #39ff14; }
+    </style>
+</head>
+<body>
+
+    <h2>Protocol Matrix Bit Collision Analyzer</h2>
+    <div style="font-size: 12px; color: #8e8eaf; margin-bottom: 15px;">
+      <div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0>
+  <a href="https://github.com/gowildchild/Existenz/" style="color: #0ff0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.6px; border-bottom: 1px solid #000000; padding-bottom: 2px;">GitHub</a> | 
+  <a href="/"  style="font-family: monospace; color: var(--pink);font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Go back to Start, Pick one of the corners!">START</a> | 
+  <a href="/Existenz/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Find which is the tipping point of extremism">Tolerance</a> | 
+  <a href="/Existenz/apps/human-rights/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Human Rights for all the ages, including the dark ages!">Human Rights</a> | 
+  <a href="/Existenz/apps/extra-colliding/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="This is a human quest to find the collissions that matter!">Extra</a> | 
+  <a href="/Existenz/apps/collisions/in-life.html" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="Collisions in Life!">In Life</a> -X- 
+  <a href="/Existenz/apps/lifetime/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> | 
+  <a href="/Existenz/apps/plato-fields/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="The quest for collissions on the canvas of Deogenes">Plato Fields</a> | 
+  <a href="/Existenz/apps/collision/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Collide in 128-bit!">Collision Analyzing</a> | 
+  <a href="/Existenz/apps/audit-world/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Audit World</a> |
+  <a href="https://github.com/gowildchild/Existenz" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;" title="Get more info now!">Git</a> : 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/examples" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/struct" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
+</div>
+        Connected directly to raw core architecture repository boundaries. Turn on your testing protocols to scan active intersections.
+    </div>
+
+    <div class="container">
+        <!-- Left Selection Controls -->
+        <div class="panel controls">
+            <h3 style="margin-top:0; color:#39ff14; font-size:14px;">Protocol Bit Activation</h3>
+            <div id="bit-selectors">Loading structural repository bits...</div>
+            <button id="reset-btn" disabled style="margin-top:15px; width:100%; padding:6px; background:transparent; border:1px solid #ff00aa; color:#ff00aa; font-family:monospace; cursor:not-allowed; font-weight:bold; border-radius:3px;">RESET ALL BITS</button>
+        </div>
+
+        <!-- Right Mapping Screen -->
+        <div class="canvas-area">
+            <canvas id="matrixMap" width="500" height="500"></canvas>
+            <div id="collisionLogs" class="log-panel"></div>
+        </div>
+    </div>
+
+<!-- Using type="module" to enable import statements seamlessly -->
+<script type="module">
+    // Direct link conversion from github branch to raw CDN module asset
+    import { ExistentialCore, ExistentialThreat, ExistentialRipple } from 'https://cdn.jsdelivr.net/gh/gowildchild/Existenz@main/struct/existenz_core.js';
+
+    // Map out user-friendly labels matching your imported bit tokens
+    const protocolBits = [
+        { id: ExistentialCore.EXISTENCE, name: "BIT 2 (EXISTENCE)" },
+        { id: ExistentialCore.AUTONOMY, name: "BIT 4 (AUTONOMY)" },
+        { id: ExistentialCore.INTEGRITY, name: "BIT 6 (INTEGRITY)" },
+        { id: ExistentialCore.PSYCHOLOGY, name: "BIT 8 (PSYCHOLOGY)" },
+        { id: ExistentialCore.PHYSICAL, name: "BIT 10 (PHYSICAL)" },
+        { id: ExistentialCore.DISABILITY, name: "BIT 12 (DISABILITY)" },
+        { id: ExistentialCore.DEVELOPMENT, name: "BIT 14 (DEVELOPMENT)" },
+        { id: ExistentialCore.PROPERTY, name: "BIT 16 (PROPERTY)" },
+        { id: ExistentialCore.PRESENCE, name: "BIT 18 (PRESENCE)" },
+        { id: ExistentialCore.RIGHTS_HUMAN, name: "BIT 20 (HUMAN RIGHTS)" },
+        { id: ExistentialCore.RIGHTS_HOLON, name: "BIT 22 (INCLUSION)" },
+        { id: ExistentialCore.RIGHTS_BASIC, name: "BIT 24 (BASIC RIGHTS)" },
+
+    ];
+
+    // Fixed coordinates for visual geometric representation
+    const bitCoordinates = {
+        [ExistentialCore.EXISTENCE]:   { x: 250, y: 70 },
+        [ExistentialCore.AUTONOMY]:    { x: 380, y: 140 },
+        [ExistentialCore.INTEGRITY]:   { x: 430, y: 270 },
+        [ExistentialCore.PSYCHOLOGY]:  { x: 350, y: 400 },
+        [ExistentialCore.PHYSICAL]:    { x: 250, y: 450 },
+        [ExistentialCore.DISABILITY]:  { x: 150, y: 400 },
+        [ExistentialCore.DEVELOPMENT]: { x: 70,  y: 270 },
+        [ExistentialCore.PROPERTY]:    { x: 120, y: 140 },
+        [ExistentialCore.PRESENCE]:    { x: 250, y: 260 }
+    };
+
+    let activeBits = new Set();
+    const canvas = document.getElementById('matrixMap');
+    const ctx = canvas.getContext('2d');
+
+    function pushConsoleLog(text, entryClass = 'info') {
+        const pane = document.getElementById('collisionLogs');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${entryClass}`;
+        entry.innerText = text;
+        pane.appendChild(entry);
+        pane.scrollTop = pane.scrollHeight;
+    }
+
+    function initUI() {
+        const container = document.getElementById('bit-selectors');
+        container.innerHTML = '';
+        
+        protocolBits.forEach(bit => {
+            const row = document.createElement('div');
+            row.className = 'bit-row';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `bit-${bit.id}`;
+            checkbox.value = bit.id;
+            checkbox.addEventListener('change', () => toggleBit(bit.id));
+            
+            const label = document.createElement('label');
+            label.htmlFor = `bit-${bit.id}`;
+            label.style.fontSize = '11px';
+            label.style.cursor = 'pointer';
+            label.innerText = bit.name;
+            
+            row.appendChild(checkbox);
+            row.appendChild(label);
+            container.appendChild(row);
+        });
+
+        const resetBtn = document.getElementById('reset-btn');
+        resetBtn.disabled = false;
+        resetBtn.style.cursor = 'pointer';
+        resetBtn.addEventListener('click', clearAllBits);
+
+        pushConsoleLog("System: Core architecture connected from repository layer successfully.", "success");
+        
+        // Auto check standard pairs to demonstrate activation mesh links
+        document.getElementById(`bit-${ExistentialCore.AUTONOMY}`).checked = true; toggleBit(ExistentialCore.AUTONOMY);
+        document.getElementById(`bit-${ExistentialCore.INTEGRITY}`).checked = true; toggleBit(ExistentialCore.INTEGRITY);
+    }
+
+    function toggleBit(bitId) {
+        if (activeBits.has(bitId)) {
+            activeBits.delete(bitId);
+        } else {
+            activeBits.add(bitId);
+        }
+        analyzeCollisions();
+    }
+
+    function clearAllBits() {
+        activeBits.clear();
+        protocolBits.forEach(bit => {
+            const el = document.getElementById(`bit-${bit.id}`);
+            if (el) el.checked = false;
+        });
+        analyzeCollisions();
+    }
+
+    function analyzeCollisions() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const logs = document.getElementById('collisionLogs');
+        const existingEntries = logs.querySelectorAll('.critical');
+        existingEntries.forEach(el => el.remove());
+
+        // 1. Plot baseline connection grid paths
+        ctx.strokeStyle = 'rgba(20, 20, 36, 0.4)';
+        ctx.lineWidth = 1;
+        protocolBits.forEach((b1, i) => {
+            protocolBits.forEach((b2, j) => {
+                if (i < j) {
+                    let p1 = bitCoordinates[b1.id];
+                    let p2 = bitCoordinates[b2.id];
+                    if (p1 && p2) {
+                        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                    }
+                }
+            });
+        });
+
+        const currentActiveArray = Array.from(activeBits);
+
+        // 2. Identify bit pair mesh overlap intersections
+        for (let i = 0; i < currentActiveArray.length; i++) {
+            for (let j = i + 1; j < currentActiveArray.length; j++) {
+                let bitX = currentActiveArray[i];
+                let bitY = currentActiveArray[j];
+                
+                let coordX = bitCoordinates[bitX];
+                let coordY = bitCoordinates[bitY];
+
+                if (coordX && coordY) {
+                    let dx = coordX.x - coordY.x;
+                    let dy = coordX.y - coordY.y;
+                    let distance = Math.hypot(dx, dy);
+
+                    let collisionThreshold = 220; 
+                    if (distance < collisionThreshold) {
+                        let impactPercentage = Math.round(((collisionThreshold - distance) / collisionThreshold) * 100);
+
+                        ctx.save();
+                        ctx.strokeStyle = 'rgba(255, 0, 170, 0.7)';
+                        ctx.lineWidth = 2;
+                        ctx.shadowColor = '#ff00aa';
+                        ctx.shadowBlur = 8;
+                        ctx.beginPath(); ctx.moveTo(coordX.x, coordX.y); ctx.lineTo(coordY.x, coordY.y); ctx.stroke();
+                        ctx.restore();
+
+                        pushConsoleLog(`🚨 PROTOCOL OVERLAP: BIT ${bitX} colliding with BIT ${bitY} for ${impactPercentage}% overlap stability`, 'critical');
+                    }
+                }
+            }
+        }
+
+        // 3. Highlight active nodes over map grid
+        protocolBits.forEach(bit => {
+            let pt = bitCoordinates[bit.id];
+            if (!pt) return;
+            let isActive = activeBits.has(bit.id);
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, isActive ? 8 : 5, 0, Math.PI * 2);
+            
+            if (isActive) {
+                ctx.fillStyle = '#39ff14';
+                ctx.shadowColor = '#39ff14';
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '10px monospace';
+                ctx.fillText(`[B:${bit.id}]`, pt.x + 12, pt.y + 4);
+            } else {
+                ctx.fillStyle = '#141424';
+                ctx.strokeStyle = '#4a5568';
+                ctx.lineWidth = 1;
+                ctx.fill();
+                ctx.stroke();
+            }
+            ctx.restore();
+        });
+    }
+
+    // Direct startup execution hook
+    initUI();
+</script>
+</body>
+</html>
