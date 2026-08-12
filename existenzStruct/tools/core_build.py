@@ -5,13 +5,13 @@
 # ==========================================================================
 # FILE: existenzStruct/tools/core_build.py
 #
+import os
+import sys
 import argparse
 import hmac
 import hashlib
 import json
 import yaml
-import os
-import sys
 import re
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
