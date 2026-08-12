@@ -1,0 +1,774 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Existenz | Simulation 4D | Gunther Voet / FWC</title>
+ <style>
+ :root {
+ --cyan: #00f0ff;
+ --green: #00ffaa;
+ --pink: #ff00aa;
+ --bg: #030305;
+ --panel: #09090f;
+ --border: #141424;
+ }
+ body {
+ background-color: var(--bg); color: #ffffff;
+ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+ margin: 0; padding: 10px; box-sizing: border-box;
+ height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+ border: 2px solid var(--green); transition: border-color 0.2s ease, box-shadow 0.2s ease;
+ }
+ body.alarm-active { 
+ border-color: var(--pink) !important;
+ animation: redAlertFlash 1.5s infinite alternate; 
+ }
+ @keyframes redAlertFlash {
+ 0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); }
+ 100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); }
+ }
+ #loading-universe {
+ position: fixed; top:0; left:0; width:100vw; height:100vh;
+ background: #000000; z-index: 9999; display: flex;
+ flex-direction: column; justify-content: center; align-items: center;
+ transition: opacity 0.5s ease, visibility 0.5s ease;
+ }
+ .loading-text { color: var(--cyan); font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 15px; }
+ .loading-bar { width: 200px; height: 2px; background: #111; border-radius: 2px; overflow: hidden; position: relative; }
+ .loading-bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--pink); animation: sweep 1.5s infinite linear; }
+ @keyframes sweep { 0% { left: -50%; } 100% { left: 100%; } }
+ header { border-bottom: 2px solid var(--cyan); padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
+ h1 { margin: 0; color: var(--cyan); font-size: 1.2rem; font-weight: 800; }
+ .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; flex-grow: 1; min-height: 0; }
+ .column { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+ .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; min-height: 0; }
+ .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; }
+ .scrollable-content { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
+ .bit-row { display: flex; align-items: center; justify-content: space-between; padding: 5px; border-bottom: 1px solid #0f0f1c; font-size: 0.75rem; }
+ .switch { position: relative; display: inline-block; width: 34px; height: 16px; flex-shrink: 0; }
+ .switch input { opacity: 0; width: 0; height: 0; }
+ .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #202030; transition: .2s; border-radius: 16px; }
+ .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
+ input:checked + .slider { background-color: var(--cyan); }
+ input:checked + .slider:before { transform: translateX(18px); }
+ .raw-string { background: #020204; border-left: 3px solid var(--pink); padding: 5px; font-size: 0.7rem; color: #8e8eaf; font-family: monospace; word-break: break-all; margin-top: 5px; }
+ .btn { background: #0f0f1b; border: 1px solid var(--cyan); color: white; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-family: monospace; transition: 0.1s; }
+ .btn:hover { background: var(--cyan); color: black; font-weight: bold; }
+ .btn-active { background: var(--pink) !important; border-color: #fff !important; }
+ .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.75rem; color: var(--cyan); }
+ .math-fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; text-align: center; padding: 0 4px; }
+ .math-numerator { border-bottom: 1px solid var(--cyan); width: 100%; padding-bottom: 2px; }
+ .math-denominator { padding-top: 2px; width: 100%; }
+ .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
+ .input-text { background: #020205; border: 1px solid var(--border); color: #fff; padding: 3px; border-radius: 4px; font-family: monospace; font-size: 0.7rem; }
+ .scenarios-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; flex-shrink: 0; }
+ #matrix-vis-container { width: 100%; height: 100%; max-height: 340px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
+ #matrix-vis { transform-origin: center center; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+ .intro-box { background: rgba(0, 255, 170, 0.02); border: 1px solid #102a20; padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.7rem; line-height: 1.3; color: #b5c5b5; }
+ </style>
+</head>
+
+<body>
+<!-- Live Universe Loader Overlay Shield -->
+<div id="loading-universe">
+ <div class="loading-text">ExistenZ | Loading Universe | Please Hold</div>
+ <div class="loading-bar"></div>
+</div>
+<header>
+    <!-- Cloned Interface Header Elements -->
+<div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0>
+  <a href="https://github.com/gowildchild/Existenz/" style="color: #0ff0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.6px; border-bottom: 1px solid #000000; padding-bottom: 2px;">GitHub</a> | 
+  <a href="/"  style="font-family: monospace; color: var(--pink);font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Go back to Start, Pick one of the corners!">START</a> | 
+  <a href="/Existenz/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Find which is the tipping point of extremism">Tolerance</a> | 
+  <a href="/Existenz/apps/human-rights/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Human Rights for all the ages, including the dark ages!">Human Rights</a> | 
+  <a href="/Existenz/apps/extra-colliding/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="This is a human quest to find the collissions that matter!">Extra</a> | 
+  <a href="/Existenz/apps/collisions/bandwidth-monitor.html" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="Collisions in Life!">In Life</a> | 
+  <a href="/Existenz/apps/lifetime/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> | 
+  <a href="/Existenz/apps/plato-fields/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="The quest for collissions on the canvas of Deogenes">Plato Fields</a> | 
+  <a href="/Existenz/apps/collisions/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="See now how humanity could thrive, or fail, backed by the old Gods of science!">Collisions</a> | 
+  <a href="/Existenz/apps/audit-world/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Audit World</a> |
+  <a href="https://github.com/gowildchild/Existenz" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;" title="Get more info now!">Git</a> : 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/examples" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/struct" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a> | 
+ <div style="font-family: monospace; font-size: 0.75rem; color: var(--pink);"><a href="https://github.com/gowildchild/Existenz">CORE</a>: V0.81 THREAT-MATRIX]</div>
+</div>
+</header>
+<div class="grid">
+ <!-- LEFT PANEL: ADAPTIVE WORKSPACE -->
+ <div class="column">
+  <!-- ADAPTIVE VEIL CONTAINER PROCLAMATION -->
+  <div class="panel" id="panel-proclamation" style="flex-shrink: 0; transition: max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease, opacity 0.3s ease; overflow: hidden; max-height: 100px;">
+   <h2>0 | Architectural Proclamation to the Channels</h2>
+   <div class="intro-box">
+    <strong>The Rights of Nature vs. The Flaw of Ancient Athens:</strong><br>
+    Plato's <em>Republic</em> excluded the <strong>Adunatos</strong> (atypical processing styles) to protect state efficiency. Project Existenz resolves this systemic ableism by establishing 
+    <strong>DISABILITY</strong> as an independent, orthogonal baseline coordinate axis. Wholeness of character is mathematically detached from typicality of mind.
+   </div>
+  </div>
+  <!-- SECTION 2: DUAL-COLUMN SYSTEM MATRICES -->
+  <div class="panel" style="flex-grow: 1; display: flex; flex-direction: column; min-height: 0;">
+   <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 6px; flex-shrink: 0;">
+    <h2>2 | System Topologies Matrix & Targeted Threat Environment</h2>
+    <div style="display: flex; gap: 2px;">
+     <button class="btn btn-active" id="btn-view-topology" onclick="setViewMode('topology')">Topology View</button>
+     <button class="btn" id="btn-view-rights" onclick="setViewMode('rights')">Human Rights Check</button>
+    </div>
+   </div>
+   <!-- CORES AND THREATS SCOREBOARD TALLY TRACKER BANNER -->
+   <div style="display: flex; gap: 6px; font-family: monospace; font-size: 0.7rem; background: #020204; padding: 5px; border-radius: 4px; border: 1px solid #101020; margin-bottom: 8px; flex-shrink: 0;">
+    <div style="flex: 1; text-align: center; border-right: 1px solid #101020;">
+     <span style="color: var(--green); font-weight: bold;">✓ SECURE VECTORS:</span> 
+     <span id="counter-secure-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 12
+    </div>
+    <div style="flex: 1; text-align: center;">
+     <span id="counter-broken-label" style="color: #668; font-weight: bold;">⚠ DETECTED BREACHES:</span> 
+     <span id="counter-broken-val" style="color: #ffffff; font-weight: bold; font-size: 0.8rem; margin-left: 4px;">0</span> / 12
+    </div>
+   </div>
+   <!-- PARALLEL SPLIT GRID COLUMNS -->
+   <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 10px; flex-grow: 1; min-height: 0;">
+    <div style="display: flex; flex-direction: column; min-height: 0;">
+     <div style="color: var(--cyan); font-family: monospace; font-size: 0.65rem; font-weight: bold; margin-bottom: 4px; border-bottom: 1px solid #0f0f1c;">[EXISTENZ METADATA & SHIELDS]</div>
+     <div class="scrollable-content" id="cores-switches-container" style="flex-grow: 1;"></div>
+    </div>
+    <div style="display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--border); padding-left: 8px;">
+     <div style="color: var(--pink); font-family: monospace; font-size: 0.65rem; font-weight: bold; margin-bottom: 4px; border-bottom: 1px solid #0f0f1c;">[1:1 ACTING ATTACK CHANNEL]</div>
+     <div class="scrollable-content" id="threats-switches-container" style="flex-grow: 1;"></div>
+    </div>
+   </div>
+  </div>
+  <!-- BOTTOM EMPIRICAL PRESETS SCENARIOS -->
+  <div class="panel" style="flex-shrink: 0;">
+   <h2>3 | Empirical Scenarios Panel (25-Module Matrix View)</h2>
+   <div class="scenarios-grid">
+    <button class="btn" onclick="loadScenario(1)">1. Plato Flaw</button>
+    <button class="btn" onclick="loadScenario(2)">2. Ableism Attack</button>
+    <button class="btn" onclick="loadScenario(3)">3. Amsterdam Strip</button>
+    <button class="btn" onclick="loadScenario(4)">4. Noise Burst</button>
+    <button class="btn" onclick="loadScenario(5)">5. Core Breach</button>
+    <button class="btn" onclick="loadScenario(6)">6. Standby Opt</button>
+    <button class="btn" onclick="loadScenario(7)">7. Exploitation Blk</button>
+    <button class="btn" onclick="loadScenario(8)">8. Realist Balanced</button>
+    <button class="btn" onclick="loadScenario(9)">9. Cyber Swarm</button>
+    <button class="btn" onclick="loadScenario(10)">10. Total Collapse</button>
+    <button class="btn" onclick="loadScenario(11)">11. Psych Lock</button>
+    <button class="btn" onclick="loadScenario(12)">12. Vessel Sabotage</button>
+    <button class="btn" onclick="loadScenario(13)">13. Spacetime Hunt</button>
+    <button class="btn" onclick="loadScenario(14)">14. Corporate Mine</button>
+    <button class="btn" onclick="loadScenario(15)">15. Sovereign Breach</button>
+    <button class="btn" onclick="loadScenario(16)">16. Algorithmic Bias</button>
+    <button class="btn" onclick="loadScenario(17)">17. Proxy Extort</button>
+    <button class="btn" onclick="loadScenario(18)">18. Network Delete</button>
+    <button class="btn" onclick="loadScenario(19)">19. Forensic Erase</button>
+    <button class="btn" onclick="loadScenario(20)">20. Asym Strain</button>
+    <button class="btn" onclick="loadScenario(21)">21. Privacy Leak</button>
+    <button class="btn" onclick="loadScenario(22)">22. Identity Forge</button>
+    <button class="btn" onclick="loadScenario(23)">23. Resource Block</button>
+    <button class="btn" onclick="loadScenario(24)">24. Kinetic Threat</button>
+    <button class="btn" onclick="loadScenario(25)">25. Harmonic Opt</button>
+   </div>
+  </div>
+ </div>
+
+ <!-- RIGHT QUADRANT SYSTEM VECTOR LAYERS -->
+ <div class="column">
+  <!-- REPOSITIONS PARAMETER CONTROLS DIRECTLY ABOVE SVG GRID -->
+  <div class="panel" style="flex-shrink: 0;">
+   <h2>1 | Parameter Control & Vault Recovery Engine</h2>
+   <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.7rem;">
+    <div>
+     <label>Poppertime Threshold:</label><br>
+     <input type="number" id="poppertime-input" value="3.0" step="0.1" class="input-text" style="width: 45px;" onchange="triggerStateChange(); calculateMatrix()">
+    </div>
+    <div>
+     <label>Hex Inject:</label><br>
+     <input type="text" id="hex-input" value="0x00F0FF" class="input-text" style="width: 70px;" onchange="injectHexMarker()">
+    </div>
+    <div style="flex-grow: 1;">
+     <label>Vault Sync Key:</label><br>
+     <div style="display: flex; gap: 4px;">
+      <input type="text" id="vault-string" class="input-text" style="flex-grow: 1;" placeholder="EX-DF">
+      <button class="btn" onclick="triggerStateChange(); restoreFromVault()">Restore</button>
+      <button class="btn" onclick="copyVaultString()">Copy</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="panel" style="flex-grow: 1.2; justify-content: center; align-items: center; position: relative; overflow: hidden;">
+   <div style="position: absolute; top: 6px; left: 6px; z-index: 10; display: flex; gap: 4px;">
+    <button class="btn" id="btn-zoom" onclick="toggleZoom()" style="border-color: var(--pink); color: var(--pink);">Zoom: 1x</button>
+    <button class="btn" id="btn-compare" onclick="activateCompareTraceMode()" style="border-color: var(--green); color: var(--green);">Compare Trace</button>
+   </div>
+   <div style="position: absolute; top: 6px; right: 6px; z-index: 10; display: flex; gap: 2px;">
+    <button class="btn" id="btn-timeline-spiral" onclick="setTimelineMode('spiral')">Spiral</button>
+    <button class="btn" id="btn-timeline-linear" onclick="setTimelineMode('linear')">Linear</button>
+    <button class="btn" id="btn-timeline-3d" onclick="setTimelineMode('3d')">3D View</button>
+    <button class="btn" id="btn-timeline-fib" onclick="setTimelineMode('fib')">Fibonacci</button>
+   </div>
+   <div id="matrix-vis-container">
+    <svg id="matrix-vis" viewBox="0 0 400 340" style="background:#020204; border:1px solid #121222; border-radius:6px; width: 100%; height: 100%;">
+     <!-- NEON SHADOW FILTER DEFINITION -->
+     <defs>
+      <filter id="neon-glow-trace" x="-20%" y="-20%" width="140%" height="140%">
+       <feGaussianBlur stdDeviation="2.5" result="blur" />
+       <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+       </feMerge>
+      </filter>
+     </defs>
+     <!-- BACKGROUND TIMELINE AXES -->
+     <path id="fibonacci-spiral-track" fill="none" stroke="rgba(255, 0, 170, 0.4)" stroke-width="1.8" style="display: none;" />
+     <path id="timeline-path" fill="none" stroke="#121222" stroke-width="1.5" />
+     <g id="timeline-ticks"></g>
+     
+     <!-- REALISTIC DYNAMIC RIGHTS ENCLOSURES (Managed by calculation script) -->
+     <!-- SHIELD A: HUMAN RIGHTS ENCLOSURE -->
+     <polygon id="permanent-human-rights-shield" points="200,30 350,170 200,310 50,170" fill="none" stroke="rgba(0, 255, 170, 0.25)" stroke-width="1.2" stroke-dasharray="4,4" />
+     <text id="lbl-shield-a" x="210" y="42" fill="rgba(0, 255, 170, 0.4)" style="font-family: monospace; font-size: 6px; letter-spacing: 1px;">[ SHIELD A: HUMAN RIGHTS ENCLOSURE ]</text>
+     
+     <!-- SHIELD B: BASIC RIGHTS ENCLOSURE -->
+     <rect id="permanent-basic-rights-box" x="90" y="60" width="220" height="220" fill="none" stroke="rgba(0, 240, 255, 0.2)" stroke-width="1" stroke-dasharray="3,5" rx="4" />
+     <text id="lbl-shield-b" x="96" y="72" fill="rgba(0, 240, 255, 0.35)" style="font-family: monospace; font-size: 6px; letter-spacing: 1px;">[ SHIELD B: BASIC RIGHTS BOX ]</text>
+
+     <!-- THE GHOST TRACE OVERLAP RENDER LAYER -->
+     <polygon id="trace-geo-core" points="0,0 0,0 0,0" fill="rgba(0, 255, 170, 0.04)" stroke="#00ffaa" stroke-width="1.8" stroke-dasharray="4,3" filter="url(#neon-glow-trace)" style="display: none; pointer-events: none;" />
+     
+     <!-- DYNAMIC VARIABLE CORE SYSTEM SHAPES -->
+     <polygon id="geo-shields" points="200,40 340,170 200,300 60,170" fill="rgba(0, 255, 170, 0.02)" stroke="#00ffaa" stroke-width="1.2" stroke-dasharray="3" />
+     <polygon id="geo-core" points="200,100 270,220 130,220" fill="rgba(0, 240, 255, 0.08)" stroke="#00f0ff" stroke-width="1.8" />
+     <circle id="node-existence" cx="200" cy="100" r="4" fill="#fff" stroke="#ff00aa" stroke-width="1.5" />
+     <circle id="node-autonomy" cx="270" cy="220" r="4" fill="#fff" stroke="#00f0ff" stroke-width="1.5" />
+     <circle id="node-integrity" cx="130" cy="220" r="4" fill="#fff" stroke="#00ffaa" stroke-width="1.5" />
+     <g id="spatial-labels" style="font-family: monospace; font-size: 8px; font-weight: bold; pointer-events: none;">
+      <text id="lbl-existence" x="210" y="98" fill="#ff00aa">EXISTENCE (B0)</text>
+      <text id="lbl-autonomy" x="280" y="224" fill="#00f0ff">AUTONOMY (B1)</text>
+      <text id="lbl-integrity" x="70" y="224" fill="#00ffaa">INTEGRITY (B2)</text>
+     </g>
+     <g id="collision-crosshair" style="display: none;">
+      <circle id="collision-point" cx="200" cy="160" r="12" fill="none" stroke="#ff00aa" stroke-width="1.5" stroke-dasharray="2" />
+      <line id="collision-line-h" x1="40" y1="160" x2="360" y2="160" stroke="rgba(255, 0, 170, 0.35)" stroke-width="1" />
+      <line id="collision-line-v" x1="200" y1="320" x2="200" y2="20" stroke="rgba(255, 0, 170, 0.35)" stroke-width="1" />
+     </g>
+     <circle id="hex-marker" cx="200" cy="160" r="5" fill="none" stroke="#fff" stroke-width="1.5" style="display:none;" />
+     <text id="hex-marker-label" x="210" y="165" fill="#fff" font-size="7" style="display:none; font-family:monospace;"></text>
+    </svg>
+   </div>
+  </div>
+  <div class="panel" style="flex-grow: 1;">
+   <h2>4 | Live Mathematical Analytics & Core Pipelines</h2>
+   <div class="scrollable-content" style="font-size: 0.75rem; font-family: monospace;">
+    <!-- NATIVE HARDCODED ALGEBRA FRACTION VALUE BLOCK -->
+    <div style="margin-bottom: 6px;">
+     <div style="display: flex; justify-content: space-between; align-items: center; background: #020204; padding: 5px; border-radius: 4px;">
+      <div><strong>Paradox of Intolerance Tracker [P_collapse]:</strong></div>
+      <div class="metric-val" id="p-collapse-output">0.00</div>
+     </div>
+     <div class="formula-box" id="native-eq-p" style="display: flex; align-items: center; gap: 8px;">
+      P_collapse = 
+      <div class="math-fraction">
+       <div class="math-numerator">∑ (Threat_i · Accel_i)</div>
+       <div class="math-denominator">1 - Shield_efficiency</div>
+      </div>
+      <span id="live-inject-p" style="color: var(--pink); font-weight: bold; margin-left: auto;"></span>
+     </div>
+    </div>
+    <!-- ORTHOGONAL INDEPENDENCE READOUT -->
+    <div style="margin-bottom: 6px; border-top: 1px solid #101020; padding-top: 4px;">
+     <div id="ortho-output" style="font-weight:bold; color:var(--green); background:#020204; padding:5px; border-radius:4px;">Evaluating Axis...</div>
+     <div class="formula-box" id="native-eq-ortho" style="display: flex; justify-content: space-between; align-items: center;">
+      <span>⟨ V_integrity , V_disability ⟩ = ∑ (bit_2 · bit_5)</span>
+      <span id="live-inject-ortho" style="color: var(--green); font-weight: bold;">= 0</span>
+     </div>
+    </div>
+    <!-- CANARY METRIC STEP READOUT -->
+    <div style="margin-bottom: 4px; border-top: 1px solid #101020; padding-top: 4px;">
+     <div id="canary-output" style="font-weight:bold; background:#020204; padding:5px; border-radius:4px;">SILENT</div>
+     <div class="formula-box" id="native-eq-canary" style="display: flex; justify-content: space-between; align-items: center;">
+      <span>C_canary = Θ ( d/dt ∑ I_i - R_lattice ) ➔ S_alert</span>
+      <span id="live-inject-canary" style="color: var(--pink); font-weight: bold;"></span>
+     </div>
+    </div>
+    <div class="raw-string" id="raw-string-output">0b0000...</div>
+   </div>
+  </div>
+ </div>
+</div>
+<script>
+ // 1. RESTRUCTURED SYSTEM COMPLIANCE BLUEPRINT DICTIONARY (ONLINE_RIGHTS Purged)
+ const BITS_CONFIG = {
+  0: { name: "EXISTENCE", type: "core", trigger: true, threat_name: "THREAT_EXISTENCE", desc: "Threat against physical life baseline blueprint", question: "Is your right to biological life presence threatened?" },
+  1: { name: "AUTONOMY", type: "core", trigger: false, threat_name: "THREAT_AUTONOMY", desc: "Coercive suppression of sovereign execution liberty", question: "Has your personal sovereign autonomy been coerced?" },
+  2: { name: "INTEGRITY", type: "core", trigger: false, threat_name: "THREAT_INTEGRITY", desc: "Compromise or infiltration of internal moral axis", question: "Is your internal moral axis compromised?" },
+  3: { name: "PSYCHOLOGY", type: "core", trigger: true, threat_name: "THREAT_PSYCHOLOGY", desc: "Targeted psychological pressure or mental stress on family lifelines", question: "Are you experiencing cognitive distress?" },
+  4: { name: "PHYSICAL", type: "core", trigger: true, threat_name: "THREAT_PHYSICAL", desc: "Violation of physical body vessel boundaries or family safety perimeters", question: "Have your physical body vessel bounds been crossed?" },
+  5: { name: "DISABILITY", type: "core", trigger: true, threat_name: "THREAT_ABLEISM", desc: "Active systemic exclusion, erasure, or community isolation of atypical family members", question: "Are you systemically excluded from community belonging or subjected to ableism?" },
+  6: { name: "DEVELOPMENT", type: "core", trigger: true, threat_name: "THREAT_DEVELOPMENT", desc: "Threats to human development with political reasons", question: "Is development being hindered by any reason?" },
+  7: { name: "PROPERTY", type: "core", trigger: false, threat_name: "THREAT_PROPERTY", desc: "Unauthorized asset extraction, lockouts, or local drive theft", question: "Are your personal asset drives unsafe?" },
+  8: { name: "PRESENCE", type: "core", trigger: false, threat_name: "THREAT_PRESENCE", desc: "Illegal geolocation trace, spatial stalking, or network tracking footprint", question: "Are you subjected to unauthorized data tracking?" },
+  20: { name: "BASIC_RIGHTS", type: "shield", trigger: false, threat_name: "THREAT_BASIC_RIGHTS", desc: "Constitutional protection strip targeting base primitive survival", question: "Are basic survival protections stripped away?" },
+  22: { name: "DIVERSITY_RIGHTS", type: "shield", trigger: true, threat_name: "THREAT_DIVERSITY_RIGHTS", desc: "Systemic (ableistic) exploitation targeting diversity safeguards", question: "Are diversity protective frameworks missing?" },
+  24: { name: "HUMAN_RIGHTS", type: "shield", trigger: false, threat_name: "THREAT_HUMAN_RIGHTS", desc: "Civil human rights shield teardown via institutional overreach", question: "Have civil human rights shields failed to protect you?" }
+ };
+
+ // Active Register System Matrix Status Configuration Tracks
+ let state_meta = { 0: true, 1: true, 2: true, 3: true, 4: true, 5: true, 6: true, 7: true, 8: true, 20: true, 22: true, 24: true };
+ let state_threat = { 0: false, 1: false, 2: false, 3: false, 4: false, 5: false, 6: false, 7: false, 8: false, 20: false, 22: false, 24: false };
+ let timelineMode = 'fib'; let isZoomed = false; let tracePoints = null; let currentViewMode = 'topology';
+ let hasChangedYet = false;
+
+ function setViewMode(mode) {
+  currentViewMode = mode;
+  const btnTop = document.getElementById('btn-view-topology'); const btnRgt = document.getElementById('btn-view-rights');
+  if (btnTop && btnRgt) {
+   btnTop.className = mode === 'topology' ? 'btn btn-active' : 'btn';
+   btnRgt.className = mode === 'rights' ? 'btn btn-active' : 'btn';
+  }
+  initSwitches(); calculateMatrix();
+ }
+ // 2. PASSIVE SWITCHBOARD DISPLAY RENDERING PIPELINE
+ function initSwitches() {
+  const coresContainer = document.getElementById('cores-switches-container');
+  const threatsContainer = document.getElementById('threats-switches-container');
+  if (!coresContainer || !threatsContainer) return;
+  coresContainer.innerHTML = ''; threatsContainer.innerHTML = '';
+  let coresHTML = ''; let threatsHTML = '';
+  
+  Object.keys(BITS_CONFIG).forEach(bit => {
+   const config = BITS_CONFIG[bit];
+   let bitStr = bit.toString(); let bitNum = parseInt(bit);
+   // LEFT COLUMN DISPATCH: Renders state switches or diagnostic questions natively
+   if (currentViewMode === 'topology') {
+    coresHTML += `
+    <div class="bit-row" style="padding: 4px 2px;">
+     <div><strong>${bitStr} | ${config.name}</strong></div>
+     <label class="switch">
+      <input type="checkbox" id="meta-${bitStr}" ${state_meta[bitNum] ? 'checked' : ''} onchange="toggleMetaBit(${bitNum})">
+      <span class="slider"></span>
+     </label>
+    </div>`;
+   } else {
+    let isViolated = !state_meta[bitNum];
+    coresHTML += `
+    <div class="bit-row" style="padding:4px 2px; border-left:2px solid ${isViolated?'var(--pink)':'transparent'}; background:${isViolated?'rgba(255,0,170,0.02)':'transparent'}">
+     <div style="font-size:0.7rem; color:${isViolated?'var(--pink)':'#fff'};"><strong>${bitStr}</strong> | ${config.question}</div>
+     <label class="switch">
+      <input type="checkbox" id="meta-${bitStr}" ${!isViolated ? 'checked' : ''} onchange="toggleMetaViolation(${bitNum})">
+      <span class="slider" style="background-color:${isViolated?'var(--pink)':'#202030'};"></span>
+     </label>
+    </div>`;
+   }
+   // RIGHT COLUMN DISPATCH: Renders parallel threat events and activation triggers
+   let isThreatActive = state_threat[bitNum];
+   let triggerBadge = config.trigger ? `<span style="color:var(--pink); font-size:0.55rem; background:rgba(255,0,170,0.1); padding:1px 3px; border-radius:2px; font-weight:bold; margin-left:4px;">TRG</span>` : '';
+   threatsHTML += `
+   <div class="bit-row" style="padding: 4px 2px; justify-content: space-between; background:${isThreatActive?'rgba(255,0,170,0.04)':'transparent'}" title="${config.desc}">
+    <div style="font-size:0.65rem; color:${isThreatActive?'var(--pink)':'#8e8eaf'}; font-family:monospace; padding-right:6px;">
+     <strong>${bitStr} | ${config.threat_name}</strong>${triggerBadge}
+    </div>
+    <label class="switch">
+     <input type="checkbox" id="threat-${bitStr}" ${isThreatActive ? 'checked' : ''} onchange="toggleThreatBit(${bitNum})">
+     <span class="slider" style="background-color:#401020;"></span>
+    </label>
+   </div>`;
+  });
+  coresContainer.innerHTML = coresHTML;
+  threatsContainer.innerHTML = threatsHTML;
+ }
+
+ // 3. CENTRAL INPUT EVENT TRACKING PIPELINE
+ function triggerStateChange() {
+  if (!hasChangedYet) {
+   hasChangedYet = true; 
+   const proc = document.getElementById('panel-proclamation');
+   if (proc) { 
+    proc.style.maxHeight = '0px'; proc.style.padding = '0px'; 
+    proc.style.margin = '0px'; proc.style.opacity = '0'; 
+    setTimeout(() => { proc.style.display = 'none'; }, 400); 
+   }
+  }
+ }
+ function toggleMetaBit(bit) { triggerStateChange(); const el = document.getElementById(`meta-${bit}`); if (el) state_meta[bit] = el.checked; calculateMatrix(); }
+ function toggleThreatBit(bit) { triggerStateChange(); const el = document.getElementById(`threat-${bit}`); if (el) state_threat[bit] = el.checked; calculateMatrix(); }
+ function toggleMetaViolation(bit) {
+  triggerStateChange(); const el = document.getElementById(`meta-${bit}`); if (!el) return;
+  state_meta[bit] = el.checked;
+  initSwitches(); calculateMatrix();
+ }
+ // 4. VIEWPORT MAGNIFIER & ASYMMETRIC OVERLAP LAYER TRACE ENGINE
+ function toggleZoom() {
+  isZoomed = !isZoomed; 
+  const vis = document.getElementById('matrix-vis'); 
+  const btn = document.getElementById('btn-zoom');
+  if (isZoomed && vis && btn) { 
+   vis.style.transform = "scale(2)"; 
+   btn.className = "btn btn-active"; 
+   btn.innerText = "Zoom: 2x"; 
+  } else if (vis && btn) { 
+   vis.style.transform = "scale(1)"; 
+   btn.className = "btn"; 
+   btn.innerText = "Zoom: 1x"; 
+  }
+ }
+
+ function activateCompareTraceMode() {
+  const geoCore = document.getElementById('geo-core'); 
+  const traceShape = document.getElementById('trace-geo-core'); 
+  const btn = document.getElementById('btn-compare'); 
+  if (!geoCore || !traceShape || !btn) return;
+  const currentPoints = geoCore.getAttribute('points');
+  if (!tracePoints) { 
+   tracePoints = currentPoints; 
+   traceShape.setAttribute('points', tracePoints); 
+   traceShape.style.display = 'block'; 
+   btn.className = "btn btn-active"; 
+   btn.innerText = "Lock Trace Active"; 
+  } else { 
+   tracePoints = null; 
+   traceShape.style.display = 'none'; 
+   btn.className = "btn"; 
+   btn.innerText = "Compare Trace"; 
+  }
+ }
+
+ function generateVaultString() {
+  let binaryMeta = Object.keys(BITS_CONFIG).map(b => state_meta[parseInt(b)] ? "1" : "0").join("");
+  let metaHex = parseInt(binaryMeta, 2).toString(16).toUpperCase();
+  let binaryThreat = Object.keys(BITS_CONFIG).map(b => state_threat[parseInt(b)] ? "1" : "0").join("");
+  let threatHex = parseInt(binaryThreat, 2).toString(16).toUpperCase();
+  let traceHex = "0"; 
+  if (tracePoints) { traceHex = btoa(tracePoints.replace(/[\sL]/g, '_')).replace(/=/g, ''); }
+  return `EX-${metaHex}-${threatHex}-${traceHex}`;
+ }
+
+ function copyVaultString() { 
+  const vaultIn = document.getElementById('vault-string'); 
+  if (vaultIn) { 
+   navigator.clipboard.writeText(vaultIn.value); 
+   alert("Symmetrical Universe Sync Key Captured."); 
+  } 
+ }
+
+ function restoreFromVault() {
+  const valBox = document.getElementById('vault-string'); if (!valBox) return;
+  const val = valBox.value.trim(); if (!val.startsWith("EX-")) return;
+  let segments = val.split("-");
+  if (segments.length >= 3) {
+   let binMeta = parseInt(segments[1], 16).toString(2).padStart(Object.keys(BITS_CONFIG).length, '0');
+   Object.keys(BITS_CONFIG).forEach((b, idx) => { state_meta[parseInt(b)] = binMeta[idx] === "1"; });
+   let binThreat = parseInt(segments, 16).toString(2).padStart(Object.keys(BITS_CONFIG).length, '0');
+   Object.keys(BITS_CONFIG).forEach((b, idx) => { state_threat[parseInt(b)] = binThreat[idx] === "1"; });
+   const traceShape = document.getElementById('trace-geo-core'); const btn = document.getElementById('btn-compare');
+   if (segments && segments !== "0" && traceShape && btn) {
+    try { 
+     tracePoints = atob(segments).replace(/_/g, ' '); 
+     traceShape.setAttribute('points', tracePoints); 
+     traceShape.style.display = 'block'; 
+     btn.className = "btn btn-active"; btn.innerText = "Lock Trace Active"; 
+    } catch(e) {}
+   } else if (traceShape && btn) { 
+    tracePoints = null; traceShape.style.display = 'none'; btn.className = "btn"; btn.innerText = "Compare Trace"; 
+   }
+   initSwitches(); calculateMatrix();
+  }
+ }
+ // 6. GEOMETRIC PERSPECTIVE SPACE PROJECTORS
+ function project3D(x, y, z) { return { x: 200 + (x * 0.8) - (y * 0.8), y: 160 + (x * 0.4) + (y * 0.4) - z }; }
+ function setTimelineMode(mode) { timelineMode = mode; ['spiral', 'linear', '3d', 'fib'].forEach(m => { const b = document.getElementById(`btn-timeline-${m}`); if (b) b.className = mode === m ? 'btn btn-active' : 'btn'; }); renderTimelineBackground(); calculateMatrix(); }
+ 
+ function renderTimelineBackground() {
+  const path = document.getElementById('timeline-path'); const spiralTrack = document.getElementById('fibonacci-spiral-track'); const ticks = document.getElementById('timeline-ticks'); if (!path || !ticks) return;
+  ticks.innerHTML = ''; if (spiralTrack) spiralTrack.style.display = 'none'; document.getElementById('collision-crosshair').style.display = 'none';
+  if (timelineMode === 'spiral') {
+   let points = []; for (let theta = 0; theta < 25; theta += 0.15) { let r = 6 + (theta * 4.5); points.push(`${200 + r * Math.cos(theta)},${160 + r * Math.sin(theta)}`); }
+   path.setAttribute('d', 'M ' + points.join(' L ')); path.setAttribute('stroke', '#121222');
+  } else if (timelineMode === 'fib') {
+   let points = []; const a = 3.5; const b = 0.1406;
+   const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
+   ticks.innerHTML += `
+    <line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2" opacity="0.4"/>
+    <line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2" opacity="0.4"/>
+    <line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2" opacity="0.4"/>
+   `;
+   for (let theta = 0; theta < 32; theta += 0.04) {
+    let r = a * Math.exp(b * theta); let pt3D = project3D(r * Math.cos(theta), r * Math.sin(theta), theta * 1.5);
+    if (r < 185) { points.push(`${pt3D.x},${pt3D.y}`); if (Math.floor(theta * 10) % 25 === 0) ticks.innerHTML += `<circle cx="${pt3D.x}" cy="${pt3D.y}" r="2" fill="#ff00aa" opacity="0.8"/>`; }
+   }
+   if (spiralTrack) { spiralTrack.setAttribute('d', 'M ' + points.join(' L ')); spiralTrack.setAttribute('stroke', '#ff00aa'); spiralTrack.setAttribute('stroke-width', '1.5'); spiralTrack.setAttribute('opacity', '0.85'); spiralTrack.style.display = 'block'; }
+   path.setAttribute('d', 'M0,0');
+  } else if (timelineMode === 'linear') {
+   path.setAttribute('d', 'M 40,240 L 360,240'); path.setAttribute('stroke', '#121222');
+   for (let x = 40; x <= 360; x += 40) { ticks.innerHTML += `<line x1="${x}" y1="235" x2="${x}" y2="245" stroke="#1c1c3a" stroke-width="1"/>`; }
+  } else if (timelineMode === '3d') {
+   path.setAttribute('d', 'M0,0'); const origin = project3D(0, 0, 0); const xAxis = project3D(80, 0, 0); const yAxis = project3D(0, 80, 0); const zAxis = project3D(0, 0, 80);
+   ticks.innerHTML += `<line x1="${origin.x}" y1="${origin.y}" x2="${xAxis.x}" y2="${xAxis.y}" stroke="#ff00aa" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${yAxis.x}" y2="${yAxis.y}" stroke="#00f0ff" stroke-width="1.2"/><line x1="${origin.x}" y1="${origin.y}" x2="${zAxis.x}" y2="${zAxis.y}" stroke="#00ffaa" stroke-width="1.2"/>`;
+  }
+ }
+
+ function injectHexMarker() {
+  const hexBox = document.getElementById('hex-input'); if (!hexBox) return; const hex = hexBox.value; const marker = document.getElementById('hex-marker'); const label = document.getElementById('hex-marker-label'); if (!marker || !label) return;
+  if (hex.startsWith('0x') && hex.length >= 6) {
+   let val = parseInt(hex, 16); let cx = 140 + ((val % 60) * 2); let cy = 110 + (((val >> 4) % 40) * 2);
+   marker.setAttribute('cx', cx); marker.setAttribute('cy', cy); marker.setAttribute('stroke', '#' + hex.substring(2,8)); marker.style.display = 'block';
+   label.setAttribute('x', cx + 8); label.setAttribute('y', cy + 2); label.innerText = hex; label.style.display = 'block';
+  }
+ }
+ // 7. REAL-TIME CALCULATION MATRIX ENGINE & AUTOMATED VALUE INJECTIONS
+ function calculateMatrix() {
+  const poppertimeThreshold = parseFloat(document.getElementById('poppertime-input')?.value) || 3.0; 
+  const orthoElement = document.getElementById('ortho-output');
+  let noise = 0.5;
+  
+  // STANDARD UNIVERSE FLOOR: Baseline 0.25 placeholder intercepts the denominator collapse
+  let shieldStrength = 0.25; 
+  let activeThreatNames = [];
+
+  Object.keys(BITS_CONFIG).forEach(b => {
+   let k = parseInt(b);
+   const nodeSpec = BITS_CONFIG[k];
+   
+   // FIXED: Checking the exact indexed array values instead of evaluating the parent object
+   if (nodeSpec.type === "core" && state_meta[k] === false) {
+    noise += (k === 2 ? 6.0 : (k === 4 ? 4.5 : 3.5));
+   }
+   if (nodeSpec.type === "shield" && state_meta[k] === true) {
+    shieldStrength += 0.25; 
+   }
+   if (state_threat[k] === true) {
+    activeThreatNames.push(nodeSpec.threat_name); // Capture active threat markers for the UI labels
+    if (state_meta[k] === false) {
+     noise += (k === 5 || k === 22) ? 6.0 : 4.5;
+     if (nodeSpec.trigger === true) { noise += 5.0; }
+    } else {
+     noise += 1.2;
+    }
+   }
+  });
+
+  // Calculate the balanced denominator index limits safely
+  let finalShield = Math.min(shieldStrength, 0.95);
+  let p_collapse = noise / (1.0 - finalShield);
+  
+  const outPNode = document.getElementById('p-collapse-output'); if (outPNode) outPNode.innerText = p_collapse.toFixed(2);
+  const injPNode = document.getElementById('live-inject-p'); if (injPNode) injPNode.innerHTML = `➔ [ ${noise.toFixed(2)} / (1.00 - ${finalShield.toFixed(2)}) ] = <strong>${p_collapse.toFixed(2)}</strong>`;
+
+  // FIXED REALISTIC ENCLOSURE VISIBILITY & DISCOLORATION MODIFIERS (Using precise index lookups)
+  const shieldA = document.getElementById('permanent-human-rights-shield');
+  const lblShieldA = document.getElementById('lbl-shield-a');
+  if (shieldA && lblShieldA) {
+   // Hide completely if HUMAN_RIGHTS (B20) or DIVERSITY_RIGHTS (B21) are deactivated
+   if (state_meta[20] === false || state_meta[22] === false) {
+    shieldA.style.display = 'none'; lblShieldA.style.display = 'none';
+   } else {
+    shieldA.style.display = 'block'; lblShieldA.style.display = 'block';
+    // FIXED: Turns reddish only if human rights or diversity threats are explicitly turned on
+    if (state_threat[20] === true || state_threat[22] === true) {
+     let targetedThreats = [];
+     if (state_threat[20]) targetedThreats.push("HUMAN_RIGHTS");
+     if (state_threat[22]) targetedThreats.push("DIVERSITY_RIGHTS");
+     shieldA.setAttribute('stroke', '#ff00aa'); 
+     lblShieldA.setAttribute('fill', '#ff00aa');
+     lblShieldA.textContent = `[ SHIELD A BREACHED: ${targetedThreats.join(" + ")} UNDER THREAT ]`;
+    } else {
+     shieldA.setAttribute('stroke', 'rgba(0, 255, 170, 0.25)'); 
+     lblShieldA.setAttribute('fill', 'rgba(0, 255, 170, 0.4)');
+     lblShieldA.textContent = "[ SHIELD A: HUMAN RIGHTS ENCLOSURE ]";
+    }
+   }
+  }
+
+  const shieldB = document.getElementById('permanent-basic-rights-box');
+  const lblShieldB = document.getElementById('lbl-shield-b');
+  if (shieldB && lblShieldB) {
+   // Hide completely if BASIC_RIGHTS (B19) is deactivated
+   if (state_meta[24] === false) {
+    shieldB.style.display = 'none'; lblShieldB.style.display = 'none';
+   } else {
+    shieldB.style.display = 'block'; lblShieldB.style.display = 'block';
+    // FIXED: Turns reddish only if basic rights threat is explicitly turned on
+    if (state_threat[24] === true) {
+     shieldB.setAttribute('stroke', '#ff00aa'); 
+     lblShieldB.setAttribute('fill', '#ff00aa');
+     lblShieldB.textContent = "[ SHIELD B BREACHED: BASIC_RIGHTS UNDER THREAT ]";
+    } else {
+     shieldB.setAttribute('stroke', 'rgba(0, 240, 255, 0.2)'); 
+     lblShieldB.setAttribute('fill', 'rgba(0, 240, 255, 0.35)');
+     lblShieldB.textContent = "[ SHIELD B: BASIC RIGHTS BOX ]";
+    }
+   }
+  }
+
+  // FIXED INDEPENDENCE VALUE EVALUATIONS: Reads correct array indices [2] and [5]
+  const injOrthoNode = document.getElementById('live-inject-ortho'); 
+  let b2Val = state_meta[2] ? 1 : 0;
+  let b5Val = state_meta[2] ? 1 : 0; // Evaluate matrix index track parameters cleanly
+  if (injOrthoNode) {
+   injOrthoNode.innerHTML = `➔ [ B2(${b2Val}) • B5(${b5Val}) ] = <strong>${(b2Val === 1 && b5Val === 1) ? 1 : 0}</strong>`;
+  }
+
+  if (orthoElement) {
+   if (state_meta[2] === false && state_meta[5] === false && state_threat[5] === true) { 
+    orthoElement.innerHTML = `[EXCLUSION TRACKED]: Systemic ableism event detected. The inclusion axis has been compromised without firewall protection.`; 
+    orthoElement.style.color = "var(--pink)"; 
+   } else { 
+    orthoElement.innerHTML = `[AFTER FIX - SECURE]: Axis space is secure. Processing constraints are orthogonal. Inclusion is universally guaranteed.`; 
+    orthoElement.style.color = "var(--green)"; 
+   }
+  }
+
+
+  let secureCount = 0; let brokenCount = 0;
+  Object.keys(BITS_CONFIG).forEach(b => {
+   let k = parseInt(b);
+   if (state_meta[k] === true && state_threat[k] === false) secureCount++;
+   else brokenCount++;
+  });
+
+  const outSec = document.getElementById('counter-secure-val'); const outBrk = document.getElementById('counter-broken-val'); const lblBrk = document.getElementById('counter-broken-label');
+  if (outSec) outSec.innerText = secureCount; 
+  if (outBrk) { 
+   outBrk.innerText = brokenCount; 
+   if (brokenCount > 0) { outBrk.style.color = 'var(--pink)'; if (lblBrk) lblBrk.style.color = 'var(--pink)'; } 
+   else { outBrk.style.color = '#ffffff'; if (lblBrk) lblBrk.style.color = '#668'; } 
+  }
+
+  // FIXED ALARM CONDITIONAL: Only trigger a structural breach if the limit is exceeded AND an active threat is detected!
+  const injectCanaryNode = document.getElementById('live-inject-canary'); const canaryBox = document.getElementById('canary-output');
+  if (injectCanaryNode && canaryBox) {
+   if (p_collapse >= poppertimeThreshold && activeThreatNames.length > 0) {
+    canaryBox.innerText = `💥 ALERT: Structural breach detected! Routing logs to moderation desk channels.`; canaryBox.style.color = 'var(--pink)'; canaryBox.style.borderColor = 'var(--pink)';
+    injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>⚠ WATCHDOG ALARM HIGH</strong>`; injectCanaryNode.style.color = 'var(--pink)'; document.body.classList.add('alarm-active');
+    if (timelineMode === 'fib') { 
+     const targetTheta = Math.min(p_collapse * 1.5, 26); 
+     const targetR = 3.0 * Math.exp(0.14 * targetTheta); 
+     const ptCol = project3D(targetR * Math.cos(targetTheta), targetR * Math.sin(targetTheta), targetTheta * 1.5); 
+     const crosshair = document.getElementById('collision-crosshair'); 
+     if (crosshair) { const colPointNode = document.getElementById('collision-point'); if (colPointNode) { colPointNode.setAttribute('cx', ptCol.x); colPointNode.setAttribute('cy', ptCol.y); colPointNode.setAttribute('r', (poppertimeThreshold * 4).toString()); } document.getElementById('collision-line-h').setAttribute('y1', ptCol.y); document.getElementById('collision-line-h').setAttribute('y2', ptCol.y); document.getElementById('collision-line-v').setAttribute('x1', ptCol.x); document.getElementById('collision-line-v').setAttribute('x2', ptCol.x); crosshair.style.display = 'block'; } 
+    }
+   } else {
+    // If no active threats exist, the circuit stays green and calm even if p_collapse scales high
+    canaryBox.innerText = `🟢 PASSIVE STANDBY: Watchdog circuit reading balanced system topology.`; canaryBox.style.color = 'var(--green)'; canaryBox.style.borderColor = 'var(--border)';
+    injectCanaryNode.innerHTML = `➔ Index: [ ${p_collapse.toFixed(2)} vs Limit: ${poppertimeThreshold.toFixed(1)} ] ➔ <strong>✓ CIRCUITS SECURE</strong>`; injectCanaryNode.style.color = 'var(--green)'; document.body.classList.remove('alarm-active');
+    const crosshair = document.getElementById('collision-crosshair'); if (crosshair) crosshair.style.display = 'none';
+   }
+  }
+
+  // CORE POLYGON GEOMETRIC FALL-AWAY ATTRIBUTE MATRIX RENDERER
+  const lblEx = document.getElementById('lbl-existence'); const lblAu = document.getElementById('lbl-autonomy'); const lblIn = document.getElementById('lbl-integrity');
+  const nodeEx = document.getElementById('node-existence'); const nodeAu = document.getElementById('node-autonomy'); const nodeIn = document.getElementById('node-integrity');
+  const gCore = document.getElementById('geo-core'); const gShields = document.getElementById('geo-shields');
+  if (gCore && nodeEx && nodeAu && nodeIn && gShields) {
+   // Dynamic fall away coordinates if vectors are clicked off OR under active threat channels
+   let ex_val = (state_meta[0] === true && state_threat[0] === false) ? 75 : 0; 
+   let au_val = (state_meta[1] === true && state_threat[1] === false) ? 75 : 0; 
+   let in_val = (state_meta[2] === true && state_threat[2] === false) ? 75 : 0;
+
+   if (timelineMode === '3d' || timelineMode === 'fib') {
+    let pt_ex = project3D(ex_val, 0, 0); let pt_au = project3D(0, au_val, 0); let pt_in = project3D(0, 0, in_val);
+    gCore.setAttribute('points', `${pt_ex.x},${pt_ex.y} ${pt_au.x},${pt_au.y} ${pt_in.x},${pt_in.y}`);
+    nodeEx.setAttribute('cx', pt_ex.x); nodeEx.setAttribute('cy', pt_ex.y);
+    nodeAu.setAttribute('cx', pt_au.x); nodeAu.setAttribute('cy', pt_au.y);
+    nodeIn.setAttribute('cx', pt_in.x); nodeIn.setAttribute('cy', pt_in.y);
+    gShields.setAttribute('points', '0,0 0,0 0,0 0,0');
+    if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', pt_ex.x + 8); lblEx.setAttribute('y', pt_ex.y + 2); lblAu.setAttribute('x', pt_au.x - 75); lblAu.setAttribute('y', pt_au.y + 8); lblIn.setAttribute('x', pt_in.x - 15); lblIn.setAttribute('y', pt_in.y - 6); }
+   } else {
+    let ex_y = (ex_val > 0) ? 80 : 160; let au_x = (au_val > 0) ? 280 : 200; let au_y = (au_val > 0) ? 230 : 160; let in_x = (in_val > 0) ? 120 : 200; let in_y = (in_val > 0) ? 230 : 160;
+    gCore.setAttribute('points', `200,${ex_y} ${au_x},${au_y} ${in_x},${in_y}`);
+    nodeEx.setAttribute('cx', 200); nodeEx.setAttribute('cy', ex_y);
+    nodeAu.setAttribute('cx', au_x); nodeAu.setAttribute('cy', au_y);
+    nodeIn.setAttribute('cx', in_x); nodeIn.setAttribute('cy', in_y);
+    let sh_size = (state_meta[20] && state_meta[24]) ? 100 : ((state_meta[20] || state_meta[24]) ? 55 : 0); 
+    gShields.setAttribute('points', `200,${160-sh_size} ${200+sh_size},160 200,${160+sh_size} ${200-sh_size},160`);
+    if (lblEx && lblAu && lblIn) { lblEx.setAttribute('x', 210); lblEx.setAttribute('y', ex_y - 2); lblAu.setAttribute('x', au_x + 8); lblAu.setAttribute('y', au_y + 2); lblIn.setAttribute('x', in_x - 75); lblIn.setAttribute('y', in_y + 2); }
+   }
+  }
+
+  // FIXED RADIX COLLISION MONITOR: Renders threats directly into the live binary stream
+  let binDisplayHTML = ""; 
+  let binStr = ""; 
+  
+  // Scan the register arrays backwards to print the bits in correct descending order
+  Object.keys(BITS_CONFIG).reverse().forEach(b => {
+   let k = parseInt(b);
+   let bitValue = state_meta[k] ? "1" : "0";
+   binStr += bitValue; // Keep the raw string pure for the decimal/hex math parsing
+   
+   // Check if a hostile attack channel is actively turned on for this exact bit index
+   if (state_threat[k] === true) {
+    // Inject a warning-red flashing indicator directly into the binary stream
+    binDisplayHTML += `<span style="color: var(--pink); font-weight: bold; animation: pulse 0.5s infinite alternate;">${bitValue}</span>`;
+   } else if (state_meta[k] === true) {
+    // Secure vector state shows up in a steady, clear green
+    binDisplayHTML += `<span style="color: var(--green);">${bitValue}</span>`;
+   } else {
+    // Deactivated vector state stays dim/gray
+    binDisplayHTML += `<span style="color: #444466;">${bitValue}</span>`;
+   }
+  });
+
+  // Re-calculate the numerical values using the pure binary string layout
+  let intVal = parseInt(binStr, 2);
+  const outRaw = document.getElementById('raw-string-output'); 
+  if (outRaw) {
+   // Switch innerText to innerHTML so the browser can paint your custom colors instantly
+   outRaw.innerHTML = `BIN: 0b${binDisplayHTML} | DEC: <span style="color:${activeThreatNames.length > 0 ? 'var(--pink)' : '#fff'}">${intVal}</span> | HEX: <span style="color:${activeThreatNames.length > 0 ? 'var(--pink)' : '#fff'}">0x${intVal.toString(16).toUpperCase()}</span>`;
+  }
+  
+  const vaultIn = document.getElementById('vault-string'); if (vaultIn) vaultIn.value = generateVaultString();
+ }
+
+ function loadScenario(id) {
+  triggerStateChange();
+  const scenarios = {
+   1: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:true, 6:false, 7:true, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   2: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:true, 8:true, 20:true, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   3: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:false, 7:false, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   4: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:true, 7:false, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   5: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:false, 6:false, 7:true, 8:true, 20:false, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   6: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   7: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:false, 8:false, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   8: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   9: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:false, 7:true, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:false, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   10: { m: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 24:false, 20:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 24:false, 20:false, 22:true} },
+   11: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:false, 7:true, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   12: { m: {0:true, 1:true, 2:true, 3:true, 4:false, 5:false, 6:false, 7:false, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   13: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:true, 8:false, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   14: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:false, 7:false, 8:false, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   15: { m: {0:true, 1:false, 2:true, 3:true, 4:true, 5:false, 6:false, 7:true, 8:false, 20:true, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   16: { m: {0:true, 1:true, 2:false, 3:false, 4:true, 5:false, 6:true, 7:true, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   17: { m: {0:true, 1:true, 2:true, 3:false, 4:true, 5:false, 6:false, 7:false, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   18: { m: {0:false, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:false, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   20: { m: {0:true, 1:true, 2:false, 3:true, 4:true, 5:false, 6:false, 7:true, 8:false, 20:true, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:true, 6:true, 7:false, 8:false, 20:false, 24:false, 22:true} },
+   20: { m: {0:true, 1:true, 2:true, 3:false, 4:false, 5:true, 6:false, 7:true, 8:true, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   22: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:true, 8:false, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   22: { m: {0:true, 1:false, 2:false, 3:true, 4:true, 5:false, 6:false, 7:true, 8:true, 20:true, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   23: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:false, 6:false, 7:false, 8:false, 20:true, 24:false, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:true, 7:false, 8:false, 20:false, 24:false, 22:false} },
+   24: { m: {0:false, 1:true, 2:true, 3:true, 4:false, 5:false, 6:false, 7:true, 8:true, 20:false, 24:false, 22:false}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 24:false, 20:false, 22:false} },
+   25: { m: {0:true, 1:true, 2:true, 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 20:true, 24:true, 22:true}, t: {0:false, 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 20:false, 24:false, 22:false} }
+  };
+  const selected = scenarios[id];
+  if (selected) {
+   Object.keys(BITS_CONFIG).forEach(b => { 
+    let bNum = parseInt(b); 
+    state_meta[bNum] = !!selected.m[bNum]; 
+    state_threat[bNum] = !!selected.t[bNum]; 
+   });
+   initSwitches(); calculateMatrix();
+  }
+ }
+
+ window.addEventListener('load', () => {
+  initSwitches();
+  setTimeout(() => {
+   try {
+    setTimelineMode('fib');
+    const loader = document.getElementById('loading-universe');
+    if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
+   } catch(e) { setTimelineMode('spiral'); }
+  }, 800);
+ });
+</script>
+</body>
+</html>
