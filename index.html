@@ -2440,13 +2440,13 @@
                     loader.style.opacity = '0';
                     setTimeout(() => { 
                         loader.style.visibility = 'hidden'; 
-                    }, 500);
+                    }, 1200);
                 }
             } catch(e) { 
                 pushLog("Viewport bootstrap anomaly bypassed.", "log-threat"); 
             }
-        }, 800);
-		setTimeout(() => { isRunning = true;executionLoop(); }, 1000);
+        }, 1600);
+		setTimeout(() => { isRunning = true;executionLoop(); }, 1200);
     });
 
 
