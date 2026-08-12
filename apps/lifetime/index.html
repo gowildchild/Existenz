@@ -53,7 +53,7 @@
             padding: 20px; 
             box-sizing: border-box; 
             display: flex; 
-            flex-direction: column; 
+            flex-direction: row; 
             gap: 20px; 
             border-right: 1px solid #1a2233; 
             z-index: 10;
@@ -61,7 +61,7 @@
         #canvas-container { 
             flex-grow: 1; 
             position: top;
-            flex-direction: column;
+            flex-direction: row;
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -193,10 +193,8 @@
 </header>
 <div id="left-panel">
             <div id="sidebar">
-        <h2 style="margin: 0; color: #63b3ed; font-size: 18px; letter-spacing: 1px;">EXISTENZ MATRIX</h2>
-        
         <div>
-            <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 6px;">Global Matrix State:</label>
+            <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 6px;">Existenz Matrix Setup:</label>
             <select id="sim-select" onchange="changeSimulation()">
                 <option value="baseline">Harmonic Framework</option>
                 <option value="diogenes">Cynic Autonomy Waves</option>
