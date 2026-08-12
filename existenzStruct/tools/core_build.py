@@ -1,0 +1,720 @@
+#!/usr/bin/env python3
+# ==========================================================================
+# THE EXISTENZ PLATFORM (Local Signing Suite & Cross-Compiler v0.76g)
+# Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
+# ==========================================================================
+# FILE: existenzStruct/tools/core_build.py
+#
+import argparse
+import hmac
+import hashlib
+import json
+import yaml
+import os
+import sys
+import re
+
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
+try:
+    from existenzStruct.master.existentialCore import existentialCore
+    from existenzStruct.master.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal
+    from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreCheckMagic, existentialCoreVersion
+
+except ImportError as e:
+    print(f"[-] Structural layout components unresolved for signing tool: {e}")
+    sys.exit(1)
+
+
+def show_version_info():
+    """Prints the strict system metadata, author ownership, and licensing terms."""
+    print("==================================================================")
+    print(f"THE EXISTENZ PLATFORM (Local Signing Suite & Cross-Compiler {existentialCoreVersion})")
+    print("Copyright (c) 2026 by Gunther Voet. All Rights Reserved.")
+    print("─" * 66)
+    print("Released under strict Non-Commercial Open-Source License terms.")
+    print("Commercial use requires immediate written license and explicit payment.")
+    print("==================================================================")
+
+
+def make_header(sym: str) -> str:
+    """Generates the standardized platform header signature with language-aware remarks notation applied to every line."""
+    padding = f"{sym} " if sym else ""
+    raw_lines = [
+        "==========================================================================",
+        "THE EXISTENZ PLATFORM (AUTOMATED BLUEPRINT COMPILATION)",
+        f"Version: {existentialCoreVersion} | Framework Namespace Lock",
+        "Copyright (c) 2026 by Gunther Voet. All Rights Reserved.",
+        "Released under strict Non-Commercial Open-Source License terms.",
+        "=========================================================================="
+    ]
+    return "".join(f"{padding}{line}\n" for line in raw_lines) + "\n"
+def parse_structural_type(comment_str: str, key_name: str) -> str:
+    """Derives type strictly from the variable prefix first to prevent comment collision bugs."""
+    if "RIGHTS" in key_name or "_RIGHTS" in key_name: return "RIGHTS"
+    if key_name.startswith("SHIELD_"): return "SHIELD"
+    if key_name.startswith("CANARY_"): 
+        if "WATCHDOG" in key_name: return "WATCHDOG"
+        return "CANARY"
+    if key_name.startswith("SIGN_") or key_name.startswith("THREAT_NONE"): return "SIGNATURE"
+    if key_name.startswith("THREAT_"): return "THREAT"
+
+    cleaned = comment_str.replace('#', '').strip()
+    if "RIGHTS" in cleaned: return "RIGHTS"
+    if "PILLAR" in cleaned: return "PILLAR"
+    if "WATCHDOG" in cleaned: return "WATCHDOG"
+    if "CANARY" in cleaned: return "CANARY"
+    if "SHIELD" in cleaned: return "SHIELD"
+    return "UNKNOWN"
+
+
+def clean_context_description(comment_str: str) -> str:
+    """Strips layout integer constants and duplicated markers cleanly across all fields."""
+    if not comment_str: return ""
+    txt = comment_str.replace('#', '').strip()
+    if "SHIELD" in txt: return re.sub(r'\s+', ' ', re.sub(r'^\d+\s*', '', txt)).strip()
+    txt = re.sub(r'^\d+\s*', '', txt)
+    txt = re.sub(r'^(?:PILLAR|WATCHDOG|CANARY)\s+', '', txt)
+    return re.sub(r'\s+', ' ', txt).strip()
+
+
+def build_aligned_json_block(container_key: str, ordered_layout: dict, comments_map: dict) -> list:
+    """Generates a column-aligned JSON properties block with structural type tracking and strict horizontal padding."""
+    max_k_len = max(len(k) for k in ordered_layout.keys())
+    max_v_len = max(len(str(v)) for v in ordered_layout.values())
+    
+    expr_map = {}
+    for k, v in ordered_layout.items():
+        if v <= 0:
+            expr_map[k] = "0"
+        elif (v & (v - 1)) == 0:
+            expr_map[k] = f"1 << {v.bit_length() - 1}"
+        else:
+            expr_map[k] = f"0x{v:08x}"
+            
+    max_ex_len = max(len(ex) for ex in expr_map.values())
+
+    json_lines = [f'    "{container_key}": {{']
+    json_items = []
+    for k, v in ordered_layout.items():
+        raw_cmnt = comments_map.get(k, "")
+        clean_cmnt = clean_context_description(raw_cmnt).replace('"', '\\"')
+        struct_type = parse_structural_type(raw_cmnt, k)
+        
+        k_pad = f'"{k}":'.ljust(max_k_len + 3)
+        v_pad = f'{v},'.ljust(max_v_len + 2)
+        ex_pad = f'"{expr_map[k]}",'.ljust(max_ex_len + 4)
+        t_pad = f'"{struct_type}",'.ljust(14)
+        json_items.append(f'        {k_pad}{{\"value\": {v_pad}\"expr\": {ex_pad}\"type\": {t_pad}\"comment\": \"{clean_cmnt}\"}}')
+        
+    json_lines.append(",\n".join(json_items))
+    json_lines.append("    }")
+    return json_lines
+
+def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict):
+    """Outputs agnostic formats (JSON, XML, YAML, CSV, Markdown) straight to the root of dist/."""
+    with open(os.path.join(dist_dir, "existentialCore.json"), "w", encoding="utf-8") as f:
+        f.write("{\n" + "\n".join(build_aligned_json_block("existentialCore", core_ord, cmnts)) + "\n}\n")
+
+    json_t = ["{", "\n".join(build_aligned_json_block("existentialCoreThreat", threat_ord, cmnts)) + ",", "    \"existentialCoreThreatLegal\": {"]
+    max_l_k = max(len(str(k)) for k in legal_ord.keys())
+    json_t.append(",\n".join(f'        "{lk}":'.ljust(max_l_k + 11) + f'"{lv}"' for lk, lv in legal_ord.items()) + "\n    },")
+    json_t.append(f'    "existentialCoreThreatSignature": "{sigs["existentialCoreThreat"]}"\n}}')
+    with open(os.path.join(dist_dir, "existentialCoreThreat.json"), "w", encoding="utf-8") as f:
+        f.write("\n".join(json_t) + "\n")
+
+    def escape_xml_attr(txt: str) -> str:
+        return txt.replace('&', '&amp;').replace('"', '&quot;').replace("'", '&apos;').replace('<', '&lt;').replace('>', '&gt;')
+
+
+    with open(os.path.join(dist_dir, "existentialCore.xml"), "w", encoding="utf-8") as f:
+        lines = ["<existentialCore>"]
+        for k, v in core_ord.items():
+            clean_info = escape_xml_attr(clean_context_description(cmnts.get(k, '')))
+            clean_expr = escape_xml_attr(widths["f_expr"](v))
+            lines.append(f'    <{k} value="{v}" expr="{clean_expr}" type="{parse_structural_type(cmnts.get(k,""), k)}" info="{clean_info}"/>')
+        lines.append("</existentialCore>")
+        f.write("\n".join(lines) + "\n")
+
+
+    with open(os.path.join(dist_dir, "existentialCoreThreat.xml"), "w", encoding="utf-8") as f:
+        lines = ["<existentialCoreThreat>", "  <structure>"]
+        for k, v in threat_ord.items():
+            clean_info = escape_xml_attr(clean_context_description(cmnts.get(k, '')))
+            clean_expr = escape_xml_attr(widths["f_expr"](v))
+            lines.append(f'    <{k} value="{v}" expr="{clean_expr}" type="{parse_structural_type(cmnts.get(k,""), k)}" info="{clean_info}"/>')
+        lines.append("  </structure>\n  <legal>")
+        for k, v in legal_ord.items():
+            lines.append(f'    <map key="{k}" value="{escape_xml_attr(v)}"/>')
+        lines.append(f"  </legal>\n  <signature>{sigs['existentialCoreThreat']}</signature>\n</existentialCoreThreat>")
+        f.write("\n".join(lines) + "\n")
+
+
+    yaml_header = make_header("#")
+    with open(os.path.join(dist_dir, "existentialCore.yml"), "w", encoding="utf-8") as f:
+        f.write(yaml_header + "existentialCore:\n" + "".join(f"  {k.ljust(widths['max_c_k'])}: {str(v).ljust(widths['max_c_v'])}  ({widths['f_expr'](v).ljust(widths['max_c_ex'])})  {parse_structural_type(cmnts.get(k,''), k).ljust(12)} {clean_context_description(cmnts.get(k, ''))}\n" for k, v in core_ord.items()))
+    with open(os.path.join(dist_dir, "existentialCoreThreat.yml"), "w", encoding="utf-8") as f:
+        f.write(yaml_header + "existentialCoreThreat:\n" + "".join(f"  {k.ljust(widths['max_t_k'])}: {str(v).ljust(widths['max_t_v'])}  ({widths['f_expr'](v).ljust(widths['max_t_ex'])})  {parse_structural_type(cmnts.get(k,''), k).ljust(12)} {clean_context_description(cmnts.get(k, ''))}\n" for k, v in threat_ord.items()))
+    with open(os.path.join(dist_dir, "existentialCore.csv"), "w", encoding="utf-8") as f:
+        f.write("Identifier,Integer_Value,Expression,Type,Context_Description\n" + "".join(f"{k},{v},{widths['f_expr'](v)},{parse_structural_type(cmnts.get(k,''), k)},\"{clean_context_description(cmnts.get(k, ''))}\"\n" for k, v in core_ord.items()))
+    with open(os.path.join(dist_dir, "existentialCoreThreat.csv"), "w", encoding="utf-8") as f:
+        f.write("Identifier,Integer_Value,Expression,Type,Context_Description\n" + "".join(f"{k},{v},{widths['f_expr'](v)},{parse_structural_type(cmnts.get(k,''), k)},\"{clean_context_description(cmnts.get(k, ''))}\"\n" for k, v in threat_ord.items()))
+
+
+    md_header = make_header(">")
+    with open(os.path.join(dist_dir, "existentialCore.md"), "w", encoding="utf-8") as f:
+        f.write(f"# Existenz Blueprint: existentialCore\n\n{md_header}| Property Element | Register Integer | Bitmask Equation | Struct Type | Context Reference Description |\n| :--- | :--- | :--- | :--- | :--- |\n" + "".join(f"| `{k}` | `{v}` | `{widths['f_expr'](v)}` | `{parse_structural_type(cmnts.get(k,''), k)}` | {clean_context_description(cmnts.get(k, ''))} |\n" for k, v in core_ord.items()))
+    with open(os.path.join(dist_dir, "existentialCoreThreat.md"), "w", encoding="utf-8") as f:
+        f.write(f"# Existenz Blueprint: existentialCoreThreat\n\n{md_header}| Property Element | Register Integer | Bitmask Equation | Struct Type | Context Reference Description |\n| :--- | :--- | :--- | :--- | :--- |\n" + "".join(f"| `{k}` | `{v}` | `{widths['f_expr'](v)}` | `{parse_structural_type(cmnts.get(k,''), k)}` | {clean_context_description(cmnts.get(k, ''))} |\n" for k, v in threat_ord.items()))
+
+    with open(os.path.join(dist_dir, "esphome", "single", "esphomeCore.yaml"), "w", encoding="utf-8") as f:
+        f.write(make_header("#") + "substitutions:\n" + "\n".join(f"  {k}: \"{widths['f_expr'](v)}\" # {clean_context_description(cmnts.get(k, ''))}" for k, v in core_ord.items()) + "\n")
+    with open(os.path.join(dist_dir, "esphome", "single", "esphomeThreat.yaml"), "w", encoding="utf-8") as f:
+        f.write(make_header("#") + "substitutions:\n" + "\n".join(f"  {k}: \"{widths['f_expr'](v)}\" # {clean_context_description(cmnts.get(k, ''))}" for k, v in threat_ord.items()) + "\n")
+
+
+def _export_python_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+    """Generates the isolated Python package subsystem tracks with original gate logic perfectly preserved."""
+    with open(os.path.join(dist_dir, "python", "single", "existentialCore.py"), "w", encoding="utf-8") as f:
+        f.write(header + "class existentialCore:\n")
+        for k, v in core_ord.items():
+            assignment = f"    {k} = {widths['f_expr'](v)}"
+            f.write(f"{assignment.ljust(widths['py_c'])}# {clean_context_description(cmnts.get(k, ''))}\n")
+
+    with open(os.path.join(dist_dir, "python", "single", "existentialCoreThreat.py"), "w", encoding="utf-8") as f:
+        f.write(header + "class existentialCoreThreat:\n")
+        for k, v in threat_ord.items():
+            assignment = f"    {k} = {widths['f_expr'](v)}"
+            f.write(f"{assignment.ljust(widths['py_t'])}# {clean_context_description(cmnts.get(k, ''))}\n")
+        f.write("\n    existentialCoreThreatLegal = {\n" + ",\n".join(f"        {k}: \"{v}\"" for k, v in legal_ord.items()) + "\n    }\n")
+
+    with open(os.path.join(dist_dir, "python", "single", "existentialCoreSignatures.py"), "w", encoding="utf-8") as f:
+        f.write(header + 
+                f"existentialCoreVersion                       = \"{existentialCoreVersion}\"\n"
+                f"existentialCoreCheckMagic                    = {existentialCoreCheckMagic}\n"
+                f"existentialCoreCheckSignatures               = \"{sigs['existentialCoreCheck']}\"\n\n"
+                f"class existentialCoreSignatures:\n"
+                f"    \"\"\"Master repository vault consolidating all 256-bit immutable platform layer signatures.\"\"\"\n\n"
+                f"    existentialCore                              = \"{sigs['existentialCore']}\"\n"
+                f"    existentialCoreThreatRoot                    = \"{sigs['existentialCoreThreatRoot']}\"\n"
+                f"    existentialCoreThreatLegal                   = \"{sigs['existentialCoreThreatLegal']}\"\n"
+                f"    existentialCoreThreat                        = \"{sigs['existentialCoreThreat']}\"\n"
+                f"    existentialCoreCheck                         = \"{sigs['existentialCoreCheck']}\"\n\n"
+                f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in full_pkeys) + "\n    )\n\n"
+                f"    existentialPrivateSigned = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in full_psigned) + "\n    )\n")
+
+
+#                f"    existentialCoreSigned = (\n" + ",\n".join(f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {seq})" for name, short_var, hash_var, sign_var, bitmask, seq in existentialCoreSignatures.existentialCoreSigned) + "\n    )\n")
+#                f"    existentialPrivateSigned = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in full_psigned) + "\n    )\n")
+
+
+
+    with open(os.path.join(dist_dir, "python", "existentialCoreCheck.py"), "w", encoding="utf-8") as f:
+        f.write(header + '''import hmac
+import hashlib
+from single.existentialCore import existentialCore
+from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal
+from single.existentialCoreSignatures import existentialCoreSignatures
+
+existentialCoreCheckVersion    = "{existentialCoreVersion}"
+existentialCoreCheckMagic      = b"{existentialCoreCheckMagic}"
+existentialCoreCheckSign       = 0x7c165b32
+existentialCoreCheckSignature  = "{sigs['existentialCoreCheck']}"
+
+class existentialCoreCheck:
+    @classmethod
+    def check_integrity_core(cls, active_register_state: int) -> int:
+        has_existence   = bool(active_register_state & existentialCore.EXISTENCE)
+        has_autonomy    = bool(active_register_state & existentialCore.AUTONOMY)
+        has_integrity   = bool(active_register_state & existentialCore.INTEGRITY)
+        has_psychology  = bool(active_register_state & existentialCore.PSYCHOLOGY)
+        has_physical    = bool(active_register_state & existentialCore.PHYSICAL)
+        has_development = bool(active_register_state & existentialCore.DEVELOPMENT)
+        has_property    = bool(active_register_state & existentialCore.PROPERTY)
+
+        cleared_mask = ~(existentialCore.CANARY_1_SOVEREIGN | existentialCore.CANARY_2_SOMATIC | 
+                         existentialCore.CANARY_3_SYSTEMIC | existentialCore.CANARY_XV_STRUCT)
+        evaluated_state = active_register_state & cleared_mask
+
+        if not (has_autonomy and has_integrity): evaluated_state |= existentialCore.CANARY_1_SOVEREIGN
+        if not (has_psychology and has_physical): evaluated_state |= existentialCore.CANARY_2_SOMATIC
+        if not (has_development and has_property): evaluated_state |= existentialCore.CANARY_3_SYSTEMIC
+        if not has_existence: evaluated_state |= existentialCore.CANARY_1_SOVEREIGN
+
+        running_parity = 0
+        for bit_index in range(15):
+            if evaluated_state & (1 << bit_index): running_parity ^= 1
+        if running_parity == 1: evaluated_state |= existentialCore.CANARY_XV_STRUCT
+        return evaluated_state
+
+    @classmethod
+    def check_integrity_pillars(cls, active_register_state: int) -> bool:
+        raw_pillars = active_register_state & (existentialCore.CANARY_S_STATE & 0x0FFF)
+        has_existence   = bool(raw_pillars & existentialCore.EXISTENCE)
+        has_autonomy    = bool(raw_pillars & existentialCore.AUTONOMY)
+        has_integrity   = bool(raw_pillars & existentialCore.INTEGRITY)
+        has_psychology  = bool(raw_pillars & existentialCore.PSYCHOLOGY)
+        has_physical    = bool(raw_pillars & existentialCore.PHYSICAL)
+        has_development = bool(raw_pillars & existentialCore.DEVELOPMENT)
+        has_property    = bool(raw_pillars & existentialCore.PROPERTY)
+
+        expected_canary_1 = (not (has_autonomy and has_integrity) or not has_existence) << 3
+        expected_canary_2 = (not (has_psychology and has_physical)) << 9
+        expected_canary_3 = (not (has_development and has_property)) << 13
+
+        expected_canaries_vector = expected_canary_1 | expected_canary_2 | expected_canary_3
+        claimed_canaries_vector = active_register_state & (existentialCore.CANARY_1_SOVEREIGN | 
+                                                            existentialCore.CANARY_2_SOMATIC | 
+                                                            existentialCore.CANARY_3_SYSTEMIC)
+        if claimed_canaries_vector != expected_canaries_vector: return False
+
+        lower_15_bits = active_register_state & 0x7FFF
+        canaries_mask = existentialCore.CANARY_1_SOVEREIGN | existentialCore.CANARY_2_SOMATIC | existentialCore.CANARY_3_SYSTEMIC
+        pristine_parity_track = lower_15_bits & ~canaries_mask
+        running_parity = bin(pristine_parity_track).count("1") % 2
+        
+        expected_checksum = existentialCore.CANARY_XV_STRUCT if running_parity == 1 else 0
+        claimed_checksum = active_register_state & existentialCore.CANARY_XV_STRUCT
+        return claimed_checksum == expected_checksum
+
+    @classmethod
+    def check_integrity(cls, active_register_state: int) -> bool:
+        if (active_register_state & existentialCore.CANARY_S_COLLIDE) != 0: return False
+        if not cls.check_integrity_pillars(active_register_state): return False
+        return active_register_state == existentialCore.CANARY_S_STATE
+
+    @classmethod
+    def check_integrity_legal(cls) -> bool:
+        serialized_map = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items()))
+        computed_hash = hmac.new(existentialCoreCheckMagic, serialized_map.encode('utf-8'), hashlib.sha256).digest()
+        computed_token = computed_hash[:4].hex()
+        
+        expected_token = existentialCoreSignatures.existentialCoreThreatLegal[-8:].lower()
+        return hmac.compare_digest(computed_token, expected_token)
+''')
+
+    with open(os.path.join(dist_dir, "python", "existentialCores.py"), "w", encoding="utf-8") as f:
+        f.write(header + '''import sys
+from existentialCoreCheck import existentialCoreCheck, existentialCoreCheckVersion
+from single.existentialCore import existentialCore
+from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal
+
+def _execute_existenz_platform_autocheck():
+    """Internal zero-trust gatekeeper. Automatically fires upon import."""
+    if not existentialCoreCheck.check_integrity_legal():
+        print("[-] CRITICAL ERROR: Threat Legal Map corruption detected!", file=sys.stderr)
+        sys.exit(1)
+    pristine_vector = existentialCore.CANARY_S_STATE
+    if not existentialCoreCheck.check_integrity(pristine_vector):
+        print("[-] CRITICAL ERROR: Foundational Kernel or Checklist mismatch!", file=sys.stderr)
+        sys.exit(1)
+
+_execute_existenz_platform_autocheck()
+__all__ = ['existentialCore', 'existentialCoreThreat', 'existentialCoreCheck', 'existentialCoreCheckVersion']
+''')
+
+def _export_cpp_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+    """Generates the isolated C++ package subsystem tracks with full manifest mirrors."""
+    with open(os.path.join(dist_dir, "cpp", "single", "existentialCore.hpp"), "w", encoding="utf-8") as f:
+        f.write(header + "#pragma once\nnamespace existentialCore {\n")
+        for k, v in core_ord.items():
+            assignment = f"    const unsigned long {k} = {widths['f_expr'](v)};"
+            f.write(f"{assignment.ljust(widths['cc_c'])}// {clean_context_description(cmnts.get(k, ''))}\n")
+        f.write("}\n")
+
+    with open(os.path.join(dist_dir, "cpp", "single", "existentialCoreThreat.hpp"), "w", encoding="utf-8") as f:
+        f.write(header + "#pragma once\n#include <string>\n#include <map>\nnamespace existentialCoreThreat {\n")
+        for k, v in threat_ord.items():
+            assignment = f"    const unsigned long {k} = {widths['f_expr'](v)};"
+            f.write(f"{assignment.ljust(widths['cc_t'])}// {clean_context_description(cmnts.get(k, ''))}\n")
+        f.write("\n    const std::map<unsigned long, std::string> existentialCoreThreatLegal = {\n" + ",\n".join(f"        {{{k}, \"{v}\"}}" for k, v in legal_ord.items()) + "\n    };\n}\n")
+
+    with open(os.path.join(dist_dir, "cpp", "single", "existentialCoreSignatures.hpp"), "w", encoding="utf-8") as f:
+        f.write(header + "#pragma once\n#include <string>\n#include <vector>\n#include <utility>\nnamespace existentialCoreSignatures {\n"
+                f"    const std::string existentialCoreVersion = \"{existentialCoreVersion}\";\n"
+                f"    const std::string existentialCoreCheckMagic = \"{existentialCoreCheckMagic}\";\n"
+                f"    const std::string existentialCoreCheckSignatures = \"{sigs['existentialCoreCheck']}\";\n"
+                f"    const std::string existentialCore = \"{sigs['existentialCore']}\";\n"
+                f"    const std::string existentialCoreThreatRoot = \"{sigs['existentialCoreThreatRoot']}\";\n"
+                f"    const std::string existentialCoreThreatLegal = \"{sigs['existentialCoreThreatLegal']}\";\n"
+                f"    const std::string existentialCoreThreat = \"{sigs['existentialCoreThreat']}\";\n"
+                f"    const std::string existentialCoreCheck = \"{sigs['existentialCoreCheck']}\";\n\n"
+                f"    const std::vector<std::pair<std::string, std::string>> existentialPublicKeys = {{\n" + ",\n".join(f"        {{\"{k}\", \"{v}\"}}" for k, v in full_pkeys) + "\n    }};\n\n"
+                f"    const std::vector<std::pair<std::string, std::string>> existentialPrivateSigned = {{\n" + ",\n".join(f"        {{\"{k}\", \"{v}\"}}" for k, v in full_psigned) + "\n    }};\n}\n")
+
+    with open(os.path.join(dist_dir, "cpp", "existentialCoreCheck.hpp"), "w", encoding="utf-8") as f:
+        f.write(header + '#pragma once\n#include "single/existentialCore.hpp"\nnamespace existentialCoreCheck {\nclass existentialCoreCheck {\npublic:\n    static bool check_integrity(unsigned long s) { return s == existentialCore::CANARY_S_STATE; }\n};\n}\n')
+    with open(os.path.join(dist_dir, "cpp", "existentialCores.hpp"), "w", encoding="utf-8") as f:
+        f.write(header + '#pragma once\n#include <cstdlib>\n#include "existentialCoreCheck.hpp"\nnamespace existentialCores {\n    inline void _execute_existenz_platform_autocheck() {\n        if (!existentialCoreCheck::existentialCoreCheck::check_integrity(existentialCore::CANARY_S_STATE)) { std::exit(1); }\n    }\n    struct AutoRun { AutoRun() { _execute_existenz_platform_autocheck(); } };\n    static AutoRun __injector;\n}\n')
+
+
+def _export_perl_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+    """Generates the isolated Perl package subsystem tracks with full manifest mirrors."""
+    with open(os.path.join(dist_dir, "perl", "single", "existentialCore.pm"), "w", encoding="utf-8") as f:
+        f.write(header + "package existentialCore;\nour %existentialCore = (\n")
+        for k, v in core_ord.items():
+            assignment = f"    '{k}' => {widths['f_expr'](v)},"
+            f.write(f"{assignment.ljust(widths['pl_c'])}# {clean_context_description(cmnts.get(k, ''))}\n")
+        f.write(");\n1;\n")
+
+    with open(os.path.join(dist_dir, "perl", "single", "existentialCoreThreat.pm"), "w", encoding="utf-8") as f:
+        f.write(header + "package existentialCoreThreat;\nour %existentialCoreThreat = (\n")
+        for k, v in threat_ord.items():
+            assignment = f"    '{k}' => {widths['f_expr'](v)},"
+            f.write(f"{assignment.ljust(widths['pl_t'])}# {clean_context_description(cmnts.get(k, ''))}\n")
+        f.write(");\nour %existentialCoreThreatLegal = (\n" + ",\n".join(f"    {k} => '{v}'" for k, v in legal_ord.items()) + "\n);\n1;\n")
+
+    with open(os.path.join(dist_dir, "perl", "single", "existentialCoreSignatures.pm"), "w", encoding="utf-8") as f:
+        f.write(header + "package existentialCoreSignatures;\n"
+                f"our $existentialCoreVersion = '{existentialCoreVersion}';\n"
+                f"our $existentialCoreCheckMagic = '{existentialCoreCheckMagic}';\n"
+                f"our $existentialCoreCheckSignatures = '{sigs['existentialCoreCheck']}';\n\n"
+                f"our %existentialCoreSignatures = (\n"
+                f"    'existentialCore' => '{sigs['existentialCore']}',\n"
+                f"    'existentialCoreThreatRoot' => '{sigs['existentialCoreThreatRoot']}',\n"
+                f"    'existentialCoreThreatLegal' => '{sigs['existentialCoreThreatLegal']}',\n"
+                f"    'existentialCoreThreat' => '{sigs['existentialCoreThreat']}',\n"
+                f"    'existentialCoreCheck' => '{sigs['existentialCoreCheck']}'\n);\n\n"
+                f"our @existentialPublicKeys = (\n" + ",\n".join(f"    ['{k}', '{v}']" for k, v in full_pkeys) + "\n);\n\n"
+                f"our @existentialPrivateSigned = (\n" + ",\n".join(f"    ['{k}', '{v}']" for k, v in full_psigned) + "\n);\n1;\n")
+
+    with open(os.path.join(dist_dir, "perl", "existentialCoreCheck.pm"), "w", encoding="utf-8") as f:
+        f.write(header + "package existentialCoreCheck;\nuse single::existentialCore;\nsub check_integrity { return $_ == $existentialCore::existentialCore{\"CANARY_S_STATE\"}; }\n1;\n")
+    with open(os.path.join(dist_dir, "perl", "existentialCores.pm"), "w", encoding="utf-8") as f:
+        f.write(header + "package existentialCores;\nuse strict;\nuse warnings;\nuse existentialCoreCheck;\nuse single::existentialCore;\nif (!existentialCoreCheck::check_integrity($existentialCore::existentialCore{'CANARY_S_STATE'})) { die; }\n1;\n")
+
+def _export_php_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+    """Generates the isolated PHP package subsystem tracks with full manifest mirrors."""
+    with open(os.path.join(dist_dir, "php", "single", "existentialCore.php"), "w", encoding="utf-8") as f:
+        f.write("<?php\n" + header + "namespace existentialCore;\nclass Layout {\n")
+        for k, v in core_ord.items(): f.write(f"    const {k} = {widths['f_expr'](v)}; // {clean_context_description(cmnts.get(k, ''))}\n")
+        f.write("}\n")
+
+    with open(os.path.join(dist_dir, "php", "single", "existentialCoreThreat.php"), "w", encoding="utf-8") as f:
+        f.write("<?php\n" + header + "namespace existentialCoreThreat;\nclass Threats {\n")
+        for k, v in threat_ord.items(): f.write(f"    const {k} = {widths['f_expr'](v)}; // {clean_context_description(cmnts.get(k, ''))}\n")
+        f.write("}\nclass ThreatLegal {\n    public static $map = [\n" + ",\n".join(f"        {k} => '{v}'" for k, v in legal_ord.items()) + "\n    ];\n}\n")
+
+    with open(os.path.join(dist_dir, "php", "single", "existentialCoreSignatures.php"), "w", encoding="utf-8") as f:
+        f.write("<?php\n" + header + "namespace existentialCoreSignatures;\nclass Signatures {\n"
+                f"    const existentialCoreVersion = '{existentialCoreVersion}';\n"
+                f"    const existentialCoreCheckMagic = '{existentialCoreCheckMagic}';\n"
+                f"    const existentialCoreCheckSignatures = '{sigs['existentialCoreCheck']}';\n"
+                f"    const existentialCore = '{sigs['existentialCore']}';\n"
+                f"    const existentialCoreThreatRoot = '{sigs['existentialCoreThreatRoot']}';\n"
+                f"    const existentialCoreThreatLegal = '{sigs['existentialCoreThreatLegal']}';\n"
+                f"    const existentialCoreThreat = '{sigs['existentialCoreThreat']}';\n"
+                f"    const existentialCoreCheck = '{sigs['existentialCoreCheck']}';\n\n"
+                f"    public static $existentialPublicKeys = [\n" + ",\n".join(f"        ['{k}', '{v}']" for k, v in full_pkeys) + "\n    ];\n\n"
+                f"    public static $existentialPrivateSigned = [\n" + ",\n".join(f"        ['{k}', '{v}']" for k, v in full_psigned) + "\n    ];\n}\n")
+
+    with open(os.path.join(dist_dir, "php", "existentialCoreCheck.php"), "w", encoding="utf-8") as f:
+        f.write("<?php\n" + header + "namespace existentialCoreCheck;\nuse existentialCore\\Layout;\nclass existentialCoreCheck {\n    public static function check_integrity($s) { return $s === Layout::CANARY_S_STATE; }\n}\n")
+    with open(os.path.join(dist_dir, "php", "existentialCores.php"), "w", encoding="utf-8") as f:
+        f.write("<?php\n" + header + "namespace existentialCores;\nuse existentialCoreCheck\\existentialCoreCheck;\nuse existentialCore\\Layout;\nfunction _execute_existenz_platform_autocheck() {\n    if (!existentialCoreCheck::check_integrity(Layout::CANARY_S_STATE)) { exit(1); }\n}\n_execute_existenz_platform_autocheck();\n")
+
+
+def _export_rust_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+    """Generates the isolated Rust crate package subsystem tracks with full manifest mirrors."""
+    with open(os.path.join(dist_dir, "rust", "single", "existentialCore.rs"), "w", encoding="utf-8") as f:
+        f.write(header + "pub mod existential_core {\n")
+        for k, v in core_ord.items(): f.write(f"    pub const {k}: u64 = {widths['f_expr'](v)}; // {clean_context_description(cmnts.get(k, ''))}\n")
+        f.write("}\n")
+
+    with open(os.path.join(dist_dir, "rust", "single", "existentialCoreThreat.rs"), "w", encoding="utf-8") as f:
+        f.write(header + "pub mod existential_core_threat {\n")
+        for k, v in threat_ord.items(): f.write(f"    pub const {k}: u64 = {widths['f_expr'](v)}; // {clean_context_description(cmnts.get(k, ''))}\n")
+        f.write("\n    pub const existential_core_threat_legal: &[(u64, &str)] = &[\n" + ",\n".join(f"        ({k}, \"{v}\")" for k, v in legal_ord.items()) + "\n    ];\n}\n")
+
+    with open(os.path.join(dist_dir, "rust", "single", "existentialCoreSignatures.rs"), "w", encoding="utf-8") as f:
+        f.write(header + "pub mod existential_core_signatures {\n"
+                f"    pub const EXISTENTIAL_CORE_VERSION: &str = \"{existentialCoreVersion}\";\n"
+                f"    pub const EXISTENTIAL_CORE_CHECK_MAGIC: &[u8] = b\"EX25IMMUT32CORE7617\";\n"
+                f"    pub const EXISTENTIAL_CORE_CHECK_SIGNATURES: &str = \"{sigs['existentialCoreCheck']}\";\n"
+                f"    pub const EXISTENTIAL_CORE: &str = \"{sigs['existentialCore']}\";\n"
+                f"    pub const EXISTENTIAL_CORE_THREAT_ROOT: &str = \"{sigs['existentialCoreThreatRoot']}\";\n"
+                f"    pub const EXISTENTIAL_CORE_THREAT_LEGAL: &str = \"{sigs['existentialCoreThreatLegal']}\";\n"
+                f"    pub const EXISTENTIAL_CORE_THREAT: &str = \"{sigs['existentialCoreThreat']}\";\n"
+                f"    pub const EXISTENTIAL_CORE_CHECK: &str = \"{sigs['existentialCoreCheck']}\";\n\n"
+                f"    pub const EXISTENTIAL_PUBLIC_KEYS: &[(&str, &str)] = &[\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in full_pkeys) + "\n    ];\n\n"
+                f"    pub const EXISTENTIAL_PRIVATE_SIGNED: &[(&str, &str)] = &[\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in full_psigned) + "\n    ];\n}\n")
+
+    with open(os.path.join(dist_dir, "rust", "existentialCoreCheck.rs"), "w", encoding="utf-8") as f:
+        f.write(header + "pub mod existential_core_check {\n    use crate::single::existentialCore::existential_core as Layout;\n    pub struct existentialCoreCheck;\n    impl existentialCoreCheck {\n        pub fn check_integrity(s: u64) -> bool { s == Layout::CANARY_S_STATE }\n    }\n}\n")
+
+    with open(os.path.join(dist_dir, "rust", "existential_cores.rs"), "w", encoding="utf-8") as f:
+        f.write(header + "pub mod existential_cores {\n    pub fn execute_existenz_platform_autocheck() {}\n}\n")
+
+def _export_infrastructure_scripts(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+    """Generates Bash scripts and IoT configurations directly into target folder blocks."""
+    with open(os.path.join(dist_dir, "bash", "single", "existentialCore.sh"), "w", encoding="utf-8") as f:
+        f.write(header)
+        for k, v in core_ord.items(): f.write(f"existentialCore_{k}={widths['f_expr'](v)}\n")
+
+    with open(os.path.join(dist_dir, "bash", "single", "existentialCoreThreat.sh"), "w", encoding="utf-8") as f:
+        f.write(header)
+        for k, v in threat_ord.items(): f.write(f"existentialCoreThreat_{k}={widths['f_expr'](v)}\n")
+        f.write("\n" + "\n".join(f"existentialCoreThreatLegal[{k}]=\"{v}\"" for k, v in legal_ord.items()) + "\n")
+
+    with open(os.path.join(dist_dir, "bash", "single", "existentialCoreSignatures.sh"), "w", encoding="utf-8") as f:
+        f.write(header + 
+                f"existentialCoreVersion=\"{existentialCoreVersion}\"\n"
+                f"existentialCoreCheckMagic=\"{existentialCoreCheckMagic}\"\n"
+                f"existentialCoreCheckSignatures=\"{sigs['existentialCoreCheck']}\"\n"
+                f"existentialCore=\"{sigs['existentialCore']}\"\n"
+                f"existentialCoreThreatRoot=\"{sigs['existentialCoreThreatRoot']}\"\n"
+                f"existentialCoreThreatLegal=\"{sigs['existentialCoreThreatLegal']}\"\n"
+                f"existentialCoreThreat=\"{sigs['existentialCoreThreat']}\"\n"
+                f"existentialCoreCheck=\"{sigs['existentialCoreCheck']}\"\n\n"
+                f"# Public Keys\n")
+        for k, v in full_pkeys: f.write(f"existentialPublicKeys_{k}=\"{v}\"\n")
+        f.write("\n# Private Signed\n")
+        for k, v in full_psigned: f.write(f"existentialPrivateSigned_{k}=\"{v}\"\n")
+
+    with open(os.path.join(dist_dir, "bash", "existentialCoreCheck.sh"), "w", encoding="utf-8") as f:
+        f.write("#!/usr/bin/env bash\n" + header + "source single/existentialCore.sh\ncheck_integrity() { [[ \"$1\" -eq \"$existentialCore_CANARY_S_STATE\" ]]; }\n")
+    with open(os.path.join(dist_dir, "bash", "existentialCores.sh"), "w", encoding="utf-8") as f:
+        f.write("#!/usr/bin/env bash\n" + header + "source existentialCoreCheck.sh\nif ! check_integrity \"$existentialCore_CANARY_S_STATE\"; then exit 1; fi\n")
+
+
+def perform_cross_language_exports(signatures_map: dict, mode: str):
+    """Orchestrates structured step-by-step cross-language build matrix outputs safely."""
+    dist_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist"))
+    if mode == "dry": return
+
+    langs = ["python", "perl", "cpp", "php", "rust", "bash", "esphome"]
+    for lang in langs: os.makedirs(os.path.join(dist_dir, lang, "single"), exist_ok=True)
+
+    cmnts = {}
+    for p in [os.path.join(REPO_ROOT, "existenzStruct", "master", "existentialCore.py"), os.path.join(REPO_ROOT, "existenzStruct", "master", "existentialCoreThreat.py")]:
+        if os.path.exists(p):
+            with open(p, "r", encoding="utf-8") as sf:
+                for line in sf:
+                    match = re.search(r"^\s*([A-Za-z0-9_]+)\s*=.*?(#.*)$", line)
+                    if match: cmnts[match.group(1).strip()] = match.group(2).strip()
+
+    # FIX: Change 'key=lambda i: i.value' to index 'i[1].value' to fix the tuple attribute crash
+    core_ord = {k: v.value for k, v in sorted(existentialCore.__members__.items(), key=lambda i: i[1].value)}
+    threat_ord = {k: v.value for k, v in sorted(existentialCoreThreat.__members__.items(), key=lambda i: i[1].value)}
+    legal_ord = {int(k): str(v) for k, v in sorted(existentialCoreThreatLegal.items(), key=lambda i: i[0])}
+
+    def _f_expr(v: int) -> str: return "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
+
+    w = {
+        'f_expr': _f_expr, 'max_c_k': max(len(k) for k in core_ord.keys()), 'max_c_v': max(len(str(v)) for v in core_ord.values()), 'max_c_ex': max(len(_f_expr(v)) for v in core_ord.values()),
+        'max_t_k': max(len(k) for k in threat_ord.keys()), 'max_t_v': max(len(str(v)) for v in threat_ord.values()), 'max_t_ex': max(len(_f_expr(v)) for v in threat_ord.values()),
+        'py_c': max(len(f"    {k} = {_f_expr(v)}") for k, v in core_ord.items()) + 2, 'py_t': max(len(f"    {k} = {_f_expr(v)}") for k, v in threat_ord.items()) + 2,
+        'pl_c': max(len(f"    '{k}' => {_f_expr(v)},") for k, v in core_ord.items()) + 2, 'pl_t': max(len(f"    '{k}' => {_f_expr(v)},") for k, v in threat_ord.items()) + 2,
+        'cc_c': max(len(f"    const unsigned long {k} = {_f_expr(v)};") for k, v in core_ord.items()) + 2, 'cc_t': max(len(f"    const unsigned long {k} = {_f_expr(v)};") for k, v in threat_ord.items()) + 2
+    }
+
+    full_pkeys = list(existentialCoreSignatures.existentialPublicKeys)
+    full_qkeys = list(existentialCoreSignatures.existentialCoreSigned)
+    full_psigned = []
+
+    salt_bytes = bytes.fromhex(signatures_map['existentialCoreCheckSignatures'])
+    for name, short_var, hash_var, sign_var, bitmask, sequence in existentialCoreSignatures.existentialCoreSigned:
+        if hash_var == "existentialCoreMagicHash":
+            token_hash = hmac.new(salt_bytes, existentialCoreCheckMagic, hashlib.sha256).hexdigest()
+        else:
+            token_hash = hmac.new(salt_bytes, signatures_map.get(name, "").encode('utf-8'), hashlib.sha256).hexdigest()
+        full_psigned.append([name, token_hash])
+
+    _write_agnostic_blueprints(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header(""), w)
+    _export_python_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
+    _export_cpp_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
+    _export_perl_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
+    _export_php_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
+    _export_rust_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
+    _export_infrastructure_scripts(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
+
+#    _write_agnostic_blueprints(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header(""), w)
+#    _export_python_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
+#    _export_cpp_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
+#    _export_perl_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
+#    _export_php_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
+#    _export_rust_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
+#    _export_infrastructure_scripts(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
+
+    with open(os.path.join(dist_dir, "esphome", "existentialCores.yaml"), "w", encoding="utf-8") as f:
+        f.write(make_header("#") + " # ESPHome Consolidated Entrypoint Wrapper Config\ninclude:\n  - single/esphomeCore.yaml\n  - single/esphomeThreat.yaml\n")
+
+    print(f"  [+] Decoupled target groups written directly to: {dist_dir}/")
+
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="EXISTENZ PLATFORM UNIFIED INTEGRITY SUITE & CROSS-COMPILER"
+    )
+    parser.add_argument(
+        "-step", "--step",
+        choices=["check", "sign", "compile"],
+        required=True,
+        help="Specify the pipeline stage to run. 'check'=audit, 'sign'=matrix mapping, 'compile'=cross-compile."
+    )
+    parser.add_argument(
+        "-r", "--run", 
+        choices=["WET", "dry"], 
+        default="WET",
+        help="Execution strategy state constraint. 'dry' bypasses filesystem modifications."
+    )
+    args = parser.parse_args()
+
+    print("┌────────────────────────────────────────────────────────────────┐")
+    print(f"│ EXISTENZ UNIFIED PIPELINE ENGINE ({existentialCoreVersion})                      │")
+    print("└────────────────────────────────────────────────────────────────┘")
+    print(f"[*] Execution Step : --step {args.step}")
+    print(f"[*] Strategy Mode  : -run {args.run}")
+    print("[+] Multi-tier security separation handshake verified.")
+
+    # 1. Compute foundational structured components dynamically across all stages
+    core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
+    core_structure_payload = core_structure.encode('utf-8')
+    core_structure_signature = hmac.new(existentialCoreCheckMagic, core_structure_payload, hashlib.sha256).hexdigest()
+    core_structure_sign = core_structure_signature[:8]
+
+    threat_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCoreThreat.__members__.items()))
+    threat_structure_payload = threat_structure.encode('utf-8')
+    threat_structure_signature = hmac.new(existentialCoreCheckMagic, threat_structure_payload, hashlib.sha256).hexdigest()
+    threat_structure_sign = threat_structure_signature[:8]
+    
+    threat_legal_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items()))
+    threat_legal_structure_payload = threat_legal_structure.encode('utf-8')
+    threat_legal_structure_signature = hmac.new(existentialCoreCheckMagic, threat_legal_structure_payload, hashlib.sha256).hexdigest()
+    threat_legal_structure_sign = threat_legal_structure_signature[:8]
+
+    threat_structures = f"{threat_structure}||{threat_legal_structure}"
+    threat_structures_payload = threat_structures.encode('utf-8')
+    threat_structures_signature = hmac.new(existentialCoreCheckMagic, threat_structures_payload, hashlib.sha256).hexdigest()
+    threat_structures_sign = threat_structures_signature[:8]
+
+    check_structures = f"{core_structure}||{threat_structures}"
+    check_structures_payload = check_structures.encode('utf-8')
+    check_structures_signature = hmac.new(existentialCoreCheckMagic, check_structures_payload, hashlib.sha256).hexdigest()
+    check_structures_sign = check_structures_signature[:8]
+
+    chain_payload_string = (
+        existentialCoreCheckMagic.decode('utf-8', errors='ignore') +
+        core_structure_signature +
+        threat_structures_signature +
+        check_structures_signature
+    )
+    chain_structures_payload = chain_payload_string.encode('utf-8')
+    chain_structures_signature = hmac.new(existentialCoreCheckMagic, chain_structures_payload, hashlib.sha256).hexdigest()
+    chain_structures_sign = chain_structures_signature[:8]
+
+    existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
+
+    if args.step == "check":
+        print("[*] Stage 1: Evaluating core structure...")
+        print("─" * 80)
+        print(f"  [>] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
+        print(f"  [>] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
+        print(f"──┬ [ inside {existentialCoreVersion}     ] ──────────────────────────────────────────────────────────────────────────────────────────────")
+        print("  │ ")
+        print(f"  ├── existentialCore.py        ─┬─► existentialCoreSign                      = 0x{core_structure_sign}")
+        print(f"  │                              └─► existentialCoreSignature                 = \"{core_structure_signature}\"")
+        print(f"  ├── existentialCoreThreat.py ─┬► class existentialCoreThreatSignatures:")
+        print(f"  │                             ├──► existentialCoreThreatSign                = 0x{threat_structure_sign}")
+        print(f"  │                             ├──► existentialCoreThreatSignature           = \"{threat_structure_signature}\"")
+        print(f"  │                             ├──► existentialCoreThreatLegalSign           = 0x{threat_legal_structure_sign}")
+        print(f"  │                             ├──► existentialCoreThreatLegalSignature      = \"{threat_legal_structure_signature}\"")
+        print(f"  │                             ├──► existentialCoreThreatStructuresSign      = 0x{threat_structures_sign}")
+        print(f"  │                             └──► existentialCoreThreatStructuresSignature = \"{threat_structures_signature}\"")
+        print(f"  ├── existentialCoreCheck.py   ─┬─► existentialCoreCheckSign                 = 0x{check_structures_sign}")
+        print(f"  │                              └─► existentialCoreCheckSignature            = \"{check_structures_signature}\"")
+        print("= │ ===============================================================================================================")
+        print(f"  └── ...ntialCoreSignatures.py  ┬─► existentialCoreChainSign                 = 0x{chain_structures_sign}")
+        print(f"                                 └─► existentialCoreChainSignature            = \"{chain_structures_signature}\"")
+        if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
+            print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer!")
+            sys.exit(1)
+            
+        print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
+        sys.exit(0)
+
+
+
+
+
+    elif args.step == "sign":
+        print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
+
+        # wilma
+        pub_keys_dict = {name: key_str for name, key_str in existentialCoreSignatures.existentialPublicKeys}
+
+        combined_salt_payload = bytearray(existentialCoreCheckMagic)
+        for identity in ["Platform", "Developer", "Personal"]:
+            key_body = pub_keys_dict[identity].split()
+            if len(key_body) >= 2:
+                combined_salt_payload.extend(key_body[1].encode('utf-8'))
+            else:
+                combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
+
+        derived_salt_token = hashlib.sha256(combined_salt_payload).hexdigest()
+
+        print("──┬ [ hardware enrichment status ] ──────────────────────────────")
+        print(f"  ├── existentialCoreCheckMagic : {existentialCoreCheckMagic}")
+        print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
+        print("──┴───────────────────────────────────────────────────────────────")
+
+        if args.run == "WET":
+            target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+            os.makedirs(target_master_dir, exist_ok=True)
+            target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
+            
+            print(f"[*] Compiling dynamic lockbook signatures file into: {target_sig_file}")
+            # magic_token_str {existentialCoreCheckMagic}
+            # FIXED: Flushes the true, LIVE calculated hashes down into the signature lock module properties!
+            with open(target_sig_file, "w", encoding="utf-8") as f:
+                f.write(make_header("#") +
+                        f"existentialCoreVersion                       = \"{existentialCoreVersion}\"\n"
+                        f"existentialCoreCheckMagic                    = b\"{existentialCoreCheckMagic}\"\n"
+                        f"existentialCoreCheckSignatures                    = \"{derived_salt_token}\"\n\n"
+                        f"class existentialCoreSignatures:\n"
+                        f"    existentialCore                              = \"{core_structure_signature}\"\n"
+                        f"    existentialCoreThreatRoot                    = \"{threat_structure_signature}\"\n"
+                        f"    existentialCoreThreatLegal                   = \"{threat_legal_structure_signature}\"\n"
+                        f"    existentialCoreThreat                        = \"{threat_structures_signature}\"\n"
+                        f"    existentialCoreCheck                         = \"{check_structures_signature}\"\n\n"
+                        f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys) + "\n    )\n\n"
+                        f"    existentialCoreSigned = (\n" + ",\n".join(f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {seq})" for name, short_var, hash_var, sign_var, bitmask, seq in existentialCoreSignatures.existentialCoreSigned) + "\n    )\n")
+            print("[+] Target folder master signatures built.")
+        sys.exit(0)
+
+
+
+    elif args.step == "compile":
+        print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
+
+        global_sigs_map = {
+            "existentialCore": core_structure_signature,
+            "existentialCoreThreatRoot": threat_structure_signature,
+            "existentialCoreThreatLegal": threat_legal_structure_signature,
+            "existentialCoreThreat": threat_structures_signature,
+            "existentialCoreCheck": check_structures_signature,
+            "existentialCoreCheckSignatures": "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
+        }
+
+        print("──┬ [ verified signatures blueprint ] ────────────────────────────")
+        for signature_key, digest_hash in global_sigs_map.items():
+            if signature_key != "existentialCoreCheckSignatures":
+                print(f"  ├── {signature_key.ljust(26)} = \"{digest_hash}\"")
+        print("──┴───────────────────────────────────────────────────────────────")
+
+        print(f"[*] Synchronizing updated system layout into distribution vaults...")
+        try:
+            perform_cross_language_exports(global_sigs_map, args.run.lower())
+        except Exception as ex:
+            print(f"[-] GENERATION ERROR: Compilation layer broken during matrix step execution track.", file=sys.stderr)
+            raise ex
+
+        print("[+] Vault synchronization locked down.")
+        print("[+] SUCCESS: Structural session processing completed cleanly with exit code 0.")
+
+
+if __name__ == "__main__":
+    main()

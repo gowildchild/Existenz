@@ -1,0 +1,13 @@
+sign_integrity_config.json
+*.key
+*.pem
+id_*
+id_*.pub
+prompt.txt
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.env
+.venv/
+venv/

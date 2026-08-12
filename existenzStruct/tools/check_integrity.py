@@ -37,13 +37,13 @@ except ImportError as e:
 def verify_structural_hashes() -> bool:
     print("ExistenzIntegrityScan v0.76g")
     print("==================================================================")
-    
+
     # 1. Enforce strict matching on the multi-class layout sequence
     core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
     core_structure_payload = core_structure.encode('utf-8')
     core_structure_signature = hmac.new(existentialCoreCheckMagic, core_structure_payload, hashlib.sha256).hexdigest()
     core_structure_sign = core_structure_signature[:8]
-    
+
     # 2. MACHINE THREAT LAYER (The Attack Vectors & Canaries)
     threat_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCoreThreat.__members__.items()))
     threat_structure_payload = threat_structure.encode('utf-8')

@@ -19,7 +19,7 @@ from existenzStruct.master.existentialCoreThreat import (
 existentialCoreCheckVersion    = "v0.76g"
 existentialCoreCheckMagic      = b"EX25IMMUT32CORE7617"
 existentialCoreCheckSign       = 0x7c165b32
-existentialCoreCheckSignature  = "7c165b32ba3df6d44968d18641470c01eca1e72b3de9b4bc871ef494dbd42c35a"
+existentialCoreCheckSignature  = "7c165b322566e304975917cdc92de03d3ab14e72d1edaefc2ea18f7444ac891c"
 
 class existentialCoreCheck:
     """
@@ -109,7 +109,7 @@ class existentialCoreCheck:
         sign_existenz        = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
         sign_immutable       = "57c413f8531731df0d2f09a260ea36c7e49269348b553fdeeaa2dd11e7bc4bb9"
         sign_structure       = "6d07d97272d414f966ea7a9d7b2956b96541fecbcb9079f375408a62b3b6bd6e"
-        sign_canary          = "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
+        #sign_canary          = "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
         sign_corechain       = "7c165b32ba3df6d44968d18641470c01eca1e72b3de9b4bc871ef494dbd42c35a"
 
         if (active_register_state & existentialCore.CANARY_S_COLLIDE) != 0:
