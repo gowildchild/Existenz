@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta property="og:type" content="website">
+    <meta property="og:url" content="https://gowildchild.github.io/Existenz/apps/collisions/bandwidth-monitor.html">
+    <meta property="og:title" content="Existenz | Collisions | 128-bit Bandwidth Monitor">
+    <meta property="og:description" content="Existenz: A 128-bit machinal philosophy and immutable math blueprint for human survival, protecting your absolute integrity from systemic, hostile noise.">
+    <meta property="og:image" content="https://gowildchild.github.io/Existenz/apps/existenz-full-logo.webp">
+
+    <!-- Twitter Cards (Twitter / X preview) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://gowildchild.github.io/Existenz/apps/collisions/bandwidth-monitor.html">
+    <meta name="twitter:title" content="Existenz | Collisions | 128-bit Bandwidth Monitor">
+    <meta name="twitter:description" content="Existenz: A 128-bit machinal philosophy and immutable math blueprint for human survival, protecting your absolute integrity from systemic, hostile noise.">
+    <meta name="twitter:image" content="https://gowildchild.github.io/Existenz/apps/existenz-full-logo.webp">
+    <title>Existenz | Bandwidth Collision Simulator</title>
+    <style>
+        :root {
+            --cyan: #00f0ff;
+            --green: #00ffaa;
+            --pink: #ff00aa;
+            --bg: #030305;
+            --panel: #09090f;
+            --border: #141424;
+        }
+        body {
+            background-color: var(--bg); color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+            margin: 0; padding: 10px; box-sizing: border-box;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+            border: 2px solid var(--green); transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        body.alarm-active { 
+            border-color: var(--pink) !important;
+            animation: redAlertFlash 1.5s infinite alternate; 
+        }
+        @keyframes redAlertFlash {
+            0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); }
+            100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); }
+        }
+        #loading-universe {
+            position: fixed; top:0; left:0; width:100vw; height:100vh;
+            background: #000000; z-index: 9999; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .loading-text { color: var(--cyan); font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 15px; }
+        .loading-bar { width: 200px; height: 2px; background: #111; border-radius: 2px; overflow: hidden; position: relative; }
+        .loading-bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--pink); animation: sweep 1.5s infinite linear; }
+        @keyframes sweep { 0% { left: -50%; } 100% { left: 100%; } }
+        
+        /* Layout Grid and Panels */
+        .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; flex-grow: 1; min-height: 0; margin-top: 5px;}
+        .column { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+        .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; min-height: 0; }
+        .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.85rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; text-transform: uppercase; }
+        .scrollable-content { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
+        
+        /* Interactive Elements */
+        .bit-row { display: flex; align-items: center; justify-content: space-between; padding: 5px; border-bottom: 1px solid #0f0f1c; font-size: 0.75rem; }
+        .switch { position: relative; display: inline-block; width: 34px; height: 16px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #202030; transition: .2s; border-radius: 16px; }
+        .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--cyan); }
+        input:checked + .slider:before { transform: translateX(18px); }
+        
+        /* Output and Formula Log Modules */
+        .raw-string { background: #020204; border-left: 3px solid var(--pink); padding: 5px; font-size: 0.7rem; color: #8e8eaf; font-family: monospace; word-break: break-all; margin-top: 5px; }
+        .formula-box { background: rgba(0, 240, 255, 0.02); border: 1px dashed rgba(0, 240, 255, 0.15); border-radius: 4px; padding: 6px; margin: 4px 0; font-family: monospace; font-size: 0.75rem; color: var(--cyan); }
+        .metric-val { font-size: 1.1rem; font-weight: bold; color: var(--pink); font-family: monospace; }
+        
+        #spectrum-container { width: 100%; height: 100%; min-height: 220px; background: #020205; border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
+        canvas { display: block; width: 100%; height: 100%; }
+        .intro-box { background: rgba(0, 255, 170, 0.02); border: 1px solid #102a20; padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 0.7rem; line-height: 1.3; color: #b5c5b5; }
+        .alert-item { font-size: 0.7rem; padding: 4px; border-left: 2px solid var(--pink); margin-bottom: 3px; background: rgba(255,0,170,0.03); color: #ffb3df; }
+        
+        @media (max-width: 768px) {
+            body { height: auto; overflow: auto; }
+            .grid { grid-template-columns: 1fr; }
+            #spectrum-container { height: 220px; }
+        }
+    </style>
+</head>
+<body>
+
+<div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0>
+  <a href="https://github.com/gowildchild/Existenz/" style="color: #0ff0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.6px; border-bottom: 1px solid #000000; padding-bottom: 2px;">GitHub</a> | 
+  <a href="/"  style="font-family: monospace; color: var(--pink);font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Go back to Start, Pick one of the corners!">START</a> | 
+  <a href="/Existenz/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Find which is the tipping point of extremism">Tolerance</a> | 
+  <a href="/Existenz/apps/human-rights/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Human Rights for all the ages, including the dark ages!">Human Rights</a> | 
+  <a href="/Existenz/apps/extra-colliding/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="This is a human quest to find the collissions that matter!">Extra</a> | 
+  <a href="/Existenz/apps/collisions/bandwidth-monitor.html" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="Collisions in Life!">In Life</a> -X- 
+  <a href="/Existenz/apps/lifetime/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> | 
+  <a href="/Existenz/apps/plato-fields/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="The quest for collissions on the canvas of Deogenes">Plato Fields</a> | 
+  <a href="/Existenz/apps/simulation-4D" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="See now how humanity could thrive, or fail, backed by the old Gods of science!">Plato 4D</a> | 
+  <a href="/Existenz/apps/audit-world/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Audit World</a> |
+  <a href="https://github.com/gowildchild/Existenz" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;" title="Get more info now!">Git</a> : 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/examples" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/struct" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
+</div>
+
+    <!-- Core App Dashboard Viewport -->
+    <div class="grid">
+        <!-- Left Data Streams / Switches -->
+        <div class="column">
+            <div class="panel id="vector-panel" style="flex-grow: 1;">
+                <h2>1. Core Structural Allocations [extra-colliding]</h2>
+                <div class="intro-box">
+                    Forced interference mapping: Locating register overrides to drive the mathematical canary detection loop.
+                </div>
+                <div class="scrollable-content" id="switchboard-target">
+                    <!-- Javascript populates active flag states dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Visual Metrics / Interference Scope -->
+        <div class="column">
+            <div class="panel" style="flex-grow: 1.2;">
+                <h2>2. Real-Time Interference Spectrum</h2>
+                <div id="spectrum-container">
+                    <canvas id="scopeCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="panel" style="flex-shrink: 0;">
+                <h2>3. Numerical Registry Metrics</h2>
+                <div class="formula-box">
+                    𝚫𝐑drift = 𝚿realist(b20→30) - 𝚿ideal(b16)
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.75rem; color:#8e8eaf;">Combined Decimal Scalar Weight:</span>
+                    <span class="metric-val" id="decimal-metric">0</span>
+                </div>
+                <div class="raw-string" id="binary-stream-box">
+                    00000000 00000000 00000000 00000000
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Foundational 128-bit registry state map
+        const systemVectorTracks = [
+            { id: 0, name: "EXISTENCE (Bit 0)", mask: 1 },
+            { id: 1, name: "AUTONOMY (Bit 1)", mask: 2 },
+            { id: 2, name: "INTEGRITY (Bit 2)", mask: 4 },
+            { id: 5, name: "DISABILITY (Bit 5)", mask: 32 },
+            { id: 22, name: "TRUST_BROKEN_SAFETY (Bit 22)", mask: 4194304 },
+            { id: 24, name: "TRUST_BROKEN_DIGITAL (Bit 24)", mask: 16777216 },
+            { id: 25, name: "SHIELD_EXPLOITATION_RIGHTS (Bit 25)", mask: 33554432 },
+            { id: 26, name: "TRUST_BROKEN_CORE (Bit 26)", mask: 67108864 },
+            { id: 27, name: "INTENTIONAL_CANARY_OVERLAP (Bit 27)", mask: 134217728 },
+            { id: 29, name: "TRUST_PERSONAL (Bit 29)", mask: 536870912 }
+        ];
+
+        // Explicit tracking structures to log cross-channel bit distribution
+        let activatedVectors = {};
+        const canvas = document.getElementById("scopeCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function setupDashboard() {
+            const target = document.getElementById("switchboard-target");
+            target.innerHTML = "";
+            
+            systemVectorTracks.forEach(track => {
+                // Initialize internal memory mappings
+                activatedVectors[track.id] = true; 
+
+                const row = document.createElement("div");
+                row.className = "bit-row";
+                row.innerHTML = `
+                    <span>${track.name}</span>
+                    <label class="switch">
+                        <input type="checkbox" checked id="chk-${track.id}" onchange="toggleRegistryField(${track.id})">
+                        <span class="slider"></span>
+                    </label>
+                `;
+                target.appendChild(row);
+            });
+
+            window.addEventListener('resize', alignCanvasLimits);
+            alignCanvasLimits();
+            evaluateTelemetryOut();
+            requestAnimationFrame(drawScopeSweeper);
+        }
+
+        function toggleRegistryField(bitId) {
+            const state = document.getElementById(`chk-${bitId}`).checked;
+            activatedVectors[bitId] = state;
+            evaluateTelemetryOut();
+        }
+
+        function alignCanvasLimits() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+
+        function evaluateTelemetryOut() {
+            let decimalScalar = BigInt(0);
+            let binaryArray = new Array(128).fill("0");
+            let overlappingBandsFound = false;
+
+            // Process mathematical register matrix transformations
+            for (let b = 0; b < 128; b++) {
+                if (activatedVectors[b]) {
+                    decimalScalar += BigInt(1) << BigInt(b);
+                    binaryArray[127 - b] = "1";
+                }
+            }
+
+            // High density structural collision test simulation
+            // Simulates an alert threshold trigger if fields overlap across the analyzer channels
+            let rawActiveCount = Object.values(activatedVectors).filter(Boolean).length;
+            if (rawActiveCount > 6) {
+                overlappingBandsFound = true;
+                document.body.classList.add("alarm-active");
+            } else {
+                document.body.classList.remove("alarm-active");
+            }
+
+            // Output strings string rendering
+            document.getElementById("decimal-metric").innerText = decimalScalar.toString();
+            let chunks = binaryArray.join("").match(/.{1,8}/g) || [];
+            document.getElementById("binary-stream-box").innerText = chunks.slice(-4).join(" ");
+        }
+
+        function drawScopeSweeper(time) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const channelsCount = 128;
+            const horizontalGap = 2;
+            const barWidth = (canvas.width - (channelsCount * horizontalGap)) / channelsCount;
+
+            // Draw clean background monitoring frequencies grid
+            ctx.strokeStyle = "rgba(20, 20, 36, 0.5)";
+            ctx.lineWidth = 1;
+            for (let y = 40; y < canvas.height; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            // Render 128 spectrum frequencies
+            for (let i = 0; i < channelsCount; i++) {
+                let x = i * (barWidth + horizontalGap);
+                let heightValue = 5; 
+                let barColor = "rgba(0, 240, 255, 0.15)"; // Default tracking lane footprint
+
+                if (activatedVectors[i]) {
+                    // Check if multiple active parameters approach collision cluster zones
+                    if (document.body.classList.contains("alarm-active") && (i >= 22 && i <= 29)) {
+                        heightValue = canvas.height - 40 + Math.sin(time * 0.01 + i) * 10;
+                        barColor = "var(--pink)"; // Collision alert channel color space
+                    } else {
+                        heightValue = 90 + Math.sin(time * 0.004 + i) * 15;
+                        barColor = "var(--green)"; // Healthy active signal state track
+                    }
+                }
+
+                ctx.fillStyle = barColor;
+                ctx.fillRect(x, canvas.height - heightValue, barWidth, heightValue);
+
+                if (i % 32 === 0) {
+                    ctx.fillStyle = "#4e4e6e";
+                    ctx.font = "9px monospace";
+                    ctx.fillText(`b${i}`, x, canvas.height - 8);
+                }
+            }
+
+            requestAnimationFrame(drawScopeSweeper);
+        }
+
+        // Initialize setup processing layers automatically
+        setupDashboard();
+
+
+
+       window.addEventListener('load', () => {
+         setTimeout(() => {
+         try {
+           const loader = document.getElementById('loading-universe');
+           if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
+         } catch(e) { requestAnimationFrame(drawScopeSweeper); }
+        }, 800);
+       });   
+
+    </script>
+</body>
+</html>
