@@ -20,6 +20,8 @@ jobs:
         python-version: '3.12'
 
     # Step 3: Determine Operational Mode from the Lockfile
+    - name: Install Platform Dependencies
+      run: pip install pyyaml cryptography    
     - name: Parse Pipeline Operational Mode
       id: mode_check
       run: |
