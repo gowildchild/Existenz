@@ -195,31 +195,13 @@
 
     <!-- Center Coordinate Field -->
     <div id="canvas-container">
-        <canvas id="simCanvas" width="750" height="750"></canvas>
+        <canvas id="simCanvas" width="550" height="550"></canvas>
     </div>
 
     <!-- Right Unified Panels -->
     <div id="right-panel">
         <!-- Top Half: Unit Inspector -->
-        <div id="inspect-panel">
-            <h3 style="margin: 0; font-size: 14px; color: #a0aec0;">MATRIX UNIT FIELD</h3>
-            <p id="no-selection" style="color: #4a5568; font-size: 11px; margin: 0;">Select an active vector node to target code telemetry data.</p>
-            <div id="inspector-content" style="display: none;">
-                <div style="font-size: 15px; font-weight: bold; color: #63b3ed;" id="ins-name">Individual #--</div>
-                <div style="font-size: 11px; color: #718096; margin-bottom: 10px;">Lineage Vector: <span id="ins-family" style="color:#9f7aea;">Alpha</span> | Age: <span id="ins-age" style="color:#ecc94b;">0</span></div>
-                <div style="margin-bottom: 12px; font-size: 12px; color: #cbd5e0;">Matrix: <span id="ins-coords" style="color: #ecc94b;">X:0, Y:0, Z:0</span></div>
-                <div id="pillars-list" style="display: flex; flex-direction: column; gap: 6px;"></div>
-            </div>
-        </div>
-
-        <!-- Bottom Half: The Spacetime Matrix Log -->
-        <div id="matrix-log">
-            <h3 style="margin: 0; font-size: 13px; color: #a0aec0; letter-spacing: 0.5px; border-bottom: 1px solid #1a2233; padding-bottom: 6px;">SPACETIME LOG TELEMETRY</h3>
-            <div id="log-stream"></div>
-        </div>
-    </div>
-    <!-- Left Control Panel -->
-    <div id="sidebar">
+            <div id="sidebar">
         <h2 style="margin: 0; color: #63b3ed; font-size: 18px; letter-spacing: 1px;">EXISTENZ MATRIX</h2>
         
         <div>
@@ -242,6 +224,25 @@
         <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
         <p style="font-size: 11px; color: #4a5568; line-height: 1.4; margin: 0;">Multi-generational dynamic curves. Families share baseline coordinates while their individual timelines scale outward along Fibonacci vectors.</p>
     </div>
+        <div id="inspect-panel">
+            <h3 style="margin: 0; font-size: 14px; color: #a0aec0;">MATRIX UNIT FIELD</h3>
+            <p id="no-selection" style="color: #4a5568; font-size: 11px; margin: 0;">Select an active vector node to target code telemetry data.</p>
+            <div id="inspector-content" style="display: none;">
+                <div style="font-size: 15px; font-weight: bold; color: #63b3ed;" id="ins-name">Individual #--</div>
+                <div style="font-size: 11px; color: #718096; margin-bottom: 10px;">Lineage Vector: <span id="ins-family" style="color:#9f7aea;">Alpha</span> | Age: <span id="ins-age" style="color:#ecc94b;">0</span></div>
+                <div style="margin-bottom: 12px; font-size: 12px; color: #cbd5e0;">Matrix: <span id="ins-coords" style="color: #ecc94b;">X:0, Y:0, Z:0</span></div>
+                <div id="pillars-list" style="display: flex; flex-direction: column; gap: 6px;"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Half: The Spacetime Matrix Log -->
+        <div id="matrix-log">
+            <h3 style="margin: 0; font-size: 13px; color: #a0aec0; letter-spacing: 0.5px; border-bottom: 1px solid #1a2233; padding-bottom: 6px;">SPACETIME LOG TELEMETRY</h3>
+            <div id="log-stream"></div>
+        </div>
+    </div>
+    <!-- Left Control Panel -->
+
 <script>
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
