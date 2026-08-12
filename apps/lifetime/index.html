@@ -171,6 +171,8 @@
     </style>
 </head>
 <body>
+
+    
 <header>
     <div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0>
   <a href="https://github.com/gowildchild/Existenz/" style="color: #0ff0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.6px; border-bottom: 1px solid #000000; padding-bottom: 2px;">GitHub</a> | 
@@ -188,30 +190,7 @@
   <a href="https://github.com/gowildchild/Existenz/tree/main/struct" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
 </div>
 </header>
-    <!-- Left Control Panel -->
-    <div id="sidebar">
-        <h2 style="margin: 0; color: #63b3ed; font-size: 18px; letter-spacing: 1px;">EXISTENZ MATRIX</h2>
-        
-        <div>
-            <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 6px;">Global Matrix State:</label>
-            <select id="sim-select" onchange="changeSimulation()">
-                <option value="baseline">Harmonic Framework</option>
-                <option value="diogenes">Cynic Autonomy Waves</option>
-                <option value="crisis">Systemic Rights Severance</option>
-            </select>
-        </div>
 
-        <div class="threat-meter">
-            <div style="display:flex; justify-content:space-between; font-size:11px;">
-                <span>ExistenzThreat Vector:</span>
-                <span id="threat-pct" style="font-weight:bold; color:#48bb78;">0%</span>
-            </div>
-            <div style="background:#2d3748; height:6px; border-radius:3px;"><div id="threat-bar"></div></div>
-        </div>
-        
-        <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
-        <p style="font-size: 11px; color: #4a5568; line-height: 1.4; margin: 0;">Multi-generational dynamic curves. Families share baseline coordinates while their individual timelines scale outward along Fibonacci vectors.</p>
-    </div>
 
     <!-- Center Coordinate Field -->
     <div id="canvas-container">
@@ -238,7 +217,30 @@
             <div id="log-stream"></div>
         </div>
     </div>
+    <!-- Left Control Panel -->
+    <div id="sidebar">
+        <h2 style="margin: 0; color: #63b3ed; font-size: 18px; letter-spacing: 1px;">EXISTENZ MATRIX</h2>
+        
+        <div>
+            <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 6px;">Global Matrix State:</label>
+            <select id="sim-select" onchange="changeSimulation()">
+                <option value="baseline">Harmonic Framework</option>
+                <option value="diogenes">Cynic Autonomy Waves</option>
+                <option value="crisis">Systemic Rights Severance</option>
+            </select>
+        </div>
 
+        <div class="threat-meter">
+            <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span>ExistenzThreat Vector:</span>
+                <span id="threat-pct" style="font-weight:bold; color:#48bb78;">0%</span>
+            </div>
+            <div style="background:#2d3748; height:6px; border-radius:3px;"><div id="threat-bar"></div></div>
+        </div>
+        
+        <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
+        <p style="font-size: 11px; color: #4a5568; line-height: 1.4; margin: 0;">Multi-generational dynamic curves. Families share baseline coordinates while their individual timelines scale outward along Fibonacci vectors.</p>
+    </div>
 <script>
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
