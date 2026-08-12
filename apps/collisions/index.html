@@ -31,25 +31,25 @@
  height: 100vh; display: flex; flex-direction: column; overflow: hidden;
  border: 2px solid var(--green); transition: border-color 0.2s ease, box-shadow 0.2s ease;
  }
- body.alarm-active { 
- border-color: var(--pink) !important;
- animation: redAlertFlash 1.5s infinite alternate; 
- }
- @keyframes redAlertFlash {
- 0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); }
- 100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); }
- }
  #loading-universe {
- position: fixed; top:0; left:0; width:100vw; height:100vh;
- background: #000000; z-index: 9999; display: flex;
- flex-direction: column; justify-content: center; align-items: center;
- transition: opacity 0.5s ease, visibility 0.5s ease;
+   position: fixed; top:0; left:0; width:100vw; height:100vh;
+   background: #000000; z-index: 9999; display: flex;
+   flex-direction: column; justify-content: center; align-items: center;
+   transition: opacity 0.5s ease, visibility 0.5s ease;
  }
  .loading-text { color: var(--cyan); font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 15px; }
  .loading-bar { width: 200px; height: 2px; background: #111; border-radius: 2px; overflow: hidden; position: relative; }
  .loading-bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--pink); animation: sweep 1.5s infinite linear; }
- @keyframes sweep { 0% { left: -50%; } 100% { left: 100%; } }
- header { border-bottom: 2px solid var(--cyan); padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
+  @keyframes sweep { 0% { left: -50%; } 100% { left: 100%; } }
+  header { border-bottom: 2px solid var(--cyan); padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
+  body.alarm-active { 
+   border-color: var(--pink) !important;
+   animation: redAlertFlash 1.5s infinite alternate; 
+  }
+ @keyframes redAlertFlash {
+ 0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); }
+ 100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); }
+ }
  h1 { margin: 0; color: var(--cyan); font-size: 1.2rem; font-weight: 800; }
  .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; flex-grow: 1; min-height: 0; }
  .column { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
@@ -378,19 +378,33 @@
     // Direct startup execution hook
     initUI();
 
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const loader = document.getElementById('loading-universe');
+        
+        if (loader) {
+            // 1. Kick off the visual CSS opacity fade
+            loader.style.opacity = '0';
+            
+            // 2. Kill click collisions immediately so links work during the fade
+            loader.style.pointerEvents = 'none';
+            
+            // 3. Completely hide it from the browser layout after fade finishes
+            setTimeout(() => { 
+                loader.style.visibility = 'hidden'; 
+                loader.style.display = 'none'; 
+            }, 500);
+        }
 
-<script>
- window.addEventListener('load', () => {
-  setTimeout(() => {
-   try {
-    const loader = document.getElementById('loading-universe');
-    if (loader) { loader.style.opacity = '0'; setTimeout(() => { loader.style.visibility = 'hidden'; }, 500); }
-   } catch(e) {     initUI();  }
-  }, 800);
- });
-</script>
-</body>
-</html>  
+        // 4. Fire up the machine spectrum loop safely
+        try {
+            requestAnimationFrame(renderSpectrumHeatmap);
+        } catch(e) {
+            console.error("Renderer initialization failed:", e);
+        }
+
+    }, 800);
+}); 
 </script>
 </body>
 </html>
