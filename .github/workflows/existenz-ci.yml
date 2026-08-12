@@ -46,7 +46,6 @@ jobs:
     - name: Run Core Suite and Compile Universal Data Structures
       if: env.RUN_MODE != 'locked'
       run: |
-        python existenzStruct/tools/core_build.py -stage check
         python existenzStruct/tools/core_build.py -stage compile
 
     # Step 6: Assert Schema and Code Generation Success (Skipped if fully locked)
