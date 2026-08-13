@@ -59,7 +59,7 @@ jobs:
         git config --global user.email "32355099+gowildchild@users.noreply.github.com"
       
         cp existenzStruct/master/existentialCore.py dist/
-        cp existenzStruct/master/existentialCoreThreats.py dist/
+        cp existenzStruct/master/existentialCoreThreat.py dist/
         
         git add dist/
         
