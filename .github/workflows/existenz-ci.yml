@@ -71,8 +71,8 @@ jobs:
     - name: Existenz - Copy Master Data Structures
       if: env.RUN_MODE != 'locked'
       run: |
-        cp existenzStruct/master/existentialCore.yml dist/
-        cp existenzStruct/master/existentialCoreThreats.yml dist/        
+        cp existenzStruct/master/existentialCore.py dist/
+        cp existenzStruct/master/existentialCoreThreats.py dist/        
 
     # Step 8: Assert Schema and Code Generation Success (Skipped if fully locked)
     - name: Existenz - Test Universal Data Structures
