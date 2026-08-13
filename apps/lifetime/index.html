@@ -5,63 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Existenz | Spacetime Generation Matrix</title>
     <style>
-        :root {
-            --cyan: #0ff0ff;
-            --pink: #ff00aa;
-        }
-
         body { 
             margin: 0; 
             background: #06080c; 
             color: #e2e8f0; 
             font-family: 'Courier New', monospace; 
-            /* CHANGE 1: Stack the top header menu over the application content layout */
             display: flex; 
-            flex-direction: column;
-            height: 40vh; 
+            height: 100vh; 
             overflow: hidden; 
         }
-
-        /* CHANGE 2: Unified Top Navigation Menu */
-        header { 
-            width: 100%; 
-            background: #09090f; 
-            border-bottom: 2px solid #141424; 
-            display: flex; 
-            gap: 20px; 
-            padding: 12px 20px; 
-            font-family: monospace; 
-            font-size: 11px; 
-            z-index: 600; 
-            box-sizing: border-box; 
-            flex-shrink: 0; 
-        }
-        header a { text-decoration: none; font-weight: bold; padding-bottom: 2px; }
-
-        /* CHANGE 3: A new layout wrapper that runs side-by-side below the menu header */
-        #app-workspace {
-            display: flex;
-            flex-direction: row;
-            flex-grow: 1;
-            width: 100%;
-            height: calc(300vh - 41px); /* Accounts for header height bounds */
-            overflow: hidden;
-        }        
         #sidebar { 
             width: 320px; 
             background: #0b0e14; 
             padding: 20px; 
             box-sizing: border-box; 
             display: flex; 
-            flex-direction: row; 
+            flex-direction: column; 
             gap: 20px; 
             border-right: 1px solid #1a2233; 
             z-index: 10;
         }
         #canvas-container { 
             flex-grow: 1; 
-            position: top;
-            flex-direction: row;
+            position: relative; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -125,6 +91,7 @@
         .loading-bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--pink); animation: sweep 1.5s infinite linear; }
         @keyframes sweep { 0% { left: -50%; } 100% { left: 100%; } }
         header { border-bottom: 2px solid var(--cyan); padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
+        
         .btn { 
             background: #2b6cb0; 
             color: white; 
@@ -173,9 +140,8 @@
 </head>
 <body>
 
-    
-<header>
-    <div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0>
+    <!-- Left Control Panel -->
+    <div id="sidebar">
   <a href="https://github.com/gowildchild/Existenz/" style="color: #0ff0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.6px; border-bottom: 1px solid #000000; padding-bottom: 2px;">GitHub</a> | 
   <a href="/"  style="font-family: monospace; color: var(--pink);font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Go back to Start, Pick one of the corners!">START</a> | 
   <a href="/Existenz/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Find which is the tipping point of extremism">Tolerance</a> | 
@@ -189,12 +155,11 @@
   <a href="https://github.com/gowildchild/Existenz" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;" title="Get more info now!">Git</a> : 
   <a href="https://github.com/gowildchild/Existenz/tree/main/examples" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
   <a href="https://github.com/gowildchild/Existenz/tree/main/struct" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
-</div>
-</header>
-<div id="left-panel">
-            <div id="sidebar">
+
+        <h2 style="margin: 0; color: #63b3ed; font-size: 18px; letter-spacing: 1px;">EXISTENZ MATRIX</h2>
+        
         <div>
-            <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 6px;">Existenz Matrix Setup:</label>
+            <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 6px;">Global Matrix State:</label>
             <select id="sim-select" onchange="changeSimulation()">
                 <option value="baseline">Harmonic Framework</option>
                 <option value="diogenes">Cynic Autonomy Waves</option>
@@ -213,17 +178,15 @@
         <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
         <p style="font-size: 11px; color: #4a5568; line-height: 1.4; margin: 0;">Multi-generational dynamic curves. Families share baseline coordinates while their individual timelines scale outward along Fibonacci vectors.</p>
     </div>
-</div>
 
     <!-- Center Coordinate Field -->
     <div id="canvas-container">
-        <canvas id="simCanvas" width="550" height="550"></canvas>
+        <canvas id="simCanvas" width="750" height="750"></canvas>
     </div>
 
     <!-- Right Unified Panels -->
     <div id="right-panel">
         <!-- Top Half: Unit Inspector -->
-
         <div id="inspect-panel">
             <h3 style="margin: 0; font-size: 14px; color: #a0aec0;">MATRIX UNIT FIELD</h3>
             <p id="no-selection" style="color: #4a5568; font-size: 11px; margin: 0;">Select an active vector node to target code telemetry data.</p>
@@ -241,7 +204,6 @@
             <div id="log-stream"></div>
         </div>
     </div>
-    <!-- Left Control Panel -->
 
 <script>
     const canvas = document.getElementById('simCanvas');
@@ -601,8 +563,7 @@
     pushLog("Existenz Core initialized. 50 individuals loaded across timeline.", "log-birth");
     updateSimulation();
 
-
-          window.addEventListener('load', () => {
+         window.addEventListener('load', () => {
          setTimeout(() => {
          try {
            const loader = document.getElementById('loading-universe');
