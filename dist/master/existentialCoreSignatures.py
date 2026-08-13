@@ -20,7 +20,7 @@ class existentialCoreSignatures:
         ("Developer", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGHTQAOnKU4zaM03kASAKmrsps4ROCx8xMQZ4m12Yo8U existenz-dev-gwc@xsrv.net"),
         ("Personal", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKn1/r+k9+T5OJyoIjcrkj0DBmLq//x0/sffNMJNWofK existenz-dev-gv@xsrv.net")
     )
-
+    
     existentialCoreSigned = (
         ("Magic", "7faa8872", "existentialCoreMagicHash", "7faa88729e96e6a8795855c4e962d1cef3f9b8d2675819ba383f65e33daa0b9f6e46d27348e0670a6e4a90ebaf1266c3be28cf0412153501830d506c6f808909", 60, 0),
         ("Core", "1289de75", "existentialCoreHash", "1289de75fe9506e225779f2f9cfe530c231e81fd4b6d420ee657cfec6e6d3b3a7b0b009a2aad37b7549b8c81e972ff337b0db434f66a67e4d859ef7186467d07", 126, 0),
