@@ -1,4 +1,4 @@
-name: Existenz Platform Genesis CI
+name: Existenz - Structure Generation CI
 
 on:
   push:
@@ -11,18 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code Blueprint
+    - name: Existenz - Checkout Code Blueprint
       uses: actions/checkout@v4
 
-    - name: Initialize Python Runtime
+    - name: Existenz - Initialize Python Runtime
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
     # Step 3: Determine Operational Mode from the Lockfile
-    - name: Install Platform Dependencies
+    - name: Existenz - Install Platform Dependencies
       run: pip install pyyaml cryptography    
-    - name: Parse Pipeline Operational Mode
+    - name: Existenz - Pipeline Operational Mode
       id: mode_check
       run: |
         if [ -f "existenzStruct/.existentialLock" ]; then
@@ -37,7 +37,7 @@ jobs:
         echo "RUN_MODE=$MODE" >> $GITHUB_ENV
 
     # Step 4: Standalone Cryptographic Hash Audit (Absolute Root Context)
-    - name: Run Standalone Cryptographic Hash Audit
+    - name: Existenz - Standalone Cryptographic Hash Audit
       if: env.RUN_MODE != 'locked'
       run: |
         # Inject the physical repository root natively into Python's search path
@@ -45,25 +45,13 @@ jobs:
         PYTHONPATH="${GITHUB_WORKSPACE}" python existenzStruct/tools/check_integrity.py
 
     # Step 5: Execute Suite and Compile Structures (Skipped if fully locked)
-    - name: Run Core Suite and Compile Universal Data Structures
+    - name: Existenz - Compile Universal Data Structures
       if: env.RUN_MODE != 'locked'
       run: |
         python existenzStruct/tools/core_build.py -step compile
 
-    # Step 6: Assert Schema and Code Generation Success (Skipped if fully locked)
-    #- name: Assert Schema and Code Generation Success
-    #  if: env.RUN_MODE != 'locked'
-    #  run: |
-    #    test -f existenzStruct/json/existentialCore.json
-    #    test -f existenzStruct/xml/existentialCore.xml
-    #    test -f existenzStruct/languages/rust/mod.rs
-    #    test -f existenzStruct/languages/cpp/existentialCore.hpp
-    #    test -f existenzStruct/languages/php/existentialCore.php
-    #    test -f existenzStruct/languages/perl/existentialCore.pm
-    #    echo "[+] Sandbox compilation and schema verification successful."
-
-    # Step 7: Conditional Repository Sync Phase (ONLY fires in compile mode)
-    - name: Commit and Push Generated Structures (Mode Checked)
+    # Step 6: Conditional Repository Sync Phase (ONLY fires in compile mode)
+    - name: Existenz - git commit and push generated structures to repo
       if: env.RUN_MODE == 'compile'
       run: |
         echo "[*] Compile mode active. Synchronizing repository files..."
@@ -75,12 +63,31 @@ jobs:
         if git diff --staged --quiet; then
           echo "[+] No structural changes detected. Skipping push."
         else
-          git commit -m "automation: freeze universal cross-language structures [skip ci]"
+          git commit -m "Existenz: universal cross-language structures"
           git push
         fi
 
+    # Step 7: Copy master files to dist
+    - name: Existenz - Copy Master Data Structures
+      if: env.RUN_MODE != 'locked'
+      run: |
+        cp existenzStruct/master/existentialCore.yml dist/
+        cp existenzStruct/master/existentialCoreThreats.yml dist/        
+
+    # Step 8: Assert Schema and Code Generation Success (Skipped if fully locked)
+    - name: Existenz - Test Universal Data Structures
+      if: env.RUN_MODE != 'locked'
+      run: |
+        test -f dist/existentialCore.json
+        test -f dist/existentialCore.xml
+        test -f dist/rust/single/existentialCore.rs
+        test -f dist/cpp/single/existentialCore.hpp
+        test -f dist/php/single/existentialCore.php
+        test -f dist/perl/single/existentialCore.pm
+        echo "[+] Compilation and schema verification successful."
+        
     # Step 8: Log Output for Integrity Check Mode
-    - name: Terminate Integrity Check Isolation Log
+    - name: Existenz - Terminate Integrity Check 
       if: env.RUN_MODE == 'integritycheck'
       run: |
         echo "[*] Pipeline Status: Mode [INTEGRITYCHECK] complete."
