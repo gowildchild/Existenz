@@ -1,0 +1,19 @@
+name: Sync to Codeberg
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "*" ]
+
+jobs:
+  codeberg-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to Codeberg
+        run: |
+          git push --prune --force "https://gowildchild:${{ secrets.CODEBERG_TOKEN }}@codeberg.org/gowildchild/Existenz.git" refs/remotes/origin/*:refs/heads/* +refs/tags/*:refs/tags/*
