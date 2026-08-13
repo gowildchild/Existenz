@@ -57,6 +57,9 @@ jobs:
         echo "[*] Compile mode active. Synchronizing repository files..."
         git config --global user.name "Existenz Platform Bot"
         git config --global user.email "32355099+gowildchild@users.noreply.github.com"
+      
+        cp existenzStruct/master/existentialCore.py dist/
+        cp existenzStruct/master/existentialCoreThreats.py dist/
         
         git add dist/
         
@@ -65,21 +68,16 @@ jobs:
         else
           git commit -m "Existenz: universal cross-language structures"
           git push
-        fi
+        fi      
 
-    # Step 7: Copy master files to dist
-    - name: Existenz - Copy Master Data Structures
-      if: env.RUN_MODE != 'locked'
-      run: |
-        cp existenzStruct/master/existentialCore.py dist/
-        cp existenzStruct/master/existentialCoreThreats.py dist/        
-
-    # Step 8: Assert Schema and Code Generation Success (Skipped if fully locked)
+    # Step 7: Assert Schema and Code Generation Success (Skipped if fully locked)
     - name: Existenz - Test Universal Data Structures
       if: env.RUN_MODE != 'locked'
       run: |
         test -f dist/existentialCore.json
         test -f dist/existentialCore.xml
+        test -f dist/existentialCoreThreat.json
+        test -f dist/existentialCoreThreat.xml        
         test -f dist/rust/single/existentialCore.rs
         test -f dist/cpp/single/existentialCore.hpp
         test -f dist/php/single/existentialCore.php
