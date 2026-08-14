@@ -8,7 +8,7 @@ This document serves as an open-source, structural breakdown of the interlocking
 
 When a highly systemizing, neurodivergent (AuDHD) intellect intersects with a rigid, wealth-protecting institutional framework, the resulting friction exposes critical vulnerabilities in modern human rights enforcement. 
 
-**Methodology:** This analysis utilizes a framework of *Dual-Vector Systems Phenomenology* [^7], executing simultaneous internal introspection of neurodivergent cognitive preservation alongside a forensic extrospection of the collapsing external institutional architectures [^4].
+**Methodology:** This analysis utilizes a framework of *Dual-Vector Systems Phenomenology*, executing simultaneous internal introspection of neurodivergent cognitive preservation alongside a forensic extrospection of the collapsing external institutional architectures.
 
 Below is the forensic taxonomy of the paradoxes governing this case.
 
