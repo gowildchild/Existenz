@@ -3,7 +3,7 @@
 # THE EXISTENZ PLATFORM (REPO tools / Check Hashes v0.76g)
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
 # ==========================================================================
-# FILE: existenzStruct/tools/check_integrity_hashes.py
+# FILE: existenzStruct/tools/check_integrity.py
 #
 import hmac
 import hashlib
