@@ -24,12 +24,12 @@ class ExistentialMeta(IntFlag):
     PRESENCE             = 1 << 10   # 256   Virtual and meta-physical presence
 
     SHIELD_HUMAN_RIGHTS  = 1 << 20     # 1048576
+    SHIELD_DISCRIMINATION_RIGHTS = 1 << 22 # 8388608
     SHIELD_BASIC_RIGHTS  = 1 << 24     # 2097152
     SHIELD_FUGITIVE_RIGHTS       = 1 << 26 # 4194304
-    SHIELD_DISCRIMINATION_RIGHTS = 1 << 22 # 8388608
-    SHIELD_EXPLOITATION_RIGHTS   = 1 << 25 # 33554432
-    SHIELD_MATHEMATICAL_RIGHTS=1 << 28 # 268435456
-    SHIELD_AQUIRED_TRUST = 1 << 30     # 1073741824
+#    SHIELD_EXPLOITATION_RIGHTS   = 1 << 25 # 33554432
+#    SHIELD_MATHEMATICAL_RIGHTS   = 1 << 28 # 268435456
+#    SHIELD_AQUIRED_TRUST = 1 << 30     # 1073741824
 
 class ExistentialThreatMeta(IntFlag):
     # ,,, Primitive Threat Vectors occupy the exact same bit positions as human pillars ,,,
@@ -67,8 +67,8 @@ class ExistentialRipples(IntFlag):
     TRUST_BROKEN_SAFETY        = 1 << 22
     TRUST_BROKEN_DIGITAL       = 1 << 24
     TRUST_BROKEN_CORE          = 1 << 26
-    TRUST_PERSONAL       = 1 << 29  # 536870912
-    TRUST_ABSOLUTE       = 1 << 30  # 1073741824
+#    TRUST_PERSONAL       = 1 << 29  # 536870912
+#    TRUST_ABSOLUTE       = 1 << 30  # 1073741824
 
 
 def parse_arguments():
@@ -221,7 +221,7 @@ def execute_matrix_render(args, active_marks, coords):
                 ax.scatter(coords[b][0], coords[b][1], color="#ff0000", s=120, edgecolors="white", linewidth=1.5, zorder=4)
 
     # 8. Render metadata layout telemetry screens
-    title_text = f"EXISTENZ SIMULATOR by Gunther Voet 2026 \nActive Event Coordinates: {[hex(m) for m in active_marks]}"
+    title_text = f"Existenz SIM v0.9 by Gunther Voet (c)2026\nActive Event Coordinates: {[hex(m) for m in active_marks]}"
     ax.set_title(title_text, color="white", fontsize=12, pad=15)
 
     info_pane = f"Timeline Vector: {args.timeline.upper()}\nTolerance Friction: {tolerance_closeness*100:.1f}%\nRights Assertion: {'ANOMALY CRITICAL' if rights_breach_detected else 'SYSTEM NORMAL'}"
