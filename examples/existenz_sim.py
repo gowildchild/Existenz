@@ -23,9 +23,9 @@ class ExistentialMeta(IntFlag):
     PROPERTY             = 1 << 8   # 128   Living and financial stability
     PRESENCE             = 1 << 10   # 256   Virtual and meta-physical presence
 
-    SHIELD_HUMAN_RIGHTS  = 1 << 20     # 1048576
+    SHIELD_HUMAN_RIGHTS          = 1 << 20     # 1048576
     SHIELD_DISCRIMINATION_RIGHTS = 1 << 22 # 8388608
-    SHIELD_BASIC_RIGHTS  = 1 << 24     # 2097152
+    SHIELD_BASIC_RIGHTS          = 1 << 24     # 2097152
     SHIELD_FUGITIVE_RIGHTS       = 1 << 26 # 4194304
 #    SHIELD_EXPLOITATION_RIGHTS   = 1 << 25 # 33554432
 #    SHIELD_MATHEMATICAL_RIGHTS   = 1 << 28 # 268435456
@@ -221,32 +221,35 @@ def execute_matrix_render(args, active_marks, coords):
                 ax.scatter(coords[b][0], coords[b][1], color="#ff0000", s=120, edgecolors="white", linewidth=1.5, zorder=4)
 
     # 8. Render metadata layout telemetry screens
-    title_text = f"Existenz SIM v0.9 by Gunther Voet (c)2026\nActive Event Coordinates: {[hex(m) for m in active_marks]}"
+    title_text = f"Existenz SIM v0.93 by Gunther Voet (c)2026\nActive Event Coordinates: {[hex(m) for m in active_marks]}"
     ax.set_title(title_text, color="white", fontsize=12, pad=15)
 
     info_pane = f"Timeline Vector: {args.timeline.upper()}\nTolerance Friction: {tolerance_closeness*100:.1f}%\nRights Assertion: {'ANOMALY CRITICAL' if rights_breach_detected else 'SYSTEM NORMAL'}"
     ax.text(0.02, 0.05, info_pane, transform=ax.transAxes, color="#00ffaa", bbox=dict(facecolor="black", edgecolor="#00ffaa", boxstyle="round,pad=1"))
 
+    time_type = args.timeline or "radial"
+    tol_type  = args.tolerance or "None"
+
     # Clean workspace styling parameters
     ax.axis("off")
     plt.tight_layout()
-    output_filename = "existenz_matrix_capture.png"
+    output_filename = f"existenzCoreThreat_{time_type}_{tol_type}_capture.png"
     plt.savefig(output_filename, facecolor="black", edgecolor="black")
     plt.close()
     print(f"Matrix layout map successfully rendered to local file output payload: {output_filename}")
 
 def display_intflag_console_payload():
     print("\n" + "="*80)
-    print("EXISTENZ BIT REGISTER STATES (VALIDATED INTFLAGS)")
+    print("Existenz SIM v0.93 by Gunther Voet (c)2026 (VALIDATED INTFLAGS)")
     print("="*80)
     for item in ExistentialMeta:
-        print(f"  ExistentialMeta.{item.name:<28} = {hex(item.value)} ({item.value})")
+        print(f"  ExistentialCore.{item.name:<28} = {hex(item.value)} ({item.value})")
     print("-"*80)
     for item in ExistentialThreatMeta:
-        print(f"  ExistentialThreatMeta.{item.name:<24} = {hex(item.value)} ({item.value})")
+        print(f"  ExistentialCoreThreat.{item.name:<24} = {hex(item.value)} ({item.value})")
     print("-"*80)
     for item in ExistentialRipples:
-        print(f"  ExistentialRipples.{item.name:<28} = {hex(item.value)} ({item.value})")
+        print(f"  ExistentialCoreRipples.{item.name:<28} = {hex(item.value)} ({item.value})")
     print("="*80 + "\n")
 
 def main():
