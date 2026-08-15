@@ -3,6 +3,7 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
+# The glue, immutability,  protection part for a zero trust world.
 
 existentialCoreVersion                       = "v0.76g"
 existentialCoreCheckMagic                    = b"EX25IMMUT32CORE7617"
