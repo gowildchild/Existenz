@@ -5,7 +5,7 @@
 # Commercial use requires immediate written license and explicit payment.
 # ==========================================================================
 # VERSION: v0.76f
-#
+##
 import hmac
 import hashlib
 from enum import IntFlag
