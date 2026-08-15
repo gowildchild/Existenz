@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta property="og:type" content="website">
+ <meta property="og:url" content="https://existenz.xsrv.net/apps/lifetime/">
+ <meta property="og:title" content="Project Existenz | Lifetime">
+ <meta property="og:description" content="Existenz: A 128-bit machinal philosophy and immutable math blueprint for human survival, protecting your absolute integrity from systemic, hostile noise.">
+ <meta property="og:image" content="https://gowildchild.github.io/Existenz/apps/existenz-full-logo.webp">
+
+    <!-- Twitter Cards (Twitter / X preview) -->
+ <meta name="twitter:card" content="summary_large_image">
+ <meta name="twitter:url" content="https://existenz.xsrv.net/apps/lifetime/">
+ <meta name="twitter:title" content="Project Existenz | Lifetime">
+ <meta name="twitter:description" content="Existenz: A 128-bit machinal philosophy and immutable math blueprint for human survival, protecting your absolute integrity from systemic, hostile noise.">
+ <meta name="twitter:image" content="https://gowildchild.github.io/Existenz/apps/existenz-full-logo.webp">    
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>ExistenZ | Life In Motion v0.5</title>
+ <style>
+ :root {
+ --cyan: #00f0ff;
+ --green: #00ffaa;
+ --pink: #ff00aa;
+ --bg: #040408;
+ --panel: #0a0a14;
+ --border: #1a1a2e;
+ --text: #c0c0d0;
+ }
+ * { box-sizing: border-box; }
+ body {
+ background-color: var(--bg); color: var(--text);
+ font-family: 'Segoe UI', Roboto, monospace; margin: 0; padding: 12px;
+ height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+ border: 2px solid var(--green); transition: border-color 0.2s ease, box-shadow 0.2s ease;
+ }
+ body.alarm-active { 
+ border-color: var(--pink) !important;
+ animation: redAlertFlash 1s infinite alternate; 
+ }
+ @keyframes redAlertFlash {
+ 0% { box-shadow: inset 0 0 10px rgba(255, 0, 170, 0.1); }
+ 100% { box-shadow: inset 0 0 40px rgba(255, 0, 170, 0.35); }
+ }
+ #loading-universe {
+ position: fixed; top:0; left:0; width:100vw; height:100vh;
+ background: #000000; z-index: 9999; display: flex;
+ flex-direction: column; justify-content: center; align-items: center;
+ transition: opacity 0.4s ease, visibility 0.4s ease;
+ }
+ .loading-text { color: var(--cyan); font-family: monospace; font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 15px; }
+ .loading-bar { width: 200px; height: 2px; background: #111; border-radius: 2px; overflow: hidden; position: relative; }
+ .loading-bar::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 50%; background: var(--pink); animation: sweep 1.5s infinite linear; }
+ @keyframes sweep { 0% { left: -50%; } 100% { left: 100%; } }
+ 
+ .nav-bar-container { width: 100%; background: var(--panel); border-bottom: 1px solid var(--border); display: flex; gap: 15px; padding: 10px 20px; font-family: monospace; font-size: 11px; margin: -12px -12px 12px -12px; flex-shrink: 0; }
+ .nav-bar-container a { color: #6e6e8f; text-decoration: none; font-weight: bold; }
+ .nav-bar-container a:hover { color: var(--cyan); border-bottom: 1px solid var(--cyan); }
+ 
+ header { border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0; }
+ h1 { margin: 0; color: var(--cyan); font-size: 1.2rem; font-weight: 800; letter-spacing: 0.5px; }
+ 
+ .grid { display: grid; grid-template-columns: 2.1fr 1fr; gap: 12px; flex-grow: 1; min-height: 0; }
+ .column { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+ .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; display: flex; flex-direction: column; min-height: 0; }
+ .panel h2 { margin-top: 0; margin-bottom: 6px; color: var(--green); font-size: 0.8rem; border-bottom: 1px solid var(--border); padding-bottom: 4px; flex-shrink: 0; font-family: monospace; letter-spacing: 0.5px; }
+ .scrollable-content { overflow-y: auto; flex-grow: 1; padding-right: 4px; }
+ 
+ .bit-row { display: flex; align-items: center; justify-content: space-between; padding: 5px; border-bottom: 1px solid #0f0f1c; font-size: 0.75rem; font-family: monospace; }
+ 
+ .control-group { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; font-size: 0.75rem; }
+ .control-label { display: flex; justify-content: space-between; font-family: monospace; color: #6e6e8f; }
+ .range-input { width: 100%; accent-color: var(--cyan); margin-top: 2px; height: 14px; }
+ 
+ .btn-deck { display: flex; gap: 8px; margin-bottom: 8px; }
+ .action-btn { background: #0c0c14; border: 1px solid var(--cyan); color: #fff; font-family: monospace; font-size: 0.7rem; padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: 0.1s; }
+ .action-btn:hover { background: var(--cyan); color: #000; font-weight: bold; }
+ .action-btn.active-play { background: var(--pink); border-color: #fff; }
+ 
+ #canvas-container { width: 100%; height: 100%; min-height: 380px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; background: #020204; border-radius: 4px; border: 1px solid var(--border); }
+ canvas { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
+ .burst-indicator { position: absolute; top: 10px; right: 10px; background: rgba(255, 0, 170, 0.15); border: 1px solid var(--pink); color: #fff; padding: 4px 8px; font-family: monospace; font-size: 0.7rem; border-radius: 4px; display: none; text-shadow: 0 0 5px var(--pink); z-index: 10; }
+ 
+ .param-pill { background: #06060c; border-left: 2px solid var(--pink); padding: 4px 8px; font-size: 0.7rem; font-family: monospace; color: #8e8eaf; margin-bottom: 5px; border-radius: 0 4px 4px 0; }
+ 
+ /* Floating Radar HUD style definition */
+ #radar-tooltip { position: absolute; background: rgba(10, 10, 20, 0.95); border: 1px solid var(--cyan); padding: 6px 10px; font-family: monospace; font-size: 0.72rem; color: #fff; border-radius: 4px; pointer-events: none; display: none; z-index: 100; box-shadow: 0 0 10px rgba(0, 240, 255, 0.25); line-height: 1.3; }
+ </style>
+</head>
+<body>
+
+<div id="loading-universe">
+ <div class="loading-text">ExistenZ | Loading Universe | Please Hold</div>
+ <div class="loading-bar"></div>
+</div>
+
+<div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0>
+  <a href="https://github.com/gowildchild/Existenz/" style="color: #0ff0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.6px; border-bottom: 1px solid #000000; padding-bottom: 2px;">GitHub</a> | 
+  <a href="https://gowildchild.github.io/"  style="font-family: monospace; color: var(--pink);font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Go back to Start, Pick one of the corners!">START</a> | 
+  <a href="/apps/paradox-of-tolerance/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Find which is the tipping point of extremism">Tolerance</a> | 
+  <a href="/apps/human-rights/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Human Rights for all the ages, including the dark ages!">Human Rights</a> | 
+  <a href="/apps/extra-colliding/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="This is a human quest to find the collissions that matter!">Extra</a> | 
+  <a href="/apps/collisions/in-life.html" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="Collisions in Life!">In Life</a> | 
+  <a href="/apps/lifetime/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> | 
+  <a href="/apps/plato-fields/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="The quest for collissions on the canvas of Deogenes">Plato Fields</a> | 
+  <a href="/apps/simulation-4D" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="See now how humanity could thrive, or fail, backed by the old Gods of science!">Plato 4D</a> | 
+  <a href="/apps/audit-world/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Audit World</a> |
+  <a href="https://github.com/gowildchild/Existenz" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;" title="Get more info now!">Git</a> : 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/examples" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/existenzStruct" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
+</div>
+<header> 
+</header>
+
+ 
+
+<div class="grid">
+ <div class="column">
+  <div class="panel" style="flex-grow: 1;">
+   <div style="font-family: monospace; font-size: 2.4rem; color: var(--pink);" id="live-clock">Chronology: 2021-01</div>
+   <div id="canvas-container">
+    <div class="burst-indicator" id="burst-badge">⚠️ THREAT IMPACT ACTIVE ⚠️</div>
+    <!-- Interactive Floating Radar Info Card -->
+    <div id="radar-tooltip"></div>
+    <canvas id="matrix-vis"></canvas>
+   </div>
+  </div>
+ </div>
+ 
+ <div class="column">
+  <div class="panel">
+   <h2>🛡️ PARAMETER CONFIGURATION & CONTROLS</h2>
+   <div class="btn-deck">
+    <button class="action-btn" id="btn-play">▶ RUN TIMELINE (CONTINUOUS)</button>
+    <button class="action-btn" id="btn-pause">⏸ PAUSE</button>
+    <button class="action-btn" id="btn-reset">🔄 RESET TO START</button>
+   </div>
+   
+   <div class="param-pill"><b>SYSTEMIC PROFILE:</b> Core Vulnerability Index [0x42]</div>
+   <div class="param-pill" style="border-left-color: var(--cyan);"><b>EXTERNAL EXTRACTION THREAT:</b> Software Exploitation Key [0xA0]</div>
+   
+   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px;">
+     <div class="control-group">
+      <div class="control-label"><span>Start Year</span></div>
+      <input type="number" id="input-start-year" style="background:#020205; border:1px solid var(--border); color:#fff; padding:2px 4px; font-family:monospace; font-size:0.75rem; width:100%; border-radius:4px;" value="2021">
+     </div>
+     <div class="control-group">
+      <div class="control-label"><span>End Year</span></div>
+      <input type="number" id="input-end-year" style="background:#020205; border:1px solid var(--border); color:#fff; padding:2px 4px; font-family:monospace; font-size:0.75rem; width:100%; border-radius:4px;" value="2030">
+     </div>
+   </div>
+   
+   <div class="control-group">
+    <div class="control-label"><span>Resolution Steps</span><span id="val-steps">100</span></div>
+    <input type="range" id="input-steps" class="range-input" min="40" max="200" value="100">
+   </div>
+   <div class="control-group">
+    <div class="control-label"><span>Timeline Position Scan</span><span id="val-position">1</span></div>
+    <input type="range" id="input-position" class="range-input" min="1" max="100" value="1">
+   </div>
+   <div class="control-group">
+    <div class="control-label"><span>Boundary Recovery Decay</span><span id="val-decay">0.002</span></div>
+    <input type="range" id="input-decay" class="range-input" min="0" max="50" value="2">
+   </div>
+  </div>
+
+  <div class="panel" style="flex-grow: 1;">
+   <h2>🖥️ CORE SYSTEM HUMAN PILLARS MONITOR</h2>
+   <div style="font-family: monospace; font-size: 0.7rem; margin-bottom: 6px; color: var(--cyan);">
+    Signature: <span id="composite-hex" style="color:var(--pink);">0x0</span> | Recovery Vector: <span id="recovery-val">0.0%</span>
+   </div>
+   <div class="scrollable-content" id="pillars-list">
+    <!-- Generated Dynamically -->
+   </div>
+  </div>
+ </div>
+</div>
+
+
+
+
+
+<script>
+// --- MASTER PARAMETER REGISTRIES ---
+const PILLARS = [
+ { bit: 0, name: "EXISTENCE", hex: "0x1" },
+ { bit: 1, name: "AUTONOMY", hex: "0x2" },
+ { bit: 2, name: "INTEGRITY", hex: "0x4" },
+ { bit: 4, name: "PSYCHOLOGY", hex: "0x10" },
+ { bit: 5, name: "PHYSICAL", hex: "0x20" },
+ { bit: 6, name: "DISABILITY", hex: "0x40" },
+ { bit: 7, name: "DEVELOPMENT", hex: "0x80" },
+ { bit: 8, name: "PROPERTY", hex: "0x100" },
+ { bit: 10, name: "PRESENCE", hex: "0x400" }
+];
+const RIPPLE_LAYERS = ["INDIVIDUAL", "PARTNER", "HOUSEHOLD", "FAMILY", "FRIENDS", "PEERS", "SUPPORT"];
+
+// Targets for our active chronological matrix position (0x42 + 0xa0 integrated)
+const paradoxTargetBits = [1,5,6,8];
+const activeFlippedBits = new Set(paradoxTargetBits);
+
+// Volatile Intermittent Impact Burst Windows
+const BURST_WINDOWS = [
+ { start: 12, end: 20 },
+ { start: 35, end: 45 },
+ { start: 62, end: 75 },
+ { start: 82, end: 98 }
+];
+
+let playInterval = null;
+let computedCoordinatesMemory = []; // Cache coordinates for rapid mouse lookups
+let manualZoomScale = 1.2;           // Baseline Mouse Wheel Zoom level
+
+setTimeout(() => {
+ const loader = document.getElementById('loading-universe');
+ loader.style.opacity = '0';
+ setTimeout(() => loader.style.visibility = 'hidden', 500);
+}, 800);
+
+const canvas = document.getElementById('matrix-vis');
+const ctx = canvas.getContext('2d');
+const tooltip = document.getElementById('radar-tooltip');
+
+const inSteps = document.getElementById('input-steps');
+const inPos = document.getElementById('input-position');
+const inDecay = document.getElementById('input-decay');
+const inStartYear = document.getElementById('input-start-year');
+const inEndYear = document.getElementById('input-end-year');
+const btnPlay = document.getElementById('btn-play');
+const btnPause = document.getElementById('btn-pause');
+const btnReset = document.getElementById('btn-reset');
+const burstBadge = document.getElementById('burst-badge');
+
+function resizeCanvas() {
+ const container = document.getElementById('canvas-container');
+ canvas.width = container.clientWidth;
+ canvas.height = container.clientHeight;
+}
+
+function drawMatrix() {
+ if (canvas.width === 0 || canvas.height === 0) {
+  const container = document.getElementById('canvas-container');
+  canvas.width = container.clientWidth;
+  canvas.height = container.clientHeight;
+ }
+
+ const steps = parseInt(inSteps.value);
+ const pos = parseInt(inPos.value);
+ const zoom = manualZoomScale;
+ const decay = parseInt(inDecay.value) / 1000;
+ const startYear = parseInt(inStartYear.value) || 2021;
+ const endYear = parseInt(inEndYear.value) || 2026;
+
+ inPos.max = steps;
+ document.getElementById('val-steps').innerText = steps;
+ document.getElementById('val-position').innerText = pos;
+ document.getElementById('val-decay').innerText = decay.toFixed(3);
+
+ const tProgress = pos / steps;
+ const currentDecimalYear = startYear + ((pos - 1) / steps) * (endYear - startYear);
+ const yr = Math.floor(currentDecimalYear);
+ const mo = Math.floor((currentDecimalYear - yr) * 12) + 1;
+ document.getElementById('live-clock').innerText = `Chronology: ${yr}-${mo.toString().padStart(2, '0')}`;
+
+ const decayReduction = decay * (pos - 1);
+ const currentDecayMult = Math.max(0.01, tProgress - decayReduction);
+ document.getElementById('recovery-val').innerText = (Math.max(0, decayReduction * 100)).toFixed(1) + '%';
+
+ let isBurstActive = false;
+ for (let window of BURST_WINDOWS) {
+  const normStart = Math.floor((window.start / 100) * steps);
+  const normEnd = Math.floor((window.end / 100) * steps);
+  if (pos >= normStart && pos <= normEnd) {
+   isBurstActive = true;
+   break;
+  }
+ }
+
+ if (isBurstActive) {
+  burstBadge.style.display = 'block';
+  document.body.classList.add('alarm-active');
+ } else {
+  burstBadge.style.display = 'none';
+  document.body.classList.remove('alarm-active');
+ }
+
+ computedCoordinatesMemory = [];
+ const a = 0.1, b = 0.15 * (1.0 / zoom);
+ const centerX = canvas.width / 2;
+ const centerY = canvas.height / 2;
+ const scaleFactor = Math.min(centerX, centerY) * 0.75;
+
+ for (let i = 0; i < 128; i++) {
+  const theta = i * 0.35;
+  const r = a * Math.exp(b * theta) * scaleFactor;
+  computedCoordinatesMemory.push({ x: centerX + r * Math.cos(theta), y: centerY + r * Math.sin(theta) });
+ }
+
+ ctx.fillStyle = '#040408';
+ ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+ ctx.beginPath();
+ ctx.strokeStyle = '#141424';
+ ctx.lineWidth = 1;
+ for (let i = 0; i < 128; i++) {
+  if (i === 0) ctx.moveTo(computedCoordinatesMemory[i].x, computedCoordinatesMemory[i].y);
+  else ctx.lineTo(computedCoordinatesMemory[i].x, computedCoordinatesMemory[i].y);
+ }
+ ctx.stroke();
+
+ if (activeFlippedBits.size > 0) {
+  for (let f = 0; f < 7; f++) {
+   const radius = 28 * (f + 1) * tProgress * zoom;
+   let waveAlpha = Math.max(0, 0.75 * (1.0 - (pos / steps)));
+   if (isBurstActive) waveAlpha = Math.min(0.9, waveAlpha + 0.2);
+
+   if (waveAlpha > 0.02) {
+    ctx.beginPath();
+    ctx.strokeStyle = `rgba(170, 0, 255, ${waveAlpha})`;
+    ctx.lineWidth = 2.5;
+    ctx.arc(computedCoordinatesMemory[f].x, computedCoordinatesMemory[f].y, radius, 0, 2 * Math.PI);
+    ctx.stroke();
+
+    ctx.fillStyle = `rgba(200, 50, 255, ${waveAlpha + 0.25})`;
+    ctx.font = 'bold 10px monospace';
+    ctx.fillText(` WAVE: ${RIPPLE_LAYERS[f]} `, computedCoordinatesMemory[f].x - 45, computedCoordinatesMemory[f].y - radius - 3);
+   }
+  }
+ }
+
+ let activeSignature = 0;
+ let triggeredBits = new Set();
+
+ for (let i = 0; i < 128; i++) {
+  const isFlipped = activeFlippedBits.has(i);
+  const bitTriggered = isFlipped && (pos / steps) >= (i / 128.0);
+  
+  if (bitTriggered) {
+   triggeredBits.add(i);
+   activeSignature += Math.pow(2, i);
+  }
+
+  let dotColor = '#1e1e2f'; 
+  if (bitTriggered) dotColor = isBurstActive ? '#ff00aa' : '#b30077'; 
+  else if (i <= 8) dotColor = '#00ffaa'; 
+  else if (i >= 20 && i <= 30) dotColor = '#00f0ff'; 
+
+  ctx.beginPath();
+  ctx.fillStyle = dotColor;
+  ctx.arc(computedCoordinatesMemory[i].x, computedCoordinatesMemory[i].y, bitTriggered ? 5.5 : 2.5, 0, 2 * Math.PI);
+  ctx.fill();
+
+  if (bitTriggered) {
+   ctx.beginPath();
+   ctx.strokeStyle = isBurstActive ? '#ff00aa' : '#660044';
+   ctx.lineWidth = 1.2;
+   const len = 14 * currentDecayMult;
+   ctx.moveTo(computedCoordinatesMemory[i].x - len, computedCoordinatesMemory[i].y); ctx.lineTo(computedCoordinatesMemory[i].x + len, computedCoordinatesMemory[i].y);
+   ctx.moveTo(computedCoordinatesMemory[i].x, computedCoordinatesMemory[i].y - len); ctx.lineTo(computedCoordinatesMemory[i].x, computedCoordinatesMemory[i].y + len);
+   ctx.stroke();
+  }
+ }
+
+ document.getElementById('composite-hex').innerText = '0x' + activeSignature.toString(16).toUpperCase();
+
+ const listContainer = document.getElementById('pillars-list');
+ listContainer.innerHTML = '';
+
+ PILLARS.forEach(p => {
+  const isHit = activeFlippedBits.has(p.bit);
+  const isBreached = triggeredBits.has(p.bit);
+  const row = document.createElement('div');
+  row.className = 'bit-row';
+
+  if (isBreached) {
+   row.style.color = 'var(--pink)';
+   row.innerHTML = `<span>💥 <b>• ${p.name}</b></span> <span>[!! IMPACT TRIGGERED !!] (${p.hex})</span>`;
+   ctx.beginPath();
+   ctx.strokeStyle = isBurstActive ? 'rgba(255, 0, 170, 0.35)' : 'rgba(179, 0, 119, 0.15)';
+   ctx.lineWidth = 0.9;
+   ctx.moveTo(computedCoordinatesMemory[p.bit].x, computedCoordinatesMemory[p.bit].y);
+   ctx.lineTo(canvas.width, computedCoordinatesMemory[p.bit].y);
+   ctx.stroke();
+  } else if (isHit && !isBreached) {
+   row.style.color = 'var(--cyan)';
+   row.innerHTML = `<span>⏳ <b>• ${p.name}</b></span> <span>[ STANDBY DECK ] (${p.hex})</span>`;
+  } else {
+   row.style.color = 'var(--green)';
+   row.innerHTML = `<span>🟢 <b>• ${p.name}</b></span> <span>[ SECURE LAYER ] (${p.hex})</span>`;
+  }
+  listContainer.appendChild(row);
+ });
+}
+
+canvas.addEventListener('mousemove', (e) => {
+ const rect = canvas.getBoundingClientRect();
+ const mouseX = e.clientX - rect.left;
+ const mouseY = e.clientY - rect.top;
+ 
+ let closestNodeIndex = -1;
+ let minimumSearchThreshold = 9;
+
+ for (let i = 0; i < computedCoordinatesMemory.length; i++) {
+   const dist = Math.hypot(computedCoordinatesMemory[i].x - mouseX,computedCoordinatesMemory[i].y - mouseY);
+   if (dist < minimumSearchThreshold) {minimumSearchThreshold = dist;closestNodeIndex = i;}
+
+ }
+
+ if (closestNodeIndex !== -1) {
+    let friendlyIdentityLabel = "TRACKER.INACTIVE_NODE";
+    for (let p of PILLARS) {
+      if (p.bit === closestNodeIndex) {
+        friendlyIdentityLabel = `CORE_PILLAR.${p.name}`;
+      }
+    }
+    // Step 1: Check if the hovered bit falls into your shield armor range
+    tooltip.innerHTML = "<strong>📡 ACTIVE RADAR AUDIT:</strong><br>• System Track Index: Bit " + 
+	closestNodeIndex.toString().padStart(2, "0") + 
+    "<br>• Hex Registry Code: 0x" +                
+    (1 << closestNodeIndex).toString(16).toUpperCase();
+
+  } else {
+    tooltip.style.display = 'none';
+  }
+
+});
+
+canvas.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+
+// --- MOUSE WHEEL ZOOM CONTROLLER ENGINE ---
+canvas.addEventListener('wheel', (e) => {
+ e.preventDefault();
+ if (e.deltaY < 0) {
+  manualZoomScale = Math.min(4.0, manualZoomScale + 0.1);
+ } else {
+  manualZoomScale = Math.max(0.5, manualZoomScale - 0.1);
+ }
+ drawMatrix();
+});
+
+function playTimeline() {
+ if (playInterval) return;
+ btnPlay.classList.add('active-play');
+ playInterval = setInterval(() => {
+  let currentPos = parseInt(inPos.value);
+  let maxSteps = parseInt(inSteps.value);
+  
+  if (currentPos >= maxSteps) {
+   // FIXED: Resets the position pointer back to 1 instantly instead of stopping the timer
+   currentPos = 1; 
+  } else {
+   currentPos++;
+  }
+  
+  inPos.value = currentPos;
+  drawMatrix();
+ }, 125);
+}
+
+// --- AUTOMATED TIMELINE TIMEFRAME PLAYBACK CONTROLS ---
+function playTimelineSingle() {
+ if (playInterval) return;
+ btnPlay.classList.add('active-play');
+ playInterval = setInterval(() => {
+  let currentPos = parseInt(inPos.value);
+  let maxSteps = parseInt(inSteps.value);
+  if (currentPos >= maxSteps) {
+   clearInterval(playInterval);
+   playInterval = null;
+   btnPlay.classList.remove('active-play');
+  } else {
+   currentPos++;
+   inPos.value = currentPos;
+   drawMatrix();
+  }
+ }, 125);
+}
+
+function pauseTimeline() {
+ clearInterval(playInterval);
+ playInterval = null;
+ btnPlay.classList.remove('active-play');
+}
+
+// Attach physical link bindings to interface action arrays safely
+btnPlay.addEventListener('click', playTimeline);
+btnPause.addEventListener('click', pauseTimeline);
+btnReset.addEventListener('click', () => {
+ pauseTimeline();
+ inPos.value = 1;
+ drawMatrix();
+});
+
+[inSteps, inPos, inDecay, inStartYear, inEndYear].forEach(input => {
+ input.addEventListener('input', () => {
+  if (input === inSteps) inPos.value = 1; 
+  drawMatrix();
+ });
+});
+
+window.addEventListener('resize', () => { resizeCanvas(); drawMatrix(); });
+
+// Initialization sequence triggers only after elements settle in memory
+setTimeout(() => {
+ resizeCanvas();
+ drawMatrix();
+}, 200);
+</script>
+</body>
+</html>
