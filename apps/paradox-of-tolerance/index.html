@@ -1,0 +1,2456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	 <meta property="og:type" content="website">
+     <meta property="og:url" content="https://existenz.xsrv.net/apps/paradox-of-tolerance/">
+     <meta property="og:title" content="Existenz | Paradox of Tolerance | Human Rights">
+     <meta property="og:description" content="Existenz: 3D simulation with all ages possible showing the theory of Karl Popper">
+     <meta property="og:image" content="https://gowildchild.github.io/Existenz/apps/existenz-full-logo.webp">
+
+    <!-- Twitter Cards (Twitter / X preview) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://existenz.xsrv.netapps/paradox-of-tolerance/">
+    <meta name="twitter:title" content="Existenz | Paradox of Tolerance | Human Rights">
+    <meta name="twitter:description" content="Existenz: 3D simulation with all ages possible showing the theory of Karl Popper.">
+    <meta name="twitter:image" content="https://gowildchild.github.io/Existenz/apps/existenz-full-logo.webp">
+    <title>Existenz | Paradox of Tolerance | Gunther FWC v1.00</title>
+    <style>
+        @keyframes blinkerAlert {
+            0% { opacity: 1.0; box-shadow: 0 0 20px rgba(255, 0, 85, 0.6); }
+            50% { opacity: 0.2; box-shadow: 0 0 4px rgba(255, 0, 85, 0.1); }
+            100% { opacity: 1.0; box-shadow: 0 0 20px rgba(255, 0, 85, 0.6); }
+        }
+        body { 
+            margin: 0; 
+            background: #030305; 
+            color: #ffffff; 
+            font-family: 'Courier New', monospace; 
+            display: flex; /* Converted safely to vertical orchestration for top navbar */
+            flex-direction: column;
+            height: 100vh; 
+            overflow: hidden; 
+        }        
+        #workspace-grid {
+            display: flex; /* Protects widescreen horizontal arrangement on desktop monitors */
+            flex-direction: row;
+            width: 100%;
+            height: calc(100vh - 39px); /* Automatically subtracts absolute header menu row height */
+            overflow: hidden;
+        }
+        #sidebar { 
+            width: 360px; /* Enhanced slightly to shield data monitor rows comfortably */
+            background: #09090f; 
+            padding: 20px; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 18px; 
+            border-right: 1px solid #141424; 
+            z-index: 10;
+            height: 100%;
+            overflow-y: auto;
+        }
+        #canvas-container { 
+            flex-grow: 1; 
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #030305;
+            height: 100%; /* Scales dynamically inside your protected inner wrapper layout */
+        }
+        canvas { 
+            background: #030305; 
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.98); 
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+        }
+        #right-panel {
+            width: 420px;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #141424;
+            background: #09090f;
+            height: 100%;
+        }
+        #inspect-panel { 
+            /* Fully optimized to nest as a crisp dark telemetry container in the sidebar */
+            background: #0c0c14;
+            border: 1px solid #141424;
+            padding: 14px; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+        #matrix-log {
+            height: 100%; /* Expands the terminal chatter log cleanly to full vertical panel space */
+            padding: 20px;
+            box-sizing: border-box;
+            background: #030305;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow: hidden;
+        }
+        #log-header-zone {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #141424;
+            padding-bottom: 6px;
+        }
+        #log-stream {
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 11px;
+            color: #4a5568;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 4px;
+            padding-right: 5px;
+        }
+        .log-entry { 
+            padding: 4px 6px; 
+            border-radius: 2px; 
+            border-left: 2px solid #2d3748; 
+            background: rgba(255,255,255,0.01); 
+        }
+        .log-threat { 
+            border-left-color: #e53e3e; 
+            color: #fc8181; 
+            background: rgba(229,62,62,0.04); 
+        }
+        .log-birth { 
+            border-left-color: #3182ce; 
+            color: #63b3ed; 
+        }
+        .log-shift { 
+            border-left-color: #ecc94b; 
+            color: #f6e05e; 
+        }
+        .log-lock { 
+            border-left-color: #9f7aea; 
+            color: #b794f4; 
+            background: rgba(159,122,234,0.03); 
+        }
+        .btn { 
+            background: #0f0f1b; 
+            color: white; 
+            border: 1px solid #00f0ff; 
+            padding: 10px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            border-radius: 4px; 
+            font-family: monospace;
+            font-size: 12px;
+            transition: 0.1s;
+        }
+        .btn:hover { 
+            background: #00f0ff;
+            color: black;
+            font-weight: bold;
+        }
+        .btn-toggle { 
+            background: #0f0f1b; 
+            border: 1px solid #00f0ff; 
+        }
+        .btn-toggle.active-mode { 
+            background: #ff00aa !important; 
+            border-color: #ffffff !important; 
+        }
+        select { 
+            background: #030305; 
+            color: #ffffff; 
+            padding: 8px; 
+            border: 1px solid #141424; 
+            border-radius: 4px; 
+            font-family: monospace;
+            width: 100%;
+            font-size: 11px;
+        }
+        .threat-meter { 
+            background: #09090f; 
+            border: 1px solid #141424; 
+            padding: 10px; 
+            border-radius: 4px; 
+        }
+        #threat-bar { 
+            height: 5px; 
+            background: #48bb78; 
+            width: 0%; 
+            transition: width 0.3s; 
+            border-radius: 2px; 
+            margin-top: 5px; 
+        }
+        .pillar { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 5px 8px; 
+            border-radius: 3px; 
+            font-size: 11px; 
+            margin-bottom: 2px;
+        }
+        .active { 
+            background: rgba(0, 255, 170, 0.05); 
+            color: #00ffaa; 
+            border-left: 3px solid #00ffaa; 
+        }
+        .inactive { 
+            background: rgba(255, 0, 170, 0.05); 
+            color: #ff00aa; 
+            border-left: 3px solid #ff00aa; 
+        }    
+		
+        /* Tightened Left Sidebar Configuration Layout Block */
+        #sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 4px !important; /* Compresses vertical spacing between elements to 4px */
+            padding: 8px 12px !important; /* Reduces upper padding footprint */
+        }
+
+        #sidebar h3, #sidebar h4 {
+            margin-top: 2px !important;
+            margin-bottom: 2px !important;
+            padding-bottom: 2px !important;
+            font-size: 11px !important; /* Compact clean layout title bars */
+        }
+
+        /* Tightened Controls Wrapper Blocks */
+        #sidebar div {
+            margin-top: 1px !important;
+            margin-bottom: 3px !important;
+        }
+
+        #sidebar label {
+            margin-top: 2px !important;
+            margin-bottom: 1px !important;
+            font-size: 10px !important; /* Slightly smaller text profiles for controls */
+            line-height: 1.1 !important;
+        }
+
+        #sidebar select, #sidebar input[type="checkbox"] {
+            margin-top: 1px !important;
+            margin-bottom: 1px !important;
+            padding: 2px 4px !important; /* Shrinks the height of pulldowns */
+            font-size: 10px !important;
+        }
+
+        #sidebar button {
+            padding: 3px 6px !important; /* Squashes button size footprint */
+            margin-top: 2px !important;
+            margin-bottom: 2px !important;
+            font-size: 10px !important;
+        }
+
+        
+        /* 📱 Cellphone and Tablet Fluid Override Zone - Isolated strictly under 1024px */
+        @media (max-width: 1024px) {
+            body {
+                display: block !important;
+                overflow-y: auto;
+                height: auto;
+            }
+            #workspace-grid {
+                display: grid !important;
+                grid-template-areas: 
+                    "canvas"
+                    "rightpanel"
+                    "sidebar";
+                grid-template-rows: auto auto auto;
+                height: auto;
+            }
+            #canvas-container {
+                grid-area: canvas;
+                width: 100%;
+                height: 50dvh !important; 
+                border-bottom: 1px solid #141424;
+            }
+            #right-panel {
+                grid-area: rightpanel;
+                width: 100% !important;
+                height: auto !important;
+                border-left: none !important;
+                border-bottom: 1px solid #141424;
+            }
+            #sidebar {
+                grid-area: sidebar;
+                width: 100% !important;
+                height: auto !important;
+                border-right: none !important;
+            }
+            #inspect-panel, #matrix-log {
+                height: auto !important;
+            }
+        }   
+		.log-shift {
+			color: #00f0ff !important; /* Highlights pure spatial collisions in bright matrix cyan */
+		    font-weight: bold;
+		}
+		.log-threat {
+			color: #ff007f !important; /* Critical bit conflicts flash in hot pink/crimson to grab your focus */
+		}
+        @keyframes redAlertFlash {
+          0% { box-shadow: inset 0 0 15px rgba(255, 0, 85, 0.15); }
+          100% { box-shadow: inset 0 0 45px rgba(255, 0, 85, 0.45); }
+        }
+        #loading-universe {
+          position: fixed; top:0; left:0; width:100vw; height:100vh;
+          background: #000000; z-index: 9999; display: flex;
+          flex-direction: column; justify-content: center; align-items: center;
+          transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .loading-text {
+          font-family: 'Courier New', monospace;
+          color: #ff00aa;
+          font-weight: bold;
+          margin-bottom: 15px;
+          letter-spacing: 2px;
+        }
+        .loading-bar {
+          width: 200px;
+          height: 3px;
+          background: #00f0ff;
+          animation: blinkerAlert 1s infinite;
+        }
+    </style>
+</head>
+<body>
+<!-- Live Universe Loader Overlay Shield -->
+<div id="loading-universe">
+ <div class="loading-text">ExistenZ | Loading Universe . . . Please Hold</div>
+ <div class="loading-bar"></div>
+</div>
+<br>
+<div style="width: 100%; background: #09090f; border-bottom: 1px solid #141424; display: flex; gap: 20px; padding: 10px 20px; font-family: monospace; font-size: 11px; z-index: 1000; box-sizing: border-box; margin: -10px -10px 10px -10px; flex-shrink: 0>
+  <a href="https://github.com/gowildchild/Existenz/" style="color: #0ff0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.6px; border-bottom: 1px solid #000000; padding-bottom: 2px;">GitHub</a> | 
+  <a href="https://gowildchild.github.io/"  style="font-family: monospace; color: var(--pink);font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Go back to Start, Pick one of the corners!">START</a> | 
+  <a href="/apps/paradox-of-tolerance/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Find which is the tipping point of extremism">Tolerance</a> | 
+  <a href="/apps/human-rights/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="Human Rights for all the ages, including the dark ages!">Human Rights</a> | 
+  <a href="/apps/extra-colliding/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="This is a human quest to find the collissions that matter!">Extra</a> | 
+  <a href="/apps/collisions/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;" title="Collisions in Life!">Find Collisions</a> | 
+  <a href="/apps/lifetime/" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">LifeTime</a> | 
+  <a href="/apps/plato-fields/"  style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="The quest for collissions on the canvas of Deogenes">Plato Fields</a> | 
+  <a href="/apps/simulation-4D" style="color: #8e8eaf; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #B4005E; padding-bottom: 2px;" title="See now how humanity could thrive, or fail, backed by the old Gods of science!">Plato 4D</a> | 
+  <a href="/apps/audit-world/" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Audit World</a> |
+  <a href="https://github.com/gowildchild/Existenz" style="color: #00f0ff; text-decoration: none; font-weight: bold; letter-spacing: 0.5px;" title="Get more info now!">GitHub</a> : 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/examples" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Examples</a> | 
+  <a href="https://github.com/gowildchild/Existenz/tree/main/existenzStruct" style="color: #00f0ff; text-decoration: none; font-weight: bold; right: 6px; letter-spacing: 0.5px; border-bottom: 1px solid #00f0ff; padding-bottom: 2px;">Structures</a>
+</div>
+
+    <!-- Panel 1: Original Left Controls Sidebar (Desktop Left / Mobile Bottom) -->
+    <div id="workspace-grid">
+      <div id="sidebar">
+        <h2 style="margin: 0; color: #63b3ed; font-size: 16px; letter-spacing: 1px;">EXISTENZ | TIMELINES v3</h2>
+        
+        <div>
+            <label for="sim-select" style="font-size: 11px; color: #718096; display:block; margin-bottom: 5px;">Spacetime Era Vector:</label>
+            <select id="sim-select" onchange="changeSimulation()">
+                <option value="tribal">1. Deep Tribal Matrix (Pre-State Sovereignty)</option>
+                <option value="antiquity">2. Classical Antiquity (400 BC - Diogenes Cynicism)</option>
+                <option value="feudal">3. Medieval Feudalism (Stratified Subservience)</option>
+                <option value="enlighten">4. Age of Enlightenment (Re-emergence of Reason)</option>
+                <option value="industrial">5. Early Industrial Grid (Labor Optimization)</option>
+                <option value="rights">6. Post-WWII Framework (Universal Declaration Era)</option>
+                <option value="pre-surveil">7. Pre-Surveillance Digital (Late 90s Cybernetic Optimism)</option>
+                <option value="early-data">8. Early Algorithmic Data Capture (2010s Silicon Boom)</option>
+                <option value="modern" selected>9. The Hyper-Digital Now (2020s Total Surveillance)</option>
+                <option value="crisis">10. Authoritarian Threat Event (Systemic Severance)</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="scale-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Scale Multiplier Continuum:</label>
+            <select id="scale-select" onchange="changeScaleMultiplier()">
+                <option value="1" selected>x1 Unity Matrix Mesh</option>
+                <option value="10">x10 Expanded Field</option>
+                <option value="100">x100 Multi-Layer Latice</option>
+                <option value="1000">x1000 Kilo-Density Layer</option>
+                <option value="10000">x10000 Macro-Continuum</option>
+                <option value="100000">x100000 Quantum Horizon</option>
+                <option value="1000000">x1000000 Mega-Spacetime Array</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="birth-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Birth Rate Flux Density:</label>
+            <select id="birth-select" onchange="changeBirthRateDensity()">
+                <option value="0.02">Low Fluid Attrition (2%)</option>
+                <option value="0.05" selected>Standard Equilibrium (5%)</option>
+                <option value="0.12">High Generational Spurt (12%)</option>
+                <option value="0.25">Hyper Exponential Boom (25%)</option>
+            </select>
+        </div>        
+        
+        <div>
+          <label style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Birth Distribution Engine:</label>
+          <label style="display: inline-flex; align-items: center; cursor: pointer; font-size: 11px; color: #00f0ff;">
+          <input type="checkbox" id="bellcurve-toggle" checked onchange="toggleBirthEngine()" style="margin-right: 6px;">
+             Gaussian Bell Curve Active
+          </label>
+        </div>
+         <div>
+           <label style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Collision Tracking HUD:</label>
+           <label style="display: inline-flex; align-items: center; cursor: pointer; font-size: 11px; color: #39ff14;">
+             <input type="checkbox" id="halo-toggle" checked onchange="toggleCollisionHalos()" style="margin-right: 6px;">
+             Neon Halo Overlay Active
+           </label>
+         </div>
+        <div>
+            <label for="speed-select" style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Temporal Speed Warp:</label>
+            <select id="speed-select" onchange="changeSimulationSpeed()">
+                <option value="1.0" selected>1.0x Normal</option>
+                <option value="0.8">0.8x Smooth Retardation</option>
+                <option value="0.6">0.6x Mid-Tier Pace</option>
+                <option value="0.4">0.4x Telemetry Mode</option>
+                <option value="0.2">0.2x High-Density</option>
+                <option value="0.05">0.05x Micro-Continuum</option>
+            </select>
+        </div>        
+        
+		<div>
+			<label style="font-size: 11px; color: #8e8eaf; display:block; margin-bottom: 5px; margin-top: 12px;">Spacetime Core Topology:</label>
+			<select id="matrix-topology-select" onchange="switchMatrixTopology()" style="width: 100%; background: #09090f; color: #00f0ff; border: 1px solid #141424; font-family: monospace; font-size: 11px; padding: 4px; border-radius: 3px; cursor: pointer;">
+			<option value="even" selected>Standard Even Bits [2 - 18]</option>
+			<option value="uneven">Uneven Offset Bits [1 - 17]</option>
+			<option value="doubles">Doubles Bitmask Structure [1 - 256]</option>
+			</select>
+		</div>
+
+        <button class="btn" id="play-btn" onclick="togglePlay()">Engage Spacetime Loop</button>
+        <button class="btn btn-toggle" id="spiral-btn" onclick="toggleSpiralField()">Show Majestic Spirals</button>
+
+        <!-- Dynamic Left-Anchored Matrix Inspector Window Panel -->
+        <div id="inspect-panel">
+            <h3 style="margin: 0; font-size: 13px; color: #a0aec0;">MATRIX MONITOR</h3>
+            <p id="no-selection" style="color: #4a5568; font-size: 11px; margin: 0;">Isolate an entity on the grid to filter and reduce telemetry chatter.</p>
+            <div id="inspector-content" style="display: none;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size: 14px; font-weight: bold; color: #63b3ed;" id="ins-name">Individual #--</div>
+                    <button class="btn" style="padding:2px 6px; font-size:10px; background:#4a5568;" onclick="clearSelection()">Clear Lock</button>
+                </div>
+                <div style="font-size: 11px; color: #718096; margin: 4px 0 8px 0;">Lineage: <span id="ins-family" style="color:#9f7aea;">Alpha</span> | Age: <span id="ins-age" style="color:#ecc94b;">0</span></div>
+                <div style="margin-bottom: 10px; font-size: 12px; color: #cbd5e0;">Coordinates: <span id="ins-coords" style="color: #ecc94b;">X:0, Y:0, Z:0</span></div>
+                <div id="pillars-list" style="display: flex; flex-direction: column; gap: 5px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel 2: Center Drawing Canvas (Desktop Center / Mobile Top) -->
+    <div id="canvas-container" style="position: relative; flex-grow: 1; display: flex; align-items: center; justify-content: center; background: #030305; height: 100%;">
+        <!-- FLOATING CONTROL ROW: Positioned perfectly at the absolute top of the viewport -->
+        <div style="position: absolute; top: 12px; left: 12px; width: calc(100% - 24px); display: flex; gap: 5px; z-index: 10; box-sizing: border-box;">
+            
+            <!-- ELEMENT 1: ZOOM FOCUS CONTROL -->
+            <button id="zoom-tracker-btn" onclick="resetCameraZoom()" 
+                title="Canvas Viewport: Reset 150% Focus Scale"
+                onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.8'"
+                style="flex: 1; padding: 4px 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3px; border-radius: 3px; cursor: pointer; border: 1px solid #4a5568; background: transparent; color: #cbd5e0; white-space: nowrap; opacity: 0.8; transition: all 0.15s ease;">
+                ZOOM 150%
+            </button>
+
+			<button id="topology-toggle-btn" onclick="cycleViewportTopology()" 
+            title="Toggle Spacetime Geometry: FIBO -> 3D -> 2D"
+            style="flex: 1; padding: 4px 6px; font-size: 10px; font-weight: bold; border-radius: 3px; cursor: pointer; border: 1px solid #00f0ff; background: rgba(0, 240, 255, 0.15); color: #00f0ff; text-transform: uppercase; white-space: nowrap; font-family: monospace; transition: all 0.15s ease;">
+            FIBO
+           </button>
+
+            
+             <button id="defense-toggle-btn" onclick="cycleToleranceMode()" 
+		 title="Karl Popper's Paradox: Poppertime!"
+		 style="flex: 1; padding: 4px 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3px; border-radius: 3px; cursor: pointer; border: 1px solid #00f0ff; background: transparent; color: #00f0ff; white-space: nowrap; transition: all 0.15s ease;">
+		 PARADOX A
+	     </button>
+            
+            <!-- ELEMENT 3: EXISTENZ CANARY ACTIVATOR -->
+            <button id="canary-toggle-btn" onclick="toggleCanarySystem()" 
+                title="Existenz Canary Engine: Toggle Human Rights Accountability Monitor"
+                onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.8'"
+                style="flex: 1; padding: 4px 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.3px; border-radius: 3px; cursor: pointer; border: 1px solid #e53e3e; background: transparent; color: #e53e3e; white-space: nowrap; opacity: 0.8; transition: all 0.15s ease;">
+                CANARY [1]
+            </button>
+
+        </div>
+
+        <!-- RENDER CANVAS PIPELINE -->
+        <canvas id="simCanvas" width="750" height="750" style="display: block; max-width: 100%; max-height: 100%; box-sizing: border-box;"></canvas>
+    </div>
+
+    <!-- Panel 3: Original Right Statistics and Logs Pane (Desktop Right / Mobile Middle) -->
+    <div id="right-panel">
+        <div class="threat-meter" style="margin: 20px 20px 0 20px;">
+            <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span>ExistenzThreat Vector:</span>
+                <span id="threat-pct" style="font-weight:bold; color:#48bb78;">0%</span>
+            </div>
+            <div style="background:#1a2233; height:5px; border-radius:2px;"><div id="threat-bar"></div></div>
+        </div>
+
+        <div class="threat-meter" style="margin: 10px 20px 0 20px;">
+            <div style="font-size: 11px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; letter-spacing: 0.5px;">METRICS</div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px;">
+                <span>Total Active Victims (Severed Layer):</span>
+                <span id="victim-count" style="font-weight:bold; color:#fc8181;">0 / 100</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px; color: #fc8181;">
+                <span>Systemic Attrition Fatalities:</span>
+                <span id="systemic-death-count" style="font-weight:bold;">0 / 100</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom: 6px; color: #8e8eaf;">
+                <span>Generations Passed:</span>
+                <div>
+                    <span id="generations-count" style="font-weight:bold; margin-right: 8px; color: #ffffff;">0</span>
+                    <span onclick="resetFatalityTally()" style="color: #00f0ff; font-size: 9px; cursor: pointer; text-decoration: underline; font-weight: bold; letter-spacing: 0.5px;">[CLR]</span>
+                </div>
+            </div>
+            <div id="tolerance-metric-row" style="display:none; justify-content:space-between; font-size:11px; margin-bottom: 12px; color: #ff00aa;">
+                <span>Poppertime:</span>
+                <div>
+                    <span id="tolerance-count" style="font-weight:bold; margin-right: 4px;">[0]</span>
+                    <span id="tolerance-pct" style="font-weight:bold;">0%</span>
+                </div>
+            </div>
+            <div id="vector-header-label" style="font-size: 10px; color: #718096; margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;">TOP 5 STRESS VECTORS:</div>
+            <div id="top-vectors-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 10px;">
+                <!-- Dynamically populated -->
+            </div>
+			<!-- FIELD B: EXISTENZ CANARY DIAGNOSTIC PANEL (Bright Green Human Rights Accountability Interface) -->
+            <div id="canary-panel-wrapper" style="display: none; margin-bottom: 12px; color: #8e8eaf;">
+                <div style="font-size: 10px; color: #39ff14; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; margin-top: 8px; border-top: 1px solid #1a2233; padding-top: 4px;letter-spacing: 0.5px;">Existenz Canary:</div>
+                <div id="canary-alerts-list" style="font-size: 11px;"></div>
+            </div>            
+            <div id="instigator-panel-wrapper" style="display: none; margin-bottom: 12px; color: #8e8eaf;">
+                <!-- Section Title Header: Clear, readable, and safely stacked -->
+                <div style="font-size: 10px; color: #a0aec0; margin-bottom: 8px; border-bottom: 1px solid #1a2233; padding-bottom: 4px; margin-top: 8px; border-top: 1px solid #1a2233; padding-top: 4px;letter-spacing: 0.5px;">Radicalization:</div>
+                
+                <!-- Target Container: Rows append here and use their own inner flex alignment -->
+                <div id="top-instigators-list" style="font-size: 11px;">
+                    <!-- Exactly 1 or 2 high-impact actors append here natively via script -->
+                </div>
+            </div>            
+        </div>
+
+        <!-- Optimized Lifespan Statistics Compact Tracking Box -->
+        <div style="margin: 10px 20px 0 20px; background: #0c0c14; border: 1px solid #141424; padding: 6px 10px; border-radius: 4px; font-size: 11px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div style="color: #00f0ff; font-weight: bold; white-space: nowrap;">Lifespan Statistics:</div>
+            <div style="display: flex; gap: 14px; color: #8e8eaf;">
+                <span>MIN: <span id="meta-age-min" style="color: #ffffff; font-weight: bold;">0.0</span></span>
+                <span>MED: <span id="meta-age-med" style="color: #ffffff; font-weight: bold;">0.0</span></span>
+                <span>MAX: <span id="meta-age-max" style="color: #ffffff; font-weight: bold;">0.0</span></span>
+            </div>
+        </div>      
+        <div id="matrix-log" style="flex-grow: 1; margin-top: 15px;">
+            <div id="log-header-zone">
+                <h3 style="margin:0; font-size:12px; color:#a0aec0; letter-spacing:0.5px;">LOG TELEMETRY</h3>
+                <span id="log-filter-status" style="font-size:10px; color:#4a5568; background:#121620; padding:2px 6px; border-radius:3px;">FILTER: GLOBAL</span>
+                </div>
+            <div id="log-stream"></div>
+        </div>
+    </div> <!-- Cleanly closes #right-panel -->
+</div>
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let isPlaying = false;
+    let selectedPersonIndex = -1; 
+    let showSpirals = true;
+    let currentSimType = 'algorithmic';
+    let simulationTick = 0;
+    let existenzThreatLevel = 0;
+    let globalSystemicFatalities = 0;
+    let globalTotalCompletions = 0;
+    let autoTriggeredUnlimited = false;
+    let toleranceMode = 2; 
+	let isRunning = false;
+    let rationalDefenseActive = false; 
+    let isCanaryActive = true;
+    // 0 = LIMITED, 1 = UNLIMITED, 2 = AUTO
+    let fatalityHistoryWindow = [];
+    let currentPopulationScale = 100;
+    let currentScaleMultiplier = 1;
+    let currentSpeedMultiplier = 1.0;
+    let canvasZoomFactor = 1.5;  
+    let currentBirthProbability = 0.05;
+	let activeViewTopologyMode = 'fibo'; // Master geometry state: 'fibo', '3d', or '2d'
+    let globalGlobeRotationAngle = 0.0;
+    
+    const families = ["Alpha Lineage", "Beta Cluster", "Gamma Node", "Delta Branch", "Epsilon Matrix"];
+    let people = [];
+
+    const pillarNames_even = [
+        { name: "EXISTENCE (Bit 1)", bit: 1 },
+        { name: "AUTONOMY (Bit 2)", bit: 2 },
+        { name: "INTEGRITY (Bit 4)", bit: 4 },
+        { name: "PSYCHOLOGY (Bit 8)", bit: 8 },
+        { name: "PHYSICAL (Bit 16)", bit: 16 },
+        { name: "DISABILITY (Bit 32)", bit: 32 },
+        { name: "DEVELOPMENT (Bit 64)", bit: 64 }
+    ];
+
+    const pillarNames = [
+        { name: "EXISTENCE (Bit 1)", bit: 2 },
+        { name: "AUTONOMY (Bit 2)", bit: 4 },
+        { name: "INTEGRITY (Bit 4)", bit: 6 },
+        { name: "PSYCHOLOGY (Bit 8)", bit: 8 },
+        { name: "PHYSICAL (Bit 16)", bit: 10 },
+        { name: "DISABILITY (Bit 32)", bit: 12 },
+        { name: "DEVELOPMENT (Bit 64)", bit: 14 }
+    ];
+
+
+
+    let isBellCurveActive = true; 
+	let isHaloOverlayActive = true;
+	let topologyZoomMemory = { 'fibo': 1.20, '3d': 0.45, '2d': 1.05 };
+	canvasZoomFactor = topologyZoomMemory['fibo'];
+
+
+    function cycleViewportTopology() {
+        // Strict 1-button sequence mapping path: fibo -> 3d -> 2d -> fibo ...
+        const topologySequence = { 'fibo': '3d', '3d': '2d', '2d': 'fibo' };
+        activeViewTopologyMode = topologySequence[activeViewTopologyMode] || 'fibo';
+        
+        const btn = document.getElementById('topology-toggle-btn');
+
+		if (btn) {
+            btn.innerText = activeViewTopologyMode.toUpperCase();
+            
+            // Color accent shifts to give you a clear visual indicator of the mesh state
+            if (activeViewTopologyMode === '3d') {
+                btn.style.background = 'rgba(255, 0, 170, 0.15)'; // Accents neon pink while revolving globe is on
+                btn.style.borderColor = '#ff00aa';
+                btn.style.color = '#ff00aa';
+				canvasZoomFactor = 0.42; 
+                if (zoomBtn) {
+                    zoomBtn.innerText = "ZOOM 42% [AUTO-GLOBE]";
+                }
+            } else if (activeViewTopologyMode === '2d') {
+                btn.style.background = 'rgba(57, 255, 20, 0.1)';   // Accents canary green on the flat plane deck
+                btn.style.borderColor = '#39ff14';
+                btn.style.color = '#39ff14';
+                canvasZoomFactor = 1.5;
+                if (zoomBtn) {
+                    zoomBtn.innerText = "ZOOM 150%";
+                }
+            } else {
+                btn.style.background = 'rgba(0, 240, 255, 0.15)';  // Restores clean cyan for standard Fibonacci
+                btn.style.borderColor = '#00f0ff';
+                btn.style.color = '#00f0ff';
+				canvasZoomFactor = 1.5;
+                if (zoomBtn) {
+                    zoomBtn.innerText = "ZOOM 150%";
+                }
+            }
+        }
+        
+        pushLog(`HUD Grid Geometry remapped via control deck: [${activeViewTopologyMode.toUpperCase()}].`, "log-shift");
+        if (typeof drawGrid === 'function') drawGrid();
+        if (typeof updateSimulation === 'function') updateSimulation();
+    }
+
+
+	function toggleCollisionHalos() {
+		const cb = document.getElementById('halo-toggle');
+	    isHaloOverlayActive = cb ? cb.checked : true;
+		pushLog(`HUD Graphics calibrated: [Neon Collision Halos = ${isHaloOverlayActive ? "ON" : "OFF"}].`, "log-shift");
+	    drawGrid();
+		updateSimulation();
+	}
+
+    function toggleBirthEngine() {
+        const cb = document.getElementById('bellcurve-toggle');
+        isBellCurveActive = cb ? cb.checked : true;
+        pushLog(`Birth matrix calibrated: [Bell-Curve System = ${isBellCurveActive ? "ON" : "OFF"}].`, "log-shift");
+    }
+
+    function pushLog(text, type = '', entityId = null, entityFamily = null) {
+        // Evaluate logs using the permanent unique ID state instead of the old array index reference
+        if (typeof selectedPersonId !== 'undefined' && selectedPersonId !== -1) {
+            let lockedPerson = people.find(p => p.id === selectedPersonId);
+            if (lockedPerson) {
+                // If a lock is active, completely block messages that don't belong to this individual or their family
+                if (entityId !== null && entityId !== lockedPerson.id && entityFamily !== lockedPerson.family) {
+                    return; 
+                }
+            }
+        }
+
+        const stream = document.getElementById('log-stream');
+        if (!stream) return;
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        if (entityId !== null) entry.setAttribute('data-person-id', entityId);
+        if (entityFamily !== null) entry.setAttribute('data-person-family', entityFamily);
+        
+        let timestamp = new Date().toLocaleTimeString().split(' ');
+        entry.innerHTML = `[${timestamp}] ${text}`;
+        stream.appendChild(entry);
+        
+        stream.scrollTop = stream.scrollHeight;
+        if (stream.children.length > 35) {
+            stream.removeChild(stream.firstChild);
+        }
+    }
+    
+    function calculateUniversalProjection(person) {
+        const goldenRatio = 1.61803398875;
+        let currentRadius = Math.log(person.age + 1) * goldenRatio * 8.5;
+        let laneOffset = person.orbitalScatterOffset !== undefined ? person.orbitalScatterOffset : 0;
+        currentRadius += laneOffset;
+
+        let baseTheta = person.individualTheta + (person.age * 0.065) + (person.familySeed || 0);
+        let heightZ = person.age * 0.9;
+        
+        let targetX = 0, targetY = 0, targetZ = 0;
+
+        if (activeViewTopologyMode === '3d') {
+            let globeScaleRadius = 145 + (laneOffset * 0.4);
+            let polarPhi = (person.age / 110) * Math.PI; // Birth = North Pole, Expiry = South Pole
+            let polarTheta = baseTheta + globalGlobeRotationAngle; 
+            
+            targetX = globeScaleRadius * Math.sin(polarPhi) * Math.cos(polarTheta);
+            targetY = globeScaleRadius * Math.sin(polarPhi) * Math.sin(polarTheta);
+            targetZ = globeScaleRadius * Math.cos(polarPhi);
+        } 
+        else if (activeViewTopologyMode === '2d') {
+            targetX = currentRadius * Math.cos(baseTheta) * 1.15;
+            targetY = currentRadius * Math.sin(baseTheta) * 1.15;
+            targetZ = 0; // Completely flattens height metrics
+        } 
+        else {
+            // Default: Fallback directly back onto your original working spiral variables
+            let frameworkScale = 1 + Math.log10(currentScaleMultiplier || 1);
+            let growthScale = Math.min(person.age / 12, 1);
+            
+            targetX = currentRadius * Math.cos(baseTheta) * growthScale * frameworkScale;
+            targetY = currentRadius * Math.sin(baseTheta) * growthScale * frameworkScale;
+            targetZ = heightZ;
+        }
+
+        return project(targetX, targetY, targetZ);
+    }
+
+
+    function initPopulation() {
+        people = [];
+        for (let i = 0; i < 100; i++) {
+            let assignedAge;
+            
+            // Force exactly 10% of the population to initialize as true newborns/infants
+            if (i < 10) {
+                assignedAge = Math.random() * 2.0;
+            } else {
+                while (true) {
+                    let u1 = Math.random();
+                    let u2 = Math.random();
+                    if (u1 === 0) u1 = 0.0001; 
+                    let standardNormal = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(Math.PI * 2.0 * u2);
+                    assignedAge = 36 + standardNormal * 16;
+                    if (assignedAge >= 2.0 && assignedAge <= 80) {
+                        break;
+                    }
+                }
+            }
+            
+            // Allow precision decimals so entities spend smooth transitions inside the white color envelope
+            assignedAge = Math.round(assignedAge * 10) / 10;
+            let familyId = Math.floor(Math.random() * families.length);
+            
+            people.push({
+                id: i + 1,
+                age: assignedAge,
+                family: families[familyId],
+                familySeed: familyId * 1.45, 
+                individualTheta: Math.random() * Math.PI * 2, 
+                bitmask: 0,
+                lastBitmask: 0
+            });
+        }
+    }
+
+    function autoScaleViewportResolution() {
+        const container = document.getElementById('canvas-container');
+        if (!container || !canvas) return;
+
+        // Extract physical screen scaling pixel density ratios
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        const rect = container.getBoundingClientRect();
+
+        // Dynamically adjust internal drawing buffer sizes to eliminate mobile blurry node vectors
+        canvas.width = rect.width * devicePixelRatio;
+        canvas.height = rect.height * devicePixelRatio;
+
+        // Force an immediate 1:1 isometric grid redraw sequence
+        drawGrid();
+        updateSimulation();
+    }
+
+    // Attach resolution listeners to catch mobile orientation flips smoothly
+    window.addEventListener('resize', autoScaleViewportResolution);
+    window.addEventListener('DOMContentLoaded', autoScaleViewportResolution);
+    function calculatePillars(person, age, type) {
+        // Initialize with 0 to construct the bitmask layers cleanly
+        let bitmask = 0;
+
+        // FIXED: Shifted from plain decimals to your exact 1:1 macro policy shield bitmasks
+        const SHIELD_HUMAN_RIGHTS          = 1 << 20; // 1048576 Shield A
+        const SHIELD_DISCRIMINATION_RIGHTS = 1 << 22; // 8388608 Shield B3
+        const SHIELD_BASIC_RIGHTS          = 1 << 24; // 2097152 Shield B
+
+        // --- UNIVERSAL ARCHITECTURAL CONSTANTS ---
+        bitmask |= 1;   // EXISTENCE
+        bitmask |= 32;  // DISABILITY (The permanent universal floor holding up the framework)
+        bitmask |= 16;  // PHYSICAL (Vessel remains active while alive)
+        bitmask |= 256; // PRESENCE (Real-time footprint remains active while alive)
+
+        // Set the macro protection shields active natively at boot
+        bitmask |= SHIELD_HUMAN_RIGHTS;
+        bitmask |= SHIELD_DISCRIMINATION_RIGHTS;
+        bitmask |= SHIELD_BASIC_RIGHTS;
+
+        // FIXED: Baseline health profiles return the fully saturated mask instead of an empty 0
+        if (type === 'rights' || type === 'baseline') {
+            bitmask |= 2 | 4 | 8 | 64 | 128; // Ensure general rights are fully packed for peace
+            return bitmask;
+        }        
+
+        // --- CHILDHOOD PURITY OVERRIDE MATRIX ---
+        if (age < 9) {
+            bitmask |= 2;  // AUTONOMY
+            bitmask |= 4;  // INTEGRITY
+            bitmask |= 8;  // PSYCHOLOGY
+            bitmask |= 64; // DEVELOPMENT
+            return bitmask; 
+        }
+
+        switch(type) {
+            case 'tribal':
+                bitmask |= 2; 
+                if (age >= 10) bitmask |= 4;  
+                if (age >= 4)  bitmask |= 8;  
+                if (age >= 8)  bitmask |= 64; 
+                break;
+
+            case 'antiquity': 
+                bitmask |= 2; 
+                bitmask |= 4; 
+                if (age >= 12) bitmask |= 8;  
+                if (age >= 6)  bitmask |= 64; 
+                break;
+
+            case 'feudal':
+                if (person.id % 8 === 0) bitmask |= 2 | 128; 
+                if (age >= 14) bitmask |= 4;  
+                if (age >= 10) bitmask |= 64; 
+                break;
+
+            case 'enlighten':
+                if (age >= 15) bitmask |= 2;  
+                bitmask |= 4;                 
+                if (age >= 10) bitmask |= 8;  
+                if (age >= 5)  bitmask |= 64; 
+                break;
+
+            case 'industrial':
+                if (age >= 18) bitmask |= 2;   
+                if (person.id % 2 === 0) bitmask |= 4; 
+                if (age < 12 || age > 48) bitmask |= 8; 
+                if (age >= 12) bitmask |= 64;  
+                if (age >= 35) bitmask |= 128; 
+                break;
+
+            case 'pre-surveil': 
+                bitmask |= 2 | 4; 
+                if (age >= 5 && person.id % 6 !== 0) bitmask |= 8; 
+                if (person.id % 8 !== 0) bitmask |= 64; 
+                if (age >= 22 && person.id % 12 !== 0) bitmask |= 128; 
+                break;
+                
+            case 'early-data': 
+                bitmask |= 2 | 4 | 64 | 128;   
+                if (age >= 12 && age <= 45) {
+                    bitmask |= 8; 
+                }
+                break;
+
+            case 'algorithmic': 
+            case 'modern': 
+                bitmask |= 2 | 64 | 128;       
+                if (age >= 11 && age <= 55) {
+                    bitmask |= 8;              
+                }
+                if (person.id % 3 !== 0) {
+                    bitmask |= 4;              
+                }
+                break;
+
+            case 'crisis': 
+                bitmask |= 128; 
+                if (age < 25 || age > 60) {
+                    bitmask |= 2 | 4 | 8 | 64; 
+                } else {
+                    bitmask |= 2; 
+                    if (person.id % 5 === 0) bitmask |= 4; 
+                }
+                break;
+
+            // FIXED: Added missing era handlers to actively trigger your crisis threat simulations
+            case 'authoritarian':
+            case 'total-surveillance':
+                // Systemically wipe out the institutional protection shield flags
+                bitmask &= ~SHIELD_HUMAN_RIGHTS;
+                bitmask &= ~SHIELD_BASIC_RIGHTS;
+                bitmask &= ~SHIELD_DISCRIMINATION_RIGHTS;
+
+                // Environment damages general human rights pillars due to surveillance tracking
+                bitmask &= ~2;   // Wipes Autonomy
+                bitmask &= ~4;   // Wipes Integrity
+                bitmask &= ~8;   // Wipes Psychology
+                bitmask &= ~64;  // Wipes Development
+                bitmask &= ~128; // Wipes Property
+                break;
+        }
+
+        // --- REALISTIC PROBABILISTIC SCARRING FILTER ---
+        if (type === 'early-data' || type === 'modern' || type === 'crisis' || type === 'authoritarian' || type === 'total-surveillance') {
+            if (person.permanentScars === undefined) {
+                person.permanentScars = 0;
+            }
+            
+            for (let b = 0; b < 9; b++) {
+                let bit = 1 << b;
+                if (bit === 32) continue; // Skip permanent disability baseline floor
+                
+                if (!(bitmask & bit)) {
+                    if (Math.random() < 0.001) {
+                        person.permanentScars |= bit; 
+                    }
+                }
+            }
+            bitmask &= ~person.permanentScars;
+        }
+
+        // --- DUAL-VECTOR ABLEISM INTERCEPTOR ---
+        if (person.id % 4 === 0) {
+            if (type === 'total-surveillance') {
+                // Vector A: Direct strike automatically strips the DISABILITY (32) pillar on Frame 1
+                bitmask &= ~32;
+            } else if (type === 'authoritarian') {
+                // Vector B: Cascade strike strips bit 32 gradually over time via systemic friction
+                if (age >= 15 || Math.random() < 0.1) {
+                    bitmask &= ~32;
+                }
+            }
+        }
+
+        return bitmask;
+    }
+ 
+    function processLifecycle() {
+        let livingUnits = people.filter(p => p.age >= 0);
+        let deceivedUnits = livingUnits.filter(p => p.isIntolerant);
+        currentIntoleranceRate = livingUnits.length > 0 ? (deceivedUnits.length / livingUnits.length) : 0;
+        currentSpreadPercentage = livingUnits.length > 0 ? Math.round((deceivedUnits.length / livingUnits.length) * 100) : 0;
+        simulationTick++;
+        let brokenPillarsCount = 0;
+        let totalCheckedPillars = people.length * 9; 
+        
+        let victimCount = 0;
+        let bitFailureCounts = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+
+        people.forEach((person) => {
+            person.lastBitmask = person.bitmask;
+            
+            let isCurrentToleranceUnlimited = (toleranceMode === 1 || (toleranceMode === 2 && typeof autoTriggeredUnlimited !== 'undefined' && autoTriggeredUnlimited));
+
+            if (person.age < 0) {
+                if (person.birthCountdown === undefined || person.birthCountdown <= 0) {
+                    if (typeof isBellCurveActive !== 'undefined' && isBellCurveActive) {
+                        let u1 = 0, u2 = 0;
+                        while(u1 === 0) u1 = Math.random(); 
+                        while(u2 === 0) u2 = Math.random();
+                        let gaussianFactor = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+                        
+                        // ADDED A SMOOTH DESYNCHRONIZATION SCATTER:
+                        // This prevents the mass-death wipes by staggering the initial generational waves and stops making it look like a christmas tree!
+                        let generationStagger = (Math.random() - 0.5) * 35; 
+                        let calibratedDelay = 75 + (gaussianFactor * 20) + generationStagger;
+                        
+                        person.birthCountdown = Math.max(10, Math.min(220, calibratedDelay));
+                    } else {
+                        person.birthCountdown = 30 + Math.random() * 120;
+                    }
+                }
+
+                
+                person.birthCountdown -= 1.0 * currentSpeedMultiplier;
+                
+                if (person.birthCountdown <= 0) {
+                    person.age = 0.0;
+                    
+                    // Box-Muller Transformation Layer calculated ONLY at birth
+                    let v1 = 0, v2 = 0;
+                    while(v1 === 0) v1 = Math.random();
+                    while(v2 === 0) v2 = Math.random();
+                    let timelineDelta = Math.sqrt(-2.0 * Math.log(v1)) * Math.cos(2.0 * Math.PI * v2);
+                    
+                    // Lock down a permanent unique velocity multiplier for this specific lifecycle path
+                    person.timelineSpeedModifier = 1.0 + (timelineDelta * 0.15);
+                    
+                    // Lock down a smooth radial offset lanes so nodes don't ride on the exact same rail
+                    person.orbitalScatterOffset = timelineDelta * 4.5;
+                    
+                    // Establish a fixed, clean initial entry heading
+                    person.individualTheta = Math.random() * Math.PI * 2;
+                    person.lastBitmask = 0;
+                    
+                    pushLog(`Unit #${person.id} calibrated to a dedicated timeline velocity.`, 'log-birth', person.id, person.family);
+                } else {
+                    person.bitmask = 0;
+                    return;
+                }
+            } else {
+                // Apply the unique locked speed modifier if it exists to desynchronize the arrival waves smoothly
+                let localSpeed = person.timelineSpeedModifier !== undefined ? person.timelineSpeedModifier : 1.0;
+                person.age += (0.1 * localSpeed) * currentSpeedMultiplier;
+            }
+            person.bitmask = calculatePillars(person, person.age, currentSimType);
+
+            let naturalDemiseTriggered = false;
+            let currentEraCeiling = 95; 
+            
+            if (currentSimType === 'tribal')     currentEraCeiling = 38;
+            if (currentSimType === 'antiquity')  currentEraCeiling = 45;
+            if (currentSimType === 'feudal')     currentEraCeiling = 40;
+            if (currentSimType === 'industrial') currentEraCeiling = 68;
+            if (currentSimType === 'rights')     currentEraCeiling = 82; 
+            if (currentSimType === 'algorithmic') currentEraCeiling = 83; 
+            if (currentSimType === 'total-surveillance' || currentSimType === 'authoritarian') {
+                person.bitmask &= ~(1 << 22);
+                currentEraCeiling = 84; 
+            }
+            if (currentSimType === 'total-surveillance') {
+                // Direct terminal algorithmic discrimination wipes out Bit 32 for specific vulnerable units
+                if (person.id % 4 === 0) { // Automatically targets 25% of your population matrix as disabled units
+                    person.bitmask &= ~32; // Strips the THREAT_ABLEISM / DISABILITY protection pillar directly
+                }
+            } else if (currentSimType === 'authoritarian' && (person.bitmask & (1 << 22)) === 0) {
+                // Cascade Effect: If the shield is already broken, individual pillars strip much faster via ambient hostility
+                if (Math.random() < 0.05 * currentSpeedMultiplier) {
+                    person.bitmask &= ~32; 
+                }
+            }
+            
+            if (person.age >= currentEraCeiling) {
+                let checkFactor = (person.age - currentEraCeiling) / (110 - currentEraCeiling + 1);
+                if (Math.random() < checkFactor || person.age >= 110) {
+                    naturalDemiseTriggered = true;
+                }
+            }
+
+            if (naturalDemiseTriggered) {
+                if (typeof globalTotalCompletions === 'undefined') {
+                    globalTotalCompletions = 0;
+                }
+                globalTotalCompletions++;
+
+                let wasCompromised = false;
+                for (let b = 0; b < 9; b++) {
+                    if ((1 << b) === 32) continue;
+                    if ((person.bitmask & (1 << b)) === 0) {
+                        wasCompromised = true;
+                    }
+                }
+
+                // FIXED: Tracking array evaluates real-time structural compromises cleanly
+                fatalityHistoryWindow.push(wasCompromised ? 1 : 0);
+                
+                if (fatalityHistoryWindow.length > 100) {
+                    fatalityHistoryWindow.shift();
+                }
+
+                person.age = -1.0; 
+                person.bitmask = 0;
+                person.birthCountdown = 0;
+                person.permanentScars = 0;
+
+                if (!isCurrentToleranceUnlimited && Math.random() < currentIntoleranceRate) {
+                    person.isIntolerant = true; 
+                } else {
+                    person.isIntolerant = false; 
+                }
+
+                pushLog(`Unit #${person.id} completed lifecycle. Entering birth flux queue.`, 'log-shift', person.id, person.family);
+                return;
+            }
+
+            const totalDeceived = people.filter(p => p.age >= 0 && p.isIntolerant).length;
+            if (totalDeceived === 0 && person.age >= 0) {
+                // Targets Node #42, or defaults to Node #0 if #42 is stuck inside the dead birth queue matrix
+                if (person.id === 42 || (person.id === 0 && !people.some(p => p.id === 42 && p.age >= 0))) {
+                    person.isIntolerant = true;
+                    pushLog('Ideological strain mutation observed inside active population matrix.', 'log-threat');
+                }
+            }
+
+            // Spatial mesh transmission loops execute normally beneath the seed layer
+            if (isCurrentToleranceUnlimited && person.age >= 0) {
+                if (person.isIntolerant) {
+                    people.forEach((neighbor) => {
+                        if (neighbor.age >= 0 && !neighbor.isIntolerant) {
+                            let dx = (person.individualTheta ? Math.cos(person.individualTheta) : 0) - (neighbor.individualTheta ? Math.cos(neighbor.individualTheta) : 0);
+                            let dy = (person.individualTheta ? Math.sin(person.individualTheta) : 0) - (neighbor.individualTheta ? Math.sin(neighbor.individualTheta) : 0);
+                            let distance = Math.hypot(dx, dy) * 100;
+
+                            if (distance < 25) {
+                                if (Math.random() < 0.002 * currentSpeedMultiplier) {
+                                    neighbor.isIntolerant = true;
+                                    pushLog(`Unit #${neighbor.id} converted via spatial footprint.`, 'log-threat');
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    const activeAggressors = people.filter(p => p.age >= 0 && p.isIntolerant);
+                    activeAggressors.forEach((aggressor) => {
+                        let dx = (person.individualTheta ? Math.cos(person.individualTheta) : 0) - (aggressor.individualTheta ? Math.cos(aggressor.individualTheta) : 0);
+                        let dy = (person.individualTheta ? Math.sin(person.individualTheta) : 0) - (aggressor.individualTheta ? Math.sin(aggressor.individualTheta) : 0);
+                        let distance = Math.hypot(dx, dy) * 100;
+
+                        if (distance < 25) {
+                            person.bitmask &= ~4;  
+                            person.bitmask &= ~16; 
+                        }
+                    });
+                }
+            }
+
+            if (person.bitmask !== person.lastBitmask && person.lastBitmask !== 0) {
+                if (currentSimType === 'crisis' && person.age >= 25 && person.age <= 31 && !(person.bitmask & 4)) {
+                    pushLog(`!! CRITICAL SEVERANCE !! Unit #${person.id} hit Age 30. Integrity stripped by Epoch Crisis rules.`, 'log-threat', person.id, person.family);
+                } else {
+                    pushLog(`Unit #${person.id} bit-shift recorded across spacetime.`, 'log-shift', person.id, person.family);
+                }
+            }
+            
+            let individualIsVictim = false;
+            for (let b = 0; b < 9; b++) {
+                if ((1 << b) === 32) continue; 
+                if (!(person.bitmask & (1 << b))) {
+                    brokenPillarsCount++;
+                    if (b < bitFailureCounts.length) { bitFailureCounts[b]++; }
+                    individualIsVictim = true;
+                }
+            }
+            if (individualIsVictim) { victimCount++; }
+        });
+
+
+        people.forEach(p => p.isPinkInstigator = false);
+        existenzThreatLevel = Math.round((brokenPillarsCount / totalCheckedPillars) * 100);
+        document.getElementById('threat-pct').innerText = `${existenzThreatLevel}%`;
+        document.getElementById('threat-bar').style.width = `${existenzThreatLevel}%`;
+        document.getElementById('threat-bar').style.backgroundColor = existenzThreatLevel > 35 ? '#e53e3e' : (existenzThreatLevel > 15 ? '#ecc94b' : '#48bb78');
+
+        let weightedVictims = victimCount * currentScaleMultiplier;
+        let weightedTotalPopulation = people.length * currentScaleMultiplier;
+
+        if (document.getElementById('victim-count')) {
+            document.getElementById('victim-count').innerText = `${weightedVictims.toLocaleString()} / ${weightedTotalPopulation.toLocaleString()}`;
+        }
+
+        if (document.getElementById('systemic-death-count')) {
+            let rollingFatalitiesCount = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
+            let displayDenominator = fatalityHistoryWindow.length > 0 ? fatalityHistoryWindow.length : 100;
+            document.getElementById('systemic-death-count').innerText = `${rollingFatalitiesCount} / ${displayDenominator}`;
+        }
+
+        if (document.getElementById('generations-count')) {
+            let generationsPassed = 0;
+            if (typeof globalTotalCompletions !== 'undefined' && people.length > 0) {
+                generationsPassed = Math.floor(globalTotalCompletions / people.length);
+            }
+            document.getElementById('generations-count').innerText = generationsPassed.toString();
+        }
+
+        const toleranceRow = document.getElementById('tolerance-metric-row');
+        const alertOverlay = document.getElementById('collapse-alert-overlay');
+        
+        if (toleranceRow) {
+            if (!rationalDefenseActive) {
+                toleranceRow.style.display = 'flex'; 
+                
+                let rawDeceivedCount = deceivedUnits.length * currentScaleMultiplier;
+                let spreadPct = currentSpreadPercentage;
+
+                if (document.getElementById('tolerance-count')) {
+                    document.getElementById('tolerance-count').innerText = `[${rawDeceivedCount.toLocaleString()}]`;
+                }
+                if (document.getElementById('tolerance-pct')) {
+                    document.getElementById('tolerance-pct').innerText = `${spreadPct}%`;
+                }
+
+                if (alertOverlay) {
+                    if (spreadPct >= 51) {
+                        alertOverlay.style.display = 'block';
+                    } else {
+                        alertOverlay.style.display = 'none';
+                    }
+                }
+            } else {
+                toleranceRow.style.display = 'none';
+                if (alertOverlay) {
+                    alertOverlay.style.display = 'none';
+                }
+                
+                if (document.getElementById('tolerance-count')) {
+                    document.getElementById('tolerance-count').innerText = "";
+                }
+                if (document.getElementById('tolerance-pct')) {
+                    document.getElementById('tolerance-pct').innerText = "0%";
+                }
+            }
+        }
+
+        if (toleranceMode === 2) {
+            // Count total active instigators across the living generation framework
+            let activeInstigatorCount = people.filter(p => p.age >= 0 && p.isIntolerant).length;
+            
+            // STRICT EXCLUSION RULE: Popper Gates can ONLY trip automatically if instigators strictly exceed 2
+            if (activeInstigatorCount > 2 && currentSpreadPercentage >= 35 && currentSpreadPercentage <= 45) {
+                if (!autoTriggeredUnlimited) {
+                    autoTriggeredUnlimited = true;
+                    rationalDefenseActive = false;
+                    const btn = document.getElementById('defense-toggle-btn');
+                    if (btn) {
+                        btn.style.background = 'rgba(229, 62, 62, 0.2)';
+                        btn.style.borderColor = '#e53e3e';
+                        btn.style.color = '#fc8181';
+                        btn.innerText = 'TOLERANCE 1'; // Syncs text representation dynamically to active popper stage
+                    }
+                    pushLog(`[Poppertime Tripped]: Systemic stress reached ${currentSpreadPercentage}%. Automated interceptor gates engaged with ${activeInstigatorCount} nodes.`, 'log-threat');
+                }
+            } else {
+                // Safeguard: Force drop or hold the interceptor gates down if population metrics drop to 2 or fewer instigators
+                if (autoTriggeredUnlimited) {
+                    autoTriggeredUnlimited = false;
+                    const btn = document.getElementById('defense-toggle-btn');
+                    if (btn) {
+                        btn.style.background = 'rgba(0, 240, 255, 0.15)';
+                        btn.style.borderColor = '#00f0ff';
+                        btn.style.color = '#00f0ff';
+                        btn.innerText = 'TOLERANCE A'; // Restores clean baseline auto state label configuration
+                    }
+                    pushLog(`[Popper Gates Reset]: Strain vector population dropped below threshold. Matrix stabilizes.`, 'log-lock');
+                }
+            }
+        }
+
+
+        const bitBlueprints_doubles = [
+            { name: "EXISTENCE (1)",   count: 0, bit: 1 },
+            { name: "AUTONOMY (2)",    count: 0, bit: 2 },
+            { name: "INTEGRITY (4)",   count: 0, bit: 4 },
+            { name: "PSYCHOLOGY (8)",  count: 0, bit: 8 },
+            { name: "PHYSICAL (16)",   count: 0, bit: 16 },
+            { name: "DISABILITY (32)", count: 0, bit: 32 },
+            { name: "DEVELOPMENT (64)",count: 0, bit: 64 },
+            { name: "PROPERTY (128)",  count: 0, bit: 128 },
+            { name: "PRESENCE (256)",  count: 0, bit: 256 }
+        ];
+
+        const bitBlueprints_uneven = [
+            { name: "EXISTENCE (1)",   count: 0, bit: 1 },
+            { name: "AUTONOMY (3)",    count: 0, bit: 3 },
+            { name: "INTEGRITY (5)",   count: 0, bit: 5 },
+            { name: "PSYCHOLOGY (7)",  count: 0, bit: 7 },
+            { name: "PHYSICAL (9)",   count: 0, bit: 9 },
+            { name: "DISABILITY (11)", count: 0, bit: 11 },
+            { name: "DEVELOPMENT (13)",count: 0, bit: 13 },
+            { name: "PROPERTY (15)",  count: 0, bit: 15 },
+            { name: "PRESENCE (17)",  count: 0, bit: 17 }
+        ];
+
+        const bitBlueprints = [
+            { name: "EXISTENCE (2)",   count: 0, bit: 2 },
+            { name: "AUTONOMY (4)",    count: 0, bit: 4 },
+            { name: "INTEGRITY (6)",   count: 0, bit: 6 },
+            { name: "PSYCHOLOGY (8)",  count: 0, bit: 8 },
+            { name: "PHYSICAL (10)",   count: 0, bit: 10 },
+            { name: "DISABILITY (12)", count: 0, bit: 12 },
+            { name: "DEVELOPMENT (14)",count: 0, bit: 14 },
+            { name: "PROPERTY (16)",  count: 0, bit: 16 },
+            { name: "PRESENCE (18)",  count: 0, bit: 18 }
+        ];
+
+
+
+
+
+        let isCivilizationOverthrown = (!rationalDefenseActive && currentSpreadPercentage >= 51);
+
+        people.forEach((person) => {
+            if (person.bitmask === 0) {
+                return; 
+            }
+
+            bitBlueprints.forEach((blueprint) => {
+                if ((person.bitmask & blueprint.bit) === 0) {
+                    blueprint.count++;
+                }
+            });
+        });
+
+        if (isCivilizationOverthrown) {
+            bitBlueprints.forEach((blueprint) => {
+                if (blueprint.bit === 2 || blueprint.bit === 4) {
+                    blueprint.count = people.length;
+                }
+            });
+        }
+
+        let activeStressVectors = bitBlueprints.filter(item => item.bit !== 32);
+        activeStressVectors.sort((a, b) => b.count - a.count);
+        let topFiveVectors = activeStressVectors.slice(0, 5);
+
+        const vectorsContainer = document.getElementById('top-vectors-list');
+        if (vectorsContainer) {
+            vectorsContainer.innerHTML = ''; 
+            
+            topFiveVectors.forEach((vector, rank) => {
+                const vectorRow = document.createElement('div');
+                vectorRow.style.display = 'flex';
+                vectorRow.style.justifyContent = 'space-between';
+                vectorRow.style.padding = '2px 4px';
+                vectorRow.style.borderRadius = '2px';
+                
+                if (isCivilizationOverthrown && (vector.bit === 2 || vector.bit === 4)) {
+                    vectorRow.style.color = '#ffffff';
+                    vectorRow.style.background = '#e53e3e';
+                    vectorRow.style.fontWeight = 'bold';
+                } else if (vector.count > 0) {
+                    vectorRow.style.color = rank === 0 ? '#fc8181' : (rank < 3 ? '#f6ad55' : '#ecc94b');
+                    vectorRow.style.background = 'rgba(255,255,255,0.01)';
+                } else {
+                    vectorRow.style.color = '#4a5568'; 
+                }
+
+                vectorRow.innerHTML = `
+                    <span>${rank + 1}. ${vector.name}</span>
+                    <span style="font-weight: bold;">${(vector.count * currentScaleMultiplier).toLocaleString()}</span>
+                `;
+                vectorsContainer.appendChild(vectorRow);
+            });
+        }
+        const instigatorPanel = document.getElementById('instigator-panel-wrapper');
+        const instigatorContainer = document.getElementById('top-instigators-list');
+        const canaryPanel = document.getElementById('canary-panel-wrapper');
+        const canaryContainer = document.getElementById('canary-alerts-list');
+        
+        // Grab active, living entities who match the extremist strain criteria
+        let allDogmatists = people.filter(p => p.age >= 12 && p.isIntolerant);
+
+        // Clear out and re-evaluate BOTH custom tracking flags across all entities on every frame pass
+        people.forEach((p) => {
+            p.isCanaryAlert = false;
+            p.isPinkInstigator = false; 
+        });
+
+        // FIXED: Resetting counters to EXACTLY 0 at the start of every frame tick to prevent runaway accumulation
+        let generalViolationsCount = 0;
+        let ableismViolationsCount = 0;
+
+        // Structural policy shield bitmasks
+        const SHIELD_HUMAN_RIGHTS          = 1 << 20; 
+        const SHIELD_DISCRIMINATION_RIGHTS = 1 << 22; 
+        const SHIELD_BASIC_RIGHTS          = 1 << 24; 
+
+        // Mapping your 1:1 Mathematically Honest Threat Matrix Enum Bits
+        const generalThreatBits = [2, 4, 6, 8, 10, 12, 14]; // Existence, Autonomy, Integrity, Psychology, Physical, Development, Property
+
+        let shieldHumanRightsBroken = people.some(p => p.age >= 0 && (p.bitmask & SHIELD_HUMAN_RIGHTS) === 0);
+        let shieldBasicRightsBroken = people.some(p => p.age >= 0 && (p.bitmask & SHIELD_BASIC_RIGHTS) === 0);
+        let shieldDiscriminationBroken = people.some(p => p.age >= 0 && (p.bitmask & SHIELD_DISCRIMINATION_RIGHTS) === 0);
+ 
+        people.forEach((p) => {
+            if (p.age >= 0) {
+                let nodeHasGeneralBroke = false;
+                let nodeHasAbleismBroke = ((p.bitmask & 32) === 0); // Active tracking for DISABILITY bit deprivation
+
+                // Tally general rights violations strictly if institutional protection shields have collapsed
+                if (shieldHumanRightsBroken || shieldBasicRightsBroken) {
+                    generalThreatBits.forEach((bitValue) => {
+                        if ((p.bitmask & bitValue) === 0) {
+                            nodeHasGeneralBroke = true;
+                            generalViolationsCount++; // Tracks raw, unmultiplied bit deprivations natively
+                        }
+                    });
+                }           
+
+                // FIXED: Ableism only ticks up if the discrimination protection shield falls AND the unit specifically loses bit 32
+                if (shieldDiscriminationBroken && nodeHasAbleismBroke) {
+                    ableismViolationsCount++;
+                }				
+
+                // --- CANARY 1: LIVE COLLISION AND RIGHTS DEPRAVATION SENSOR MATRIX ---
+                p.hasVisualCollision = false; 
+                if (typeof isCanaryActive !== 'undefined' && isCanaryActive) {
+                    people.forEach((otherPerson) => {
+                        // Check against other living individuals, ignoring self-comparison
+                        if (otherPerson.id !== p.id && otherPerson.age >= 0) {
+                            let dx = (p.individualTheta ? Math.cos(p.individualTheta) : 0) - (otherPerson.individualTheta ? Math.cos(otherPerson.individualTheta) : 0);
+                            let dy = (p.individualTheta ? Math.sin(p.individualTheta) : 0) - (otherPerson.individualTheta ? Math.sin(otherPerson.individualTheta) : 0);
+                            let structuralProximity = Math.hypot(dx, dy) * 100;
+                            
+                            // Proximity threshold boundary limit is set at 3.5 units
+                            if (structuralProximity < 3.5) {
+                                p.hasVisualCollision = true; 
+                                
+                                // Calculate physical collision overlap percentage (closer distance = higher percentage)
+                                let collisionPercentage = Math.round(((3.5 - structuralProximity) / 3.5) * 100);
+                                
+                                // Diagnostic Matrix: Intercept matching missing bit values between the pair
+                                let brokenBitsInP = [];
+                                let brokenBitsInOther = [];
+                                let sharedBrokenBits = [];
+
+                                // Scan across all 9 structural blueprint bits
+                                for (let b = 0; b < 9; b++) {
+                                    let bitVal = 1 << b;
+                                    let pHasBit = (p.bitmask & bitVal) !== 0;
+                                    let otherHasBit = (otherPerson.bitmask & bitVal) !== 0;
+
+                                    if (!pHasBit) brokenBitsInP.push(bitVal);
+                                    if (!otherHasBit) brokenBitsInOther.push(bitVal);
+                                    if (!pHasBit && !otherHasBit) sharedBrokenBits.push(bitVal);
+                                }
+
+                                let hasRightsSeverance = (brokenBitsInP.length > 0 || brokenBitsInOther.length > 0);
+                                if (hasRightsSeverance) {
+                                    // Format diagnostic readout text strings
+                                    let pBitsText = brokenBitsInP.length > 0 ? brokenBitsInP.join(",") : "NONE";
+                                    let otherBitsText = brokenBitsInOther.length > 0 ? brokenBitsInOther.join(",") : "NONE";
+                                    let sharedText = sharedBrokenBits.length > 0 ? ` [SHARED CONFLICT BITS: ${sharedBrokenBits.join(",")}]` : "";
+
+                                // ELEVATED MESSAGE 1: True Bit/Pair Failure with specific bit positions and proximity impact percentages
+                                    pushLog(`🚨 CRITICAL BIT-PAIR COLLISION [${collisionPercentage}% IMPACT]: Mesh intersection detected! ID #${p.id} (Missing Bits: ${pBitsText}) x ID #${otherPerson.id} (Missing Bits: ${otherBitsText}).${sharedText}`, 'log-threat', p.id, p.family);
+                                } else {
+								    pushLog(`🌀 MATRIX WAVE COLLISION [${collisionPercentage}% OVERLAP]: Clean geometric wave intersection registered on timeline mesh between ID #${p.id} and ID #${otherPerson.id}. All bits intact.`, 'log-shift');
+								}                                
+                            }
+                        }
+                    });
+                }
+
+
+                // Activate neon-green canvas halos exclusively when the master canary switch is ON
+                if (isCanaryActive) {
+                    p.isCanaryAlert = false; // Reset the alert flag state for the current frame iteration
+
+                    if (shieldDiscriminationBroken && nodeHasAbleismBroke) {
+                        p.isCanaryAlert = true;
+                    }
+                    if ((shieldHumanRightsBroken || shieldBasicRightsBroken) && nodeHasGeneralBroke) {
+                        p.isCanaryAlert = true;
+                    }
+                    
+                    // FIXED: Only trigger the alert ring if the Neon Halo switch is explicitly checked ON!
+                    if (typeof isHaloOverlayActive !== 'undefined' && isHaloOverlayActive && p.hasVisualCollision) {
+                        p.isCanaryAlert = true;
+                    }
+                }
+
+            }
+        });
+
+        // CHANNEL 1: EXTRA-STRICT INSTIGATOR SEPARATION LAYER (Popperian Extremists)
+        if (instigatorPanel && instigatorContainer) {
+            if (allDogmatists.length > 0) {
+                instigatorPanel.style.display = 'block'; 
+                instigatorContainer.innerHTML = '';
+                
+                let visibleInstigators = allDogmatists.slice(0, 2);
+                let currentFatalities = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
+                
+                visibleInstigators.forEach((node, index) => {
+                    node.isPinkInstigator = true;
+                    let calculatedLevel = currentFatalities >= 75 ? 4 : (currentFatalities >= 60 ? 3 : (currentFatalities >= 30 ? 2 : 1));
+
+                    const instigatorRow = document.createElement('div');
+                    instigatorRow.style.display = 'flex';
+                    instigatorRow.style.justifyContent = 'space-between';
+                    instigatorRow.style.padding = '2px 4px';
+                    instigatorRow.style.fontSize = '11px';
+                    instigatorRow.style.color = '#fc8181';
+                    
+                    let badgeColor = calculatedLevel === 4 ? 'color: #ffffff; background: #e53e3e; padding: 0 3px; border-radius: 2px; font-weight: bold;' : 'font-weight: bold; color: #e53e3e;';
+
+                    instigatorRow.innerHTML = `
+                        <span>${index + 1}. Dogmatic Instigator #${node.id}</span>
+                        <span style="${badgeColor}">[LEVEL ${calculatedLevel}]</span>
+                    `;
+                    instigatorContainer.appendChild(instigatorRow);
+                });
+            } else {
+                instigatorPanel.style.display = 'none';
+            }
+        }
+
+        // CHANNEL 2: INDEPENDENT CANARY ALERTS SEPARATION LAYER (Macro Shield Monitors with Dynamic Counts)
+        if (canaryPanel && canaryContainer) {
+            let hasAnyCanarySignal = isCanaryActive && (shieldHumanRightsBroken || shieldBasicRightsBroken || shieldDiscriminationBroken);
+            
+            if (hasAnyCanarySignal) {
+                canaryPanel.style.display = 'block';
+                canaryContainer.innerHTML = '';
+
+                // Block A: General Fundamental Rights Shield Violations with Counter
+                if (shieldHumanRightsBroken || shieldBasicRightsBroken) {
+                    let brokenLabel = (shieldHumanRightsBroken && shieldBasicRightsBroken) ? "HUMAN & BASIC" : (shieldHumanRightsBroken ? "HUMAN" : "BASIC");
+                    const humanRightsRow = document.createElement('div');
+                    humanRightsRow.style.padding = '2px 4px';
+                    humanRightsRow.style.fontSize = '11px';
+                    humanRightsRow.style.color = '#39ff14'; 
+                    humanRightsRow.style.fontWeight = 'bold';
+                    humanRightsRow.innerHTML = `⚠️ CANARY-RIGHTS: ${brokenLabel} [${generalViolationsCount}x]`;
+                    canaryContainer.appendChild(humanRightsRow);
+                }
+
+                // Block B: Special Designated Anti-Discrimination Shield Violations with Counter
+                if (shieldDiscriminationBroken) {
+                    const ableismRow = document.createElement('div');
+                    if (shieldHumanRightsBroken || shieldBasicRightsBroken) {
+                        ableismRow.style.borderTop = '1px dashed rgba(57, 255, 20, 0.15)';
+                        ableismRow.style.marginTop = '4px';
+                        ableismRow.style.paddingTop = '4px';
+                    }
+                    ableismRow.style.paddingLeft = '4px';
+                    ableismRow.style.paddingRight = '4px';
+                    ableismRow.style.fontSize = '11px';
+                    ableismRow.style.color = '#39ff14'; 
+                    ableismRow.style.fontWeight = 'bold';
+                    ableismRow.innerHTML = `♿ CANARY-ABLEISM: DISCRIMINATION! [${ableismViolationsCount}x]`;
+                    canaryContainer.appendChild(ableismRow);
+                }
+            } else {
+                canaryPanel.style.display = 'none';
+            }
+        }
+    }
+
+
+
+    function getXYZ(person) {
+        let mask = person.bitmask;
+        let age = person.age;
+        let x = 0;
+        let y = 0;
+        let z = 0;
+        
+        let growthScale = Math.min(age / 12, 1);
+        const goldenRatio = 1.61803398875;
+        let continuousRadius = Math.log(age + 1) * goldenRatio * 8.5;
+        let spiralTheta = 0 + (age * 0.065) + person.familySeed;
+
+        let frameworkScale = 1 + Math.log10(currentScaleMultiplier);
+
+        if (mask & 1) x += 5;
+        if (mask & 16) x += 20;
+        if (mask & 128) x += 20; 
+        x += continuousRadius * Math.cos(spiralTheta);
+
+        if (mask & 2) y += 5;
+        if (mask & 4) y += 10;
+        if (mask & 8) y += 15;
+        if (mask & 128) y += 20; 
+        y += continuousRadius * Math.sin(spiralTheta);
+
+        if (mask & 32) z += 15;
+        if (mask & 64) z += 25;
+        
+        return {
+            x: (x * growthScale * frameworkScale),
+            y: (y * growthScale * frameworkScale),
+            z: (z * growthScale * frameworkScale) + (age * 0.9)
+        };
+    }
+
+    function project(x, y, z) {
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2 + 110;
+        const matrixScale = 3.6; 
+        
+        // Formulate base isometric layout tracking coordinates first
+        let baseIsoX = (x - y) * Math.cos(0.52) * matrixScale;
+        let baseIsoY = (x + y) * Math.sin(0.52) * matrixScale - (z * matrixScale);
+        
+        // Apply camera zoom strictly to spatial coordinates so expansion tracks the center point perfectly
+        let isoX = centerX + (baseIsoX * canvasZoomFactor);
+        let isoY = centerY + (baseIsoY * canvasZoomFactor);
+        
+        return { x: isoX, y: isoY };
+    }
+    canvas.addEventListener('wheel', (event) => {
+        // Stop default browser page scrolls while hovering your canvas environment
+        event.preventDefault();
+
+        // Adjust camera lens focus factor (scrolling up focuses closer, down pulls back)
+        let focusStep = event.deltaY < 0 ? 1.1 : 0.9;
+        let nextZoom = canvasZoomFactor * focusStep;
+
+        // Secure camera lens parameters between 0.1x panorama and 15.0x extreme close-ups
+        if (nextZoom < 0.1) nextZoom = 0.1;
+        if (nextZoom > 15.0) nextZoom = 15.0;
+        canvasZoomFactor = nextZoom;
+        const zoomBtn = document.getElementById('zoom-tracker-btn');
+        if (zoomBtn) {
+            let displayPercent = Math.round(canvasZoomFactor * 100);
+            zoomBtn.innerText = `ZOOM ${displayPercent}%`;
+        }
+        
+
+        // Instantly invoke viewport redraw requests to present smooth camera movements
+        drawGrid();
+        updateSimulation();
+    }, { passive: false });
+
+    // Direct multi-touch mobile pinch gesture to viewport camera zoom conversion routine
+    let initialTouchDistance = null;
+
+    canvas.addEventListener('touchstart', (event) => {
+        // Intercept touch parameters only when exactly two fingers are placed on the canvas mesh
+        if (event.touches.length === 2) {
+            let t1 = event.touches[0];
+            let t2 = event.touches[1];
+            initialTouchDistance = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+        }
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (event) => {
+        if (event.touches.length === 2 && initialTouchDistance !== null) {
+            // Prevent default mobile browser elastic overscroll page rubber-banding
+            event.preventDefault();
+
+            let t1 = event.touches[0];
+            let t2 = event.touches[1];
+            let currentTouchDistance = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+
+            if (currentTouchDistance > 0) {
+                // Determine the fluid ratio of touch motion tracking steps
+                let touchScaleRatio = currentTouchDistance / initialTouchDistance;
+                let nextTouchZoom = canvasZoomFactor * (1 + (touchScaleRatio - 1) * 0.4);
+
+                // Secure mobile camera parameters between 0.1x panorama and 15.0x extreme close-ups
+                if (nextTouchZoom < 0.1) nextTouchZoom = 0.1;
+                if (nextTouchZoom > 15.0) nextTouchZoom = 15.0;
+
+                canvasZoomFactor = nextTouchZoom;
+                initialTouchDistance = currentTouchDistance;
+
+                // Dynamically update the top overlay telemetry button using your custom layout string format
+                const zoomBtn = document.getElementById('zoom-tracker-btn');
+                if (zoomBtn) {
+                    let displayPercent = Math.round(canvasZoomFactor * 100);
+                    zoomBtn.innerText = `ZOOM ${displayPercent}%`;
+                }
+
+                // Instantly invoke viewport redraw requests to present smooth camera movements
+                drawGrid();
+                updateSimulation();
+            }
+        }
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', (event) => {
+        // Clear active distance tracking layers when fingers lift away from screen surface
+        if (event.touches.length < 2) {
+            initialTouchDistance = null;
+        }
+    }, { passive: true });
+    
+    
+    function drawGrid() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = '#141b26';
+        ctx.lineWidth = 1;
+        
+        let origin = project(0, 0, 0);
+        let xAxis = project(180, 0, 0);
+        let yAxis = project(0, 40, 0);
+        let zAxis = project(0, 0, 160);
+        
+        ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(xAxis.x, xAxis.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(yAxis.x, yAxis.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(zAxis.x, zAxis.y); ctx.stroke();
+        
+        ctx.strokeStyle = '#0a0e17';
+        for (let r = 20; r <= 160; r += 35) {
+            ctx.beginPath();
+            ctx.arc(origin.x, origin.y - (r * 0.5), r * 1.5, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        if (showSpirals) {
+            ctx.lineWidth = 0.75;
+            families.forEach((familyName, fId) => {
+                let familySeed = fId * 1.45;
+                ctx.strokeStyle = fId === 1 ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.08)';
+                ctx.beginPath();
+                
+                for (let testAge = 0; testAge <= 80; testAge += 1) {
+                    let testMask = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128;
+                    
+                    let spaceExpansionFactor = 1.0;
+                    if (testMask & 1) spaceExpansionFactor *= 1.1;
+                    if (testMask & 16) spaceExpansionFactor *= 1.25;
+                    if (testMask & 128) spaceExpansionFactor *= 1.4;
+
+                    let internalMoralForce = 1.0;
+                    if (testMask & 2) internalMoralForce += 0.5;
+                    if (testMask & 4) internalMoralForce += 1.0;
+                    if (testMask & 8) internalMoralForce += 1.5;
+
+                    const goldenRatio = 1.61803398875;
+                    let continuousRadius = Math.log(testAge + 1) * goldenRatio * 8.5; 
+                    let spiralTheta = 0 + (testAge * 0.065) + familySeed; 
+                    let frameworkScale = 1 + Math.log10(currentScaleMultiplier);
+                    let growthScale = Math.min(testAge / 12, 1);
+                    let sX = (((testMask & 1) ? 5 : 0) + ((testMask & 16) ? 20 : 0) + ((testMask & 128) ? 20 : 0) + (continuousRadius * Math.cos(spiralTheta))) * growthScale * frameworkScale;
+                    let sY = (((testMask & 2) ? 5 : 0) + ((testMask & 4) ? 10 : 0) + ((testMask & 8) ? 15 : 0) + ((testMask & 128) ? 20 : 0) + (continuousRadius * Math.sin(spiralTheta))) * growthScale * frameworkScale;
+                    let sZ = ((((testMask & 32) ? 15 : 0) + ((testMask & 64) ? 25 : 0)) * growthScale * frameworkScale) + (testAge * 0.9);
+
+                    let pt = project(sX, sY, sZ);
+                    if (testAge === 0) ctx.moveTo(pt.x, pt.y);
+                    else ctx.lineTo(pt.x, pt.y);
+                }
+                ctx.stroke();
+            });
+        }
+
+        if (typeof people !== 'undefined') {
+            let activeInstigators = people.filter(p => p.age >= 0 && p.isPinkInstigator);
+            let currentFatalities = fatalityHistoryWindow.reduce((sum, val) => sum + val, 0);
+            let calculatedLevel = currentFatalities >= 75 ? 4 : (currentFatalities >= 60 ? 3 : (currentFatalities >= 30 ? 2 : 1));
+
+            // A: DRAW PINK POPPERIAN EXTRA-STRICT TARGET MATRIX 
+            activeInstigators.forEach((node) => {
+                let fId = families.indexOf(node.family);
+                if (fId === -1) fId = 0;
+                let familySeed = fId * 1.45;
+
+                const goldenRatio = 1.61803398875;
+                let continuousRadius = Math.log(node.age + 1) * goldenRatio * 8.5; 
+                let spiralTheta = 0 + (node.age * 0.065) + familySeed; 
+                let frameworkScale = 1 + Math.log10(currentScaleMultiplier);
+                let growthScale = Math.min(node.age / 12, 1);
+
+                let sX = (20 + 20 + (continuousRadius * Math.cos(spiralTheta))) * growthScale * frameworkScale;
+                let sY = (5 + 10 + 15 + 20 + (continuousRadius * Math.sin(spiralTheta))) * growthScale * frameworkScale;
+                let sZ = ((15 + 25) * growthScale * frameworkScale) + (node.age * 0.9);
+
+                let pt = typeof project === 'function' ? project(sX, sY, sZ) : null;
+
+                if (pt && typeof pt.x === 'number' && typeof pt.y === 'number') {
+                    ctx.save(); 
+
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 4 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ff1493'; // Deep Shocking Pink Sphere Core
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 10 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#ff1493'; 
+                    ctx.lineWidth = 1.75;
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    if (calculatedLevel > 2) {
+                        ctx.beginPath();
+                        ctx.arc(pt.x, pt.y, 18 * canvasZoomFactor, 0, Math.PI * 2);
+                        ctx.strokeStyle = 'rgba(255, 20, 147, 0.45)'; 
+                        ctx.lineWidth = 1.25;
+                        ctx.stroke();
+                        ctx.closePath();
+                    }
+
+                    ctx.restore(); 
+                }
+            });
+
+
+            let canaryNodes = people.filter(p => p.age >= 0 && p.isCanaryAlert);
+            canaryNodes.forEach((node) => {
+                let targetX = node.screenX || (node.pt ? node.pt.x : null) || (typeof getIsometricCoords === 'function' ? getIsometricCoords(node).x : null);
+                let targetY = node.screenY || (node.pt ? node.pt.y : null) || (typeof getIsometricCoords === 'function' ? getIsometricCoords(node).y : null);
+
+                if (targetX && targetY) {
+                    // Safety check: Skip drawing if this specific alert is purely a physical collision and halos are disabled
+                    if (node.hasVisualCollision && (typeof isHaloOverlayActive !== 'undefined' && !isHaloOverlayActive)) {
+                        // Check if they also have a broken rights bit; if they don't, skip rendering entirely
+                        let hasTrueViolation = ((node.bitmask & 2) === 0 || (node.bitmask & 4) === 0 || (node.bitmask & 32) === 0);
+                        if (!hasTrueViolation) return;
+                    }
+
+                    ctx.save(); 
+
+                    ctx.beginPath();
+                    ctx.arc(targetX, targetY, 4 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.fillStyle = '#39ff14'; // Bright Neon Green Core Sphere
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(targetX, targetY, 10 * canvasZoomFactor, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(57, 255, 20, 0.85)'; // Neon Green Protective Tracking Ring
+                    ctx.lineWidth = 1.75;
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.restore(); 
+                }
+            });
+
+        }        
+    }
+
+
+    function updateSimulation() {
+        drawGrid();
+        
+        // --- CONTINUOUS ROTATIONAL TICK DRIVER ---
+        if (typeof isRunning !== 'undefined' && isRunning && activeViewTopologyMode === '3d') {
+            globalGlobeRotationAngle += 0.006 * (currentSpeedMultiplier || 1);
+        }
+        
+        // --- REAL-TIME AGE MATRIX CALCULATOR ---
+        if (people.length > 0) {
+            let activeAges = people.map(p => p.age).filter(a => a >= 0).sort((a, b) => a - b);
+            if (activeAges.length > 0) {
+                let minAge = activeAges[0];
+                let maxAge = activeAges[activeAges.length - 1];
+                let medianAge;
+                let midIndex = Math.floor(activeAges.length / 2);
+                
+                if (activeAges.length % 2 === 0) {
+                    medianAge = (activeAges[midIndex - 1] + activeAges[midIndex]) / 2;
+                } else {
+                    medianAge = activeAges[midIndex];
+                }
+                
+                if (document.getElementById('meta-age-min')) document.getElementById('meta-age-min').innerText = minAge.toFixed(1);
+                if (document.getElementById('meta-age-med')) document.getElementById('meta-age-med').innerText = medianAge.toFixed(1);
+                if (document.getElementById('meta-age-max')) document.getElementById('meta-age-max').innerText = maxAge.toFixed(1);
+            }
+        }
+
+        let sortedPopulation = [...people].sort((a, b) => {
+            let posA = getXYZ(a);
+            let posB = getXYZ(b);
+            return (posA.x + posA.y) - (posB.x + posB.y);
+        });
+
+        sortedPopulation.forEach((person) => {
+            let isTargeted = (typeof selectedPersonId !== 'undefined' && person.id === selectedPersonId);
+            
+            // --- DYNAMIC GEOMETRY PROJECTION HOOK ---
+            let pt = calculateUniversalProjection(person);
+            if (!pt || typeof pt.x !== 'number' || typeof pt.y !== 'number') return;
+            
+            if (person.bitmask === 0) {
+                // Track dead people: Project a prominent targeting line if this dead node is selected
+                if (isTargeted) {
+                    ctx.strokeStyle = '#b7791f'; 
+                    ctx.lineWidth = 1.5;
+                    
+                    let heightZ = activeViewTopologyMode === '3d' ? pt.y : (person.age * 0.9);
+                    let spinePt = project(0, 0, activeViewTopologyMode === '2d' ? 0 : heightZ);
+                    
+                    ctx.beginPath(); ctx.moveTo(spinePt.x, spinePt.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
+                    
+                    ctx.fillStyle = '#ff00aa'; 
+                    ctx.shadowColor = '#ff00aa';
+                    ctx.shadowBlur = 14;
+                    ctx.beginPath(); ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2); ctx.fill();
+                    ctx.shadowBlur = 0;
+                    
+                    updateInspector(person, { x: pt.x, y: pt.y, z: 0 });
+                } else {
+                    ctx.fillStyle = '#718096'; 
+                    ctx.beginPath(); ctx.arc(pt.x, pt.y, 2.5, 0, Math.PI * 2); ctx.fill();
+                }
+                return;
+            }
+
+            ctx.strokeStyle = isTargeted ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.03)';
+            ctx.lineWidth = 0.5;
+            
+            let currentZ = activeViewTopologyMode === '3d' ? pt.y : (person.age * 0.9);
+            let originPt = project(0, 0, activeViewTopologyMode === '2d' ? 0 : currentZ);
+            ctx.beginPath(); ctx.moveTo(originPt.x, originPt.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
+
+            if (isTargeted) {
+                ctx.fillStyle = '#f6e05e';
+                ctx.shadowColor = '#f6e05e';
+                ctx.shadowBlur = 12;
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 7, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0; 
+                
+                let rawCoords = getXYZ(person) || {x: 0, y: 0, z: 0};
+                updateInspector(person, rawCoords);
+            } else {
+                let baseColorRGB = "72, 187, 120"; 
+                
+                if (!rationalDefenseActive && person.isIntolerant) {
+                    baseColorRGB = "255, 0, 170"; 
+                } else if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
+                    baseColorRGB = "229, 62, 62";  
+                } else if (!(person.bitmask & 8) || (!(person.bitmask & 64) && person.age >= 8) || (!(person.bitmask & 128) && person.age >= 35) || !(person.bitmask & 256)) {
+                    baseColorRGB = "237, 137, 54"; 
+                }
+
+                if (person.age <= 2.0) {
+                    let blendRatio = Math.max(0, (2.0 - person.age) / 2.0);
+                    let rgbParts = baseColorRGB.split(',');
+                    
+                    let targetRed   = Math.round((255 * blendRatio) + (parseInt(rgbParts[0]) * (1 - blendRatio)));
+                    let targetGreen = Math.round((255 * blendRatio) + (parseInt(rgbParts[1]) * (1 - blendRatio)));
+                    let targetBlue  = Math.round((255 * blendRatio) + (parseInt(rgbParts[2]) * (1 - blendRatio)));
+                    
+                    ctx.fillStyle = `rgb(${targetRed}, ${targetGreen}, ${targetBlue})`;
+                } else {
+                    ctx.fillStyle = `rgb(${baseColorRGB})`;
+                }
+                
+                let isCarrier = (!rationalDefenseActive && person.isIntolerant);
+                let radius = (isCarrier ? 4.0 : 2.5) + (person.age * 0.05);
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
+            }
+        });
+    }
+
+
+
+    function updateSimulationOld() {
+        drawGrid();
+        
+        // --- REAL-TIME AGE MATRIX CALCULATOR ---
+        if (people.length > 0) {
+            // Filter out waiting tokens in the birth queue to keep age telemetry metrics running accurately
+            let activeAges = people.map(p => p.age).filter(a => a >= 0).sort((a, b) => a - b);
+            if (activeAges.length > 0) {
+                let minAge = activeAges[0];
+                let maxAge = activeAges[activeAges.length - 1];
+                let medianAge;
+                let midIndex = Math.floor(activeAges.length / 2);
+                
+                if (activeAges.length % 2 === 0) {
+                    medianAge = (activeAges[midIndex - 1] + activeAges[midIndex]) / 2;
+                } else {
+                    medianAge = activeAges[midIndex];
+                }
+                
+                if (document.getElementById('meta-age-min')) document.getElementById('meta-age-min').innerText = minAge.toFixed(1);
+                if (document.getElementById('meta-age-med')) document.getElementById('meta-age-med').innerText = medianAge.toFixed(1);
+                if (document.getElementById('meta-age-max')) document.getElementById('meta-age-max').innerText = maxAge.toFixed(1);
+            }
+        }
+
+        let sortedPopulation = [...people].sort((a, b) => {
+            let posA = getXYZ(a);
+            let posB = getXYZ(b);
+            return (posA.x + posA.y) - (posB.x + posB.y);
+        });
+
+        sortedPopulation.forEach((person) => {
+            // Check selection lock using unique object ID parity instead of array position references
+            let isTargeted = (typeof selectedPersonId !== 'undefined' && person.id === selectedPersonId);
+            
+            // FIXED: Automatically maps framework scale layers across ghost transitions to avoid layout drift
+            if (person.bitmask === 0) {
+                const goldenRatio = 1.61803398875;
+                
+                // SMOOTH STAGGER: Incorporate the locked lane offset into the dead ghost radius calculation
+                let laneOffset = person.orbitalScatterOffset !== undefined ? person.orbitalScatterOffset : 0;
+                let deadRadius = (Math.log(person.age + 1) * goldenRatio * 8.5) + laneOffset;
+                
+                let deadTheta = person.individualTheta + (person.age * 0.065) + person.familySeed;
+                let frameworkScale = 1 + Math.log10(currentScaleMultiplier);
+                let growthScale = Math.min(person.age / 12, 1);
+                
+                let ghostX = deadRadius * Math.cos(deadTheta) * growthScale * frameworkScale;
+                let ghostY = deadRadius * Math.sin(deadTheta) * growthScale * frameworkScale;
+                let ghostZ = person.age * 0.9; // Synchronized height step progression constant
+                
+                let pt = project(ghostX, ghostY, ghostZ);
+                
+                // Track dead people: Project a prominent targeting line if this dead node is selected
+                if (isTargeted) {
+                    ctx.strokeStyle = '#b7791f'; // Deep amber line to track selected dead node
+                    ctx.lineWidth = 1.5;
+                    let spinePt = project(0, 0, ghostZ);
+                    ctx.beginPath(); ctx.moveTo(spinePt.x, spinePt.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
+                    
+                    ctx.fillStyle = '#ff00aa'; // Highlight selected dead particle in Alert Pink
+                    ctx.shadowColor = '#ff00aa';
+                    ctx.shadowBlur = 14;
+                    ctx.beginPath(); ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2); ctx.fill();
+                    ctx.shadowBlur = 0;
+                    updateInspector(person, { x: ghostX, y: ghostY, z: ghostZ });
+                } else {
+                    ctx.fillStyle = '#718096'; // Standard GREY: Transitionary death phase
+                    ctx.beginPath(); ctx.arc(pt.x, pt.y, 2.5, 0, Math.PI * 2); ctx.fill();
+                }
+                return;
+            }
+
+            let coords = getXYZ(person);
+            
+            // SMOOTH STAGGER: Read the birth lane offset parameters and apply them directly to living coordinates
+            if (person.orbitalScatterOffset !== undefined && coords) {
+                let currentAngle = Math.atan2(coords.y, coords.x);
+                coords.x += Math.cos(currentAngle) * person.orbitalScatterOffset;
+                coords.y += Math.sin(currentAngle) * person.orbitalScatterOffset;
+            }
+
+            let pt = project(coords.x, coords.y, coords.z);
+            
+            ctx.strokeStyle = isTargeted ? 'rgba(159, 122, 234, 0.25)' : 'rgba(49, 130, 206, 0.03)';
+            ctx.lineWidth = 0.5;
+            let originPt = project(0, 0, coords.z);
+            ctx.beginPath(); ctx.moveTo(originPt.x, originPt.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
+
+            if (isTargeted) {
+                ctx.fillStyle = '#f6e05e';
+                ctx.shadowColor = '#f6e05e';
+                ctx.shadowBlur = 12;
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 7, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 0; 
+                updateInspector(person, coords);
+            } else {
+                let baseColorRGB = "72, 187, 120"; 
+                
+                // FIXED: Checks the node's Intolerant state universally across all spacetime eras
+                if (!rationalDefenseActive && person.isIntolerant) {
+                    baseColorRGB = "255, 0, 170"; // Sharp Neon Accent Pink for active intolerant carriers
+                } else if (!(person.bitmask & 1) || !(person.bitmask & 2) || !(person.bitmask & 4)) {
+                    baseColorRGB = "229, 62, 62";  
+                } else if (!(person.bitmask & 8) || (!(person.bitmask & 64) && person.age >= 8) || (!(person.bitmask & 128) && person.age >= 35) || !(person.bitmask & 256)) {
+                    baseColorRGB = "237, 137, 54"; 
+                }
+
+                if (person.age <= 2.0) {
+                    let blendRatio = Math.max(0, (2.0 - person.age) / 2.0);
+                    
+                    let targetRed   = Math.round((255 * blendRatio) + (parseInt(baseColorRGB.split(',')[0]) * (1 - blendRatio)));
+                    let targetGreen = Math.round((255 * blendRatio) + (parseInt(baseColorRGB.split(',')[1]) * (1 - blendRatio)));
+                    let targetBlue  = Math.round((255 * blendRatio) + (parseInt(baseColorRGB.split(',')[2]) * (1 - blendRatio)));
+                    
+                    ctx.fillStyle = `rgb(${targetRed}, ${targetGreen}, ${targetBlue})`;
+                } else {
+                    ctx.fillStyle = `rgb(${baseColorRGB})`;
+                }
+                
+                // FIXED: Automatically inflates the radius for active carriers across any active era
+                let isCarrier = (!rationalDefenseActive && person.isIntolerant);
+                let radius = (isCarrier ? 4.0 : 2.5) + (person.age * 0.05);
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2); ctx.fill();
+            }
+        });
+    }
+
+
+    function updateInspector(person, coords) {
+        document.getElementById('no-selection').style.display = 'none';
+        document.getElementById('inspector-content').style.display = 'block';
+        
+        // Grab the name element from the DOM to modify layout context dynamically
+        const nameEl = document.getElementById('ins-name');
+        if (nameEl) {
+            // Verify if the active unit satisfies the instigator strain parameters
+            if (person.age >= 12 && person.isPinkInstigator) {
+                nameEl.innerText = `Instigator #${person.id}`;
+                nameEl.style.color = '#ff1493'; // Shocking Pink accent matrix
+            } else {
+                nameEl.innerText = `Individual #${person.id}`;
+                nameEl.style.color = '#63b3ed'; // Restores clean standard blue baseline profile
+            }
+        }
+        
+        document.getElementById('ins-family').innerText = person.family;
+        document.getElementById('ins-age').innerText = Math.floor(person.age);
+        document.getElementById('ins-coords').innerText = `X:${Math.round(coords.x)}, Y:${Math.round(coords.y)}, Z:${Math.round(coords.z)}`;
+        
+        const list = document.getElementById('pillars-list');
+        list.innerHTML = '';
+        
+        pillarNames.forEach(p => {
+            const isActive = (person.bitmask & p.bit) !== 0;
+            const div = document.createElement('div');
+            div.className = `pillar ${isActive ? 'active' : 'inactive'}`;
+            div.innerHTML = `<span>${p.name}</span><span>${isActive ? 'INTACT' : 'STRIPPED'}</span>`;
+            list.appendChild(div);
+        });
+    }
+
+
+
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const clickX = (e.clientX - rect.left) * dpr;
+        const clickY = (e.clientY - rect.top) * dpr;
+        
+        let closestId = -1;
+        let minDist = 99999;
+        const staticPopulationSample = [...people];
+        
+        staticPopulationSample.forEach((person) => {
+            let coords = getXYZ(person);
+            let pt = project(coords.x, coords.y, coords.z);
+            let dist = Math.hypot(pt.x - clickX, pt.y - clickY);
+            if (person.age >= 12 && person.isPinkInstigator) {
+                dist = dist * 0.2; // Shrinks distance value mathematically to force a hit match
+            }            
+            if (dist < minDist) {
+                minDist = dist;
+                closestId = person.id; // Store unique ID instead of array index
+            }
+        });
+        
+        let adaptiveThreshold = (45 * dpr) / canvasZoomFactor;
+        if (minDist < adaptiveThreshold && closestId !== -1) { 
+            selectedPersonId = closestId; // Save to permanent global identifier state
+			let lockedPerson = people.find(p => p.id === selectedPersonId);
+	        if (lockedPerson) {
+		        const nameEl = document.getElementById('ins-name');
+			    if (nameEl) {
+				    if (lockedPerson.age >= 12 && lockedPerson.isPinkInstigator) {
+					    nameEl.innerText = `Instigator #${lockedPerson.id}`;
+						nameEl.style.color = '#ff1493'; // Pink overwrite for click event pass tracking
+					} else {
+						nameEl.innerText = `Individual #${lockedPerson.id}`;
+	                    nameEl.style.color = '#63b3ed'; // Standard profile rollback
+		            }
+			    }
+
+                const statusEl = document.getElementById('log-filter-status');
+                if (statusEl) {
+                    statusEl.innerText = `LOCK: ID #${lockedPerson.id} & LINEAGE`;
+                    statusEl.style.color = '#9f7aea';
+                }
+                
+                // Retrospectively filter logs current sitting in the terminal stream on lock engagement
+                const existingLogs = document.querySelectorAll('.log-entry');
+                existingLogs.forEach(log => {
+                    const logId = log.getAttribute('data-person-id');
+                    const logFamily = log.getAttribute('data-person-family');
+                    
+                    if (logId !== null || logFamily !== null) {
+                        if (parseInt(logId) === lockedPerson.id || logFamily === lockedPerson.family) {
+                            log.style.display = 'block';
+                        } else {
+                            log.style.display = 'none';
+                        }
+                    }
+                });
+
+                pushLog(`TELEMETRY LOCK ENGAGED: Isolating data strings for Individual #${lockedPerson.id} and the ${lockedPerson.family}.`, 'log-lock', lockedPerson.id, lockedPerson.family);
+            }
+            drawGrid();
+            updateSimulation();
+        }
+    });
+
+
+
+    function clearSelection() {
+        selectedPersonId = -1;
+        document.getElementById('no-selection').style.display = 'block';
+        document.getElementById('inspector-content').style.display = 'none';
+        document.getElementById('log-filter-status').innerText = `FILTER: GLOBAL`;
+        document.getElementById('log-filter-status').style.color = '#4a5568';
+        const logs = document.querySelectorAll('.log-entry');
+        logs.forEach(log => log.style.display = 'block');
+        pushLog("TELEMETRY UNLOCKED: Global telemetry chatter stream restored.", "log-shift");
+        updateSimulation();
+    }
+
+
+    function toggleSpiralField() {
+        showSpirals = !showSpirals;
+        const btn = document.getElementById('spiral-btn');
+        if (showSpirals) {
+            btn.classList.add('active-mode');
+            btn.innerText = "Hide Majestic Spirals";
+            pushLog("VISUALIZER MATRIX: Majestic structural Fibonacci rails projected onto grid.", "log-shift");
+        } else {
+            btn.classList.remove('active-mode');
+            btn.innerText = "Show Majestic Spirals";
+            pushLog("VISUALIZER MATRIX: Continuous geometric curves hidden.", "log-shift");
+        }
+        updateSimulation();
+    }
+
+    function togglePlay() {
+        isRunning = !isRunning;
+        const btn = document.getElementById('play-btn');
+        if (btn) {
+            if (isRunning) {
+                btn.innerText = "Halt Spacetime Loop";
+                // Lock the active button borders directly onto your custom hot Neon Pink color profile!
+                btn.style.background = "rgba(255, 0, 170, 0.2)";
+                btn.style.borderColor = "#ff00aa";
+                btn.style.color = "#ff00aa";
+                executionLoop();
+            } else {
+                btn.innerText = "Engage Spacetime Loop";
+                // Smoothly rolls back to clean default outline state parameters when frozen
+                btn.style.background = "transparent";
+                btn.style.borderColor = "#00f0ff";
+                btn.style.color = "#00f0ff";
+            }
+        }
+    }
+
+    function togglePlayOld() {
+        isPlaying = !isPlaying;
+        document.getElementById('play-btn').innerText = isPlaying ? "Halt Spacetime Loop" : "Engage Spacetime Loop";
+        if (isPlaying) executionLoop();
+    }
+
+
+    function changeSimulation() {
+        currentSimType = document.getElementById('sim-select').value;
+        let profileName = document.getElementById('sim-select').options[document.getElementById('sim-select').selectedIndex].text;
+        pushLog(`%c%cEPOCH RESET: Rules shifted to [${profileName}].`, 'color: #00f0ff; font-weight: bold;');
+        
+        // Flushes past generational scarring states and forces clean historical vectors
+        people.forEach((person) => {
+            person.isIntolerant = false;  // Purges all historical virus traces completely
+            person.permanentScars = 0;   // Wipes previous physical/psychological scars
+            person.lastBitmask = 0;      // Breaks old bit states to force fresh engine evaluations
+        });
+
+        // Patient Zero Universal Injection Vector
+        // FIXED: Explicitly assigns the ignition state to individual Node #0 instead of the parent array container
+        if (currentSimType === 'tolerance-paradox' && people.length > 0) {
+            people[0].isIntolerant = true; // Targets the first person node directly inside the collection loop
+            pushLog('Ideological strain tracking active. Patient Zero injected at Vector Node #1.', 'log-threat');
+        }
+
+        clearSelection(); 
+        updateSimulation();
+    }
+
+
+    function changeScaleMultiplier() {
+        currentScaleMultiplier = parseFloat(document.getElementById('scale-select').value);
+        pushLog(`Continuum scale matrix expanded to [${currentScaleMultiplier}x].`, 'log-shift');
+        
+        // Dynamic dashboard refresh to instantly catch scale value text transformations
+        if (document.getElementById('victim-count')) {
+            let displayedTotal = people.length * currentScaleMultiplier;
+            // The display text adjusts smoothly using your current loop results
+            document.getElementById('victim-count').innerText = `0 / ${displayedTotal.toLocaleString()}`;
+        }
+        
+        drawGrid();
+        if (typeof updateSimulation === 'function') {
+            updateSimulation();
+        }
+    }
+
+    function changeSimulationSpeed() {
+        currentSpeedMultiplier = parseFloat(document.getElementById('speed-select').value);
+        pushLog(`Temporal frequency pacing shifted to [${currentSpeedMultiplier}x].`, 'log-shift');
+    }
+
+    function changeBirthRateDensity() {
+        currentBirthProbability = parseFloat(document.getElementById('birth-select').value);
+        pushLog(`Generational birth flux density calibrated to [${Math.round(currentBirthProbability * 100)}%].`, 'log-shift');
+    }
+    
+    function resetCameraZoom() {
+        canvasZoomFactor = 1.5;
+        
+        // Restore your exact baseline layout string format on mouse clicks
+        const zoomBtn = document.getElementById('zoom-tracker-btn');
+        if (zoomBtn) {
+            zoomBtn.innerText = "150% ZOOM [RESET]";
+        }
+        
+        pushLog("Viewport camera matrix returned to 1:1 baseline focus.", 'log-shift');
+        drawGrid();
+        updateSimulation();
+    }
+
+    function cycleToleranceMode() {
+        // Exact requested routing sequence map: 1 -> 2 -> 0 -> 1 ...
+        // Auto (2) cleanly transitions off into Limited (0) on your very first click!
+        const transitionSequence = { 1: 2, 2: 0, 0: 1 };
+        toleranceMode = transitionSequence[toleranceMode];
+    
+        const btn = document.getElementById('defense-toggle-btn');
+        const alertOverlay = document.getElementById('collapse-alert-overlay');
+        if (!btn) return;
+
+        // MODE 0: LIMITED TOLERANCE
+        if (toleranceMode === 0) {
+            autoTriggeredUnlimited = false;
+            rationalDefenseActive = true;
+            btn.style.background = 'rgba(72, 187, 120, 0.2)';
+            btn.style.borderColor = '#48bb78';
+            btn.style.color = '#48bb78';
+            btn.innerText = 'PARADOX 0';
+        
+            // Popper Theoretical Purge: Actively cleanses indoctrination from active population matrices
+            people.forEach(p => p.isIntolerant = false);
+            if (document.getElementById('tolerance-count')) document.getElementById('tolerance-count').innerText = "";
+            if (document.getElementById('tolerance-pct')) document.getElementById('tolerance-pct').innerText = "0%";
+            pushLog('Popperian limit active: Defensive mode engaged. Intolerant strain wiped.', 'log-lock');
+        } 
+        // MODE 1: UNLIMITED TOLERANCE
+        else if (toleranceMode === 1) {
+            autoTriggeredUnlimited = true;
+            rationalDefenseActive = false;
+            btn.style.background = 'rgba(229, 62, 62, 0.2)';
+            btn.style.borderColor = '#e53e3e';
+            btn.style.color = '#fc8181';
+            btn.innerText = 'PARADOX 1';
+        
+            // Frame 1 Instantiation: Inject ideological strain to unblock tracking mechanics
+            const targetNode = people.find(p => p.id === 42);
+            if (targetNode) {
+                targetNode.isIntolerant = true;
+            }
+            pushLog('Popperian limit dropped: Manual override active. Target Node #42 tracked.', 'log-threat');
+        } 
+        // MODE 2: AUTO TOLERANCE
+        else if (toleranceMode === 2) {
+            autoTriggeredUnlimited = false;
+            rationalDefenseActive = false;
+            btn.style.background = 'rgba(0, 240, 255, 0.15)';
+            btn.style.borderColor = '#00f0ff';
+            btn.style.color = '#00f0ff';
+            btn.innerText = 'PARADOX A';
+            pushLog('Automated Popper Interceptor: Boundary gates will trip automatically at 35% systemic stress.', 'log-lock');
+        }
+    
+        // Repaint canvas and graphics matrices instantly
+        drawGrid();
+        updateSimulation();
+    }
+
+    function resetFatalityTally() {
+        globalSystemicFatalities = 0;
+        globalTotalCompletions = 0; 
+        fatalityHistoryWindow = [];
+        autoTriggeredUnlimited = false;
+
+        // Instantly push the reset baselines to the active dashboard UI text spans
+        if (document.getElementById('systemic-death-count')) {
+            document.getElementById('systemic-death-count').innerText = "0 / 100";
+        } 
+        if (document.getElementById('generations-count')) {
+            document.getElementById('generations-count').innerText = "0";
+        }
+        if (document.getElementById('collapse-alert-overlay')) {
+            document.getElementById('collapse-alert-overlay').style.display = 'none';
+        }        
+        pushLog("Historical telemetry tracking scoreboards flushed to zero vector.", "log-shift");
+    }    
+
+    function toggleCanarySystem() {
+        isCanaryActive = !isCanaryActive;
+        const btn = document.getElementById('canary-toggle-btn');
+        
+        if (btn) {
+            if (isCanaryActive) {
+                // System Enabled: Binary [1] turns on your protective canary gold profile
+                btn.innerText = "CANARY 1";
+                btn.style.background = "#ecc94b";
+                btn.style.color = "#1a202c";
+                btn.style.borderColor = "#ecc94b";
+                btn.style.boxShadow = "0 0 8px rgba(236, 201, 75, 0.3)";
+                pushLog("EXISTENZ CANARY INITIALIZED [STATE: 1]: Telemetry link active.", "log-shift");
+            } else {
+                // System Disabled: Reverts back to baseline state with the binary [0] flag
+                btn.innerText = "CANARY 0";
+                btn.style.background = "transparent";
+                btn.style.color = "#e53e3e";
+                btn.style.borderColor = "#e53e3e";
+                btn.style.boxShadow = "none";
+                pushLog("EXISTENZ CANARY DETACHED [STATE: 0]: Accountability metrics blinded.", "log-threat");
+            }
+        }
+        
+        // Force the graphics rendering engines to instantly repaint the screen state
+        drawGrid();
+        updateSimulation();
+    }    
+    
+    function executionLoop() {
+        if (!isRunning) return; // Safely halts calculations if play state permiso is flipped off
+        processLifecycle();
+        updateSimulation();
+        
+        setTimeout(() => { 
+            requestAnimationFrame(executionLoop); 
+        }, 12 / currentSpeedMultiplier); 
+    }
+
+
+
+
+    window.addEventListener('load', () => {
+        initPopulation();
+        const spiralBtn = document.getElementById('spiral-btn');
+        if (spiralBtn) {
+            spiralBtn.classList.add('active-mode');
+            spiralBtn.innerText = "Hide Majestic Spirals";
+        }
+        pushLog(`Existenz Space-Time Matrix online. ${currentPopulationScale} multiversal timelines activated.`, "log-birth");
+    
+        if (typeof autoScaleViewportResolution === 'function') {
+            autoScaleViewportResolution();
+        } else {
+            updateSimulation();
+        }
+
+        // Fire the calculation frames natively right at bootstrap time!
+		togglePlay();
+		isRunning = true;executionLoop();
+
+        // The loading screen shield simply melts away automatically in the background
+        setTimeout(() => {
+            try {
+                const loader = document.getElementById('loading-universe');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => { 
+                        loader.style.visibility = 'hidden'; 
+                    }, 1200);
+                }
+            } catch(e) { 
+                pushLog("Viewport bootstrap anomaly bypassed.", "log-threat"); 
+            }
+        }, 1600);
+		setTimeout(() => { isRunning = true;executionLoop(); }, 1200);
+    });
+
+
+
+</script>
+</body>
+</html>
