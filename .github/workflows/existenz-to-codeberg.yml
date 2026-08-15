@@ -2,7 +2,7 @@ name: Sync to Codeberg
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
     tags: [ "*" ]
 
 jobs:
