@@ -1,5 +1,5 @@
 ####
-## You don't have to agree with my coding, but atleast you could agree upon the framework. Atleast, I tried. 
+## You don't have to agree with my coding, but atleast you could agree upon the framework. Atleast, I tried. v0.76h
 ####
 
 from enum import IntFlag
