@@ -4,7 +4,7 @@
 # Released under strict Non-Commercial Open-Source License terms.
 # Commercial use requires immediate written license and explicit payment.
 # ==========================================================================
-# VERSION: v0.76g
+# VERSION: v0.76h
 #
 from enum import IntFlag
 class existentialCoreThreat(IntFlag):
