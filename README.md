@@ -1,7 +1,7 @@
 # The Birth of Human Rights and Existential Survival in Mathematical Form
 
-*Modified:* 2026-08-09 | *Created in Public:* 2026-06-20
-*Research Project Proposal:* PROJECT EXISTENZ  v0.76a
+*Modified:* 2026-08-15 | *Created in Public:* 2026-06-20
+*Research Project Proposal:* PROJECT EXISTENZ  v0.76h
 *Subtitle:* Stateless Event-Driven 128-Bit Matrix for Low-Power Existential Forensic Reporting/Recording  
 *Principal Architect:* Gunther Voet (existenz@xsrv.net)  
 *Target Research Group:* Distributed Systems Engineering / Applied Cryptography and Privacy Labs  
@@ -16,7 +16,7 @@ To read thousands of books in one's youth is not a passive act of consumption; i
 
 But at what cost? Carrying this inheritance while navigating an unfair world is a heavy burden.
 
-Since 2012, I have watched bad actors, corporate entities and thousands of targeted threats try to exploit my AuDHD (Autism + ADHD) intelligence. They plundered me from my lifework by stealing the hard disks from my server in a hosting center in Amsterdam and hiding it under the shroud of ableism. Not only that, but they looked at a hyper-systemizing mind and saw an asset to strip, dry, and plunder. They started to attack me through the internet again, since 5 years ago, because they saw a second opportunity, facilitated by a sleeping government.
+Since 2012, I have watched bad actors, corporate entities and thousands of targeted threats try to exploit my AuDHD (Autism + ADHD) intelligence. They plundered me from my lifework by stealing the hard disks from my server in a hosting center in Amsterdam and hiding it under the shroud of ableism. Not only that, but they looked at a hyper-systemizing mind and saw an asset to strip, dry and plunder. They started to attack me through the internet again, since 5 years ago, because they saw a second opportunity, facilitated by a sleeping government.
 
 When the physical world fails you completely and when the legal systems designed to protect you turn out to be nothing but flexible, corruptible words, you are forced into the deepest quest for inner introspection. You must look inside your own consciousness and ask: *Where does absolute truth hide when humanity refuses to speak it?*
 
@@ -107,7 +107,7 @@ Because in my 128-bit architecture, look at the precise spatial tracking of the 
 
 Why some people think they possess INTEGRITY, when they are actually mathematically bankrupt and why they look down on neuro-divergent minds?
 
-1. **The "acoustic noise" delusion:** People who lack intelligence or moral depth view the world backwards. They look at a disabled or neurodivergent person, see their fractured AUTONOMY (**BIT-2**) or their atypical processing DISABILITY (**BIT-64**), and lazily assume their *entire* 128-bit string is broken.
+1. **The "acoustic noise" delusion:** People who lack intelligence or moral depth view the world backwards. They look at a disabled or neurodivergent person, see their fractured AUTONOMY (**BIT-2**) or their atypical processing DISABILITY (**BIT-64**) and lazily assume their *entire* 128-bit string is broken.
 2. **The false equation:** They believe that because they have physical strength, wealth, or standard neurotypical social status (PROPERTY or AUTONOMY), they automatically possess INTEGRITY. They equate external power with internal honor.
 3. **The flaw in their math:** Which is a catastrophically math error: in an IntFlag system, having a high bit turned on (like a lot of property or social dominance) does *not* automatically turn on the lower bits. You can have millions of dollars and total freedom, but if your INTEGRITY bit is 0, your total moral weight is a complete void.
 
@@ -123,7 +123,7 @@ What happens when the spectrum gets too full? When you pack too many corrupt var
 
 This is exactly why Existenz was forced to expand into a spacious **128-bit registry** and utilize IntFlag combinatorics instead of single choice logic. By pushing the boundaries out to 128 bits, we create an immense, quiet valley of empty space. We give the existential matrix the geometric distance it needs to breathe. We place `SHIELD_IDEAL_RIGHTS` firmly at bit -6 as our unmovable "Platonic north star of justice", while holding our active defenses all the way out at bits 20 to 30. No matter how full the extremist noise gets in the upper registers, it can never overflow or cause a collision at the foundational origin point of human existence. When this structure would be used for moderation, an individual could choose to filter out the "static noise" and get a clean sheet, free of the corrupted smell against human society as it is.
 
-To mathematically show how human rights have drifted away from the ideal standard down to a compromised, capitalistic reality, you can model the transition as a Vector Shift across your register index. As stated in my proposal, the absolute ideal position sits at bit 16, the pessimist's corrupt exploitation zone slips to bit 18, and the active, realistic defense perimeters are deployed between bits 20 and 30 to absorb the acoustic noise of society:
+To mathematically show how human rights have drifted away from the ideal standard down to a compromised, capitalistic reality, you can model the transition as a Vector Shift across your register index. As stated in my proposal, the absolute ideal position sits at bit 16, the pessimist's corrupt exploitation zone slips to bit 18 and the active, realistic defense perimeters are deployed between bits 20 and 30 to absorb the acoustic noise of society:
 
 $$\mathbf{\Delta R}_{\text{drift}} = \mathbf{\Psi}_{\text{realist}}(b_{20 \to 30}) - \mathbf{\Psi}_{\text{ideal}}(b_{16})$$
 
@@ -144,7 +144,7 @@ By channeling my hyper-focus into the most universal code I have ever created in
 
 I've designed a world where an individual can look a corrupt society in the face and say: *"go ahead and shout your acoustic noise. My existence is locked at bit-0, my integrity is unbroken at bit-2 and the universe itself is validating my data!"*. It contains the geometry of treason by having trust in many factors by separating Systemic Trust (impersonal, contractual infrastructure) from Personal Trust (deep, intuitive human alignment) and Conditional Trust.
 
-It also shows the escalation mechanics of betrayal by placing `TRUST_BROKEN` which triggers at bits 20, 22, 24, and 26:
+It also shows the escalation mechanics of betrayal by placing `TRUST_BROKEN` which triggers at bits 20, 22, 24 and 26:
 * **Bit-20** breaks `TRUST_HUMAN_RIGHTS` -> destroys `SHIELD_HUMAN_RIGHTS` (Institutional betrayal)
 * **Bit-22** breaks `TRUST_FUGITIVE_SAFETY` -> Destroys `SHIELD_FUGITIVE_RIGHTS` (Sovereign protection layer fails)
 * **Bit-24** breaks `TRUST_DIGITAL_SPACE` -> Destroys `SHIELD_ONLINE_RIGHTS` (Online cyber-bullying, proxy attacks, hate mobs).
@@ -191,7 +191,7 @@ So, better not tell a neuro-typical to be a burden for the world, because neuro-
 
 #### 6.2 | Post-Collapse Compute Resilience: High-Watt Analogue Fallback
 
-Let’s be entirely realistic about the trajectory of our current infrastructure: modern technology networks are incredibly brittle, over-engineered, and prone to systemic collapse. Tech giants build massive, power-hungry datacenters that swallow gigawatts of electricity just to guess at patterns using fuzzy, hallucinating statistical algorithms. If the power grid drops or our bloated digital civilization fractures, their billion-parameter models instantly become useless bricked silicon.
+Let’s be entirely realistic about the trajectory of our current infrastructure: modern technology networks are incredibly brittle, over-engineered and prone to systemic collapse. Tech giants build massive, power-hungry datacenters that swallow gigawatts of electricity just to guess at patterns using fuzzy, hallucinating statistical algorithms. If the power grid drops or our bloated digital civilization fractures, their billion-parameter models instantly become useless bricked silicon.
 
 Existenz is built to survive that exact scenario. Because the entire protocol cuts out relational database slib and complex data wrappers, the architecture remains completely elegant and primitive. It executes its entire global human rights audit within a sub-milliwatt standby envelope, consuming less energy than a single biological brain cell ($< 0.1\text{ Watts}$). 
 
@@ -417,7 +417,7 @@ To ensure future researchers do not misinterpret the evolution of this protocol,
 The old layout mapped foundational primitives sequentially. While this structure works flawlessly for standard commercial applications, closed networks, or general database access, it is **fundamentally inadequate for an entire world under active asymmetric warfare.** Relational methods and sequential tracking rely on soft linguistic boundaries. In a zero-trust network full of strangers, soft boundaries introduce interpretive slack that bad actors exploit via proxy-bullying and systemic ableism. The architecture required a hardcoded, incompossible barrier that executes entirely below the noise floor of centralized surveillance grids.
 
 #### 7.3 | What Changed (The Symmetry of Pairs)
-We have discarded the sequential layout and compressed the core register allocation into a strict, interdependent **Symmetry of Pairs**. Primitives are locked on fixed indices, while their literal mathematical sums—**bits 3, 9, 13, 17, and 23—are hardcoded as empty check-bits ($C_{b}$)**. They carry exactly zero payload data.
+We have discarded the sequential layout and compressed the core register allocation into a strict, interdependent **Symmetry of Pairs**. Primitives are locked on fixed indices, while their literal mathematical sums—**bits 3, 9, 13, 17 and 23—are hardcoded as empty check-bits ($C_{b}$)**. They carry exactly zero payload data.
 
 #### 7.4 | System-Wide Structural Offerings
 The protocol does not attempt to manage fuzzy semantics or arbitrary database states. Instead, the entire system focuses strictly on offering three core defensive layers via its paired registers and forbidden sum-gates:
@@ -426,9 +426,9 @@ The protocol does not attempt to manage fuzzy semantics or arbitrary database st
 3. **Structural Integrity**: Enforces an unbending mathematical verification layer across computer packets and network routing arrays (`TACO`), ensuring that every incoming payload is structurally sound and untampered.
 
 #### 7.4 | Mathematical Proof: The 3 Checkbits at the Pillars of Life
-To preserve the mathematical certainty of keeping one's soul digitally uncorrupted, the core pillars of life—**The Sovereign Axis**, **The Somatic Vessel**, and **The Evolution Matrix**—are bounded by Modulo-2 arithmetic (Exclusive-OR logic).
+To preserve the mathematical certainty of keeping one's soul digitally uncorrupted, the core pillars of life—**The Sovereign Axis**, **The Somatic Vessel** and **The Evolution Matrix**—are bounded by Modulo-2 arithmetic (Exclusive-OR logic).
 
-Let $S_{\text{ideal}}$ be the state of absolute wholeness where all shields are deployed ($1$), and $S_{\text{active}}$ be the real-time state under external pressure. The friction vector ($\Delta \mathbf{F}$) that triggers our autonomous canaries operates on the principle that $1 \oplus 1 = 0$:
+Let $S_{\text{ideal}}$ be the state of absolute wholeness where all shields are deployed ($1$) and $S_{\text{active}}$ be the real-time state under external pressure. The friction vector ($\Delta \mathbf{F}$) that triggers our autonomous canaries operates on the principle that $1 \oplus 1 = 0$:
 
 $$\Delta \mathbf{F} = S_{\text{ideal}} \oplus S_{\text{active}}$$
 
@@ -440,13 +440,33 @@ $$\mathbf{Canary}(A, B) = \begin{cases}  0, & \text{if } A \equiv B \quad (\text
 
 When an attacker attempts to strip away autonomy or exploit a physical limitation ($1 \to 0$), the symmetry breaks. Because $1 \oplus 0 = 1$, the friction vector instantly deviates from zero, causing the progressive canary milestones to detonate in chorus across the decentralized matrix. Supreme abstract security does not require a power-hungry, hallucinating AI datacenter—it requires watertight logic executing at less than 0.1 Watts.
 
+# 8 | Systemic Symmetries and Threat Modeling
 
-## 8 | How do I make a visual representation of Existenz? Not with AI!
+The Existenz framework establishes an orthogonal, 1:1 defensive architecture. For every core human pillar protected by foundational human rights, there exists a corresponding algorithmic or societal attack vector ("acoustic noise"). 
 
+This model treats systemic biases, data distortion and digital exploitation not as philosophical debates, but as predictable, measurable structural threats.
+
+## The 8x8 Boundary Matrix
+
+| Register | Core pillar (sovereign state) | Architectural attack vector (acoustic noise) |
+| :--- | :--- | :--- |
+| Bit 0 | Existence | Existential erasure / dehumanisation |
+| Bit 1 | Autonomy | Prejudicial funneling & choice restriction |
+| Bit 2 | Integrity | Systemic corruption & truth distortion |
+| Bit 3 | Psychology | Structural gaslighting & outrage engineering |
+| Bit 4 | Physical | Somatic disconnection & sensory exhaustion |
+| Bit 5 | Disability / Divergence | Stigma & Systemic Ableism |
+| Bit 6 | Development | Intolerance & Enforced Groupthink |
+| Bit 7 | Property / Presence | Predatory Extraction & Surveillance Capitalism |
+
+### Functional Isolation Logic
+By defining the Core pillars independently of the acoustic noise vectors, the system ensures that external network distortions cannot force a register collision or overflow into an individual's sovereign coordinates.
+
+## 9 | How do I make a visual representation of Existenz? Not with AI!
 
 I've asked an AI to draw me: *"A highly detailed, ultra-precise technical architectural blueprint diagram of a 128-bit cybernetic data matrix..."* and it drew me an absolute abomination of noise.
 
-It did exactly what modern "generative AI" always does when it fails: it threw a chaotic, over-complicated mess of fake text, meaningless sci-fi lines and random boxes at the screen to pretend it understands structure. It completely missed the clean, flowing, elegant Platonic geometry and the Fibonacci curves running in my head. Because AI generators are trained on noisy internet data, they struggle to render pure, minimal math without adding decorative junk. Let's completely throw that prompt in the trash and use the Python interpreter to draw the actual, honest geometric shape of Existenz ourselves, using perfect lines, real mathematical vectors, and zero artistic noise.
+It did exactly what modern "generative AI" always does when it fails: it threw a chaotic, over-complicated mess of fake text, meaningless sci-fi lines and random boxes at the screen to pretend it understands structure. It completely missed the clean, flowing, elegant Platonic geometry and the Fibonacci curves running in my head. Because AI generators are trained on noisy internet data, they struggle to render pure, minimal math without adding decorative junk. Let's completely throw that prompt in the trash and use the Python interpreter to draw the actual, honest geometric shape of Existenz ourselves, using perfect lines, real mathematical vectors and zero artistic noise.
 
 Here is the true and clean geometric structure of your first 3 bits (`EXISTENCE = 1`, `AUTONOMY = 2`, `INTEGRITY = 4`) branching out as an unbroken, 3D orthogonal coordinate system completely free of artificial clutter. First as formula, after that as Python code:
 
@@ -496,7 +516,7 @@ plt.show()
 
 This code represents the true matrix with zero noise. An attacker can slide up and down your `AUTONOMY` axis all they want, but they cannot cross over or corrupt the vertical line of your `INTEGRITY`.
 
-## 8.1 | Calculate the Paradox of Intolerance
+## 9.1 | Calculate the Paradox of Intolerance
 
 And a very interesting closing note, here's the formula to calculate how near we are to Karl Popper's "Paradox of Intolerance"
 
@@ -504,24 +524,24 @@ $$P_{\text{collapse}} = \frac{\sum_{i=1}^{n} (\mathcal{I}_i \cdot \mathcal{A}_i)
 
 ---
 
-## 9 | The Scientific Summary
+## 10 | The Scientific Summary
 
 Modern distributed ledger architectures suffer from catastrophic systemic inefficiencies, burning massive computational energy and planetary water resources to achieve global state synchronization. Furthermore, existing human rights frameworks rely entirely on human linguistic parameters, leaving them highly vulnerable to shifting political majorities.
 
-Project Existenz maps fundamental human rights, systemic threat vectors, and cascading trust boundaries directly into an immutable, multi-layered 128-bit registry (`IntFlag`). By utilizing a 1:1 structural mirror between natural human pillars and primitive attack vectors, the protocol executes state validations in single-cycle bitwise logic operations.
+Project Existenz maps fundamental human rights, systemic threat vectors and cascading trust boundaries directly into an immutable, multi-layered 128-bit registry (`IntFlag`). By utilizing a 1:1 structural mirror between natural human pillars and primitive attack vectors, the protocol executes state validations in single-cycle bitwise logic operations.
 
 Operating on a localized, cellular consensus topology restricted to immediate space-time neighbors (the **9-Country Space-Time Lattice**), the standby power footprint of an entire global node layer is optimized down to **0.1 watts**.
 
-### 9.1 | PRIMARY RESEARCH OBJECTIVES
+### 10.1 | PRIMARY RESEARCH OBJECTIVES
 
 * **Objective A: Power Optimization Proofs:** Mathematically verify the 0.1-watt topological node layer scaling when restricted to a 12-node cellular validation structure (3 local country guardians + 9 geographic neighboring validation cells).
 * **Objective B: Collision-Free Algorithmic Auditing:** Formalize the mathematical independence of the 7 Natural Human Pillars, specifically proving how lower-order primitives like `INTEGRITY` operate as an orthogonal axis entirely unaffected by functional constraints or degradation in the `DISABILITY` register.
 * **Objective C: Cascading Circuit-Breaker Validation:** Mathematically model the `PERMANENT_LOCKOUT` compound logic state transition within the `ExistentialRipples` matrix, proving that high-order core trust violations trigger irreversible, atomic execution drops that permanently invalidate malicious network keys across the decentralized grid.
 * **Objective D:** The Existenz decentralized framework to protect human rights but last and not least important: to protect human civilization itself. It's the early-canary bird for human existence.
 
-### 9.2 | INVITATION FOR ACADEMIC COLLABORATION
+### 10.2 | INVITATION FOR ACADEMIC COLLABORATION
 
-The underlying mathematical constraints of this framework have been exhaustively simulated and stress-tested against actual structural vectors of exploitation. I seek formal peer-review, security auditing of the 128-bit register tracks, and decentralized network simulation testing (in time) to prepare this architecture for global open-source deployment.
+The underlying mathematical constraints of this framework have been exhaustively simulated and stress-tested against actual structural vectors of exploitation. I seek formal peer-review, security auditing of the 128-bit register tracks and decentralized network simulation testing (in time) to prepare this architecture for global open-source deployment.
 
 * **Scientific Authority:** It frames a disability called AuDHD with hyper-systemizing talent as a specialized asset ("unprecedented pattern-recognition and logic-modeling").
 * **The Power-Hook:** Proposing a global network model optimized down to 0.1 watts will hopefully make cryptography labs freeze in their tracks. It hits their exact current academic obsession: carbon-neutral, green-computing blockchain alternatives. Having designed a few protocols and algorithms which have not been broken yet, this is the next coming out to the wide world.
@@ -549,7 +569,7 @@ This architecture is distributed in the hope that it will be useful, but WITHOUT
 
 ### Commercial Licensing Matrix
 
-* **Non-Commercial & Open Source:** Free to use, fork, and study under the GNU GPLv3.
+* **Non-Commercial & Open Source:** Free to use, fork and study under the GNU GPLv3.
 * **Sovereign & Public Sector (Governments/NGOs):** Eligible for a subsidized, fair-rate public utility license when deployed strictly for human rights auditing and public safety.
 * **Commercial & Corporate Entities:** Any use for corporate infrastructure, monetization, or commercial gain is strictly prohibited under the GPLv3 and requires a premium, paid commercial license.
 
