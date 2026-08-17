@@ -219,17 +219,20 @@ $$\mathcal{S}_{\text{state}} = \left( \mathcal{M}_{\text{exist}} \land \neg\left
 # Released under strict Non-Commercial Open-Source License terms.
 # Commercial use requires immediate written license and explicit payment.
 # ==========================================================================
-#  VERSION: v0.76a
-#
+# VERSION: v0.76f
+##
+import hmac
+import hashlib
 from enum import IntFlag
-class ExistentialCore(IntFlag):
+
+class existentialCore(IntFlag):
 
     # THE LOWER 16-BITS:  IMMUTABLE   7 Human Pillars of existence!
 
     EXISTENCE               = 1 << 0    # 1     PILLAR  You, alive, with a body
     AUTONOMY                = 1 << 1    # 2     PILLAR  The Sovereign Right to Choose
     INTEGRITY               = 1 << 2    # 4     PILLAR  The Moral Axis of Personal Choice
-    CANARY_1_SOVEREIGN      = 1 << 3    # 8     WATCHDOG
+    CANARY_1_SOVEREIGN      = 1 << 3    # 8     CANARY  WATCHDOG_SOVEREIGN
     PSYCHOLOGY              = 1 << 4    # 16    PILLAR  Cognitive Internal State and Mental Peace
     PHYSICAL                = 1 << 5    # 32    PILLAR  Physical Body Vessel and bio-state
     DISABILITY              = 1 << 6    # 64    PILLAR  Nature's way of checks and balances
@@ -237,122 +240,61 @@ class ExistentialCore(IntFlag):
     PROPERTY                = 1 << 8    # 256   PILLAR  Material Assets and Income Protection
     CANARY_2_SOMATIC        = 1 << 9    # 512   CANARY  WATCHDOG_SOMATIC
     PRESENCE                = 1 << 10   # 1024  PILLAR  Real-Time Spacetime Footprint
-    CANARY_3_SYSTEMIC       = 1 << 13   # 8192  CANARY  WATCHDOG_EVOLUTION
+    CANARY_3_SYSTEMIC       = 1 << 13   # 8128  CANARY  WATCHDOG_EVOLUTION
+    CANARY_XV_STRUCT        = 1 << 15   # 32768 CANARY WATCHDOG_PILLARS
 
     # THE HIGHER 8-BITS:  IMMUTABLE   Legal SHIELDS by external defense factors
 
-    CANARY_4_PERSONAL       = 1 << 17   # 131072     CANARY  WATCHDOG_PERSONAL	
+    CANARY_IV_PERSONAL      = 1 << 17   # 131072     CANARY   WATCHDOG_PERSONAL
     SHIELD_RIGHTS_HUMAN     = 1 << 20   # 1048576    SHIELD-A  (Institutional)
     SHIELD_RIGHTS_INCLUSIVE = 1 << 22   # 4194304    SHIELD-A2 (Systemic)
-    CANARY_5_RIGHTS         = 1 << 23   # 8388608    CANARY  WATCHDOG_RIGHTS
+    CANARY_V_RIGHTS         = 1 << 23   # 8388608    CANARY   WATCHDOG_RIGHTS
     SHIELD_RIGHTS_BASIC     = 1 << 24   # 16777216   SHIELD-B  (Institutional) 
     SHIELD_RIGHTS_ASYLUM    = 1 << 26   # 67108864   SHIELD-A3 (Institutional)
-    CANARY_6_CIVIC          = 1 << 27   # 134217728  CANARY  WATCHDOG_CIVILIAN
+    CANARY_VI_CIVIC         = 1 << 27   # 134217728  CANARY   WATCHDOG_CIVILIAN
     SHIELD_IMMUTABLE_END    = 1 << 31   # 2147483648 END OF IMMUTABLE STRUCTURE
 
     # CANARIES FOR STRUCTURAL MANIPULATION
 
     CANARY_S_IMMUTABLE      = 0x80000401
-    CANARY_S_STATE          = 0x455005F7
-    CANARY_S_COLLIDE        = 0x88822208
- 
+    CANARY_S_STATE          = 0x055005f7
+    CANARY_S_COLLIDE        = 0x8882a208
+
     # SIGNATURES FOR IMMUTABLE STRUCTURE, CORE STRUCTURE AND CHAINED SIGNATURE
 
     SIGN_CORE_EXISTENZ      = 0x5beba3df
     SIGN_CORE_IMMUTABLE     = 0x6d44968d
     SIGN_CORE_EXISTENTIAL   = 0x18641470
-    SIGN_CORES_CHAINED	    = 0xa62b1b36
-
-    @classmethod
-    def canary_integrity(cls, active_register_state: int) -> bool:
-        """
-        Instantaneous single-cycle check. Returns True if completely untampered.
-        Fails (False) if any data spills into the forbidden watchdog gates.
-        """
-	    sign_existenz        = "5beba3df48dfcb7cf800c14fba00a297e594d2105da6d4484bc871ef494dbd42"
-	    sign_immutable       = "18641470fa93489814467d58fa05ef44c35c3b99912788e0b67277d33d9691b0"
-	    sign_structure       = "6d44968d7d1d9d85546928e57d9924f7ab5cf0682bfd7e1d7de690e086347438"
-	    sign_corechain       = "a62b1b3636f328f413d78964724838da1cf464972e27301048ca0ef3df503cd2" 
-        return (active_register_state & cls.CANARY_S_COLLIDE) == 0
-
-    @classmethod
-    def canary_pristine(cls, active_register_state: int) -> bool:
-        """
-        Compares the operational registry directly against the ideal system vector.
-        """
-        return active_register_state == cls.CANARY_S_STATE
+    SIGN_CORE_CANARY        = 0xc01eca1e
 
 
-class ExistentialCoreThreat(IntFlag):
+# This one is lonely because of a circular math paradox!
+existentialCoreSign      = 0x22023c14
+existentialCoreSignature = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
+
+
+from enum import IntFlag
+class existentialCoreThreat(IntFlag):
     """
     1:1 Symmetrical Mirror of ExistentialCore.
-    Defines immediate critical attacks on the 
-    ExistentialCoreThreat pillars as THREAT_LABEL.
+    Defines immediate critical attacks and their corresponding system watchdogs.
     """
-    THREAT_NONE			= 0
-    THREAT_EXISTENCE	    = 1 << 0
-    THREAT_AUTONOMY		    = 1 << 1
-    THREAT_INTEGRITY	    = 1 << 2
-    THREAT_PSYCHOLOGY	    = 1 << 4
-    THREAT_PHYSICAL		    = 1 << 5
-    THREAT_ABLEISM		    = 1 << 6
-    THREAT_DEVELOPMENT	    = 1 << 7
-    THREAT_PROPERTY		    = 1 << 8
-    THREAT_PRESENCE		    = 1 << 10
+    THREAT_NONE             = 0
+    THREAT_EXISTENCE        = 1 << 0
+    THREAT_AUTONOMY         = 1 << 1
+    THREAT_INTEGRITY        = 1 << 2
+    THREAT_PSYCHOLOGY       = 1 << 4
+    THREAT_PHYSICAL         = 1 << 5
+    THREAT_ABLEISM          = 1 << 6
+    THREAT_DEVELOPMENT      = 1 << 7
+    THREAT_PROPERTY         = 1 << 8
+    THREAT_PRESENCE         = 1 << 10
 
-    THREAT_RIGHTS_HUMAN		= 1 << 20
-    THREAT_RIGHTS_INCLUSIVE	= 1 << 22
-    THREAT_RIGHTS_BASIC		= 1 << 24
-    THREAT_RIGHTS_ASYLUM	= 1 << 26
-    THREAT_IMMUTABLE_END	= 1 << 31
-
-    THREAT_RIGHTS_LEGAL		= {
-    	1 << 0:  "LEGAL_CAT1_MURDER",
-	    1 << 1:  "LEGAL_CAT2_PHYSICAL_VIOLATION",
-	    1 << 2:  "LEGAL_CAT3_COERSION",
-	    1 << 3:  "LEGAL_CAT4_CHARACTER_ASSASINATION",
-	    1 << 4:  "LEGAL_CAT5_PSYCHOLOGICAL_INTIMIDATION",
-	    1 << 5:  "LEGAL_CAT6_ABLEISM",
-	    1 << 6:  "LEGAL_CAT7_INTERSECTIONAL_BIAS",
-	    1 << 7:  "LEGAL_CAT8_INTELLECTUAL_PIRACY",
-	    1 << 8:  "LEGAL_CAT9_THEFTH",
-	    1 << 13: "LEGAL_CAN1_SYSTEMCRISIS",
-	    1 << 14: "LEGAL_CAN2_EXPLOITATION",
-	    1 << 20: "LEGAL_CAN3_HUMAN",
-	    1 << 20: "LEGAL_CAN4_INCLUSION",
-	    1 << 40: "LEGAL_CAN5_PREDATORY"
-    },
-
-    SIGN_THREAT_RIGHTS_LEGAL = 0x7f4a218d
-    SIGN_THREAT_EXISTENZ     = 0x5beba3df
-    SIGN_THREAT_IMMUTABLE    = 0x6d44968d
-    SIGN_THREAT_EXISTENTIAL  = 0x18641470
-    SIGN_THREAT_CHAINED	     = 0xa62b1b36
-
-   @classmethod
-    def verify_legal_map_integrity(cls) -> bool:
-        """
-        Deterministically verifies that the forensic translation map has not 
-        been altered by external code injection or memory manipulation.
-        Executes entirely in constant time.
-        """
-        # 1. Flatten the map into a deterministic, unspaced string
-        serialized_map = "".join(f"{k}:{v}" for k, v in sorted(cls.THREAT_RIGHTS_LEGAL.items()))
-        payload_bytes = serialized_map.encode('utf-8')
-        
-        # 2. Use the framework master key anchor as the signature salt
-        anchor_key = b"EX25IMMUT32CORE7617"
-        computed_hash = hmac.new(anchor_key, payload_bytes, hashlib.sha256).digest()
-        computed_token = computed_hash[:4].hex()
-        
-        # 3. Verify against the cold-compiled literal constant
-        expected_token = hex(cls.SIGN_THREAT_RIGHTS_LEGAL)[2:]
-        return hmac.compare_digest(computed_token, expected_token)
-
-
-class ExistentialCoreThreatBirds(IntFlag):
-
-    ## This file is still under simulation, it might be changed later
+    THREAT_RIGHTS_HUMAN     = 1 << 20
+    THREAT_RIGHTS_INCLUSIVE = 1 << 22
+    THREAT_RIGHTS_BASIC     = 1 << 24
+    THREAT_RIGHTS_ASYLUM    = 1 << 26
+    THREAT_IMMUTABLE_END    = 1 << 31
 
     CANARY_1_SOVEREIGN      = 1 << 3
     CANARY_2_SOMATIC        = 1 << 9
@@ -360,6 +302,42 @@ class ExistentialCoreThreatBirds(IntFlag):
     CANARY_4_PERSONAL       = 1 << 17
     CANARY_5_RIGHTS         = 1 << 23
     CANARY_6_CIVIC          = 1 << 27
+
+    SIGN_THREAT_RIGHTS_LEGAL = 0x6d07d972
+    SIGN_THREAT_EXISTENZ     = 0x5beba3df
+    SIGN_THREAT_IMMUTABLE    = 0x6d44968d
+    SIGN_THREAT_EXISTENTIAL  = 0x18641470
+    SIGN_THREAT_CANARY       = 0xc01eca1e
+
+existentialCoreThreatLegal = {
+    existentialCoreThreat.THREAT_EXISTENCE:        "LEGAL_CAT1_MURDER",
+    existentialCoreThreat.THREAT_AUTONOMY:         "LEGAL_CAT2_PHYSICAL_VIOLATION",
+    existentialCoreThreat.THREAT_INTEGRITY:        "LEGAL_CAT3_COERSION",
+    existentialCoreThreat.CANARY_1_SOVEREIGN:      "LEGAL_CAT4_CHARACTER_ASSASINATION",
+    existentialCoreThreat.THREAT_PSYCHOLOGY:       "LEGAL_CAT5_PSYCHOLOGICAL_INTIMIDATION",
+    existentialCoreThreat.THREAT_PHYSICAL:         "LEGAL_CAT2_PHYSICAL_VIOLATION",
+    existentialCoreThreat.THREAT_ABLEISM:          "LEGAL_CAT6_ABLEISM",
+    existentialCoreThreat.THREAT_DEVELOPMENT:      "LEGAL_CAT8_INTELLECTUAL_PIRACY",
+    existentialCoreThreat.THREAT_PROPERTY:         "LEGAL_CAT9_THEFTH",
+    existentialCoreThreat.CANARY_3_SYSTEMIC:       "LEGAL_CAN1_SYSTEMCRISIS",
+    1 << 14:                                       "LEGAL_CAN2_EXPLOITATION",
+    existentialCoreThreat.THREAT_RIGHTS_HUMAN:     "LEGAL_CAN3_HUMAN",
+    existentialCoreThreat.THREAT_RIGHTS_INCLUSIVE: "LEGAL_CAN4_INCLUSION",
+    1 << 40:                                       "LEGAL_CAN5_PREDATORY"
+}
+
+
+# ==========================================================================
+# UNIVERSAL CRYPTOGRAPHIC BOUNDARY (CONSOLIDATED STRUCTURE)
+# ==========================================================================
+class existentialCoreThreatSignatures:
+    """Consolidated hardware-salted cryptographic locks for the threat ecosystem."""
+    existentialCoreThreatSign                = 0x57c413f8
+    existentialCoreThreatSignature           = "57c413f8531731df0d2f09a260ea36c7e49269348b553fdeeaa2dd11e7bc4bb9"
+    existentialCoreThreatLegalSign           = 0x6d07d972
+    existentialCoreThreatLegalSignature      = "6d07d97272d414f966ea7a9d7b2956b96541fecbcb9079f375408a62b3b6bd6e"
+    existentialCoreThreatStructuresSign      = 0x759533df
+    existentialCoreThreatStructuresSignature = "759533dfd2a276046bc62985b17df7cefb999a1c3a07b7b983e5ee278d80302d"
 
 
 class ExistentialRipple(IntFlag):
