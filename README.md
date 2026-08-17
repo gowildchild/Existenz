@@ -431,11 +431,12 @@ This model treats systemic biases, data distortion and digital exploitation not 
 | Bit 0 | Existence | Existential erasure / dehumanisation |
 | Bit 1 | Autonomy | Prejudicial funneling & choice restriction |
 | Bit 2 | Integrity | Systemic corruption & truth distortion |
-| Bit 3 | Psychology | Structural gaslighting & outrage engineering |
-| Bit 4 | Physical | Somatic disconnection & sensory exhaustion |
-| Bit 5 | Disability / Divergence | Stigma & Systemic Ableism |
-| Bit 6 | Development | Intolerance & Enforced Groupthink |
-| Bit 7 | Property / Presence | Predatory Extraction & Surveillance Capitalism |
+| Bit 4 | Psychology | Structural gaslighting & outrage engineering |
+| Bit 5 | Physical | Somatic disconnection & sensory exhaustion |
+| Bit 6 | Disability / Divergence | Stigma & Systemic Ableism |
+| Bit 7 | Development | Intolerance & Enforced Groupthink |
+| Bit 8 | Property | Predatory Extraction |
+| Bit 10 | Presence | Surveillance Capitalism |
 
 ### Functional Isolation Logic
 By defining the Core pillars independently of the acoustic noise vectors, the system ensures that external network distortions cannot force a register collision or overflow into an individual's sovereign coordinates.
