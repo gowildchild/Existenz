@@ -20,7 +20,7 @@ if REPO_ROOT not in sys.path:
 
 try:
     from existenzStruct.master.existentialCore import existentialCore
-    from existenzStruct.master.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal
+    from existenzStruct.master.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal, existentialCoreThreatShadowVacuum
     from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreCheckMagic, existentialCoreVersion
 
 except ImportError as e:
@@ -189,6 +189,7 @@ def _export_python_framework(dist_dir: str, core_ord: dict, threat_ord: dict, le
             assignment = f"    {k} = {widths['f_expr'](v)}"
             f.write(f"{assignment.ljust(widths['py_t'])}# {clean_context_description(cmnts.get(k, ''))}\n")
         f.write("\n    existentialCoreThreatLegal = {\n" + ",\n".join(f"        {k}: \"{v}\"" for k, v in legal_ord.items()) + "\n    }\n")
+        f.write("\n    existentialCoreThreatShadowVacuum = {\n" + ",\n".join(f"        {k}: \"{v}\"" for k, v in legal_ord.items()) + "\n    }\n")
 
     with open(os.path.join(dist_dir, "python", "single", "existentialCoreSignatures.py"), "w", encoding="utf-8") as f:
         f.write(header + 
@@ -200,6 +201,7 @@ def _export_python_framework(dist_dir: str, core_ord: dict, threat_ord: dict, le
                 f"    existentialCore                              = \"{sigs['existentialCore']}\"\n"
                 f"    existentialCoreThreatRoot                    = \"{sigs['existentialCoreThreatRoot']}\"\n"
                 f"    existentialCoreThreatLegal                   = \"{sigs['existentialCoreThreatLegal']}\"\n"
+                f"    existentialCoreThreatShadowVacuum            = \"{sigs['existentialCoreThreatShadowVacuum']}\"\n"                
                 f"    existentialCoreThreat                        = \"{sigs['existentialCoreThreat']}\"\n"
                 f"    existentialCoreCheck                         = \"{sigs['existentialCoreCheck']}\"\n\n"
                 f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in full_pkeys) + "\n    )\n\n"
