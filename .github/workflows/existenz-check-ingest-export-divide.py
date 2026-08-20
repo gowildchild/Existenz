@@ -3,7 +3,7 @@ name: Existenz - Check Ingest Export Divide
 # do on the Guthub of Existenz. This gives 
 # confidence that the structure is not 
 # tampered with, while kept at the standard of
-# the science that it is built upon. 
+# the science that it is built upon.  Hashing!
 
 on:
   push:
