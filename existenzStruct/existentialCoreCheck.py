@@ -16,10 +16,10 @@ from existenzStruct.master.existentialCoreThreat import (
 
 # CRITICAL FILE-GLOBAL ARCHITECTURAL ANCHORS
 # ==========================================================================
-existentialCoreCheckVersion    = "v0.76g"
+existentialCoreCheckVersion    = "v0.76i"
 existentialCoreCheckMagic      = b"EX25IMMUT32CORE7617"
-existentialCoreCheckSign       = 0x7c165b32
-existentialCoreCheckSignature  = "7c165b322566e304975917cdc92de03d3ab14e72d1edaefc2ea18f7444ac891c"
+existentialCoreCheckSign       = 0xb45624fc
+existentialCoreCheckSignature  = "b45624fc09463f05d2e9359db32ae928e084aa81e47bbd33ecde0a58d66d0656"
 
 class existentialCoreCheck:
     """
