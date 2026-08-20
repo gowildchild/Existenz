@@ -19,29 +19,31 @@
     <CANARY_5_RIGHTS value="8388608" expr="1 &lt;&lt; 23" type="RIGHTS" info=""/>
     <THREAT_RIGHTS_BASIC value="16777216" expr="1 &lt;&lt; 24" type="RIGHTS" info=""/>
     <THREAT_RIGHTS_ASYLUM value="67108864" expr="1 &lt;&lt; 26" type="RIGHTS" info=""/>
+    <CANARY_7_EXPLOITATION value="89130487" expr="0x055005f7" type="CANARY" info=""/>
     <CANARY_6_CIVIC value="134217728" expr="1 &lt;&lt; 27" type="CANARY" info=""/>
     <SIGN_THREAT_EXISTENTIAL value="409212016" expr="0x18641470" type="SIGNATURE" info=""/>
     <SIGN_THREAT_EXISTENZ value="1542169567" expr="0x5beba3df" type="SIGNATURE" info=""/>
     <SIGN_THREAT_RIGHTS_LEGAL value="1829230962" expr="0x6d07d972" type="RIGHTS" info=""/>
     <SIGN_THREAT_IMMUTABLE value="1833211533" expr="0x6d44968d" type="SIGNATURE" info=""/>
     <THREAT_IMMUTABLE_END value="2147483648" expr="1 &lt;&lt; 31" type="THREAT" info=""/>
+    <CANARY_8_PREDATORY value="2290263560" expr="0x8882a608" type="CANARY" info=""/>
     <SIGN_THREAT_CANARY value="3223243294" expr="0xc01eca1e" type="SIGNATURE" info=""/>
   </structure>
   <legal>
     <map key="1" value="LEGAL_CAT1_MURDER"/>
     <map key="2" value="LEGAL_CAT2_PHYSICAL_VIOLATION"/>
-    <map key="4" value="LEGAL_CAT3_COERSION"/>
-    <map key="8" value="LEGAL_CAT4_CHARACTER_ASSASINATION"/>
+    <map key="4" value="LEGAL_CAT3_COERCION"/>
+    <map key="8" value="LEGAL_CAT4_CHARACTER_ASSASSINATION"/>
     <map key="16" value="LEGAL_CAT5_PSYCHOLOGICAL_INTIMIDATION"/>
     <map key="32" value="LEGAL_CAT2_PHYSICAL_VIOLATION"/>
     <map key="64" value="LEGAL_CAT6_ABLEISM"/>
     <map key="128" value="LEGAL_CAT8_INTELLECTUAL_PIRACY"/>
-    <map key="256" value="LEGAL_CAT9_THEFTH"/>
+    <map key="256" value="LEGAL_CAT9_THEFT"/>
     <map key="8192" value="LEGAL_CAN1_SYSTEMCRISIS"/>
-    <map key="16384" value="LEGAL_CAN2_EXPLOITATION"/>
     <map key="1048576" value="LEGAL_CAN3_HUMAN"/>
     <map key="4194304" value="LEGAL_CAN4_INCLUSION"/>
-    <map key="1099511627776" value="LEGAL_CAN5_PREDATORY"/>
+    <map key="89130487" value="LEGAL_CAN2_EXPLOITATION"/>
+    <map key="2290263560" value="LEGAL_CAN5_PREDATORY"/>
   </legal>
-  <signature>759533dfd2a276046bc62985b17df7cefb999a1c3a07b7b983e5ee278d80302d</signature>
+  <signature>90f9d7438a0497f54dbe065a64f5f5c111dee8c1184832c280d96c0bd2226689</signature>
 </existentialCoreThreat>

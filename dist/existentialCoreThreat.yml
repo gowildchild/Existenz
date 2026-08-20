@@ -1,6 +1,6 @@
 # ==========================================================================
 # THE EXISTENZ PLATFORM (AUTOMATED BLUEPRINT COMPILATION)
-# Version: v0.76g | Framework Namespace Lock
+# Version: v0.76i | Framework Namespace Lock
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
@@ -25,10 +25,12 @@ existentialCoreThreat:
   CANARY_5_RIGHTS         : 8388608     (1 << 23   )  RIGHTS       
   THREAT_RIGHTS_BASIC     : 16777216    (1 << 24   )  RIGHTS       
   THREAT_RIGHTS_ASYLUM    : 67108864    (1 << 26   )  RIGHTS       
+  CANARY_7_EXPLOITATION   : 89130487    (0x055005f7)  CANARY       
   CANARY_6_CIVIC          : 134217728   (1 << 27   )  CANARY       
   SIGN_THREAT_EXISTENTIAL : 409212016   (0x18641470)  SIGNATURE    
   SIGN_THREAT_EXISTENZ    : 1542169567  (0x5beba3df)  SIGNATURE    
   SIGN_THREAT_RIGHTS_LEGAL: 1829230962  (0x6d07d972)  RIGHTS       
   SIGN_THREAT_IMMUTABLE   : 1833211533  (0x6d44968d)  SIGNATURE    
   THREAT_IMMUTABLE_END    : 2147483648  (1 << 31   )  THREAT       
+  CANARY_8_PREDATORY      : 2290263560  (0x8882a608)  CANARY       
   SIGN_THREAT_CANARY      : 3223243294  (0xc01eca1e)  SIGNATURE    

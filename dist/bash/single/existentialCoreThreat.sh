@@ -1,6 +1,6 @@
 # ==========================================================================
 # THE EXISTENZ PLATFORM (AUTOMATED BLUEPRINT COMPILATION)
-# Version: v0.76g | Framework Namespace Lock
+# Version: v0.76i | Framework Namespace Lock
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
@@ -24,25 +24,27 @@ existentialCoreThreat_THREAT_RIGHTS_INCLUSIVE=1 << 22
 existentialCoreThreat_CANARY_5_RIGHTS=1 << 23
 existentialCoreThreat_THREAT_RIGHTS_BASIC=1 << 24
 existentialCoreThreat_THREAT_RIGHTS_ASYLUM=1 << 26
+existentialCoreThreat_CANARY_7_EXPLOITATION=0x055005f7
 existentialCoreThreat_CANARY_6_CIVIC=1 << 27
 existentialCoreThreat_SIGN_THREAT_EXISTENTIAL=0x18641470
 existentialCoreThreat_SIGN_THREAT_EXISTENZ=0x5beba3df
 existentialCoreThreat_SIGN_THREAT_RIGHTS_LEGAL=0x6d07d972
 existentialCoreThreat_SIGN_THREAT_IMMUTABLE=0x6d44968d
 existentialCoreThreat_THREAT_IMMUTABLE_END=1 << 31
+existentialCoreThreat_CANARY_8_PREDATORY=0x8882a608
 existentialCoreThreat_SIGN_THREAT_CANARY=0xc01eca1e
 
 existentialCoreThreatLegal[1]="LEGAL_CAT1_MURDER"
 existentialCoreThreatLegal[2]="LEGAL_CAT2_PHYSICAL_VIOLATION"
-existentialCoreThreatLegal[4]="LEGAL_CAT3_COERSION"
-existentialCoreThreatLegal[8]="LEGAL_CAT4_CHARACTER_ASSASINATION"
+existentialCoreThreatLegal[4]="LEGAL_CAT3_COERCION"
+existentialCoreThreatLegal[8]="LEGAL_CAT4_CHARACTER_ASSASSINATION"
 existentialCoreThreatLegal[16]="LEGAL_CAT5_PSYCHOLOGICAL_INTIMIDATION"
 existentialCoreThreatLegal[32]="LEGAL_CAT2_PHYSICAL_VIOLATION"
 existentialCoreThreatLegal[64]="LEGAL_CAT6_ABLEISM"
 existentialCoreThreatLegal[128]="LEGAL_CAT8_INTELLECTUAL_PIRACY"
-existentialCoreThreatLegal[256]="LEGAL_CAT9_THEFTH"
+existentialCoreThreatLegal[256]="LEGAL_CAT9_THEFT"
 existentialCoreThreatLegal[8192]="LEGAL_CAN1_SYSTEMCRISIS"
-existentialCoreThreatLegal[16384]="LEGAL_CAN2_EXPLOITATION"
 existentialCoreThreatLegal[1048576]="LEGAL_CAN3_HUMAN"
 existentialCoreThreatLegal[4194304]="LEGAL_CAN4_INCLUSION"
-existentialCoreThreatLegal[1099511627776]="LEGAL_CAN5_PREDATORY"
+existentialCoreThreatLegal[89130487]="LEGAL_CAN2_EXPLOITATION"
+existentialCoreThreatLegal[2290263560]="LEGAL_CAN5_PREDATORY"
