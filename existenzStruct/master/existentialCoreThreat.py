@@ -95,8 +95,8 @@ class existentialCoreThreatSignatures:
     existentialCoreThreatSignature              = "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca"
     existentialCoreThreatLegalSign              = 0x931547ed
     existentialCoreThreatLegalSignature         = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"
-    existentialCoreThreatShadowVacuumSign       = 0x931547ed
-    existentialCoreThreatShadowVacuumSignature  = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"    
+    existentialCoreThreatShadowVacuumSign       = 0x9b1d1bcf
+    existentialCoreThreatShadowVacuumSignature  = "9b1d1bcf4903c7c26a6b75dd2e0c341ddab3594c2514c99e5d8e6b4651bfcc69"    
     existentialCoreThreatStructuresSign         = 0x90f9d743
     existentialCoreThreatStructuresSignature    = "90f9d7438a0497f54dbe065a64f5f5c111dee8c1184832c280d96c0bd2226689"
 
