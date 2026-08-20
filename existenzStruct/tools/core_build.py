@@ -175,7 +175,7 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
         f.write(make_header("#") + "substitutions:\n" + "\n".join(f"  {k}: \"{widths['f_expr'](v)}\" # {clean_context_description(cmnts.get(k, ''))}" for k, v in threat_ord.items()) + "\n")
 
 
-def _export_python_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+def _export_python_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
     """Generates the isolated Python package subsystem tracks with original gate logic perfectly preserved."""
     with open(os.path.join(dist_dir, "python", "single", "existentialCore.py"), "w", encoding="utf-8") as f:
         f.write(header + "class existentialCore:\n")
@@ -189,7 +189,7 @@ def _export_python_framework(dist_dir: str, core_ord: dict, threat_ord: dict, le
             assignment = f"    {k} = {widths['f_expr'](v)}"
             f.write(f"{assignment.ljust(widths['py_t'])}# {clean_context_description(cmnts.get(k, ''))}\n")
         f.write("\n    existentialCoreThreatLegal = {\n" + ",\n".join(f"        {k}: \"{v}\"" for k, v in legal_ord.items()) + "\n    }\n")
-        f.write("\n    existentialCoreThreatShadowVacuum = {\n" + ",\n".join(f"        {k}: \"{v}\"" for k, v in legal_ord.items()) + "\n    }\n")
+        f.write("\n    existentialCoreThreatShadowVacuum = {\n" + ",\n".join(f"        {k}: \"{v}\"" for k, v in vacuum_ord.items()) + "\n    }\n")
 
     with open(os.path.join(dist_dir, "python", "single", "existentialCoreSignatures.py"), "w", encoding="utf-8") as f:
         f.write(header + 
@@ -317,7 +317,7 @@ _execute_existenz_platform_autocheck()
 __all__ = ['existentialCore', 'existentialCoreThreat', 'existentialCoreCheck', 'existentialCoreCheckVersion']
 ''')
 
-def _export_cpp_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+def _export_cpp_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
     """Generates the isolated C++ package subsystem tracks with full manifest mirrors."""
     with open(os.path.join(dist_dir, "cpp", "single", "existentialCore.hpp"), "w", encoding="utf-8") as f:
         f.write(header + "#pragma once\nnamespace existentialCore {\n")
@@ -331,16 +331,20 @@ def _export_cpp_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal
         for k, v in threat_ord.items():
             assignment = f"    const unsigned long {k} = {widths['f_expr'](v)};"
             f.write(f"{assignment.ljust(widths['cc_t'])}// {clean_context_description(cmnts.get(k, ''))}\n")
-        f.write("\n    const std::map<unsigned long, std::string> existentialCoreThreatLegal = {\n" + ",\n".join(f"        {{{k}, \"{v}\"}}" for k, v in legal_ord.items()) + "\n    };\n}\n")
+        f.write("\n    const std::map<unsigned long, std::string> existentialCoreThreatLegal = {\n" + ",\n".join(f"        {{{k}, \"{v}\"}}" for k, v in legal_ord.items()) + "\n    };\n")
+        # NEW: Inject the dynamic shadow vacuum mirror matching the exact key-value structural dimensions
+        f.write("\n    const std::map<unsigned long, std::string> existentialCoreThreatShadowVacuum = {\n" + ",\n".join(f"        {{{k}, \"{v}\"}}" for k, v in vacuum_ord.items()) + "\n    };\n}\n")
 
     with open(os.path.join(dist_dir, "cpp", "single", "existentialCoreSignatures.hpp"), "w", encoding="utf-8") as f:
         f.write(header + "#pragma once\n#include <string>\n#include <vector>\n#include <utility>\nnamespace existentialCoreSignatures {\n"
                 f"    const std::string existentialCoreVersion = \"{existentialCoreVersion}\";\n"
                 f"    const std::string existentialCoreCheckMagic = \"{existentialCoreCheckMagic}\";\n"
-                f"    const std::string existentialCoreCheckSignatures = \"{sigs['existentialCoreCheck']}\";\n"
+                f"    const std::string existentialCoreCheckSignatures = \"{sigs['existentialCoreCheckSignatures']}\";\n"
                 f"    const std::string existentialCore = \"{sigs['existentialCore']}\";\n"
                 f"    const std::string existentialCoreThreatRoot = \"{sigs['existentialCoreThreatRoot']}\";\n"
                 f"    const std::string existentialCoreThreatLegal = \"{sigs['existentialCoreThreatLegal']}\";\n"
+                # NEW: Expose the standalone signature token for your vacuum layer explicitly within the C++ vault
+                f"    const std::string existentialCoreThreatShadowVacuum = \"{sigs['existentialCoreThreatShadowVacuum']}\";\n"
                 f"    const std::string existentialCoreThreat = \"{sigs['existentialCoreThreat']}\";\n"
                 f"    const std::string existentialCoreCheck = \"{sigs['existentialCoreCheck']}\";\n\n"
                 f"    const std::vector<std::pair<std::string, std::string>> existentialPublicKeys = {{\n" + ",\n".join(f"        {{\"{k}\", \"{v}\"}}" for k, v in full_pkeys) + "\n    }};\n\n"
@@ -348,11 +352,11 @@ def _export_cpp_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal
 
     with open(os.path.join(dist_dir, "cpp", "existentialCoreCheck.hpp"), "w", encoding="utf-8") as f:
         f.write(header + '#pragma once\n#include "single/existentialCore.hpp"\nnamespace existentialCoreCheck {\nclass existentialCoreCheck {\npublic:\n    static bool check_integrity(unsigned long s) { return s == existentialCore::CANARY_S_STATE; }\n};\n}\n')
+        
     with open(os.path.join(dist_dir, "cpp", "existentialCores.hpp"), "w", encoding="utf-8") as f:
         f.write(header + '#pragma once\n#include <cstdlib>\n#include "existentialCoreCheck.hpp"\nnamespace existentialCores {\n    inline void _execute_existenz_platform_autocheck() {\n        if (!existentialCoreCheck::existentialCoreCheck::check_integrity(existentialCore::CANARY_S_STATE)) { std::exit(1); }\n    }\n    struct AutoRun { AutoRun() { _execute_existenz_platform_autocheck(); } };\n    static AutoRun __injector;\n}\n')
 
-
-def _export_perl_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+def _export_perl_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
     """Generates the isolated Perl package subsystem tracks with full manifest mirrors."""
     with open(os.path.join(dist_dir, "perl", "single", "existentialCore.pm"), "w", encoding="utf-8") as f:
         f.write(header + "package existentialCore;\nour %existentialCore = (\n")
@@ -366,17 +370,21 @@ def _export_perl_framework(dist_dir: str, core_ord: dict, threat_ord: dict, lega
         for k, v in threat_ord.items():
             assignment = f"    '{k}' => {widths['f_expr'](v)},"
             f.write(f"{assignment.ljust(widths['pl_t'])}# {clean_context_description(cmnts.get(k, ''))}\n")
-        f.write(");\nour %existentialCoreThreatLegal = (\n" + ",\n".join(f"    {k} => '{v}'" for k, v in legal_ord.items()) + "\n);\n1;\n")
+        f.write(");\nour %existentialCoreThreatLegal = (\n" + ",\n".join(f"    {k} => '{v}'" for k, v in legal_ord.items()) + "\n);\n")
+        # NEW: Inject the shadow vacuum configuration mirror cleanly into the Perl platform package module
+        f.write("our %existentialCoreThreatShadowVacuum = (\n" + ",\n".join(f"    {k} => '{v}'" for k, v in vacuum_ord.items()) + "\n);\n1;\n")
 
     with open(os.path.join(dist_dir, "perl", "single", "existentialCoreSignatures.pm"), "w", encoding="utf-8") as f:
         f.write(header + "package existentialCoreSignatures;\n"
                 f"our $existentialCoreVersion = '{existentialCoreVersion}';\n"
                 f"our $existentialCoreCheckMagic = '{existentialCoreCheckMagic}';\n"
-                f"our $existentialCoreCheckSignatures = '{sigs['existentialCoreCheck']}';\n\n"
+                f"our $existentialCoreCheckSignatures = '{sigs['existentialCoreCheckSignatures']}';\n\n"
                 f"our %existentialCoreSignatures = (\n"
                 f"    'existentialCore' => '{sigs['existentialCore']}',\n"
                 f"    'existentialCoreThreatRoot' => '{sigs['existentialCoreThreatRoot']}',\n"
                 f"    'existentialCoreThreatLegal' => '{sigs['existentialCoreThreatLegal']}',\n"
+                # NEW: Expose the standalone signature token for the vacuum layer explicitly within the Perl vault module
+                f"    'existentialCoreThreatShadowVacuum' => '{sigs['existentialCoreThreatShadowVacuum']}',\n"
                 f"    'existentialCoreThreat' => '{sigs['existentialCoreThreat']}',\n"
                 f"    'existentialCoreCheck' => '{sigs['existentialCoreCheck']}'\n);\n\n"
                 f"our @existentialPublicKeys = (\n" + ",\n".join(f"    ['{k}', '{v}']" for k, v in full_pkeys) + "\n);\n\n"
@@ -384,10 +392,12 @@ def _export_perl_framework(dist_dir: str, core_ord: dict, threat_ord: dict, lega
 
     with open(os.path.join(dist_dir, "perl", "existentialCoreCheck.pm"), "w", encoding="utf-8") as f:
         f.write(header + "package existentialCoreCheck;\nuse single::existentialCore;\nsub check_integrity { return $_ == $existentialCore::existentialCore{\"CANARY_S_STATE\"}; }\n1;\n")
+        
     with open(os.path.join(dist_dir, "perl", "existentialCores.pm"), "w", encoding="utf-8") as f:
         f.write(header + "package existentialCores;\nuse strict;\nuse warnings;\nuse existentialCoreCheck;\nuse single::existentialCore;\nif (!existentialCoreCheck::check_integrity($existentialCore::existentialCore{'CANARY_S_STATE'})) { die; }\n1;\n")
 
-def _export_php_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+
+def _export_php_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
     """Generates the isolated PHP package subsystem tracks with full manifest mirrors."""
     with open(os.path.join(dist_dir, "php", "single", "existentialCore.php"), "w", encoding="utf-8") as f:
         f.write("<?php\n" + header + "namespace existentialCore;\nclass Layout {\n")
@@ -398,15 +408,19 @@ def _export_php_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal
         f.write("<?php\n" + header + "namespace existentialCoreThreat;\nclass Threats {\n")
         for k, v in threat_ord.items(): f.write(f"    const {k} = {widths['f_expr'](v)}; // {clean_context_description(cmnts.get(k, ''))}\n")
         f.write("}\nclass ThreatLegal {\n    public static $map = [\n" + ",\n".join(f"        {k} => '{v}'" for k, v in legal_ord.items()) + "\n    ];\n}\n")
+        # NEW: Inject the shadow vacuum configuration mirror cleanly into the PHP framework classes
+        f.write("class ThreatShadowVacuum {\n    public static $map = [\n" + ",\n".join(f"        {k} => '{v}'" for k, v in vacuum_ord.items()) + "\n    ];\n}\n")
 
     with open(os.path.join(dist_dir, "php", "single", "existentialCoreSignatures.php"), "w", encoding="utf-8") as f:
         f.write("<?php\n" + header + "namespace existentialCoreSignatures;\nclass Signatures {\n"
                 f"    const existentialCoreVersion = '{existentialCoreVersion}';\n"
                 f"    const existentialCoreCheckMagic = '{existentialCoreCheckMagic}';\n"
-                f"    const existentialCoreCheckSignatures = '{sigs['existentialCoreCheck']}';\n"
+                f"    const existentialCoreCheckSignatures = '{sigs['existentialCoreCheckSignatures']}';\n"
                 f"    const existentialCore = '{sigs['existentialCore']}';\n"
                 f"    const existentialCoreThreatRoot = '{sigs['existentialCoreThreatRoot']}';\n"
                 f"    const existentialCoreThreatLegal = '{sigs['existentialCoreThreatLegal']}';\n"
+                # NEW: Expose the standalone signature token for the vacuum layer explicitly within the PHP vault class
+                f"    const existentialCoreThreatShadowVacuum = '{sigs['existentialCoreThreatShadowVacuum']}';\n"
                 f"    const existentialCoreThreat = '{sigs['existentialCoreThreat']}';\n"
                 f"    const existentialCoreCheck = '{sigs['existentialCoreCheck']}';\n\n"
                 f"    public static $existentialPublicKeys = [\n" + ",\n".join(f"        ['{k}', '{v}']" for k, v in full_pkeys) + "\n    ];\n\n"
@@ -414,11 +428,11 @@ def _export_php_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal
 
     with open(os.path.join(dist_dir, "php", "existentialCoreCheck.php"), "w", encoding="utf-8") as f:
         f.write("<?php\n" + header + "namespace existentialCoreCheck;\nuse existentialCore\\Layout;\nclass existentialCoreCheck {\n    public static function check_integrity($s) { return $s === Layout::CANARY_S_STATE; }\n}\n")
+        
     with open(os.path.join(dist_dir, "php", "existentialCores.php"), "w", encoding="utf-8") as f:
         f.write("<?php\n" + header + "namespace existentialCores;\nuse existentialCoreCheck\\existentialCoreCheck;\nuse existentialCore\\Layout;\nfunction _execute_existenz_platform_autocheck() {\n    if (!existentialCoreCheck::check_integrity(Layout::CANARY_S_STATE)) { exit(1); }\n}\n_execute_existenz_platform_autocheck();\n")
 
-
-def _export_rust_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+def _export_rust_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
     """Generates the isolated Rust crate package subsystem tracks with full manifest mirrors."""
     with open(os.path.join(dist_dir, "rust", "single", "existentialCore.rs"), "w", encoding="utf-8") as f:
         f.write(header + "pub mod existential_core {\n")
@@ -428,16 +442,20 @@ def _export_rust_framework(dist_dir: str, core_ord: dict, threat_ord: dict, lega
     with open(os.path.join(dist_dir, "rust", "single", "existentialCoreThreat.rs"), "w", encoding="utf-8") as f:
         f.write(header + "pub mod existential_core_threat {\n")
         for k, v in threat_ord.items(): f.write(f"    pub const {k}: u64 = {widths['f_expr'](v)}; // {clean_context_description(cmnts.get(k, ''))}\n")
-        f.write("\n    pub const existential_core_threat_legal: &[(u64, &str)] = &[\n" + ",\n".join(f"        ({k}, \"{v}\")" for k, v in legal_ord.items()) + "\n    ];\n}\n")
+        f.write("\n    pub const existential_core_threat_legal: &[(u64, &str)] = &[\n" + ",\n".join(f"        ({k}, \"{v}\")" for k, v in legal_ord.items()) + "\n    ];\n")
+        # NEW: Inject the shadow vacuum configuration mirror cleanly into the Rust crate mod layout
+        f.write("\n    pub const existential_core_threat_shadow_vacuum: &[(u64, &str)] = &[\n" + ",\n".join(f"        ({k}, \"{v}\")" for k, v in vacuum_ord.items()) + "\n    ];\n}\n")
 
     with open(os.path.join(dist_dir, "rust", "single", "existentialCoreSignatures.rs"), "w", encoding="utf-8") as f:
         f.write(header + "pub mod existential_core_signatures {\n"
                 f"    pub const EXISTENTIAL_CORE_VERSION: &str = \"{existentialCoreVersion}\";\n"
                 f"    pub const EXISTENTIAL_CORE_CHECK_MAGIC: &[u8] = b\"EX25IMMUT32CORE7617\";\n"
-                f"    pub const EXISTENTIAL_CORE_CHECK_SIGNATURES: &str = \"{sigs['existentialCoreCheck']}\";\n"
+                f"    pub const EXISTENTIAL_CORE_CHECK_SIGNATURES: &str = \"{sigs['existentialCoreCheckSignatures']}\";\n"
                 f"    pub const EXISTENTIAL_CORE: &str = \"{sigs['existentialCore']}\";\n"
                 f"    pub const EXISTENTIAL_CORE_THREAT_ROOT: &str = \"{sigs['existentialCoreThreatRoot']}\";\n"
                 f"    pub const EXISTENTIAL_CORE_THREAT_LEGAL: &str = \"{sigs['existentialCoreThreatLegal']}\";\n"
+                # NEW: Expose the standalone signature token for your vacuum layer explicitly within the Rust vault constants
+                f"    pub const EXISTENTIAL_CORE_THREAT_SHADOW_VACUUM: &str = \"{sigs['existentialCoreThreatShadowVacuum']}\";\n"
                 f"    pub const EXISTENTIAL_CORE_THREAT: &str = \"{sigs['existentialCoreThreat']}\";\n"
                 f"    pub const EXISTENTIAL_CORE_CHECK: &str = \"{sigs['existentialCoreCheck']}\";\n\n"
                 f"    pub const EXISTENTIAL_PUBLIC_KEYS: &[(&str, &str)] = &[\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in full_pkeys) + "\n    ];\n\n"
@@ -449,7 +467,8 @@ def _export_rust_framework(dist_dir: str, core_ord: dict, threat_ord: dict, lega
     with open(os.path.join(dist_dir, "rust", "existential_cores.rs"), "w", encoding="utf-8") as f:
         f.write(header + "pub mod existential_cores {\n    pub fn execute_existenz_platform_autocheck() {}\n}\n")
 
-def _export_infrastructure_scripts(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
+
+def _export_infrastructure_scripts(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
     """Generates Bash scripts and IoT configurations directly into target folder blocks."""
     with open(os.path.join(dist_dir, "bash", "single", "existentialCore.sh"), "w", encoding="utf-8") as f:
         f.write(header)
@@ -459,15 +478,19 @@ def _export_infrastructure_scripts(dist_dir: str, core_ord: dict, threat_ord: di
         f.write(header)
         for k, v in threat_ord.items(): f.write(f"existentialCoreThreat_{k}={widths['f_expr'](v)}\n")
         f.write("\n" + "\n".join(f"existentialCoreThreatLegal[{k}]=\"{v}\"" for k, v in legal_ord.items()) + "\n")
+        # NEW: Inject the shadow vacuum array layout mirror elements directly into the Bash runtime configurations
+        f.write("\n" + "\n".join(f"existentialCoreThreatShadowVacuum[{k}]=\"{v}\"" for k, v in vacuum_ord.items()) + "\n")
 
     with open(os.path.join(dist_dir, "bash", "single", "existentialCoreSignatures.sh"), "w", encoding="utf-8") as f:
         f.write(header + 
                 f"existentialCoreVersion=\"{existentialCoreVersion}\"\n"
                 f"existentialCoreCheckMagic=\"{existentialCoreCheckMagic}\"\n"
-                f"existentialCoreCheckSignatures=\"{sigs['existentialCoreCheck']}\"\n"
+                f"existentialCoreCheckSignatures=\"{sigs['existentialCoreCheckSignatures']}\"\n"
                 f"existentialCore=\"{sigs['existentialCore']}\"\n"
                 f"existentialCoreThreatRoot=\"{sigs['existentialCoreThreatRoot']}\"\n"
                 f"existentialCoreThreatLegal=\"{sigs['existentialCoreThreatLegal']}\"\n"
+                # NEW: Expose the standalone signature token variable within the Bash distribution scripts
+                f"existentialCoreThreatShadowVacuum=\"{sigs['existentialCoreThreatShadowVacuum']}\"\n"
                 f"existentialCoreThreat=\"{sigs['existentialCoreThreat']}\"\n"
                 f"existentialCoreCheck=\"{sigs['existentialCoreCheck']}\"\n\n"
                 f"# Public Keys\n")
@@ -477,9 +500,9 @@ def _export_infrastructure_scripts(dist_dir: str, core_ord: dict, threat_ord: di
 
     with open(os.path.join(dist_dir, "bash", "existentialCoreCheck.sh"), "w", encoding="utf-8") as f:
         f.write("#!/usr/bin/env bash\n" + header + "source single/existentialCore.sh\ncheck_integrity() { [[ \"$1\" -eq \"$existentialCore_CANARY_S_STATE\" ]]; }\n")
+        
     with open(os.path.join(dist_dir, "bash", "existentialCores.sh"), "w", encoding="utf-8") as f:
         f.write("#!/usr/bin/env bash\n" + header + "source existentialCoreCheck.sh\nif ! check_integrity \"$existentialCore_CANARY_S_STATE\"; then exit 1; fi\n")
-
 
 def perform_cross_language_exports(signatures_map: dict, mode: str):
     """Orchestrates structured step-by-step cross-language build matrix outputs safely."""
@@ -501,7 +524,7 @@ def perform_cross_language_exports(signatures_map: dict, mode: str):
     core_ord = {k: v.value for k, v in sorted(existentialCore.__members__.items(), key=lambda i: i[1].value)}
     threat_ord = {k: v.value for k, v in sorted(existentialCoreThreat.__members__.items(), key=lambda i: i[1].value)}
     legal_ord = {int(k): str(v) for k, v in sorted(existentialCoreThreatLegal.items(), key=lambda i: i[0])}
-
+    vacuum_ord = {int(k): str(v) for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i[0])}
     def _f_expr(v: int) -> str: return "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
 
     w = {
@@ -524,21 +547,13 @@ def perform_cross_language_exports(signatures_map: dict, mode: str):
             token_hash = hmac.new(salt_bytes, signatures_map.get(name, "").encode('utf-8'), hashlib.sha256).hexdigest()
         full_psigned.append([name, token_hash])
 
-    _write_agnostic_blueprints(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header(""), w)
-    _export_python_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
-    _export_cpp_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
-    _export_perl_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
-    _export_php_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
-    _export_rust_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
-    _export_infrastructure_scripts(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
-
-#    _write_agnostic_blueprints(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header(""), w)
-#    _export_python_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
-#    _export_cpp_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
-#    _export_perl_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
-#    _export_php_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
-#    _export_rust_framework(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
-#    _export_infrastructure_scripts(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
+    _write_agnostic_blueprints(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header(""), w)
+    _export_python_framework(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
+    _export_cpp_framework(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
+    _export_perl_framework(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
+    _export_php_framework(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
+    _export_rust_framework(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
+    _export_infrastructure_scripts(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
 
     with open(os.path.join(dist_dir, "esphome", "existentialCores.yaml"), "w", encoding="utf-8") as f:
         f.write(make_header("#") + " # ESPHome Consolidated Entrypoint Wrapper Config\ninclude:\n  - single/esphomeCore.yaml\n  - single/esphomeThreat.yaml\n")
@@ -588,12 +603,12 @@ def main():
     threat_legal_structure_signature = hmac.new(existentialCoreCheckMagic, threat_legal_structure_payload, hashlib.sha256).hexdigest()
     threat_legal_structure_sign = threat_legal_structure_signature[:8]
 
-    threat_shadow_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items()))
+    threat_shadow_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i[0]))
     threat_shadow_structure_payload = threat_shadow_structure.encode('utf-8')
     threat_shadow_structure_signature = hmac.new(existentialCoreCheckMagic, threat_shadow_structure_payload, hashlib.sha256).hexdigest()
-    threat_shadow_structure_sign = threat_shadow_structure_signature[:8]    
+    threat_shadow_structure_sign = threat_shadow_structure_signature[:8] 
 
-    threat_structures = f"{threat_structure}||{threat_legal_structure}"
+    threat_structures = f"{threat_structure}||{threat_legal_structure}||{threat_shadow_structure}"
     threat_structures_payload = threat_structures.encode('utf-8')
     threat_structures_signature = hmac.new(existentialCoreCheckMagic, threat_structures_payload, hashlib.sha256).hexdigest()
     threat_structures_sign = threat_structures_signature[:8]
@@ -629,6 +644,8 @@ def main():
         print(f"  │                             ├──► existentialCoreThreatSignature           = \"{threat_structure_signature}\"")
         print(f"  │                             ├──► existentialCoreThreatLegalSign           = 0x{threat_legal_structure_sign}")
         print(f"  │                             ├──► existentialCoreThreatLegalSignature      = \"{threat_legal_structure_signature}\"")
+        print(f"  │                             ├──► existentialCoreThreatShadowVacuumSign    = 0x{threat_shadow_structure_sign}")
+        print(f"  │                             ├──► existentialCoreThreatShadowV..Signature  = \"{threat_shadow_structure_signature}\"")        
         print(f"  │                             ├──► existentialCoreThreatStructuresSign      = 0x{threat_structures_sign}")
         print(f"  │                             └──► existentialCoreThreatStructuresSignature = \"{threat_structures_signature}\"")
         print(f"  ├── existentialCoreCheck.py   ─┬─► existentialCoreCheckSign                 = 0x{check_structures_sign}")
@@ -681,6 +698,7 @@ def main():
                         f"    existentialCore                              = \"{core_structure_signature}\"\n"
                         f"    existentialCoreThreatRoot                    = \"{threat_structure_signature}\"\n"
                         f"    existentialCoreThreatLegal                   = \"{threat_legal_structure_signature}\"\n"
+                        f"    existentialCoreThreatShadowVacuum            = \"{threat_shadow_structure_signature}\"\n"
                         f"    existentialCoreThreat                        = \"{threat_structures_signature}\"\n"
                         f"    existentialCoreCheck                         = \"{check_structures_signature}\"\n\n"
                         f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys) + "\n    )\n\n"
@@ -720,9 +738,10 @@ def main():
             "existentialCore": core_structure_signature,
             "existentialCoreThreatRoot": threat_structure_signature,
             "existentialCoreThreatLegal": threat_legal_structure_signature,
+            "existentialCoreThreatShadowVacuum": threat_shadow_structure_signature,
             "existentialCoreThreat": threat_structures_signature,
             "existentialCoreCheck": check_structures_signature,
-            "existentialCoreCheckSignatures": "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
+            "existentialCoreCheckSignatures": getattr(existentialCoreSignatures, "existentialCoreCheckSignatures", "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484")
         }
         
         print("──┬ [ verified signatures blueprint ] ────────────────────────────")
