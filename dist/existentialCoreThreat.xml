@@ -45,5 +45,24 @@
     <map key="89130487" value="LEGAL_CAN2_EXPLOITATION"/>
     <map key="2290263560" value="LEGAL_CAN5_PREDATORY"/>
   </legal>
-  <signature>90f9d7438a0497f54dbe065a64f5f5c111dee8c1184832c280d96c0bd2226689</signature>
+  <vacuum>
+    <map key="1" value="VACUUM_DEHUMANISATION"/>
+    <map key="2" value="VACUUM_DISFRANCHISEMENT"/>
+    <map key="4" value="VACUUM_CORRUPTION"/>
+    <map key="8" value="VACUUM_DRIFT_SOVEREIGN"/>
+    <map key="16" value="VACUUM_ATTRITION_PSYCHOLOGY"/>
+    <map key="32" value="VACUUM_SOMATIC_DRAIN"/>
+    <map key="64" value="VACUUM_NEURONORMATIVITY"/>
+    <map key="128" value="VACUUM_ATTRITION_INSTITUTIONAL"/>
+    <map key="256" value="VACUUM_SYSTEMIC_DESPOILMENT"/>
+    <map key="512" value="VACUUM_DRIFT_SOMATIC"/>
+    <map key="1024" value="VACUUM_PANOPTICISM"/>
+    <map key="8192" value="VACUUM_DRIFT_SYSTEMIC"/>
+    <map key="1048576" value="VACUUM_INVERT_COMPLIANCE"/>
+    <map key="4194304" value="VACUUM_INVERT_NORMALIZATION"/>
+    <map key="16777216" value="VACUUM_INVERT_INERTIA"/>
+    <map key="89130487" value="VACUUM_PARASITISM"/>
+    <map key="2290263560" value="VACUUM_HARVESTING"/>
+  </vacuum>
+  <signature>23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3</signature>
 </existentialCoreThreat>

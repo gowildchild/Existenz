@@ -8,13 +8,13 @@
 import hmac
 import hashlib
 from single.existentialCore import existentialCore
-from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal
+from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal, existentialCoreThreatShadowVacuum
 from single.existentialCoreSignatures import existentialCoreSignatures
 
-existentialCoreCheckVersion    = "{existentialCoreVersion}"
-existentialCoreCheckMagic      = b"{existentialCoreCheckMagic}"
+existentialCoreCheckVersion    = "v0.76i"
+existentialCoreCheckMagic      = b"EX25IMMUT32CORE7617"
 existentialCoreCheckSign       = 0x7c165b32
-existentialCoreCheckSignature  = "{sigs['existentialCoreCheck']}"
+existentialCoreCheckSignature  = "8b4defb0aaf1eb9bcd7b382cf0b4db0aa093eb1b84b8e09d3cf0f73d5b2d37b6"
 
 class existentialCoreCheck:
     @classmethod
@@ -85,4 +85,13 @@ class existentialCoreCheck:
         computed_token = computed_hash[:4].hex()
         
         expected_token = existentialCoreSignatures.existentialCoreThreatLegal[-8:].lower()
+        return hmac.compare_digest(computed_token, expected_token)
+
+    @classmethod
+    def check_integrity_vacuum(cls) -> bool:
+        serialized_map = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items()))
+        computed_hash = hmac.new(existentialCoreCheckMagic, serialized_map.encode('utf-8'), hashlib.sha256).digest()
+        computed_token = computed_hash[:4].hex()
+        
+        expected_token = existentialCoreSignatures.existentialCoreThreatShadowVacuum[-8:].lower()
         return hmac.compare_digest(computed_token, expected_token)

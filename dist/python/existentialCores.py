@@ -8,17 +8,24 @@
 import sys
 from existentialCoreCheck import existentialCoreCheck, existentialCoreCheckVersion
 from single.existentialCore import existentialCore
-from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal
+# UPDATED: Import your new shadow vacuum structure right into the runtime module
+from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal, existentialCoreThreatShadowVacuum
 
 def _execute_existenz_platform_autocheck():
     """Internal zero-trust gatekeeper. Automatically fires upon import."""
     if not existentialCoreCheck.check_integrity_legal():
         print("[-] CRITICAL ERROR: Threat Legal Map corruption detected!", file=sys.stderr)
         sys.exit(1)
+        
+    # NEW: Actively catch any runtime drift or corruption inside the shadow vacuum layers
+    if hasattr(existentialCoreCheck, 'check_integrity_vacuum') and not existentialCoreCheck.check_integrity_vacuum():
+        print("[-] CRITICAL ERROR: Shadow Vacuum Map corruption detected!", file=sys.stderr)
+        sys.exit(1)
+
     pristine_vector = existentialCore.CANARY_S_STATE
     if not existentialCoreCheck.check_integrity(pristine_vector):
         print("[-] CRITICAL ERROR: Foundational Kernel or Checklist mismatch!", file=sys.stderr)
         sys.exit(1)
 
 _execute_existenz_platform_autocheck()
-__all__ = ['existentialCore', 'existentialCoreThreat', 'existentialCoreCheck', 'existentialCoreCheckVersion']
+__all__ = ['existentialCore', 'existentialCoreThreat', 'existentialCoreThreatShadowVacuum', 'existentialCoreCheck', 'existentialCoreCheckVersion']

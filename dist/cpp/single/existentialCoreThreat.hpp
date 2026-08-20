@@ -54,4 +54,24 @@ namespace existentialCoreThreat {
         {89130487, "LEGAL_CAN2_EXPLOITATION"},
         {2290263560, "LEGAL_CAN5_PREDATORY"}
     };
+
+    const std::map<unsigned long, std::string> existentialCoreThreatShadowVacuum = {
+        {1, "VACUUM_DEHUMANISATION"},
+        {2, "VACUUM_DISFRANCHISEMENT"},
+        {4, "VACUUM_CORRUPTION"},
+        {8, "VACUUM_DRIFT_SOVEREIGN"},
+        {16, "VACUUM_ATTRITION_PSYCHOLOGY"},
+        {32, "VACUUM_SOMATIC_DRAIN"},
+        {64, "VACUUM_NEURONORMATIVITY"},
+        {128, "VACUUM_ATTRITION_INSTITUTIONAL"},
+        {256, "VACUUM_SYSTEMIC_DESPOILMENT"},
+        {512, "VACUUM_DRIFT_SOMATIC"},
+        {1024, "VACUUM_PANOPTICISM"},
+        {8192, "VACUUM_DRIFT_SYSTEMIC"},
+        {1048576, "VACUUM_INVERT_COMPLIANCE"},
+        {4194304, "VACUUM_INVERT_NORMALIZATION"},
+        {16777216, "VACUUM_INVERT_INERTIA"},
+        {89130487, "VACUUM_PARASITISM"},
+        {2290263560, "VACUUM_HARVESTING"}
+    };
 }

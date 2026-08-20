@@ -12,12 +12,13 @@
 namespace existentialCoreSignatures {
     const std::string existentialCoreVersion = "v0.76i";
     const std::string existentialCoreCheckMagic = "b'EX25IMMUT32CORE7617'";
-    const std::string existentialCoreCheckSignatures = "b45624fc09463f05d2e9359db32ae928e084aa81e47bbd33ecde0a58d66d0656";
+    const std::string existentialCoreCheckSignatures = "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484";
     const std::string existentialCore = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e";
     const std::string existentialCoreThreatRoot = "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca";
     const std::string existentialCoreThreatLegal = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1";
-    const std::string existentialCoreThreat = "90f9d7438a0497f54dbe065a64f5f5c111dee8c1184832c280d96c0bd2226689";
-    const std::string existentialCoreCheck = "b45624fc09463f05d2e9359db32ae928e084aa81e47bbd33ecde0a58d66d0656";
+    const std::string existentialCoreThreatShadowVacuum = "9b1d1bcf4903c7c26a6b75dd2e0c341ddab3594c2514c99e5d8e6b4651bfcc69";
+    const std::string existentialCoreThreat = "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3";
+    const std::string existentialCoreCheck = "8b4defb0aaf1eb9bcd7b382cf0b4db0aa093eb1b84b8e09d3cf0f73d5b2d37b6";
 
     const std::vector<std::pair<std::string, std::string>> existentialPublicKeys = {
         {"Platform", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"},
@@ -32,6 +33,7 @@ namespace existentialCoreSignatures {
         {"CoreThreatStruct", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d"},
         {"CoreThreatLegal", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d"},
         {"CoreThreat", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d"},
+        {"CoreThreatShadowVacuum", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d"},
         {"CoreChain", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d"}
     }};
 }

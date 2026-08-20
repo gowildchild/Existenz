@@ -63,7 +63,7 @@ existentialCoreThreatLegal = {
     existentialCoreThreat.CANARY_8_PREDATORY:      "LEGAL_CAN5_PREDATORY"
 }
 
-existentialCorethreatShadowVacuum = {
+existentialCoreThreatShadowVacuum = {
     existentialCoreThreat.THREAT_EXISTENCE:        "VACUUM_DEHUMANISATION",
     existentialCoreThreat.THREAT_AUTONOMY:         "VACUUM_DISFRANCHISEMENT",
     existentialCoreThreat.THREAT_INTEGRITY:        "VACUUM_CORRUPTION",
@@ -91,11 +91,13 @@ existentialCorethreatShadowVacuum = {
 # ==========================================================================
 class existentialCoreThreatSignatures:
     """Consolidated hardware-salted cryptographic locks for the threat ecosystem."""
-    existentialCoreThreatSign                = 0x1f95497b
-    existentialCoreThreatSignature           = "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca"
-    existentialCoreThreatLegalSign           = 0x931547ed
-    existentialCoreThreatLegalSignature      = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"
-    existentialCoreThreatStructuresSign      = 0x90f9d743
-    existentialCoreThreatStructuresSignature = "90f9d7438a0497f54dbe065a64f5f5c111dee8c1184832c280d96c0bd2226689"
+    existentialCoreThreatSign                   = 0x1f95497b
+    existentialCoreThreatSignature              = "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca"
+    existentialCoreThreatLegalSign              = 0x931547ed
+    existentialCoreThreatLegalSignature         = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"
+    existentialCoreThreatShadowVacuumSign       = 0x931547ed
+    existentialCoreThreatShadowVacuumSignature  = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"    
+    existentialCoreThreatStructuresSign         = 0x90f9d743
+    existentialCoreThreatStructuresSignature    = "90f9d7438a0497f54dbe065a64f5f5c111dee8c1184832c280d96c0bd2226689"
 
 
