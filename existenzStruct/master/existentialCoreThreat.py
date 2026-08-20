@@ -87,14 +87,15 @@ existentialCorethreatShadowVacuum = {
 
 # ==========================================================================
 # UNIVERSAL CRYPTOGRAPHIC BOUNDARY VAULT (CONSOLIDATED STRUCTURE)
+# v0.76i - Grammatical errors and adding ShadowVacuum
 # ==========================================================================
 class existentialCoreThreatSignatures:
     """Consolidated hardware-salted cryptographic locks for the threat ecosystem."""
-    existentialCoreThreatSign                = 0x57c413f8
-    existentialCoreThreatSignature           = "57c413f8531731df0d2f09a260ea36c7e49269348b553fdeeaa2dd11e7bc4bb9"
-    existentialCoreThreatLegalSign           = 0x6d07d972
-    existentialCoreThreatLegalSignature      = "6d07d97272d414f966ea7a9d7b2956b96541fecbcb9079f375408a62b3b6bd6e"
-    existentialCoreThreatStructuresSign      = 0x759533df
-    existentialCoreThreatStructuresSignature = "759533dfd2a276046bc62985b17df7cefb999a1c3a07b7b983e5ee278d80302d"
+    existentialCoreThreatSign                = 0x1f95497b
+    existentialCoreThreatSignature           = "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca"
+    existentialCoreThreatLegalSign           = 0x931547ed
+    existentialCoreThreatLegalSignature      = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"
+    existentialCoreThreatStructuresSign      = 0x90f9d743
+    existentialCoreThreatStructuresSignature = "90f9d7438a0497f54dbe065a64f5f5c111dee8c1184832c280d96c0bd2226689"
 
 
