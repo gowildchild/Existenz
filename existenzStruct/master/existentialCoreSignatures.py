@@ -23,11 +23,11 @@ class existentialCoreSignatures:
     )
 
     existentialCoreSigned = (
-        ("Magic", "7faa8872", "existentialCoreMagicHash", "7faa88729e96e6a8795855c4e962d1cef3f9b8d2675819ba383f65e33daa0b9f6e46d27348e0670a6e4a90ebaf1266c3be28cf0412153501830d506c6f808909", 60, 0),
-        ("Core", "1289de75", "existentialCoreHash", "1289de75fe9506e225779f2f9cfe530c231e81fd4b6d420ee657cfec6e6d3b3a7b0b009a2aad37b7549b8c81e972ff337b0db434f66a67e4d859ef7186467d07", 126, 0),
-        ("CoreCheck", "7faa8872", "existentialCoreCheckHash", "7faa88729e96e6a8795855c4e962d1cef3f9b8d2675819ba383f65e33daa0b9f6e46d27348e0670a6e4a90ebaf1266c3be28cf0412153501830d506c6f808909", 62, 0),
-        ("CoreThreatStruct", "cfac5173", "existentialCoreThreatStructHash", "cfac51731c4614745c0f3d6c867bb0f07b4f2c7144de8a26c0676c5ff93c2a92d64f11568b294e03d598aaf1fb0c647cc1f18cad0dc9e11ccb19054b76bf2c09", 31, 1),
-        ("CoreThreatLegal", "afc8df8c", "existentialCoreThreatLegalHash", "afc8df8ce773f0a5dc492fcaf08686da15601de09ad58ed224284e2e96f5b29d17a4d4c1eb0eff3ed8863eea0e64af1c25be49999d3c5d6de552ad97dbe8ad09", 31, 2),
-        ("CoreThreat", "158ca97c", "existentialCoreThreatHash", "158ca97cd218c2a45c1dcead0cf22ee4bfaf582ad02c5a74cd587059636331b0bd5a6043f9b27bd7c2b8889220aaaee1c9f49a730c79ae61a211633f05392f01", 127, 3),
-        ("CoreChain", "7faa8872", "existentialCoreChainHash", "7faa88729e96e6a8795855c4e962d1cef3f9b8d2675819ba383f65e33daa0b9f6e46d27348e0670a6e4a90ebaf1266c3be28cf0412153501830d506c6f808909", 255, 9)
+        ("Magic", "existentialCoreMagicSig", "existentialCoreMagicHash", "existentialCoreMagicSignature", 60, 0),
+        ("Core", "existentialCoreSign", "existentialCoreHash", "existentialCoreSignature", 126, 0),
+        ("CoreCheck", "existentialCoreCheckSign", "existentialCoreCheckHash", "existentialCoreCheckSignature", 62, 0),
+        ("CoreThreatStruct", "existentialCoreThreatStructSign", "existentialCoreThreatStructHash", "existentialCoreThreatStructSignature", 31, 1),
+        ("CoreThreatLegal", "existentialCoreThreatLegalSign", "existentialCoreThreatLegalHash", "existentialCoreThreatLegalSignature", 31, 2),
+        ("CoreThreat", "existentialCoreThreatSign", "existentialCoreThreatHash", "existentialCoreThreatSignature", 127, 3),
+        ("CoreChain", "existentialCoreChainSign", "existentialCoreChainHash", "existentialCoreChainSignature", 255, 9)
     )
