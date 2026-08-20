@@ -113,7 +113,7 @@ def build_aligned_json_block(container_key: str, ordered_layout: dict, comments_
     json_lines.append("    }")
     return json_lines
 
-def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict):
+def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, vacuum_ord=None):
     """Outputs agnostic formats (JSON, XML, YAML, CSV, Markdown) straight to the root of dist/."""
     with open(os.path.join(dist_dir, "existentialCore.json"), "w", encoding="utf-8") as f:
         f.write("{\n" + "\n".join(build_aligned_json_block("existentialCore", core_ord, cmnts)) + "\n}\n")
@@ -121,6 +121,11 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
     json_t = ["{", "\n".join(build_aligned_json_block("existentialCoreThreat", threat_ord, cmnts)) + ",", "    \"existentialCoreThreatLegal\": {"]
     max_l_k = max(len(str(k)) for k in legal_ord.keys())
     json_t.append(",\n".join(f'        "{lk}":'.ljust(max_l_k + 11) + f'"{lv}"' for lk, lv in legal_ord.items()) + "\n    },")
+    if vacuum_ord:
+        json_t.append("    \"existentialCoreThreatShadowVacuum\": {")
+        max_v_k = max(len(str(k)) for k in vacuum_ord.keys())
+        json_t.append(",\n".join(f'        "{vk}":'.ljust(max_v_k + 11) + f'"{vv}"' for vk, vv in vacuum_ord.items()) + "\n    },")
+        
     json_t.append(f'    "existentialCoreThreatSignature": "{sigs["existentialCoreThreat"]}"\n}}')
     with open(os.path.join(dist_dir, "existentialCoreThreat.json"), "w", encoding="utf-8") as f:
         f.write("\n".join(json_t) + "\n")
@@ -148,7 +153,17 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
         lines.append("  </structure>\n  <legal>")
         for k, v in legal_ord.items():
             lines.append(f'    <map key="{k}" value="{escape_xml_attr(v)}"/>')
-        lines.append(f"  </legal>\n  <signature>{sigs['existentialCoreThreat']}</signature>\n</existentialCoreThreat>")
+            
+        # ── CHANGE 2: BRIDGE VACUUM DATA INTO THE UNIFIED XML MARKUP NODE ──
+        if vacuum_ord:
+            lines.append("  </legal>\n  <vacuum>")
+            for k, v in vacuum_ord.items():
+                lines.append(f'    <map key="{k}" value="{escape_xml_attr(v)}"/>')
+            lines.append("  </vacuum>")
+        else:
+            lines.append("  </legal>")
+
+        lines.append(f"  <signature>{sigs['existentialCoreThreat']}</signature>\n</existentialCoreThreat>")
         f.write("\n".join(lines) + "\n")
 
 
@@ -214,14 +229,17 @@ def _export_python_framework(dist_dir: str, core_ord: dict, threat_ord: dict, le
 
 
     with open(os.path.join(dist_dir, "python", "existentialCoreCheck.py"), "w", encoding="utf-8") as f:
-        f.write(header + '''import hmac
+        # Extract clean string to prevent syntax string interpolation issues
+        clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic)
+        
+        f.write(header + f'''import hmac
 import hashlib
 from single.existentialCore import existentialCore
-from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal
+from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal, existentialCoreThreatShadowVacuum
 from single.existentialCoreSignatures import existentialCoreSignatures
 
 existentialCoreCheckVersion    = "{existentialCoreVersion}"
-existentialCoreCheckMagic      = b"{existentialCoreCheckMagic}"
+existentialCoreCheckMagic      = b"{clean_magic_str}"
 existentialCoreCheckSign       = 0x7c165b32
 existentialCoreCheckSignature  = "{sigs['existentialCoreCheck']}"
 
@@ -289,11 +307,20 @@ class existentialCoreCheck:
 
     @classmethod
     def check_integrity_legal(cls) -> bool:
-        serialized_map = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items()))
+        serialized_map = "".join(f"{{k}}:{{v}}" for k, v in sorted(existentialCoreThreatLegal.items()))
         computed_hash = hmac.new(existentialCoreCheckMagic, serialized_map.encode('utf-8'), hashlib.sha256).digest()
         computed_token = computed_hash[:4].hex()
         
         expected_token = existentialCoreSignatures.existentialCoreThreatLegal[-8:].lower()
+        return hmac.compare_digest(computed_token, expected_token)
+
+    @classmethod
+    def check_integrity_vacuum(cls) -> bool:
+        serialized_map = "".join(f"{{k}}:{{v}}" for k, v in sorted(existentialCoreThreatShadowVacuum.items()))
+        computed_hash = hmac.new(existentialCoreCheckMagic, serialized_map.encode('utf-8'), hashlib.sha256).digest()
+        computed_token = computed_hash[:4].hex()
+        
+        expected_token = existentialCoreSignatures.existentialCoreThreatShadowVacuum[-8:].lower()
         return hmac.compare_digest(computed_token, expected_token)
 ''')
 
@@ -301,20 +328,27 @@ class existentialCoreCheck:
         f.write(header + '''import sys
 from existentialCoreCheck import existentialCoreCheck, existentialCoreCheckVersion
 from single.existentialCore import existentialCore
-from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal
+# UPDATED: Import your new shadow vacuum structure right into the runtime module
+from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal, existentialCoreThreatShadowVacuum
 
 def _execute_existenz_platform_autocheck():
     """Internal zero-trust gatekeeper. Automatically fires upon import."""
     if not existentialCoreCheck.check_integrity_legal():
         print("[-] CRITICAL ERROR: Threat Legal Map corruption detected!", file=sys.stderr)
         sys.exit(1)
+        
+    # NEW: Actively catch any runtime drift or corruption inside the shadow vacuum layers
+    if hasattr(existentialCoreCheck, 'check_integrity_vacuum') and not existentialCoreCheck.check_integrity_vacuum():
+        print("[-] CRITICAL ERROR: Shadow Vacuum Map corruption detected!", file=sys.stderr)
+        sys.exit(1)
+
     pristine_vector = existentialCore.CANARY_S_STATE
     if not existentialCoreCheck.check_integrity(pristine_vector):
         print("[-] CRITICAL ERROR: Foundational Kernel or Checklist mismatch!", file=sys.stderr)
         sys.exit(1)
 
 _execute_existenz_platform_autocheck()
-__all__ = ['existentialCore', 'existentialCoreThreat', 'existentialCoreCheck', 'existentialCoreCheckVersion']
+__all__ = ['existentialCore', 'existentialCoreThreat', 'existentialCoreThreatShadowVacuum', 'existentialCoreCheck', 'existentialCoreCheckVersion']
 ''')
 
 def _export_cpp_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
@@ -547,7 +581,7 @@ def perform_cross_language_exports(signatures_map: dict, mode: str):
             token_hash = hmac.new(salt_bytes, signatures_map.get(name, "").encode('utf-8'), hashlib.sha256).hexdigest()
         full_psigned.append([name, token_hash])
 
-    _write_agnostic_blueprints(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header(""), w)
+    _write_agnostic_blueprints(dist_dir, core_ord, threat_ord, legal_ord, signatures_map, cmnts, make_header(""), w, vacuum_ord=vacuum_ord)
     _export_python_framework(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
     _export_cpp_framework(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
     _export_perl_framework(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
