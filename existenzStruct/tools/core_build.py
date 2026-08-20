@@ -695,7 +695,7 @@ def main():
             print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer! Compilation aborted.", file=sys.stderr)
             sys.exit(1)
             
-        global_sigs_map = {
+        global_sigs_map_previous = {
             "existentialCore": core_structure_signature,
             "existentialCoreThreatRoot": threat_structure_signature,
             "existentialCoreThreatLegal": threat_legal_structure_signature,
@@ -704,6 +704,15 @@ def main():
             "existentialCoreCheckSignatures": "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
         }
 
+        global_sigs_map = {
+            "Core": core_structure_signature,
+            "CoreThreatRoot": threat_structure_signature,
+            "CoreThreatLegal": threat_legal_structure_signature,
+            "CoreThreat": threat_structures_signature,
+            "CoreCheck": check_structures_signature,
+            "existentialCoreCheckSignatures": "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
+        }
+        
         print("──┬ [ verified signatures blueprint ] ────────────────────────────")
         for signature_key, digest_hash in global_sigs_map.items():
             if signature_key != "existentialCoreCheckSignatures":
