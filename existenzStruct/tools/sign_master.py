@@ -3,6 +3,7 @@
 # THE EXISTENZ PLATFORM (DYNAMIC MASTER BLUEPRINT CRYPTOGRAPHIC SIGNER)
 # File: sign_master.py
 # Purpose: Implements asymmetric private key multi-signing from dynamic tuples.
+# v 0.76i
 # ==========================================================================
 import os
 import sys
