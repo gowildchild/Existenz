@@ -690,6 +690,11 @@ def main():
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
 
+        # FORCE PLATFORM TO ABORT IF THE KEY:VALUE LAYOUT HAS BEEN TAMPERED WITH
+        if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
+            print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer! Compilation aborted.", file=sys.stderr)
+            sys.exit(1)
+            
         global_sigs_map = {
             "existentialCore": core_structure_signature,
             "existentialCoreThreatRoot": threat_structure_signature,
