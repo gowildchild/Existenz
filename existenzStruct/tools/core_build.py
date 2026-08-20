@@ -697,16 +697,29 @@ def main():
     elif args.step == "sign":
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
 
-        # wilma
         pub_keys_dict = {name: key_str for name, key_str in existentialCoreSignatures.existentialPublicKeys}
 
+        # Dynamic Bitmask Extraction: Identify which key bits are explicitly required by the tracking layers
+        active_required_identities = set()
+        for layer_meta in existentialCoreSignatures.existentialCoreSigned:
+            name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+            
+            # Map bitwise configuration flags directly to your cryptographic key handles
+            if bitmask & 8:   active_required_identities.add("Platform")
+            if bitmask & 16:  active_required_identities.add("Developer")
+            if bitmask & 32:  active_required_identities.add("Personal")
+
+        # Initialize signature payload base anchoring constant
         combined_salt_payload = bytearray(existentialCoreCheckMagic)
+        
+        # Enforce key evaluation block strictly following your bitmask configuration criteria
         for identity in ["Platform", "Developer", "Personal"]:
-            key_body = pub_keys_dict[identity].split()
-            if len(key_body) >= 2:
-                combined_salt_payload.extend(key_body[1].encode('utf-8'))
-            else:
-                combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
+            if identity in active_required_identities and identity in pub_keys_dict:
+                key_body = pub_keys_dict[identity].split()
+                if len(key_body) >= 2:
+                    combined_salt_payload.extend(key_body[1].encode('utf-8'))
+                else:
+                    combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
 
         derived_salt_token = hashlib.sha256(combined_salt_payload).hexdigest()
 
@@ -721,13 +734,18 @@ def main():
             target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
             
             print(f"[*] Compiling dynamic lockbook signatures file into: {target_sig_file}")
-            # magic_token_str {existentialCoreCheckMagic}
-            # FIXED: Flushes the true, LIVE calculated hashes down into the signature lock module properties!
+            
+            # Clean string parsing pass to avoid b"b'...'" literal formatting string syntax corruption bugs
+            if isinstance(existentialCoreCheckMagic, bytes):
+                clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore')
+            else:
+                clean_magic_str = str(existentialCoreCheckMagic).replace("b'", "").replace("'", "")
+
             with open(target_sig_file, "w", encoding="utf-8") as f:
                 f.write(make_header("#") +
                         f"existentialCoreVersion                       = \"{existentialCoreVersion}\"\n"
-                        f"existentialCoreCheckMagic                    = b\"{existentialCoreCheckMagic}\"\n"
-                        f"existentialCoreCheckSignatures                    = \"{derived_salt_token}\"\n\n"
+                        f"existentialCoreCheckMagic                    = b\"{clean_magic_str}\"\n"
+                        f"existentialCoreCheckSignatures               = \"{derived_salt_token}\"\n\n"
                         f"class existentialCoreSignatures:\n"
                         f"    existentialCore                              = \"{core_structure_signature}\"\n"
                         f"    existentialCoreThreatRoot                    = \"{threat_structure_signature}\"\n"
@@ -739,8 +757,6 @@ def main():
                         f"    existentialCoreSigned = (\n" + ",\n".join(f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {seq})" for name, short_var, hash_var, sign_var, bitmask, seq in existentialCoreSignatures.existentialCoreSigned) + "\n    )\n")
             print("[+] Target folder master signatures built.")
         sys.exit(0)
-
-
 
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
