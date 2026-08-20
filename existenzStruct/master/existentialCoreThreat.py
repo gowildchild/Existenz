@@ -35,6 +35,10 @@ class existentialCoreThreat(IntFlag):
     CANARY_4_PERSONAL       = 1 << 17
     CANARY_5_RIGHTS         = 1 << 23
     CANARY_6_CIVIC          = 1 << 27
+    # CANARY_7_EXPLOITATION   = existentialCore.CANARY_S_STATE | existentialCore.PROPERTY
+    CANARY_7_EXPLOITATION   = 0x055005f7
+    # CANARY_8_PREDATORY      = existentialCore.CANARY_S_COLLIDE | existentialCore.PRESENCE
+    CANARY_8_PREDATORY      = 0x8882a608
 
     SIGN_THREAT_RIGHTS_LEGAL = 0x6d07d972
     SIGN_THREAT_EXISTENZ     = 0x5beba3df
