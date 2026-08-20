@@ -564,7 +564,7 @@ def main():
     args = parser.parse_args()
 
     print("┌────────────────────────────────────────────────────────────────┐")
-    print(f"│ EXISTENZ UNIFIED PIPELINE ENGINE ({existentialCoreVersion})                      │")
+    print(f"│ EXISTENZ CORE BUILDER ENGINE v0.76i ({existentialCoreVersion})                      │")
     print("└────────────────────────────────────────────────────────────────┘")
     print(f"[*] Execution Step : --step {args.step}")
     print(f"[*] Strategy Mode  : -run {args.run}")
@@ -585,6 +585,11 @@ def main():
     threat_legal_structure_payload = threat_legal_structure.encode('utf-8')
     threat_legal_structure_signature = hmac.new(existentialCoreCheckMagic, threat_legal_structure_payload, hashlib.sha256).hexdigest()
     threat_legal_structure_sign = threat_legal_structure_signature[:8]
+
+    threat_shadow_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items()))
+    threat_shadow_structure_payload = threat_shadow_structure.encode('utf-8')
+    threat_shadow_structure_signature = hmac.new(existentialCoreCheckMagic, threat_shadow_structure_payload, hashlib.sha256).hexdigest()
+    threat_shadow_structure_sign = threat_shadow_structure_signature[:8]    
 
     threat_structures = f"{threat_structure}||{threat_legal_structure}"
     threat_structures_payload = threat_structures.encode('utf-8')
@@ -636,10 +641,6 @@ def main():
         print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
         sys.exit(0)
 
-
-
-
-
     elif args.step == "sign":
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
 
@@ -690,26 +691,35 @@ def main():
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
 
-        # FORCE PLATFORM TO ABORT IF THE KEY:VALUE LAYOUT HAS BEEN TAMPERED WITH
-        if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
-            print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer! Compilation aborted.", file=sys.stderr)
+        print("[*] Validating live framework text layouts against signature records...")
+        
+        # 1. Compute exactly what the threat legal layout hash looks like with your grammar changes
+        current_legal_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items(), key=lambda i: i[0]))
+        current_legal_payload = current_legal_structure.encode('utf-8')
+        current_legal_hash = hmac.new(existentialCoreCheckMagic, current_legal_payload, hashlib.sha256).hexdigest()
+
+        # 2. Compare it to the master tracking module. 
+        # If your grammar fix hasn't been signed with --step sign, it aborts instantly.
+        if not hmac.compare_digest(current_legal_hash, existentialCoreSignatures.existentialCoreThreatLegal):
+            print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
+            print("[-] Unsigned grammatical or structural variations detected inside Legal Map!", file=sys.stderr)
+            print(f"[-] Current Code Hash  : {current_legal_hash}", file=sys.stderr)
+            print(f"[-] Stored Signed Hash : {existentialCoreSignatures.existentialCoreThreatLegal}", file=sys.stderr)
+            print("[-] Compilation halted. Please re-run with '--step sign' using your keys first.", file=sys.stderr)
             sys.exit(1)
-            
-        global_sigs_map_previous = {
+
+        # 3. Double-check core properties to make sure no registers were altered
+        if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
+            print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
+            print("[-] Core register structure mismatch against stored private signature records. Aborting.", file=sys.stderr)
+            sys.exit(1)
+        
+        global_sigs_map = {
             "existentialCore": core_structure_signature,
             "existentialCoreThreatRoot": threat_structure_signature,
             "existentialCoreThreatLegal": threat_legal_structure_signature,
             "existentialCoreThreat": threat_structures_signature,
             "existentialCoreCheck": check_structures_signature,
-            "existentialCoreCheckSignatures": "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
-        }
-
-        global_sigs_map = {
-            "Core": core_structure_signature,
-            "CoreThreatRoot": threat_structure_signature,
-            "CoreThreatLegal": threat_legal_structure_signature,
-            "CoreThreat": threat_structures_signature,
-            "CoreCheck": check_structures_signature,
             "existentialCoreCheckSignatures": "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
         }
         
