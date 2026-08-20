@@ -63,7 +63,7 @@ existentialCoreThreatLegal = {
     existentialCoreThreat.CANARY_8_PREDATORY:      "LEGAL_CAN5_PREDATORY"
 }
 
-existentialCorethreatShadowVacuum = {
+existentialCoreThreatShadowVacuum = {
     existentialCoreThreat.THREAT_EXISTENCE:        "VACUUM_DEHUMANISATION",
     existentialCoreThreat.THREAT_AUTONOMY:         "VACUUM_DISFRANCHISEMENT",
     existentialCoreThreat.THREAT_INTEGRITY:        "VACUUM_CORRUPTION",
