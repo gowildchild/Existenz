@@ -4,7 +4,7 @@
 # Released under strict Non-Commercial Open-Source License terms.
 # Commercial use requires immediate written license and explicit payment.
 # ==========================================================================
-# VERSION: v0.76i
+# v0.76i - Added  ShadowVacuum that appears when there's no law and order 
 #
 from enum import IntFlag
 class existentialCoreThreat(IntFlag):
