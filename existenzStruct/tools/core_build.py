@@ -744,7 +744,55 @@ def main():
 
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
+        print("[*] Enforcing asymmetric bitmask key requirements check...")
 
+        # 1. Map out live dynamic hashes calculated by this session step for lookup verification
+        live_computed_hashes = {
+            "existentialCore": core_structure_signature,
+            "existentialCoreThreatRoot": threat_structure_signature,
+            "existentialCoreThreatLegal": threat_legal_structure_signature,
+            "existentialCoreThreatShadowVacuum": threat_shadow_structure_signature,
+            "existentialCoreThreat": threat_structures_signature,
+            "existentialCoreCheck": check_structures_signature,
+            "existentialCoreChain": chain_structures_signature
+        }
+
+        # 2. Translation map to bridge the short keys in your config file to your long hash keys
+        key_translation_map = {
+            "Magic": "Magic",
+            "Core": "existentialCore",
+            "CoreCheck": "existentialCoreCheck",
+            "CoreThreatStruct": "existentialCoreThreatRoot",
+            "CoreThreatLegal": "existentialCoreThreatLegal",
+            "CoreThreatShadowVacuum": "existentialCoreThreatShadowVacuum",
+            "CoreThreat": "existentialCoreThreat",
+            "CoreChain": "existentialCoreChain"
+        }
+
+        # 3. CRITICAL SIGNATURE GATEKEEPER LOOP: Abort if keys haven't signed the current layout state
+        for layer_meta in existentialCoreSignatures.existentialCoreSigned:
+            name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+            if name == "Magic": 
+                continue
+
+            # Translate the short config name to get the true live computed hash variable
+            long_name = key_translation_map.get(name, name)
+            current_live_hash = live_computed_hashes.get(long_name, "")
+            
+            # Extract what was actually signed and frozen into your signature module last
+            target_frozen_sig = getattr(existentialCoreSignatures, long_name, "") if hasattr(existentialCoreSignatures, long_name) else ""
+
+            if current_live_hash and target_frozen_sig:
+                if not hmac.compare_digest(current_live_hash, target_frozen_sig):
+                    print(f"\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
+                    print(f"[-] Unsigned modifications exposed inside tracking hook Layer: '{name}'", file=sys.stderr)
+                    print(f"[-] Live Code Hash:        {current_live_hash}", file=sys.stderr)
+                    print(f"[-] Last Signed Master Hash: {target_frozen_sig}", file=sys.stderr)
+                    print(f"[-] Bitmask Requirement:    {hex(bitmask)} (Requires private key authorization sync)", file=sys.stderr)
+                    print("[-] Compilation terminated safely. No distribution assets were modified.", file=sys.stderr)
+                    sys.exit(1)
+
+        print("[+] Success: All live core layout hashes match the private key signature records.")
         print("[*] Validating live framework text layouts against signature records...")
         
         # 1. Compute exactly what the threat legal layout hash looks like with your grammar changes
@@ -762,7 +810,20 @@ def main():
             print("[-] Compilation halted. Please re-run with '--step sign' using your keys first.", file=sys.stderr)
             sys.exit(1)
 
-        # 3. Double-check core properties to make sure no registers were altered
+        # 3. New: Compute and compare the live shadow vacuum mapping matrix against master signed state
+        current_vacuum_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i[0]))
+        current_vacuum_payload = current_vacuum_structure.encode('utf-8')
+        current_vacuum_hash = hmac.new(existentialCoreCheckMagic, current_vacuum_payload, hashlib.sha256).hexdigest()
+
+        if not hmac.compare_digest(current_vacuum_hash, existentialCoreSignatures.existentialCoreThreatShadowVacuum):
+            print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
+            print("[-] Unsigned variations detected inside Shadow Vacuum progression map!", file=sys.stderr)
+            print(f"[-] Current Code Hash  : {current_vacuum_hash}", file=sys.stderr)
+            print(f"[-] Stored Signed Hash : {existentialCoreSignatures.existentialCoreThreatShadowVacuum}", file=sys.stderr)
+            print("[-] Compilation halted. Please re-run with '--step sign' using your keys first.", file=sys.stderr)
+            sys.exit(1)
+
+        # 4. Double-check core properties to make sure no registers were altered
         if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
             print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
             print("[-] Core register structure mismatch against stored private signature records. Aborting.", file=sys.stderr)
@@ -797,3 +858,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
