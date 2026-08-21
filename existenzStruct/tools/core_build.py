@@ -758,7 +758,7 @@ def main():
                     
             return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line, chain_arrow
 
-        print("─" * 134)
+        #print("─" * 134)
         print(f"  [MAGIC] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
         print(f"  [CHECK] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
         print(f"──┬ [ Existenz {existentialCoreVersion}   ] ", end="")
@@ -784,13 +784,13 @@ def main():
             sys.exit(1)
         print(f"  │  ")            
         print(f"  ├──► class existentialCoreThreatSignatures ────────────  ── ─ ── ─────  ─  ─ ─   ─ ─ ─  ─►")
-        print(f"  │    {conn_ct} [SQ {sq_ct}{ch_ct}{bm_ct.ljust(4)}] CoreThreatStructure   ─┬──► Sign: 0x{threat_structure_sign} {ch_ct} {tg_ct}")
+        print(f"  │    {conn_ct} [SQ {sq_ct}{ch_ct}{bm_ct.ljust(4)}] existentialCoreThreat     ─┬──► Sign: 0x{threat_structure_sign} {ch_ct} {tg_ct}")
         print(f"  │    {vl_ct}                                      └──► Signature: \"{threat_structure_signature}\"")
         print(f"  │    {conn_ctl} [SQ {sq_ctl}{ch_ctl}{bm_ctl.ljust(4)}] CoreThreatLegal       ─┬──► Sign: 0x{threat_legal_structure_sign} {ch_ctl} {tg_ctl}")
         print(f"  │    {vl_ctl}                                      └──► Signature: \"{threat_legal_structure_signature}\"")
         print(f"  │    {conn_ctv} [SQ {sq_ctv}{ch_ctv}{bm_ctv.ljust(4)}] CoreThreatShadowVacuum ─┬─► Sign: 0x{threat_shadow_structure_sign} {ch_ctv} {tg_ctv}")
         print(f"  │    {vl_ctv}                                       └─► Signature: \"{threat_shadow_structure_signature}\"")        
-        print(f"  │    {conn_cts} [SQ {sq_cts}{ch_cts}{bm_cts.ljust(4)}] CoreThreat             ─┬─► Sign: 0x{threat_structures_sign} {ch_cts} {tg_cts}")
+        print(f"  │    {conn_cts} [SQ {sq_cts}{ch_cts}{bm_cts.ljust(4)}] existentialCoreThreat.py  ─┬─► Sign: 0x{threat_structures_sign} {ch_cts} {tg_cts}")
         print(f"  │                                              └─► Signature: \"{threat_structures_signature}\"")
         print("─ │ ─", end="")
         print("─" * 130)
