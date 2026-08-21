@@ -59,7 +59,8 @@ def parse_structural_type(comment_str: str, key_name: str) -> str:
         if "WATCHDOG" in key_name: return "WATCHDOG"
         return "CANARY"
     if key_name.startswith("SIGN_") or key_name.startswith("THREAT_NONE"): return "SIGNATURE"
-    if key_name.startswith("THREAT_"): return "THREAT"
+    # FIXED: Catches the new tracking fields (CoreThreatStruct, CoreThreatLegal, etc.) natively
+    if key_name.startswith("THREAT_") or "Threat" in key_name or "Vacuum" in key_name: return "THREAT"
 
     cleaned = comment_str.replace('#', '').strip()
     if "RIGHTS" in cleaned: return "RIGHTS"
@@ -328,7 +329,7 @@ class existentialCoreCheck:
         f.write(header + '''import sys
 from existentialCoreCheck import existentialCoreCheck, existentialCoreCheckVersion
 from single.existentialCore import existentialCore
-# UPDATED: Import your new shadow vacuum structure right into the runtime module
+# UPDATED: Import the new shadow vacuum structure right into the runtime module
 from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal, existentialCoreThreatShadowVacuum
 
 def _execute_existenz_platform_autocheck():
@@ -377,7 +378,7 @@ def _export_cpp_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal
                 f"    const std::string existentialCore = \"{sigs['existentialCore']}\";\n"
                 f"    const std::string existentialCoreThreatRoot = \"{sigs['existentialCoreThreatRoot']}\";\n"
                 f"    const std::string existentialCoreThreatLegal = \"{sigs['existentialCoreThreatLegal']}\";\n"
-                # NEW: Expose the standalone signature token for your vacuum layer explicitly within the C++ vault
+                # NEW: Expose the standalone signature token for the vacuum layer explicitly within the C++ vault
                 f"    const std::string existentialCoreThreatShadowVacuum = \"{sigs['existentialCoreThreatShadowVacuum']}\";\n"
                 f"    const std::string existentialCoreThreat = \"{sigs['existentialCoreThreat']}\";\n"
                 f"    const std::string existentialCoreCheck = \"{sigs['existentialCoreCheck']}\";\n\n"
@@ -488,7 +489,7 @@ def _export_rust_framework(dist_dir: str, core_ord: dict, threat_ord: dict, lega
                 f"    pub const EXISTENTIAL_CORE: &str = \"{sigs['existentialCore']}\";\n"
                 f"    pub const EXISTENTIAL_CORE_THREAT_ROOT: &str = \"{sigs['existentialCoreThreatRoot']}\";\n"
                 f"    pub const EXISTENTIAL_CORE_THREAT_LEGAL: &str = \"{sigs['existentialCoreThreatLegal']}\";\n"
-                # NEW: Expose the standalone signature token for your vacuum layer explicitly within the Rust vault constants
+                # NEW: Expose the standalone signature token for the vacuum layer explicitly within the Rust vault constants
                 f"    pub const EXISTENTIAL_CORE_THREAT_SHADOW_VACUUM: &str = \"{sigs['existentialCoreThreatShadowVacuum']}\";\n"
                 f"    pub const EXISTENTIAL_CORE_THREAT: &str = \"{sigs['existentialCoreThreat']}\";\n"
                 f"    pub const EXISTENTIAL_CORE_CHECK: &str = \"{sigs['existentialCoreCheck']}\";\n\n"
@@ -710,7 +711,7 @@ def main():
             if name in ["Core", "CoreCheck", "CoreThreatStruct"]:
                 sequence_chain_accumulator += sequence
             
-            # Map bitwise configuration flags directly to your cryptographic key handles
+            # Map bitwise configuration flags directly to the cryptographic key handles
             if bitmask & 8:   active_required_identities.add("Platform")
             if bitmask & 16:  active_required_identities.add("Developer")
             if bitmask & 32:  active_required_identities.add("Personal")
@@ -721,7 +722,7 @@ def main():
         # Lock the dynamic sequence progression value straight into the foundational salt stream
         combined_salt_payload.extend(str(sequence_chain_accumulator).encode('utf-8'))
 
-        # Enforce key evaluation block strictly following your bitmask configuration criteria
+        # Enforce key evaluation block strictly following the bitmask configuration criteria
         for identity in ["Platform", "Developer", "Personal"]:
             if identity in active_required_identities and identity in pub_keys_dict:
                 key_body = pub_keys_dict[identity].split()
@@ -789,7 +790,7 @@ def main():
             "existentialCoreChain": chain_structures_signature
         }
 
-        # 2. Translation map to bridge the short keys in your config file to your long hash keys
+        # 2. Translation map to bridge the short keys in the config file to the long hash keys
         key_translation_map = {
             "Magic": "Magic",
             "Core": "existentialCore",
@@ -816,7 +817,7 @@ def main():
             long_name = key_translation_map.get(name, name)
             current_live_hash = live_computed_hashes.get(long_name, "")
             
-            # Extract what was actually signed and frozen into your signature module last
+            # Extract what was actually signed and frozen into the signature module last
             target_frozen_sig = getattr(existentialCoreSignatures, long_name, "") if hasattr(existentialCoreSignatures, long_name) else ""
 
             if current_live_hash and target_frozen_sig:
@@ -832,13 +833,13 @@ def main():
         print("[+] Success: All live core layout hashes match the private key signature records.")
         print("[*] Validating live framework text layouts against signature records...")
         
-        # 1. Compute exactly what the threat legal layout hash looks like with your grammar changes
+        # 1. Compute exactly what the threat legal layout hash looks like with the grammar changes
         current_legal_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items(), key=lambda i: i[0]))
         current_legal_payload = current_legal_structure.encode('utf-8')
         current_legal_hash = hmac.new(existentialCoreCheckMagic, current_legal_payload, hashlib.sha256).hexdigest()
 
         # 2. Compare it to the master tracking module. 
-        # If your grammar fix hasn't been signed with --step sign, it aborts instantly.
+        # If the grammar fix hasn't been signed with --step sign, it aborts instantly.
         if not hmac.compare_digest(current_legal_hash, existentialCoreSignatures.existentialCoreThreatLegal):
             print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
             print("[-] Unsigned grammatical or structural variations detected inside Legal Map!", file=sys.stderr)
