@@ -650,7 +650,7 @@ def main():
     print(f"[*] Strategy Mode  : -run {args.run}")
 
     # Establish backward-compatible path hooks for your distribution checking layer
-    target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+    target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
 
     print("[+] Multi-tier security separation handshake verified.")
