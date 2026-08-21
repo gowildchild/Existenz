@@ -727,57 +727,52 @@ def main():
             print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer!", file=sys.stderr)
             sys.exit(1)
 
-        # STRICT CONTIGUOUS SEQUENCE RUN VERIFICATION
-        print("[*] Enforcing dynamic consecutive block chaining and bitmode validation...")
+        # ENGINE PASS: Enforce dynamic continuous series rule tracking matrix validations
+        print("[*] Enforcing dynamic consecutive run tracking and bitmode validation...")
         
-        # 1. Gather all valid rule rows sorted chronologically by their sequence index integer (index 5)
+        # 1. Sort the dynamic rule array strictly by the sequence integer (index 5)
         sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"], key=lambda x: x[5])
         
-        # 2. Group items into continuous unbroken sequence blocks dynamically by comparing index 5
-        sequence_groups = []
-        current_group = []
+        # 2. Extract into independent, fluid lists of consecutive runs completely on the fly
+        active_series_runs = []
+        current_series_run = []
         
         for row in sorted_rules:
-            if not current_group or row[5] == current_group[-1][5] + 1:
-                current_group.append(row)
+            if not current_series_run or row[5] == current_series_run[-1][5] + 1:
+                current_series_run.append(row)
             else:
-                if len(current_group) > 1:
-                    sequence_groups.append(current_group)
-                current_group = [row]
-        if len(current_group) > 1:
-            sequence_groups.append(current_group)
+                if len(current_series_run) > 1:
+                    active_series_runs.append(current_series_run)
+                current_series_run = [row]
+        if len(current_series_run) > 1:
+            active_series_runs.append(current_series_run)
 
-        # 3. Validate each isolated contiguous block chain
-        for group in sequence_groups:
-            # The final element in the contiguous run is the designated anchor node
-            anchor_row = group[-1]
-            cause_rows = group[:-1]
+        # 3. Process each continuous series run strictly by its relative sequence boundaries
+        for run_series in active_series_runs:
+            anchor_row = run_series[-1]
+            cause_rows = run_series[:-1]
             
             anchor_name, _, anchor_hash, _, _, anchor_seq = anchor_row
             
-            # String together the hash variables (index 2) of all preceding cause nodes in this block
-            rolling_hash_chain_payload = "".join(row[2] for row in cause_rows)
+            # Dynamically concatenate the hash variables (index 2) from the cause rows of this specific run series
+            active_run_payload = "".join(row[2] for row in cause_rows)
             
-            computed_payload = rolling_hash_chain_payload.encode('utf-8')
+            computed_payload = active_run_payload.encode('utf-8')
             computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
             
             if not hmac.compare_digest(computed_validation, anchor_hash):
-                print(f"\n[!!!] CRITICAL CHAINING INTEGRITY FAILURE [!!!]", file=sys.stderr)
-                print(f"[-] Block chain mismatch at terminal anchor node '{anchor_name}' Sequence [{anchor_seq}].", file=sys.stderr)
+                print(f"\n[!!!] CRITICAL RUN SERIES INTEGRITY FAILURE [!!!]", file=sys.stderr)
+                print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{anchor_name}' Sequence [{anchor_seq}].", file=sys.stderr)
                 sys.exit(1)
 
-        # 4. Independent dynamic bitmode permissions validation loop
+        # 4. Independent bitmode validation pass across all layers
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
-            is_valid_hex_token = bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32
-            
-            if (bitmask & 8 or bitmask & 16 or bitmask & 32) and not is_valid_hex_token:
+            is_valid_hex = bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32
+            if (bitmask & 8 or bitmask & 16 or bitmask & 32) and not is_valid_hex:
                 print(f"\n[!!!] CRITICAL BITMODE VALIDATION FAILURE [!!!]", file=sys.stderr)
-                print(f"[-] Layer '{name}' violates Bitmode: {hex(bitmask)} (Requires asymmetric private signing).", file=sys.stderr)
+                print(f"[-] Layer '{name}' failed bitmask verification: {hex(bitmask)}", file=sys.stderr)
                 sys.exit(1)
-
-        print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
-        sys.exit(0)
 
     
     elif args.step == "sign":
