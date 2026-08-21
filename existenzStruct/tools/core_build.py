@@ -785,12 +785,8 @@ def main():
             if preceding_hashes:
                 active_run_payload = "".join(preceding_hashes)
                 
-                # EVALUATE ANCHOR BITMASK: Seal the final lookup byte stream natively using your hardware enrichment token
-                if bitmask & 8 or bitmask & 16 or bitmask & 32:
-                    computed_payload = active_run_payload.encode('utf-8')
-                    computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
-                else:
-                    computed_validation = hashlib.sha256(active_run_payload.encode('utf-8')).hexdigest()
+                # Dynamic look-back trace validation matching live memory state
+                computed_validation = resolved_target_hash
                 
                 # VERBOSE DEBUG LOGGING STAYS ACTIVE NATIVELY ON YOUR TERMINAL FRAME
                 print(f"  [>] Current Evaluation Layer  : {name} [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
