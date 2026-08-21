@@ -701,22 +701,21 @@ def main():
         # Build a temporary mapping dictionary from your dynamic matrix tuple array
         matrix_rules_lookup = {}
         for row in existentialCoreSignatures.existentialCoreSigned:
-            if row != "Magic":
-                matrix_rules_lookup[row] = row  # Store entire row data mapped to Name
+            if row[0] != "Magic":
+                matrix_rules_lookup[row[0]] = row  # Store entire row data mapped to Name
 
         # Helper function to dynamically check live signature states and compile compact tags
         def get_layer_tags(layer_name):
-            #if layer_name not in matrix_rules_lookup:
-            #    return "0x00", "0", "+H"
+            if layer_name not in matrix_rules_lookup:
+                return "0x00", "0", "+HASH"
             
             name, short_var, hash_var, sign_var, bitmask, seq = matrix_rules_lookup[layer_name]
             
-            # Determine asymmetric private key validation requirements based on your true bit flags
+            # Identify asymmetric private key validation requirements based on your true bit flags
             requires_signing = bool(bitmask & 8 or bitmask & 16 or bitmask & 32)
             is_signed = len(sign_var) >= 64 and not sign_var.startswith(name) and sign_var != short_var + "9d3f0dca9fc8"
             
             tags = []
-            
             # 1. Evaluate your native structural flags (1=None/Part of Chain, 2=MAGIC, 4=SHA256, 64=Chain, 128=Order)
             if bitmask > 1 and (bitmask & 1):
                 tags.append("+CHN:M")
