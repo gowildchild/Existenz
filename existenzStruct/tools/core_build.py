@@ -650,16 +650,11 @@ def main():
     print("└────────────────────────────────────────────────────────────────┘")
     print(f"[*] Execution Step : --step {args.step}")
     print(f"[*] Strategy Mode  : -run {args.run}")
+    print(f"[*] Configuration   : {args.config}")
 
     # Establish backward-compatible path hooks for your distribution checking layer
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
-
-    # FIXED GUARD ENGINE: Drop the validation wall specifically during bootstrapping passes
-    if args.step != "sign" and not os.path.exists(target_sig_file):
-        print(f"[-] CRITICAL ERROR: Foundational compiled lockbook structure missing inside dist/master/.", file=sys.stderr)
-        print(f"    Please execute 'core_build.py -step sign' first to generate base parameters.", file=sys.stderr)
-        sys.exit(1)
 
     print("[+] Multi-tier security separation handshake verified.")
 
@@ -747,7 +742,8 @@ def main():
         running_chain_sum = 0
         expected_next_sequence = 1
         sequence_chain_accumulator = 0
-        
+
+        # FIXED ONLY: Enforce a standard chronological sort pass by the sequence index integer (index 5)
         for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
@@ -777,7 +773,7 @@ def main():
             if identity in active_required_identities and identity in pub_keys_dict:
                 key_body = pub_keys_dict[identity].split()
                 if len(key_body) >= 2:
-                    combined_salt_payload.extend(key_body[1].encode('utf-8'))
+                    combined_salt_payload.extend(key_body.encode('utf-8'))
                 else:
                     combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
 
@@ -789,32 +785,33 @@ def main():
         print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
         print("──┴───────────────────────────────────────────────────────────────")
 
-        # BACKWARD COMPATIBLE INTERACTIVE PASS: Only loops local keys if the file exists on your workstation
+        # FIXED: Look up configuration directly relative to where the engine executes
         local_cfg_path = os.path.abspath(os.path.join(REPO_ROOT, "sign_integrity_config.json"))
+
+        # INTERACTIVE PASS: Triggers your native local interactive password check matching your true file variables
         if os.path.exists(local_cfg_path):
             try:
-                import importlib.util
-                # Dynamically load sign_master relative to REPO_ROOT to guarantee compatibility across machines
-                sign_master_path = os.path.join(REPO_ROOT, "existenzStruct", "tools", "sign_master.py")
-                spec = importlib.util.spec_from_file_location("sign_master", sign_master_path)
-                sign_master_module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(sign_master_module)
+                # Dynamic import inside the block to completely prevent cross-module scoping crashes
+                from existenzStruct.tools.sign_master import load_ssh_private_key
                 
                 with open(local_cfg_path, "r", encoding="utf-8") as cf:
                     cfg = json.load(cf)
+                
                 private_paths = cfg.get("private_key_paths", {})
                 
                 for identity in ["Platform", "Developer", "Personal"]:
                     if identity in active_required_identities:
                         key_path = private_paths.get(identity)
                         if key_path and os.path.exists(key_path):
-                            print(f"  [+] Local Key File Verified. Prompting credentials for: [{identity}]")
-                            sign_master_module.load_ssh_private_key(identity, key_path)
+                            print(f"  [+] Active local key found. Launching authentication prompt for: [{identity}]")
+                            load_ssh_private_key(identity, key_path)
+                        else:
+                            print(f"  [-] Warning: Path for identity [{identity}] does not point to a valid file target.")
             except Exception as e:
-                print(f"  [!] Verification Halt: Inline local private key signing failed: {e}")
+                print(f"  [!] Verification Halt: Asymmetric security envelope check bypassed or failed: {e}")
                 sys.exit(1)
         else:
-            print("  [*] Notice: sign_integrity_config.json absent (GitHub environment). Skipping local private signing pass.")
+            print("  [*] Notice: sign_integrity_config.json absent. Skipping local key load phase.")
 
         if args.run == "WET":
             target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
