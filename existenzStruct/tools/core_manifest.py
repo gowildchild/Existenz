@@ -4,15 +4,16 @@
 # File: core_manifest.py v0.76i
 # Purpose: Tracks, hashes, and validates code updates across master, tools, and dist.
 # ==========================================================================
-
 import os
 import sys
 import json
 import argparse
 import hashlib
+import getpass
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
 
+# Natively bridge your existing workspace root paths and master config files
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
 MANIFEST_OUTPUT = os.path.join(REPO_ROOT, "existenz_workspace_manifest.json")
@@ -51,14 +52,31 @@ def gather_folder_files(folder_relative_path: str) -> dict:
             file_matrix[rel_path] = compute_sha256(full_path)
     return file_matrix
 
-def load_private_key(path: str) -> ed25519.Ed25519PrivateKey:
-    """Loads an asymmetric OpenSSH private key from disk."""
+def load_private_key(identity: str, path: str) -> ed25519.Ed25519PrivateKey:
+    """Natively reads an asymmetric OpenSSH private key, capturing password requirements explicitly."""
     expanded_path = os.path.expanduser(path)
     if not os.path.exists(expanded_path):
         raise FileNotFoundError(f"[-] Key file missing at: {expanded_path}")
+        
     with open(expanded_path, "rb") as k_file:
         key_data = k_file.read()
-    return serialization.load_ssh_private_key(key_data, password=None)
+        
+    try:
+        # Attempt to load the private key unencrypted first
+        return serialization.load_ssh_private_key(key_data, password=None)
+    except Exception as e:
+        # FIXED: Catch all encryption parsing traps to reliably trigger password prompts
+        err_str = str(e).lower()
+        if "password" in err_str or "unsupported" in err_str or "encrypted" in err_str or "passphrase" in err_str:
+            print(f"🔒 [SECURITY ENVELOPE] Private key for manifest identity '{identity}' is password-protected.")
+            pwd = getpass.getpass(f"   Enter interactive pass-phrase for [{identity}]: ").encode('utf-8')
+            try:
+                return serialization.load_ssh_private_key(key_data, password=pwd)
+            except Exception as ex:
+                raise ValueError(f"Invalid password entry sequence or corrupted key format: {ex}")
+        else:
+            raise e
+            
 def main():
     parser = argparse.ArgumentParser(description="Existenz Platform Asset Manifest Suite")
     # ENFORCED PARAMETERS: Explicit split tracks for both signing and verifying
@@ -67,9 +85,10 @@ def main():
     args = parser.parse_args()
 
     print("┌────────────────────────────────────────────────────────────────┐")
-    print("│ EXISTENZ: SHA256 MANIFEST                                      │")
+    print("│ EXISTENZ ARCHITECTURAL MANIFEST SHA256 SIGNATURES              │")
     print("└────────────────────────────────────────────────────────────────┘")
     print(f"[*] Operational Stage : -stage {args.stage}")
+    print(f"[*] Configuration File: {args.config}")
     print(f"[*] Ledger Output File: {MANIFEST_OUTPUT}")
 
     public_keys_dict = {name: key_str for name, key_str in existentialCoreSignatures.existentialPublicKeys}
@@ -124,11 +143,12 @@ def main():
             manifest_data["files"].update(gather_folder_files("existenzStruct/master"))
             manifest_data["files"].update(gather_folder_files("existenzStruct/tools"))
 
-        # Asymmetric Cryptographic Signing Handshake Suite
+        # Asymmetric Cryptographic Signing Handshake Suite using custom config flag parameters path
         if os.path.exists(args.config):
             try:
                 with open(args.config, "r", encoding="utf-8") as cf:
                     cfg = json.load(cf)
+                # FIXED ROUTING DICTIONARY LOOKUP: Correctly traces 'private_key_paths' matching your design format
                 key_routes = cfg.get("private_key_paths", {})
                 
                 payload_to_sign = {
@@ -142,12 +162,16 @@ def main():
                     if key_path:
                         expanded_path = os.path.expanduser(key_path)
                         if os.path.exists(expanded_path):
-                            priv_key = load_private_key(expanded_path)
+                            # FIXED: Invokes passphrase check passing down both identity context and file paths
+                            priv_key = load_private_key(identity, expanded_path)
                             sig_bytes = priv_key.sign(serialized_manifest_body)
                             manifest_data["signatures"][identity] = sig_bytes.hex()
                             print(f"  [+] Cryptographically signed workspace ledger with key: [{identity}]")
             except Exception as e:
-                print(f"  [!] Intercepted exception during key signature routing: {e}")
+                print(f"  [!] Terminal error during asymmetric signature generation: {e}")
+                sys.exit(1)
+        else:
+            print(f"  [!] Warning: Local configuration file map absent at {args.config}. Manifest built unsigned.")
 
         # Flag missing signatures visibly
         missing_signatures = [k for k in ["Platform", "Developer", "Personal"] if k not in manifest_data["signatures"]]
