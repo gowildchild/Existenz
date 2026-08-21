@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # ==========================================================================
-# THE EXISTENZ PLATFORM (REPO tools / Check Hashes v0.76g)
+# THE EXISTENZ PLATFORM (REPO tools / Check Hashes v0.76i)
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
 # ==========================================================================
 # FILE: existenzStruct/tools/check_integrity.py
