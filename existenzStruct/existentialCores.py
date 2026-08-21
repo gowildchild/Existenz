@@ -17,7 +17,7 @@ from existenzStruct.existentialCoreCheck import (
 )
 
 from existenzStruct.master.existentialCore import existentialCore
-from existenzStruct.master.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal
+from existenzStruct.master.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal, existentialCoreThreatShadowVacuum
 
 
 # ==========================================================================
@@ -34,6 +34,11 @@ def _execute_existenz_platform_autocheck():
         print("[-] Platform Initialization aborted to protect digital sanctuary.", file=sys.stderr)
         sys.exit(1)
 
+    if not existentialCoreCheck.check_integrity_shadow():
+        print(f"[-] CRITICAL ERROR: Threat Shadow Map corruption detected in {PLATFORM_VERSION}!", file=sys.stderr)
+        print("[-] Platform Initialization aborted to protect digital sanctuary.", file=sys.stderr)
+        sys.exit(1)
+    
     # 2. Enforce Main Core Environmental Integrity (Pillar and Collision Checks)
     # Evaluates against the ideal pristine system state constant (0x055005f7)
     pristine_vector = existentialCore.CANARY_S_STATE
