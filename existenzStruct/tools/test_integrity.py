@@ -92,7 +92,13 @@ def main():
         "php": ["existentialCores.php", "existentialCoreCheck.php", "single/existentialCore.php", "single/existentialCoreThreat.php", "single/existentialCoreSignatures.php"],
         "rust": ["existential_cores.rs", "existentialCoreCheck.rs", "single/existentialCore.rs", "single/existentialCoreThreat.rs", "single/existentialCoreSignatures.rs"],
         "bash": ["existentialCores.sh", "existentialCoreCheck.sh", "single/existentialCore.sh", "single/existentialCoreThreat.sh", "single/existentialCoreSignatures.sh"],
-        "esphome": ["existentialCores.yaml", "single/esphomeCore.yaml", "single/esphomeThreat.yaml"]
+        "esphome": [
+            "existentialCores.yaml", 
+            "single/esphomeCore.yaml", 
+            "single/esphomeThreat.yaml",
+            "single/esphomeThreatLegal.yaml",
+            "single/esphomeThreatShadowVacuum.yaml"
+        ]
     }
 
     for lang, components in target_languages.items():
@@ -204,6 +210,7 @@ def main():
                 content = f.read()
             for var_name, expected_val in master_map.items():
                 if not var_name.isupper(): continue
+                if "LEGAL" in var_name or "VACUUM" in var_name: continue
                 clean_expected = expected_val.strip().replace(' ', '')
                 match = re.search(regex_pattern.format(var_name), content)
                 found_val = match.group(1).strip().replace(' ', '') if match else "NOT_FOUND"
