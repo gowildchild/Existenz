@@ -173,6 +173,14 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
         f.write(yaml_header + "existentialCore:\n" + "".join(f"  {k.ljust(widths['max_c_k'])}: {str(v).ljust(widths['max_c_v'])}  ({widths['f_expr'](v).ljust(widths['max_c_ex'])})  {parse_structural_type(cmnts.get(k,''), k).ljust(12)} {clean_context_description(cmnts.get(k, ''))}\n" for k, v in core_ord.items()))
     with open(os.path.join(dist_dir, "existentialCoreThreat.yml"), "w", encoding="utf-8") as f:
         f.write(yaml_header + "existentialCoreThreat:\n" + "".join(f"  {k.ljust(widths['max_t_k'])}: {str(v).ljust(widths['max_t_v'])}  ({widths['f_expr'](v).ljust(widths['max_t_ex'])})  {parse_structural_type(cmnts.get(k,''), k).ljust(12)} {clean_context_description(cmnts.get(k, ''))}\n" for k, v in threat_ord.items()))
+
+    # NEW: Standalone Isolated YAML Map Generators for Legal and Vacuum records
+    with open(os.path.join(dist_dir, "existentialCoreThreatLegal.yml"), "w", encoding="utf-8") as f:
+        f.write(yaml_header + "existentialCoreThreatLegal:\n" + "".join(f"  {str(k).ljust(10)}: \"{v}\"\n" for k, v in legal_ord.items()))
+    if vacuum_ord:
+        with open(os.path.join(dist_dir, "existentialCoreThreatShadowVacuum.yml"), "w", encoding="utf-8") as f:
+            f.write(yaml_header + "existentialCoreThreatShadowVacuum:\n" + "".join(f"  {str(k).ljust(10)}: \"{v}\"\n" for k, v in vacuum_ord.items()))
+
     with open(os.path.join(dist_dir, "existentialCore.csv"), "w", encoding="utf-8") as f:
         f.write("Identifier,Integer_Value,Expression,Type,Context_Description\n" + "".join(f"{k},{v},{widths['f_expr'](v)},{parse_structural_type(cmnts.get(k,''), k)},\"{clean_context_description(cmnts.get(k, ''))}\"\n" for k, v in core_ord.items()))
     with open(os.path.join(dist_dir, "existentialCoreThreat.csv"), "w", encoding="utf-8") as f:
@@ -184,6 +192,13 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
         f.write(f"# Existenz Blueprint: existentialCore\n\n{md_header}| Property Element | Register Integer | Bitmask Equation | Struct Type | Context Reference Description |\n| :--- | :--- | :--- | :--- | :--- |\n" + "".join(f"| `{k}` | `{v}` | `{widths['f_expr'](v)}` | `{parse_structural_type(cmnts.get(k,''), k)}` | {clean_context_description(cmnts.get(k, ''))} |\n" for k, v in core_ord.items()))
     with open(os.path.join(dist_dir, "existentialCoreThreat.md"), "w", encoding="utf-8") as f:
         f.write(f"# Existenz Blueprint: existentialCoreThreat\n\n{md_header}| Property Element | Register Integer | Bitmask Equation | Struct Type | Context Reference Description |\n| :--- | :--- | :--- | :--- | :--- |\n" + "".join(f"| `{k}` | `{v}` | `{widths['f_expr'](v)}` | `{parse_structural_type(cmnts.get(k,''), k)}` | {clean_context_description(cmnts.get(k, ''))} |\n" for k, v in threat_ord.items()))
+
+    # NEW: Standalone Isolated Markdown Table Documentation for Legal and Vacuum records
+    with open(os.path.join(dist_dir, "existentialCoreThreatLegal.md"), "w", encoding="utf-8") as f:
+        f.write(f"# Existenz Reference: existentialCoreThreatLegal\n\n{md_header}| Register Key Index | Mapped Legal Context Definition Name |\n| :--- | :--- |\n" + "".join(f"| `{k}` | `{v}` |\n" for k, v in legal_ord.items()))
+    if vacuum_ord:
+        with open(os.path.join(dist_dir, "existentialCoreThreatShadowVacuum.md"), "w", encoding="utf-8") as f:
+            f.write(f"# Existenz Reference: existentialCoreThreatShadowVacuum\n\n{md_header}| Register Key Index | Mapped Shadow Vacuum Context Definition Name |\n| :--- | :--- |\n" + "".join(f"| `{k}` | `{v}` |\n" for k, v in vacuum_ord.items()))
 
     with open(os.path.join(dist_dir, "esphome", "single", "esphomeCore.yaml"), "w", encoding="utf-8") as f:
         f.write(make_header("#") + "substitutions:\n" + "\n".join(f"  {k}: \"{widths['f_expr'](v)}\" # {clean_context_description(cmnts.get(k, ''))}" for k, v in core_ord.items()) + "\n")
