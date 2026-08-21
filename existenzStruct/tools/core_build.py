@@ -650,8 +650,18 @@ def main():
     print("└────────────────────────────────────────────────────────────────┘")
     print(f"[*] Execution Step : --step {args.step}")
     print(f"[*] Strategy Mode  : -run {args.run}")
-    print("[+] Multi-tier security separation handshake verified.")
 
+    # Establish global root paths and directories
+    target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+    target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
+
+    # FIXED GUARD ENGINE: Allow --step sign to run even if the target signature file does not exist yet
+    if args.step != "sign" and not os.path.exists(target_sig_file):
+        print(f"[-] CRITICAL ERROR: Foundational compiled lockbook structure missing inside dist/master/.", file=sys.stderr)
+        print(f"    Please execute 'core_build.py -step sign' first to generate base parameters.", file=sys.stderr)
+        sys.exit(1)
+
+    print("[+] Multi-tier security separation handshake verified.")
     # 1. Compute foundational structured components dynamically across all stages
     core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
     core_structure_payload = core_structure.encode('utf-8')
@@ -737,9 +747,8 @@ def main():
         running_chain_sum = 0
         expected_next_sequence = 1
         sequence_chain_accumulator = 0
-
-        # FIXED ONLY: Enforce a standard chronological sort pass by the sequence index integer (index 5)
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
+        
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
                 continue
@@ -780,13 +789,16 @@ def main():
         print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
         print("──┴───────────────────────────────────────────────────────────────")
 
+        # BACKWARD COMPATIBLE INTERACTIVE PASS: Only loops local keys if the file exists on your workstation
         local_cfg_path = os.path.abspath(os.path.join(REPO_ROOT, "sign_integrity_config.json"))
-
-        # INTERACTIVE PASS: Triggers your native local interactive password check matching your true file variables
         if os.path.exists(local_cfg_path):
             try:
-                # Import your unified signature handler on-demand from your master tool
-                from existenzStruct.tools.sign_master import load_ssh_private_key
+                import importlib.util
+                # Dynamically load sign_master relative to REPO_ROOT to guarantee compatibility across machines
+                sign_master_path = os.path.join(REPO_ROOT, "existenzStruct", "tools", "sign_master.py")
+                spec = importlib.util.spec_from_file_location("sign_master", sign_master_path)
+                sign_master_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(sign_master_module)
                 
                 with open(local_cfg_path, "r", encoding="utf-8") as cf:
                     cfg = json.load(cf)
@@ -796,15 +808,13 @@ def main():
                     if identity in active_required_identities:
                         key_path = private_paths.get(identity)
                         if key_path and os.path.exists(key_path):
-                            print(f"  [+] Local Key File Found. Executing imported authentication routine for: [{identity}]")
-                            load_ssh_private_key(identity, key_path)
-                        else:
-                            print(f"  [-] Alert: Local key path registered but file missing for: [{identity}]")
+                            print(f"  [+] Local Key File Verified. Prompting credentials for: [{identity}]")
+                            sign_master_module.load_ssh_private_key(identity, key_path)
             except Exception as e:
-                print(f"  [!] Verification Halt: Asymmetric security envelope check bypassed or failed: {e}")
+                print(f"  [!] Verification Halt: Inline local private key signing failed: {e}")
                 sys.exit(1)
         else:
-            print("  [*] Notice: Local private configuration file absent (GitHub environment). Skipping local private signing pass.")
+            print("  [*] Notice: sign_integrity_config.json absent (GitHub environment). Skipping local private signing pass.")
 
         if args.run == "WET":
             target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
