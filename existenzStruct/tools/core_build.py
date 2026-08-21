@@ -741,6 +741,11 @@ def main():
             else:
                 clean_magic_str = str(existentialCoreCheckMagic).replace("b'", "").replace("'", "")
 
+            # STABILIZATION PASS: Format the nested tuple elements safely before writing the file stream
+            formatted_pkeys = ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys)
+            formatted_signed = ",\n".join(f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {seq})" 
+                                           for name, short_var, hash_var, sign_var, bitmask, seq in existentialCoreSignatures.existentialCoreSigned)
+
             with open(target_sig_file, "w", encoding="utf-8") as f:
                 f.write(make_header("#") +
                         f"existentialCoreVersion                       = \"{existentialCoreVersion}\"\n"
@@ -753,10 +758,11 @@ def main():
                         f"    existentialCoreThreatShadowVacuum            = \"{threat_shadow_structure_signature}\"\n"
                         f"    existentialCoreThreat                        = \"{threat_structures_signature}\"\n"
                         f"    existentialCoreCheck                         = \"{check_structures_signature}\"\n\n"
-                        f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys) + "\n    )\n\n"
-                        f"    existentialCoreSigned = (\n" + ",\n".join(f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {seq})" for name, short_var, hash_var, sign_var, bitmask, seq in existentialCoreSignatures.existentialCoreSigned) + "\n    )\n")
+                        f"    existentialPublicKeys = (\n{formatted_pkeys}\n    )\n\n"
+                        f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
             print("[+] Target folder master signatures built.")
         sys.exit(0)
+
 
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
