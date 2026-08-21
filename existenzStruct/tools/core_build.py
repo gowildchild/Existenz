@@ -702,15 +702,25 @@ def main():
 
         # Dynamic Bitmask and Sequence Extraction: Track required key bits and build progression chain
         active_required_identities = set()
+        
+        # SELF-CALCULATING CONTIGUOUS CHAIN: Evaluate strict sequential follow-ups
+        running_chain_sum = 0
+        expected_next_sequence = 1
         sequence_chain_accumulator = 0
 
         for layer_meta in existentialCoreSignatures.existentialCoreSigned:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+            if name == "Magic":
+                continue
             
-            # Accumulate sequential dependencies dynamically to verify the 1 + 2 + 1 = 4 field rule
-            if name in ["Core", "CoreCheck", "CoreThreatStruct"]:
-                sequence_chain_accumulator += sequence
-            
+            # If the number strictly follows up consecutively, add it to the running cause-sum
+            if sequence == expected_next_sequence:
+                running_chain_sum += sequence
+                expected_next_sequence += 1
+            # If it lands exactly on the accumulated sum of the previous consecutive chain, it is the effect
+            elif sequence == running_chain_sum:
+                sequence_chain_accumulator = sequence
+
             # Map bitwise configuration flags directly to the cryptographic key handles
             if bitmask & 8:   active_required_identities.add("Platform")
             if bitmask & 16:  active_required_identities.add("Developer")
@@ -719,7 +729,7 @@ def main():
         # Initialize signature payload base anchoring constant
         combined_salt_payload = bytearray(existentialCoreCheckMagic)
         
-        # Lock the dynamic sequence progression value straight into the foundational salt stream
+        # Lock the dynamic self-calculating chain progression value straight into the foundational salt stream
         combined_salt_payload.extend(str(sequence_chain_accumulator).encode('utf-8'))
 
         # Enforce key evaluation block strictly following the bitmask configuration criteria
@@ -774,7 +784,6 @@ def main():
             print("[+] Target folder master signatures built.")
         sys.exit(0)
 
-
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
         print("[*] Enforcing asymmetric bitmask key requirements check...")
@@ -803,15 +812,23 @@ def main():
         }
 
         # 3. CRITICAL SIGNATURE GATEKEEPER LOOP: Abort if keys haven't signed the current layout state
-        # FIXED: Actively computes the dynamic order chain requirements matching the sign track parameters
+        # FIXED: Actively computes the consecutive chain progression logic to prevent ordering out-of-bounds exploits
+        running_chain_sum = 0
+        expected_next_sequence = 1
         sequence_chain_accumulator = 0
+
         for layer_meta in existentialCoreSignatures.existentialCoreSigned:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic": 
                 continue
 
-            if name in ["Core", "CoreCheck", "CoreThreatStruct"]:
-                sequence_chain_accumulator += sequence
+            # If the number strictly follows up consecutively, add it to the running cause-sum
+            if sequence == expected_next_sequence:
+                running_chain_sum += sequence
+                expected_next_sequence += 1
+            # If it lands exactly on the accumulated sum of the previous consecutive chain, it is the effect
+            elif sequence == running_chain_sum:
+                sequence_chain_accumulator = sequence
 
             # Translate the short config name to get the true live computed hash variable
             long_name = key_translation_map.get(name, name)
@@ -898,4 +915,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
