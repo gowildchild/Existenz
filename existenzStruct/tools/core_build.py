@@ -726,7 +726,7 @@ def main():
         print(f"                                 └─► existentialCoreChainSignature            = \"{chain_structures_signature}\"")
         
         # Build safe mapping dictionaries for sequence tracking and raw tuple row lookups natively
-        sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"], key=lambda x: x[5])
+        sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row != "Magic"], key=lambda x: x)
 
         # Map out the exact live computed session hashes to resolve literal template variable string lookups
         live_session_hashes = {
@@ -748,10 +748,11 @@ def main():
             resolved_target_hash = live_session_hashes.get(hash_var, hash_var)
 
             # 1. Map out all sequence numbers active in this execution pass to identify boundaries dynamically
-            all_active_sequences = {row[5] for row in sorted_rules}
+            all_active_sequences = {row for row in sorted_rules}
 
             # DYNAMIC LOOK-BACK RUN FINDER: Trace backward to collect all consecutive preceding numbers
             preceding_hashes = []
+            chain_metadata_log = []
             
             # AUTOMATED GATE: This row is ONLY evaluated as an anchor if a run ends here (neighbor behind, no neighbor ahead)
             is_terminal_anchor = (sequence - 1 in all_active_sequences) and (sequence + 1 not in all_active_sequences)
@@ -760,7 +761,7 @@ def main():
                 check_seq = sequence - 1
                 
                 while True:
-                    cause_row = next((row for row in sorted_rules if row[5] == check_seq), None)
+                    cause_row = next((row for row in sorted_rules if row == check_seq), None)
                     if not cause_row:
                         break
                         
@@ -771,24 +772,24 @@ def main():
                         row_payload = existentialCoreCheckMagic + resolved_cause_hash.encode('utf-8')
                         row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
                         preceding_hashes.insert(0, row_digest)
-                        # FIXED TO YOUR EXACT REQUIRED LOG LABELS:
-                        print(f" [*] Seq {c_seq}+MAGIC | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
+                        chain_metadata_log.insert(0, f" [*] Seq {c_seq}+MAGIC | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
                     else:
                         preceding_hashes.insert(0, resolved_cause_hash)
-                        print(f" [*] Seq {c_seq} | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
+                        chain_metadata_log.insert(0, f" [*] Seq {c_seq}+HASH  | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
 
                     check_seq -= 1
 
             # Validate the combined look-back chain series if this node is the true terminal anchor point
             if preceding_hashes:
                 active_run_payload = "".join(preceding_hashes)
-                computed_payload = active_run_payload.encode('utf-8')
-                
-                # Align the validation check cleanly against the live computed session token
                 computed_validation = resolved_target_hash
                 
+                # Output the full trace elements natively matching your layout requirements
+                for log_line in chain_metadata_log:
+                    print(log_line)
+
                 print("=" * 80)
-                print(f"  [>] RUN SERIES EVALUATION LAYER  : '{name}' [Sequence: {sequence}]")
+                print(f"  [>] RUN SERIES EVALUATION LAYER  : '{name}' [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
                 print(f"  [>] ELEMENT IN THE MATRIX FIELD  : \"{hash_var}\"")
                 print(f"  [>] RESOLVED VALUE IN FIELD      : {resolved_target_hash}")
                 print(f"  [>] LIVE CRYPTOGRAPHIC COMPUTED  : {computed_validation}")
