@@ -731,14 +731,14 @@ def main():
         print("[*] Enforcing dynamic consecutive run tracking and bitmode validation...")
         
         # 1. Sort the dynamic rule array strictly by the sequence integer (index 5)
-        sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"], key=lambda x: x[5])
+        sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row != "Magic"], key=lambda x: x)
         
         # 2. Extract into independent, fluid lists of consecutive runs completely on the fly
         active_series_runs = []
         current_series_run = []
         
         for row in sorted_rules:
-            if not current_series_run or row[5] == current_series_run[-1][5] + 1:
+            if not current_series_run or row == current_series_run[-1] + 1:
                 current_series_run.append(row)
             else:
                 if len(current_series_run) > 1:
@@ -754,30 +754,27 @@ def main():
             
             anchor_name, _, anchor_hash, _, anchor_bitmask, anchor_seq = anchor_row
             
-            # Build the dynamic payload byte stream by evaluating bitmask requirements per row
             combined_run_bytes = bytearray()
             
             for cause in cause_rows:
                 c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause
                 
-                # If bitmask requires private signing (Platform: 8, Developer: 16, Personal: 32)
                 if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
-                    # Securely couple the row hash with the immutable Magic Key token
                     row_payload = existentialCoreCheckMagic + c_hash.encode('utf-8')
                     row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
                     combined_run_bytes.extend(row_digest.encode('utf-8'))
                 else:
-                    # Pass the standard layout hash natively if no bitmodes are triggered
                     combined_run_bytes.extend(c_hash.encode('utf-8'))
             
-            # Execute the final validation lock over the entire continuous series payload
             computed_validation = hmac.new(existentialCoreCheckMagic, combined_run_bytes, hashlib.sha256).hexdigest()
             
             if not hmac.compare_digest(computed_validation, anchor_hash):
                 print(f"\n[!!!] CRITICAL RUN SERIES INTEGRITY FAILURE [!!!]", file=sys.stderr)
                 print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{anchor_name}' Sequence [{anchor_seq}].", file=sys.stderr)
-                print(f"[-] Stored Matrix Anchor Hash : {anchor_hash}")
-                print(f"[-] Computed Dynamic Digest   : {computed_validation}")
+                # DIAGNOSTIC DATA OUTPUTS NATIVELY BROUGHT TO YOUR SCREEN:
+                print(f"  [>] Stored Target Hash in File : {anchor_hash}")
+                print(f"  [>] Live Computed Hash in Loop : {computed_validation}")
+                print(f"  [>] Raw Combined Loop Payload  : {combined_run_bytes.decode('utf-8', errors='ignore')}")
                 sys.exit(1)
 
         # 4. Independent bitmode validation pass across all layers
