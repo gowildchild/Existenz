@@ -762,22 +762,27 @@ def main():
                 # Resolve the cause node hash token directly from live execution space
                 resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
                 
-                # NATIVE BITMODE ENFORCEMENT & VERBOSE CHAIN TRACE DATA:
+                # EVALUATE CAUSE BITMASK: Securely couple with Magic Key if private cryptographic signing is required
                 if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
                     row_payload = existentialCoreCheckMagic + resolved_cause_hash.encode('utf-8')
                     row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
                     preceding_hashes.insert(0, row_digest)
-                    print(f"    [CHAIN COMPONENT] Seq {c_seq} | Node: '{c_name}' (Bitmask {hex(c_bitmask)}) -> ENRICHED & SALTED")
+                    print(f"    [DIAGNOSTIC] Seq {c_seq} | Node: '{c_name}' -> SALTED WITH MAGIC (Bitmask: {hex(c_bitmask)})")
                 else:
                     preceding_hashes.insert(0, resolved_cause_hash)
-                    print(f"    [CHAIN COMPONENT] Seq {c_seq} | Node: '{c_name}' (Bitmask {hex(c_bitmask)}) -> PLAIN LAYOUT HASH")
+                    print(f"    [DIAGNOSTIC] Seq {c_seq} | Node: '{c_name}' -> PASS NATIVE HASH (Bitmask: {hex(c_bitmask)})")
                 check_seq -= 1
 
-            # If an unbroken sequence of cause rows exists right behind this node, validate the look-back chain
+            # Validate the combined look-back chain series if an unbroken run exists right behind this node
             if preceding_hashes:
                 active_run_payload = "".join(preceding_hashes)
-                computed_payload = active_run_payload.encode('utf-8')
-                computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
+                
+                # EVALUATE ANCHOR BITMASK: Seal the final lookup byte stream natively using your hardware enrichment token
+                if bitmask & 8 or bitmask & 16 or bitmask & 32:
+                    computed_payload = active_run_payload.encode('utf-8')
+                    computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
+                else:
+                    computed_validation = hashlib.sha256(active_run_payload.encode('utf-8')).hexdigest()
                 
                 # VERBOSE DEBUG LOGGING STAYS ACTIVE NATIVELY ON YOUR TERMINAL FRAME
                 print(f"  [>] Current Evaluation Layer  : {name} [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
@@ -804,6 +809,8 @@ def main():
 
         print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
         sys.exit(0)
+
+
     
     elif args.step == "sign":
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
