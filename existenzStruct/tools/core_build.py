@@ -740,40 +740,41 @@ def main():
             "existentialCoreChainHash": chain_structures_signature
         }
 
-        # Process each row inside the sorted tracking matrix natively
-        for layer_meta in sorted_rules:
-            name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
-
-            # Resolve the target look-back baseline token from live memory if a placeholder string is present
-            resolved_target_hash = live_session_hashes.get(hash_var, hash_var)
+            # 1. Map out all sequence numbers active in this execution pass to identify boundaries dynamically
+            all_active_sequences = {row[5] for row in sorted_rules}
 
             # DYNAMIC LOOK-BACK RUN FINDER: Trace backward to collect all consecutive preceding numbers
             preceding_hashes = []
-            check_seq = sequence - 1
             
-            while True:
-                # Dynamically locate the preceding row directly inside the sorted list matching check_seq
-                cause_row = next((row for row in sorted_rules if row[5] == check_seq), None)
-                if not cause_row:
-                    break
+            # AUTOMATED GATE: This row is ONLY evaluated as an anchor if a run ends here (neighbor behind, no neighbor ahead)
+            is_terminal_anchor = (sequence - 1 in all_active_sequences) and (sequence + 1 not in all_active_sequences)
+            
+            if is_terminal_anchor:
+                check_seq = sequence - 1
+                
+                while True:
+                    # Dynamically locate the preceding row directly inside the sorted list matching check_seq
+                    cause_row = next((row for row in sorted_rules if row[5] == check_seq), None)
+                    if not cause_row:
+                        break
+                        
+                    c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause_row
                     
-                c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause_row
-                
-                # Resolve the cause node hash token directly from live execution space
-                resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
-                
-                # EVALUATE CAUSE BITMASK: Securely couple with Magic Key if private cryptographic signing is required
-                if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
-                    row_payload = existentialCoreCheckMagic + resolved_cause_hash.encode('utf-8')
-                    row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
-                    preceding_hashes.insert(0, row_digest)
-                    print(f"    [DIAGNOSTIC] Seq {c_seq} | Node: '{c_name}' -> SALTED WITH MAGIC (Bitmask: {hex(c_bitmask)})")
-                else:
-                    preceding_hashes.insert(0, resolved_cause_hash)
-                    print(f"    [DIAGNOSTIC] Seq {c_seq} | Node: '{c_name}' -> PASS NATIVE HASH (Bitmask: {hex(c_bitmask)})")
-                check_seq -= 1
+                    # Resolve the cause node hash token directly from live execution space
+                    resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
+                    
+                    # NATIVE BITMODE ENFORCEMENT: Salt the payload if the row requires private cryptographic signing
+                    if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
+                        row_payload = existentialCoreCheckMagic + resolved_cause_hash.encode('utf-8')
+                        row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
+                        preceding_hashes.insert(0, row_digest)
+                        print(f"    [DIAGNOSTIC] Seq {c_seq} | Node: '{c_name}' -> SALTED WITH MAGIC (Bitmask: {hex(c_bitmask)})")
+                    else:
+                        preceding_hashes.insert(0, resolved_cause_hash)
+                        print(f"    [DIAGNOSTIC] Seq {c_seq} | Node: '{c_name}' -> PASS NATIVE HASH (Bitmask: {hex(c_bitmask)})")
+                    check_seq -= 1
 
-            # Validate the combined look-back chain series if an unbroken run exists right behind this node
+            # Validate the combined look-back chain series if this node is the true terminal anchor point
             if preceding_hashes:
                 active_run_payload = "".join(preceding_hashes)
                 
@@ -809,6 +810,7 @@ def main():
 
         print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
         sys.exit(0)
+
 
 
     
