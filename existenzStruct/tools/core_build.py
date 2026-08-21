@@ -775,31 +775,34 @@ def main():
                         row_payload = existentialCoreCheckMagic + resolved_cause_hash.encode('utf-8')
                         row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
                         preceding_hashes.insert(0, row_digest)
-                        print(f"    [DIAGNOSTIC] Seq {c_seq} | Node: '{c_name}' -> SALTED WITH MAGIC (Bitmask: {hex(c_bitmask)})")
+                        print(f" [*] Seq {c_seq} | Node: '{c_name}' +MAGIC (Bitmask: {hex(c_bitmask)})")
                     else:
                         preceding_hashes.insert(0, resolved_cause_hash)
-                        print(f"    [DIAGNOSTIC] Seq {c_seq} | Node: '{c_name}' -> PASS NATIVE HASH (Bitmask: {hex(c_bitmask)})")
+                        print(f" [*] Seq {c_seq} | Node: '{c_name}' +HASH (Bitmask: {hex(c_bitmask)})")
                     check_seq -= 1
 
             # Validate the combined look-back chain series if this node is the true terminal anchor point
             if preceding_hashes:
                 active_run_payload = "".join(preceding_hashes)
+                computed_payload = active_run_payload.encode('utf-8')
                 
-                # Dynamic look-back trace validation matching live memory state
-                computed_validation = resolved_target_hash
+                # Execute the exact cryptographic calculation pass over your collected look-back elements
+                computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
                 
-                # VERBOSE DEBUG LOGGING STAYS ACTIVE NATIVELY ON YOUR TERMINAL FRAME
-                print(f"  [>] Current Evaluation Layer  : {name} [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
-                print(f"  [>] Stored Matrix Anchor Hash : {resolved_target_hash}")
-                print(f"  [>] Live Computed Digest Loop : {computed_validation}")
-                print(f"  [>] Combined Run Payload Data : {active_run_payload}")
-                print("─" * 80)
+                # PERSISTENT VERBOSE DIAGNOSTIC DISPLAY SYSTEM LOCKS DIRECTLY INTO YOUR WORKSPACE
+                print("=" * 80)
+                print(f"  [>] RUN SERIES EVALUATION LAYER  : '{name}' [Sequence: {sequence}]")
+                print(f"  [>] ELEMENT IN THE MATRIX FIELD  : \"{hash_var}\"")
+                print(f"  [>] RESOLVED VALUE IN FIELD      : {resolved_target_hash}")
+                print(f"  [>] LIVE CRYPTOGRAPHIC COMPUTED  : {computed_validation}")
+                print(f"  [>] RAW ACCUMULATED BYTE STRINGS : {active_run_payload}")
+                print("=" * 80)
                 
                 if not hmac.compare_digest(computed_validation, resolved_target_hash):
                     print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
                     print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].")
-                    print(f"    Expected (Stored) : {resolved_target_hash}")
-                    print(f"    Computed (Live)   : {computed_validation}")
+                    print(f"    Expected (Stored in Field) : {resolved_target_hash}")
+                    print(f"    Computed (Live Calculated) : {computed_validation}")
                     sys.exit(1)
 
         # 4. Independent bitmode validation pass across all layers
