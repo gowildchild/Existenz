@@ -653,15 +653,13 @@ def main():
         print("[*] Verifying integrity of existentz cryptographic structures... ") 
     
     print("┌─────────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
-    print(f"│ EXISTENZ CORE BUILDER {pub_ver}      by Gunther Voet              │")
+    print(f"│ EXISTENZ CORE BUILDER {pub_ver}                   by Gunther Voet │")
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ────────────────────────────────────┘")
     print(f"Execution Step : --step {args.step.ljust(8)}    |     Strategy Mode  : -run {args.run.ljust(4)}")
 
     # Establish backward-compatible path hooks for your distribution checking layer
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
-
-    # print("[+] Signatures")
 
     # Flintstones
     core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
