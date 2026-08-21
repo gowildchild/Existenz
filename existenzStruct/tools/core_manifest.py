@@ -14,6 +14,7 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
 
 # Natively bridge your existing workspace root paths and master config files
+INT_VERSION = "v0.76h"
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
 MANIFEST_OUTPUT = os.path.join(REPO_ROOT, "manifest.json")
@@ -89,9 +90,9 @@ def main():
     parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to your private key routes.")
     args = parser.parse_args()
 
-    print("┌────────────────────────────────────────────────────────────────┐")
-    print("│ EXISTENZ ARCHITECTURAL MANIFEST SHA256 SIGNATURES              │")
-    print("└────────────────────────────────────────────────────────────────┘")
+    print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
+    print("│ EXISTENZ SHA256 MANIFEST                       by Gunther Voet │")
+    print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘")
     print(f"[*] Operational Stage : -stage {args.stage}")
     print(f"[*] Configuration File: {args.config}")
     print(f"[*] Ledger Output File: {MANIFEST_OUTPUT}")
@@ -226,9 +227,9 @@ def main():
                 print(f"  [-] DELETION DETECTED: Required tracking file missing -> {rel_path}")
                 has_drift = True
             elif live_files[rel_path] != expected_hash:
-                print(f"  [!] MUTATION DETECTED: Code contents modified inside -> {rel_path}")
-                print(f"      Expected File Hash: {expected_hash}")
-                print(f"      Live Dynamic Hash : {live_files[rel_path]}")
+                print(f"  [!] TAMPER DETECTED:   Code contents modified inside -> {rel_path}")
+                print(f"      Current SHA-256:   {live_files[rel_path]}")
+                print(f"      Expected SHA-256:  {expected_hash}")
                 has_drift = True
 
         # 2. Catch unexpected external folder injections
@@ -240,8 +241,8 @@ def main():
         # 3. Handle private signature reporting loops safely
         missing_signatures = [k for k in ["Platform", "Developer", "Personal"] if k not in stored_signatures]
         if missing_signatures:
-            print(f"  [!] WARNING: Manifest contains UNRESOLVED private key signatures! Missing: {missing_signatures}")
-
+            print(f"  [!!!] WARNING [!!!!] Manifest contains UNRESOLVED private key signatures! Missing: {missing_signatures}")
+            sys.exit(1)
         if has_drift:
             print(f"\n[!] VERIFICATION FAILED: {args.stage.upper()} alignment errors exposed!")
             sys.exit(1)
