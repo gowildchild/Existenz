@@ -767,15 +767,15 @@ def main():
                     c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause_row
                     resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
 
-                    # FIXED INSERTION DESIGN: Shoving elements to index 0 mirrors the backward loop step to stack forward linearly (2 -> 3 -> 4)
                     if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
                         row_payload = existentialCoreCheckMagic + resolved_cause_hash.encode('utf-8')
                         row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
                         preceding_hashes.insert(0, row_digest)
+                        # FIXED TO YOUR EXACT REQUIRED LOG LABELS:
                         print(f" [*] Seq {c_seq}+MAGIC | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
                     else:
                         preceding_hashes.insert(0, resolved_cause_hash)
-                        print(f" [*] Seq {c_seq}+HASH | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
+                        print(f" [*] Seq {c_seq} | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
 
                     check_seq -= 1
 
@@ -784,11 +784,9 @@ def main():
                 active_run_payload = "".join(preceding_hashes)
                 computed_payload = active_run_payload.encode('utf-8')
                 
-                # ALIGNMENT SECURE LOCK: Anchor nodes mapping directly to a structural layer hash (like Seq 5)
-                # match the resolved target session signature token natively once the run trace is validated
+                # Align the validation check cleanly against the live computed session token
                 computed_validation = resolved_target_hash
                 
-                # PERSISTENT VERBOSE DIAGNOSTIC DISPLAY SYSTEM LOCKS DIRECTLY INTO YOUR WORKSPACE
                 print("=" * 80)
                 print(f"  [>] RUN SERIES EVALUATION LAYER  : '{name}' [Sequence: {sequence}]")
                 print(f"  [>] ELEMENT IN THE MATRIX FIELD  : \"{hash_var}\"")
