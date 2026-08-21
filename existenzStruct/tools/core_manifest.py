@@ -84,9 +84,9 @@ def load_private_key(identity: str, path: str) -> ed25519.Ed25519PrivateKey:
             raise e
             
 def main():
-    parser = argparse.ArgumentParser(description="Existenz Platform Asset Manifest Suite")
+    parser = argparse.ArgumentParser(description="Existenz SHA256 Manifest")
     # ENFORCED PARAMETERS: Explicit split tracks for both signing and verifying
-    parser.add_argument("-stage", choices=["sign", "sign-master", "sign-dist", "verify-master", "verify-dist"], required=True, help="Manifest operation state selection.")
+    parser.add_argument("-stage", choices=["sign", "sign-master", "sign-dist", "verify-master", "verify-dist","sign-tools","verify-tools"], required=True, help="Manifest operation state selection.")
     parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to your private key routes.")
     args = parser.parse_args()
 
@@ -94,7 +94,7 @@ def main():
     print("│ EXISTENZ SHA256 MANIFEST                       by Gunther Voet │")
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘")
     print(f"[*] Operational Stage : -stage {args.stage}")
-    if not args.stage in ["verify-dist","verify-master","verify","check"]:
+    if not args.stage in ["verify-dist","verify-master","verify","check","verify-tools"]:
       print(f"[*] Configuration File: {args.config}")
     print(f"[*] Ledger Output File: {MANIFEST_OUTPUT}")
 
@@ -103,7 +103,7 @@ def main():
     # ==========================================================================
     # CORE SIGNING BLOCKS (INCREMENTAL RE-SIGN WITH PARTIAL PRESERVATION)
     # ==========================================================================
-    if args.stage in ["sign", "sign-master", "sign-dist"]:
+    if args.stage in ["sign", "sign-master", "sign-dist","sign-tools"]:
         print(f"[*] Stage: [{args.stage.upper()}] Scanning targeted directories...")
         
         # Pull down the existing file baseline records to guarantee signature persistence
@@ -126,6 +126,11 @@ def main():
             # Preserve existing compiled dist records untouched
             for k, v in stored_files.items():
                 if k.startswith("dist/"): live_files[k] = v
+        elif args.stage == "sign-tools":
+            live_files.update(gather_folder_files("existenzStruct/tools"))
+            # Preserve existing source file records untouched
+            for k, v in stored_files.items():
+                if k.startswith("existenzStruct/tools"): live_files[k] = v
         elif args.stage == "sign-dist":
             live_files.update(gather_folder_files("dist"))
             # Preserve existing source file records untouched
@@ -178,8 +183,8 @@ def main():
                 print(f"  [!] Terminal error during asymmetric signature generation: {e}")
                 sys.exit(1)
         else:
-            print(f"  [!] Warning: Local configuration file map absent at {args.config}. Manifest built unsigned.")
-
+            print(f"  [!] Warning: This tool is used on a public server, no private signing allowed!")
+        #    print(f"  [!] Warning: Local configuration file map absent at {args.config}. Manifest built unsigned.")
         # Flag missing signatures visibly
         missing_signatures = [k for k in ["Platform", "Developer", "Personal"] if k not in manifest_data["signatures"]]
         if missing_signatures:
@@ -195,7 +200,7 @@ def main():
     # ==========================================================================
     # CORE VERIFICATION BLOCKS (ISOLATED SPACE TESTING)
     # ==========================================================================
-    elif args.stage in ["verify-master", "verify-dist"]:
+    elif args.stage in ["verify-master", "verify-dist","verify-tools"]:
         if not os.path.exists(MANIFEST_OUTPUT):
             print("[-] CRITICAL ERROR: manifest file missing. Execute -stage sign first.")
             sys.exit(1)
@@ -211,6 +216,10 @@ def main():
             live_files = {}
             live_files.update(gather_folder_files("existenzStruct/master"))
             live_files.update(gather_folder_files("existenzStruct/tools"))
+        elif args.stage == "verify-tools":
+            print("[*] Stage: [VERIFY-TOOLS] Sweeping source tools folders...")
+            live_files = {}
+            live_files.update(gather_folder_files("existenzStruct/tools"))            
         else:
             print("[*] Stage: [VERIFY-DIST] Sweeping compiled language vaults...")
             live_files = gather_folder_files("dist")
