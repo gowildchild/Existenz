@@ -697,7 +697,7 @@ def main():
 
     existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
 
-    if args.step == "check":
+    if args.step == "check" or args.step == "compile":
         print("[*] Stage 1: Evaluating core structure...")
         print("─" * 80)
         print(f"  [>] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
@@ -723,7 +723,23 @@ def main():
         print("= │ ===============================================================================================================")
         print(f"  └── ...ntialCoreSignatures.py  ┬─► existentialCoreChainSign                 = 0x{chain_structures_sign}")
         print(f"                                 └─► existentialCoreChainSignature            = \"{chain_structures_signature}\"")
+        print("──┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────")
         
+        print("[*] Auditing live matrix permission layouts and signature states:")
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
+            name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+            if name == "Magic":
+                continue
+                
+            active_handles = []
+            if bitmask & 8:   active_handles.append("PLATFORM")
+            if bitmask & 16:  active_handles.append("DEVELOPER")
+            if bitmask & 32:  active_handles.append("PERSONAL")
+            handle_str = f"+MAGIC ({'|'.join(active_handles)})" if active_handles else "+HASH"
+            
+            print(f" [*] Seq {sequence} | Node: '{name.ljust(22)}' (Bitmask: {hex(bitmask)} -> {handle_str})")
+        print("=" * 80)
+
         # Build safe mapping dictionaries for sequence tracking and raw tuple row lookups natively
         sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row != "Magic"], key=lambda x: x)
 
@@ -738,7 +754,6 @@ def main():
             "existentialCoreThreatHash": threat_structures_signature,
             "existentialCoreChainHash": chain_structures_signature
         }
-
         # Process each row inside the sorted tracking matrix natively
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
@@ -801,7 +816,6 @@ def main():
                     print(f"    Expected (Stored in Field) : {resolved_target_hash}")
                     print(f"    Computed (Live Calculated) : {computed_validation}")
                     sys.exit(1)
-
         # 4. Independent bitmode validation pass across all layers
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
@@ -811,8 +825,9 @@ def main():
                 print(f"[-] Layer '{name}' failed bitmask verification: {hex(bitmask)}", file=sys.stderr)
                 sys.exit(1)
 
-        print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
-        sys.exit(0)
+        if args.step == "check":
+            print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
+            sys.exit(0)
     
     elif args.step == "sign":
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
@@ -828,7 +843,7 @@ def main():
         sequence_chain_accumulator = 0
 
         # ENFORCE STRICT MATRIX ORDER SCAN BY SEQUENCE INDEX 5
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
                 continue
@@ -857,7 +872,7 @@ def main():
             if identity in active_required_identities and identity in pub_keys_dict:
                 key_body = pub_keys_dict[identity].split()
                 if len(key_body) >= 2:
-                    combined_salt_payload.extend(key_body[1].encode('utf-8'))
+                    combined_salt_payload.extend(key_body.encode('utf-8'))
                 else:
                     combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
 
@@ -868,9 +883,8 @@ def main():
         print(f"  ├── Sequence Progression sum  : {sequence_chain_accumulator} (Field Order Matrix)")
         print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
         print("──┴───────────────────────────────────────────────────────────────")
-
         if args.run == "WET":
-            target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
+            target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
             os.makedirs(target_master_dir, exist_ok=True)
             target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
             
@@ -933,6 +947,7 @@ def main():
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
 
+        # 1. Map out live dynamic hashes calculated by this session step for lookup verification
         live_computed_hashes = {
             "existentialCore": core_structure_signature,
             "existentialCoreThreatRoot": threat_structure_signature,
@@ -943,6 +958,7 @@ def main():
             "existentialCoreChain": chain_structures_signature
         }
 
+        # 2. Translation map to bridge the short keys in the config file to the long hash keys
         key_translation_map = {
             "Magic": "Magic",
             "Core": "existentialCore",
@@ -963,9 +979,11 @@ def main():
             if name == "Magic": 
                 continue
 
+            # If the number strictly follows up consecutively inside the chain limit, add it to the running cause-sum
             if sequence == expected_next_sequence:
                 running_chain_sum += sequence
                 expected_next_sequence += 1
+            # DYNAMIC ANCHOR CHECK: Replaces the hardcoded sequence == 5 layout trap cleanly
             elif sequence == running_chain_sum:
                 sequence_chain_accumulator = sequence
 
@@ -987,6 +1005,7 @@ def main():
         print("[+] Success: All live core layout hashes match the private key signature records.")
         print("[*] Validating live framework text layouts against signature records...")
         
+        # 1. Compute exactly what the threat legal layout hash looks like with the grammar changes
         current_legal_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items(), key=lambda i: i))
         current_legal_payload = current_legal_structure.encode('utf-8')
         current_legal_hash = hmac.new(existentialCoreCheckMagic, current_legal_payload, hashlib.sha256).hexdigest()
@@ -1001,7 +1020,7 @@ def main():
 
         current_vacuum_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i))
         current_vacuum_payload = current_vacuum_structure.encode('utf-8')
-        current_vacuum_hash = hmac.new(existentialCoreCheckMagic, current_vacuum_structure_payload if 'current_vacuum_structure_payload' in locals() else current_vacuum_structure.encode('utf-8'), hashlib.sha256).hexdigest()
+        current_vacuum_hash = hmac.new(existentialCoreCheckMagic, current_vacuum_structure.encode('utf-8'), hashlib.sha256).hexdigest()
 
         target_vacuum_sig = getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET")
 
@@ -1034,7 +1053,7 @@ def main():
                 print(f"  ├── {signature_key.ljust(26)} = \"{digest_hash}\"")
         print("──┴───────────────────────────────────────────────────────────────")
 
-        print(f"[*] Synchronizing updated system layout for distribution...")
+        print(f"[*] Synchronizing updated system layout into distribution vaults...")
         try:
             perform_cross_language_exports(global_sigs_map, args.run.lower())
         except Exception as ex:
