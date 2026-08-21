@@ -760,25 +760,23 @@ def main():
                 check_seq = sequence - 1
                 
                 while True:
-                    # Dynamically locate the preceding row directly inside the sorted list matching check_seq
                     cause_row = next((row for row in sorted_rules if row[5] == check_seq), None)
                     if not cause_row:
                         break
                         
                     c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause_row
-                    
-                    # Resolve the cause node hash token directly from live execution space
                     resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
-                    
-                    # NATIVE BITMODE ENFORCEMENT: Salt the payload if the row requires private cryptographic signing
+
+                    # FIXED INSERTION DESIGN: Shoving elements to index 0 mirrors the backward loop step to stack forward linearly (2 -> 3 -> 4)
                     if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
                         row_payload = existentialCoreCheckMagic + resolved_cause_hash.encode('utf-8')
                         row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
                         preceding_hashes.insert(0, row_digest)
-                        print(f" [*] Seq {c_seq} | Node: '{c_name}' +MAGIC (Bitmask: {hex(c_bitmask)})")
+                        print(f" [*] Seq {c_seq}+MAGIC | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
                     else:
                         preceding_hashes.insert(0, resolved_cause_hash)
-                        print(f" [*] Seq {c_seq} | Node: '{c_name}' +HASH (Bitmask: {hex(c_bitmask)})")
+                        print(f" [*] Seq {c_seq}+HASH | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
+
                     check_seq -= 1
 
             # Validate the combined look-back chain series if this node is the true terminal anchor point
@@ -816,9 +814,6 @@ def main():
 
         print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
         sys.exit(0)
-
-
-
     
     elif args.step == "sign":
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
