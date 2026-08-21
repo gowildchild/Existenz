@@ -44,8 +44,13 @@ def gather_folder_files(folder_relative_path: str) -> dict:
         return file_matrix
 
     for root, _, files in os.walk(full_folder_path):
+        # NEW CRITICAL FILTER: Natively skip tracking inside any python caching folders
+        if "__pycache__" in root:
+            continue
+            
         for file in files:
-            if file == "existenz_workspace_manifest.json":
+            # Skip the manifest ledger itself and any temporary compiled byte fragments
+            if file == "existenz_workspace_manifest.json" or file.endswith(".pyc"):
                 continue
             full_path = os.path.join(root, file)
             rel_path = os.path.relpath(full_path, REPO_ROOT)
