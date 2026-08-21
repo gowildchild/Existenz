@@ -4,6 +4,7 @@ sign_integrity_config.json
 id_*
 id_*.pub
 prompt.txt
+integrity_config.json
 __pycache__/
 *.py[cod]
 *$py.class
