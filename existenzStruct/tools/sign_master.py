@@ -15,6 +15,9 @@ import getpass
 import hmac
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
+import existentialCoreSignatures
+from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
+
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
@@ -97,15 +100,8 @@ def main():
     print(f"[*] Execution Stage: -stage {args.stage}")
     print(f"[*] Configuration   : {args.config}")
 
-    # Establish backward-compatible path hooks for your distribution checking layer
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
-
-    # FIXED GUARD ENGINE: Drop the validation wall during active signature execution stages
-    #if args.stage != "sign" and not os.path.exists(target_sig_file):
-    #    print(f"[-] CRITICAL ERROR: Foundational compiled lockbook structure missing inside dist/master/.", file=sys.stderr)
-    #    print(f"    Please execute 'core_build.py -step sign' first to generate base parameters.", file=sys.stderr)
-    #    sys.exit(1)
 
     if not os.path.exists(args.config):
         print(f"[-] CRITICAL ERROR: Local private key path mapping configuration missing at: {args.config}")
@@ -219,30 +215,9 @@ def main():
             print(f"  ├──[{sequence}] {name:<18} 0x{live_short} : {expected_hash}")
             print(f"  ├──[{sequence}] [ {status_lbl} ] 0x{display_sig}")
 
-#        # --- EXECUTION TRACK B: THE SINGLE ONE-LINE DESCRIPTIVE AUDIT VERIFY ROUTINE ---
-#        elif args.stage == "verify":
-#            is_signed = len(sign_var) > 40 and not sign_var.startswith("existential")
-#            
-#            if is_signed:
-#                live_short = sign_var[:8]
-#                live_long = sign_var
-#                status_msg = "[ VERIFIED CLEAN ]" if live_short == short_var[:8] else "[ DRIFTING ]"
-#            else:
-#                live_short = "--------"
-#                live_long = "WAITING FOR PRIVATE SIGN"
-#                status_msg = "[ UNRESOLVED ]"
-#
-#            print(f"  ├──[{sequence}] {name:<16} 0x{live_short} : {expected_hash}")
-#            print(f"  ├──[{sequence}] {status_msg:<12} 0x{live_long}")
-#            print(f"  ├── Track       : {name:<18} | Sequence: {sequence}")
-#            print(f"  │   ├── Short   : 0x{live_short}")
-#            print(f"  │   ├── Hash    : {expected_hash}")
-#            print(f"  │   ├── Long Sig: {live_long}")
-#            print(f"  │   └── Status  : {status_msg}")
-#            print(f"  │")    
+
     if args.stage == "verify":
         print("──┴───────────────────────────────────────────────────────────────────────────────")
-        # ADDED: Prints out the verified sliding-window cumulative execution chain token
         print(f"[+] Audit sequence chain check sum computed: {sequence_chain_accumulator}")
         print("[+] Audit validation tracking execution pass completed.")
         sys.exit(0)
@@ -255,7 +230,6 @@ def main():
         output_signatures_file = os.path.join(TARGET_DIST_DIR, "existentialCoreSignatures.py")
         print(f"\n[*] Committing complete asymmetric signature array to: {output_signatures_file}")
 
-        # FIXED: Resolves literal string interpolation crashing on raw byte arrays
         clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic)
         target_vacuum_sig = getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET")
 
@@ -279,3 +253,24 @@ def main():
 if __name__ == "__main__":
     main()
 
+#        # --- EXECUTION TRACK B: THE SINGLE ONE-LINE DESCRIPTIVE AUDIT VERIFY ROUTINE ---
+#        elif args.stage == "verify":
+#            is_signed = len(sign_var) > 40 and not sign_var.startswith("existential")
+#            
+#            if is_signed:
+#                live_short = sign_var[:8]
+#                live_long = sign_var
+#                status_msg = "[ VERIFIED CLEAN ]" if live_short == short_var[:8] else "[ DRIFTING ]"
+#            else:
+#                live_short = "--------"
+#                live_long = "WAITING FOR PRIVATE SIGN"
+#                status_msg = "[ UNRESOLVED ]"
+#
+#            print(f"  ├──[{sequence}] {name:<16} 0x{live_short} : {expected_hash}")
+#            print(f"  ├──[{sequence}] {status_msg:<12} 0x{live_long}")
+#            print(f"  ├── Track       : {name:<18} | Sequence: {sequence}")
+#            print(f"  │   ├── Short   : 0x{live_short}")
+#            print(f"  │   ├── Hash    : {expected_hash}")
+#            print(f"  │   ├── Long Sig: {live_long}")
+#            print(f"  │   └── Status  : {status_msg}")
+#            print(f"  │")    
