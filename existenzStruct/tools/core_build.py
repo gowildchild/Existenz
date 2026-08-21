@@ -752,17 +752,32 @@ def main():
             anchor_row = run_series[-1]
             cause_rows = run_series[:-1]
             
-            anchor_name, _, anchor_hash, _, _, anchor_seq = anchor_row
+            anchor_name, _, anchor_hash, _, anchor_bitmask, anchor_seq = anchor_row
             
-            # Dynamically concatenate the hash variables (index 2) from the cause rows of this specific run series
-            active_run_payload = "".join(row[2] for row in cause_rows)
+            # Build the dynamic payload byte stream by evaluating bitmask requirements per row
+            combined_run_bytes = bytearray()
             
-            computed_payload = active_run_payload.encode('utf-8')
-            computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
+            for cause in cause_rows:
+                c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause
+                
+                # If bitmask requires private signing (Platform: 8, Developer: 16, Personal: 32)
+                if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
+                    # Securely couple the row hash with the immutable Magic Key token
+                    row_payload = existentialCoreCheckMagic + c_hash.encode('utf-8')
+                    row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
+                    combined_run_bytes.extend(row_digest.encode('utf-8'))
+                else:
+                    # Pass the standard layout hash natively if no bitmodes are triggered
+                    combined_run_bytes.extend(c_hash.encode('utf-8'))
+            
+            # Execute the final validation lock over the entire continuous series payload
+            computed_validation = hmac.new(existentialCoreCheckMagic, combined_run_bytes, hashlib.sha256).hexdigest()
             
             if not hmac.compare_digest(computed_validation, anchor_hash):
                 print(f"\n[!!!] CRITICAL RUN SERIES INTEGRITY FAILURE [!!!]", file=sys.stderr)
                 print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{anchor_name}' Sequence [{anchor_seq}].", file=sys.stderr)
+                print(f"[-] Stored Matrix Anchor Hash : {anchor_hash}")
+                print(f"[-] Computed Dynamic Digest   : {computed_validation}")
                 sys.exit(1)
 
         # 4. Independent bitmode validation pass across all layers
