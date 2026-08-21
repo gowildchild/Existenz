@@ -726,10 +726,60 @@ def main():
         if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
             print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer!", file=sys.stderr)
             sys.exit(1)
+
+        # STRICT CONTIGUOUS SEQUENCE RUN VERIFICATION
+        print("[*] Enforcing dynamic consecutive block chaining and bitmode validation...")
         
+        # 1. Gather all valid rule rows sorted chronologically by their sequence index
+        sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"], key=lambda x: x[5])
+        
+        # 2. Group items into continuous unbroken sequence blocks dynamically
+        sequence_groups = []
+        current_group = []
+        
+        for row in sorted_rules:
+            if not current_group or row[5] == current_group[-1][5] + 1:
+                current_group.append(row)
+            else:
+                if len(current_group) > 1:
+                    sequence_groups.append(current_group)
+                current_group = [row]
+        if len(current_group) > 1:
+            sequence_groups.append(current_group)
+
+        # 3. Validate each isolated contiguous block chain
+        for group in sequence_groups:
+            # The final element in the contiguous run is the designated anchor node
+            anchor_row = group[-1]
+            cause_rows = group[:-1]
+            
+            anchor_name, _, anchor_hash, _, _, anchor_seq = anchor_row
+            
+            # String together the hash variables of all preceding cause nodes in this block
+            rolling_hash_chain_payload = "".join(row[2] for row in cause_rows)
+            
+            computed_payload = rolling_hash_chain_payload.encode('utf-8')
+            computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
+            
+            if not hmac.compare_digest(computed_validation, anchor_hash):
+                print(f"\n[!!!] CRITICAL CHAINING INTEGRITY FAILURE [!!!]", file=sys.stderr)
+                print(f"[-] Block chain mismatch at terminal anchor node '{anchor_name}' Sequence [{anchor_seq}].", file=sys.stderr)
+                sys.exit(1)
+
+        # 4. Independent dynamic bitmode permissions validation loop
+        for layer_meta in sorted_rules:
+            name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+            is_valid_hex_token = bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32
+            
+            if (bitmask & 8 or bitmask & 16 or bitmask & 32) and not is_valid_hex_token:
+                print(f"\n[!!!] CRITICAL BITMODE VALIDATION FAILURE [!!!]", file=sys.stderr)
+                print(f"[-] Layer '{name}' violates Bitmode: {hex(bitmask)} (Requires asymmetric private signing).", file=sys.stderr)
+                sys.exit(1)
+
         print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
         sys.exit(0)
 
+    
     elif args.step == "sign":
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
 
