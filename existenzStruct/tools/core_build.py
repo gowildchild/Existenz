@@ -655,7 +655,8 @@ def main():
     print("┌─────────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
     print(f"│ EXISTENZ CORE BUILDER {pub_ver}      by Gunther Voet              │")
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ────────────────────────────────────┘")
-    print(f"Execution Step : --step {args.step}  |  Strategy Mode  : -run {args.run}")
+    print(f"Execution Step : --step {args.step.ljust(8)} | Strategy Mode  : -run {args.run.ljust(4)}")
+    print("")
 
     # Establish backward-compatible path hooks for your distribution checking layer
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
@@ -707,6 +708,7 @@ def main():
     existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
 
     if args.step == "check" or args.step == "compile":
+        print("")        
         matrix_rules_lookup = {}
         for row in existentialCoreSignatures.existentialCoreSigned:
             if row[0] != "Magic":
