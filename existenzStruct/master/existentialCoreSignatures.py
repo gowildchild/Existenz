@@ -6,14 +6,14 @@
 
 existentialCoreVersion                       = "v0.76i"
 existentialCoreCheckMagic                    = b"EX25IMMUT32CORE7617"
-existentialCoreCheckSignature                = "7c165b322566e304975917cdc92de03d3ab14e72d1edaefc2ea18f7444ac891c"
+existentialCoreCheckSignature                = "8b4defb0aaf1eb9bcd7b382cf0b4db0aa093eb1b84b8e09d3cf0f73d5b2d37b6"
 
 class existentialCoreSignatures:
     existentialCore                              = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
     existentialCoreThreatRoot                    = "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca"
     existentialCoreThreatLegal                   = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"
     existentialCoreThreat                        = "90f9d7438a0497f54dbe065a64f5f5c111dee8c1184832c280d96c0bd2226689"
-    existentialCoreCheck                         = "7c165b322566e304975917cdc92de03d3ab14e72d1edaefc2ea18f7444ac891c"
+    existentialCoreCheck                         = "8b4defb0aaf1eb9bcd7b382cf0b4db0aa093eb1b84b8e09d3cf0f73d5b2d37b6"
 
     existentialPublicKeys = (
         ("Platform", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"),
