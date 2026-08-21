@@ -768,9 +768,10 @@ def main():
             if identity in active_required_identities and identity in pub_keys_dict:
                 key_body = pub_keys_dict[identity].split()
                 if len(key_body) >= 2:
-                    combined_salt_payload.extend(key_body.encode('utf-8'))
+                    combined_salt_payload.extend(" ".join(key_body).encode('utf-8'))
                 else:
                     combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
+
 
         derived_salt_token = hashlib.sha256(combined_salt_payload).hexdigest()
 
