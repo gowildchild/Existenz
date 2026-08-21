@@ -49,15 +49,20 @@ jobs:
         # This allows absolute paths (existenzStruct.master...) to resolve flawlessly!
         PYTHONPATH="${GITHUB_WORKSPACE}" python existenzStruct/tools/check_integrity.py
 
-    # NEW STEP 4.5: WORKSPACE INTEGRITY MANIFEST VERIFICATION
+    # Step 5: Execute Suite and Compile Structures (Skipped if fully locked)
+    - name: Existenz - Checking Signatures for core_build
+      if: env.RUN_MODE != 'locked'
+      run: |
+        python existenzStruct/tools/core_build.py -step verify
+
     # Strictly validates the existenzStruct/ directory layout using your contiguous sequence math rules
     - name: Existenz - Codebase Manifest Audit
       if: env.RUN_MODE != 'locked'
       run: |
         PYTHONPATH="${GITHUB_WORKSPACE}" python existenzStruct/tools/core_manifest.py -stage verify-master
 
-    # Step 5: Execute Suite and Compile Structures (Skipped if fully locked)
-    - name: Compiling Pristine Universal Structures - Existenz
+    # Step 7: Execute Suite and Compile Structures (Skipped if fully locked)
+    - name: Existenz - Compiling Pristine Universal Structures
       if: env.RUN_MODE != 'locked'
       run: |
         python existenzStruct/tools/core_build.py -step compile
@@ -67,7 +72,7 @@ jobs:
       run: |
         PYTHONPATH="${GITHUB_WORKSPACE}" python existenzStruct/tools/core_manifest.py -stage sign-dist
         
-    # Step 6: Conditional Repository Sync Phase (ONLY fires in compile mode)
+    # Step 9: Conditional Repository Sync Phase (ONLY fires in compile mode)
     - name: Existenz - git commit and push to repo
       if: env.RUN_MODE == 'compile'
       run: |
@@ -87,7 +92,7 @@ jobs:
           git push
         fi      
 
-    # Step 7: Assert Schema and Code Generation Success (Skipped if fully locked)
+    # Step 10: Assert Schema and Code Generation Success (Skipped if fully locked)
     - name: Existenz - Test Universal Data Structures
       if: env.RUN_MODE != 'locked'
       run: |
@@ -102,7 +107,7 @@ jobs:
         test -f manifest.json
         echo "[+] Compilation and schema verification successful."
         
-    # Step 8: Log Output for Integrity Check Mode
+    # Step 11: Log Output for Integrity Check Mode
     - name: Existenz - Terminate Integrity Check 
       if: env.RUN_MODE == 'integritycheck'
       run: |
