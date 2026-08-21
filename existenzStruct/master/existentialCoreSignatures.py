@@ -3,17 +3,15 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
-# The glue, immutability,  protection part for a zero trust world.
 
 existentialCoreVersion                       = "v0.76i"
 existentialCoreCheckMagic                    = b"EX25IMMUT32CORE7617"
-existentialCoreCheckSignature                = "b45624fc09463f05d2e9359db32ae928e084aa81e47bbd33ecde0a58d66d0656"
+existentialCoreCheckSignature                = "7c165b322566e304975917cdc92de03d3ab14e72d1edaefc2ea18f7444ac891c"
 
 class existentialCoreSignatures:
     existentialCore                              = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
     existentialCoreThreatRoot                    = "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca"
     existentialCoreThreatLegal                   = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"
-    existentialCoreThreatShadowVacuum            = ""    
     existentialCoreThreat                        = "90f9d7438a0497f54dbe065a64f5f5c111dee8c1184832c280d96c0bd2226689"
     existentialCoreCheck                         = "7c165b322566e304975917cdc92de03d3ab14e72d1edaefc2ea18f7444ac891c"
 
@@ -24,12 +22,12 @@ class existentialCoreSignatures:
     )
 
     existentialCoreSigned = (
-        ("Magic", "existentialCoreMagicSig", "existentialCoreMagicHash", "existentialCoreMagicSignature", 60, 0),
-        ("Core", "existentialCoreSign", "existentialCoreHash", "existentialCoreSignature", 126, 0),
-        ("CoreCheck", "existentialCoreCheckSign", "existentialCoreCheckHash", "existentialCoreCheckSignature", 62, 0),
-        ("CoreThreatStruct", "existentialCoreThreatStructSign", "existentialCoreThreatStructHash", "existentialCoreThreatStructSignature", 31, 1),
-        ("CoreThreatLegal", "existentialCoreThreatLegalSign", "existentialCoreThreatLegalHash", "existentialCoreThreatLegalSignature", 31, 2),
-        ("CoreThreat", "existentialCoreThreatSign", "existentialCoreThreatHash", "existentialCoreThreatSignature", 127, 3),
-        ("CoreThreatShadowVacuum", "existentialCoreThreatShadowVacuumSign", "existentialCoreThreatShadowVacuumHash", "existentialCoreThreatShadowVacuumSignature", 31, 5),        
-        ("CoreChain", "existentialCoreChainSign", "existentialCoreChainHash", "existentialCoreChainSignature", 255, 9)
+        ("Magic", "7faa8872", "existentialCoreMagicHash", "7faa88729e96e6a8795855c4e962d1cef3f9b8d2675819ba383f65e33daa0b9f6e46d27348e0670a6e4a90ebaf1266c3be28cf0412153501830d506c6f808909", 60, 0),
+        ("Core", "1289de75", "existentialCoreHash", "1289de75fe9506e225779f2f9cfe530c231e81fd4b6d420ee657cfec6e6d3b3a7b0b009a2aad37b7549b8c81e972ff337b0db434f66a67e4d859ef7186467d07", 126, 0),
+        ("CoreCheck", "7faa8872", "existentialCoreCheckHash", "7faa88729e96e6a8795855c4e962d1cef3f9b8d2675819ba383f65e33daa0b9f6e46d27348e0670a6e4a90ebaf1266c3be28cf0412153501830d506c6f808909", 62, 0),
+        ("CoreThreatStruct", "aa808a1f", "existentialCoreThreatStructHash", "aa808a1f4a6f73281378d2875fda658f0866048da37419013c0ebfd846a14a0fda859c5d6d657ce2ab1efec0c07d83320d7d4d437a4aee01e1c83d7893675903", 31, 1),
+        ("CoreThreatLegal", "cf73b021", "existentialCoreThreatLegalHash", "cf73b021381f426ad53910a83a1a5ce15ab6c3ea200e6e6818a805ca22328b13c7aacfc8a9cb5083abd633687e7693cc2c38310d026a36e59dfbd75cf592eb0b", 31, 2),
+        ("CoreThreat", "19aaad78", "existentialCoreThreatHash", "19aaad78077aa3c5f0dc4f8eebf98e7c6b0df624d790a92b5d736c69771f4eb9586c55559c7b4cbf069a77ffefc678a12b4696958ac55a3ad9b9e6c05e040b02", 127, 3),
+        ("CoreThreatShadowVacuum", "4f42af6a", "existentialCoreThreatShadowVacuumHash", "4f42af6a6be5078c95f186936058f8872553d523879b287e575f77e4180e4fc9a215e6bb30a6fd744ed85880945c133509ecf318ce4ca79caad6b7e1a50c1d01", 31, 5),
+        ("CoreChain", "7faa8872", "existentialCoreChainHash", "7faa88729e96e6a8795855c4e962d1cef3f9b8d2675819ba383f65e33daa0b9f6e46d27348e0670a6e4a90ebaf1266c3be28cf0412153501830d506c6f808909", 255, 9)
     )
