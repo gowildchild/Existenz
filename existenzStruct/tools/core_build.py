@@ -762,13 +762,15 @@ def main():
                 # Resolve the cause node hash token directly from live execution space
                 resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
                 
-                # NATIVE BITMODE ENFORCEMENT: Salt the payload if the row requires private cryptographic signing
+                # NATIVE BITMODE ENFORCEMENT & VERBOSE CHAIN TRACE DATA:
                 if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
                     row_payload = existentialCoreCheckMagic + resolved_cause_hash.encode('utf-8')
                     row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
                     preceding_hashes.insert(0, row_digest)
+                    print(f"    [CHAIN COMPONENT] Seq {c_seq} | Node: '{c_name}' (Bitmask {hex(c_bitmask)}) -> ENRICHED & SALTED")
                 else:
                     preceding_hashes.insert(0, resolved_cause_hash)
+                    print(f"    [CHAIN COMPONENT] Seq {c_seq} | Node: '{c_name}' (Bitmask {hex(c_bitmask)}) -> PLAIN LAYOUT HASH")
                 check_seq -= 1
 
             # If an unbroken sequence of cause rows exists right behind this node, validate the look-back chain
@@ -786,11 +788,9 @@ def main():
                 
                 if not hmac.compare_digest(computed_validation, resolved_target_hash):
                     print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
-                    print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].", file=sys.stderr)
-                    print(f"  [>] Failed Target Anchor Node  : {name}", file=sys.stderr)
-                    print(f"  [>] Expected Stored Hash Value : {resolved_target_hash}", file=sys.stderr)
-                    print(f"  [>] Computed Dynamic Loop Hash : {computed_validation}", file=sys.stderr)
-                    print(f"  [>] Raw Concatenated Payload   : {active_run_payload}", file=sys.stderr)
+                    print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].")
+                    print(f"    Expected (Stored) : {resolved_target_hash}")
+                    print(f"    Computed (Live)   : {computed_validation}")
                     sys.exit(1)
 
         # 4. Independent bitmode validation pass across all layers
