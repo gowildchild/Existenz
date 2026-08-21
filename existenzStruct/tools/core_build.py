@@ -632,7 +632,7 @@ def main():
     )
     parser.add_argument(
         "-step", "--step",
-        choices=["check", "sign", "compile"],
+        choices=["verify","check", "sign", "compile"],
         required=True,
         help="Specify the pipeline stage to run. 'check'=audit, 'sign'=matrix mapping, 'compile'=cross-compile."
     )
@@ -649,14 +649,13 @@ def main():
     else:
         pub_ver = "[" + int_ver + "]"
 
-    if args.step == "check":
+    if args.step in ["check","verify"]:
         print("[*] Verifying integrity of existentz cryptographic structures... ") 
     
     print("┌─────────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
     print(f"│ EXISTENZ CORE BUILDER {pub_ver}      by Gunther Voet              │")
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ────────────────────────────────────┘")
-    print(f"Execution Step : --step {args.step.ljust(8)} | Strategy Mode  : -run {args.run.ljust(4)}")
-    print("")
+    print(f"Execution Step : --step {args.step.ljust(8)}    |     Strategy Mode  : -run {args.run.ljust(4)}")
 
     # Establish backward-compatible path hooks for your distribution checking layer
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
@@ -707,7 +706,7 @@ def main():
 
     existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
 
-    if args.step == "check" or args.step == "compile":
+    if args.step in ["check","verify","compile"]:
         print("")        
         matrix_rules_lookup = {}
         for row in existentialCoreSignatures.existentialCoreSigned:
@@ -751,7 +750,7 @@ def main():
             # 2. Append asymmetric signature metadata states cleanly into the tag stream
             if requires_signing:
                 if is_signed:
-                    tags.append("+PK: ")
+                    tags.append("+PK:")
                     if bitmask & 8:   tags.append("PFM")
                     if bitmask & 16:  tags.append("DEV")
                     if bitmask & 32:  tags.append("PSN")
@@ -763,6 +762,7 @@ def main():
         #print("─" * 134)
         print(f"  [MAGIC] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
         print(f"  [CHECK] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
+        print("")        
         print(f"──┬ [ Existenz {existentialCoreVersion}   ] ", end="")
         print("─" * 111)
         
@@ -786,18 +786,18 @@ def main():
             sys.exit(1)
         print(f"  │  ")            
         print(f"  ├──► class existentialCoreThreatSignatures ────────────  ── ─ ── ─────  ─  ─ ─   ─ ─ ─  ─►")
-        print(f"  │    {conn_ct} [SQ {sq_ct}{ch_ct}{bm_ct.ljust(4)}] existentialCoreThreat     ─┬──► Sign: 0x{threat_structure_sign} {ch_ct} {tg_ct}")
-        print(f"  │    {vl_ct}                                      └──► Signature: \"{threat_structure_signature}\"")
-        print(f"  │    {conn_ctl} [SQ {sq_ctl}{ch_ctl}{bm_ctl.ljust(4)}] CoreThreatLegal       ─┬──► Sign: 0x{threat_legal_structure_sign} {ch_ctl} {tg_ctl}")
-        print(f"  │    {vl_ctl}                                      └──► Signature: \"{threat_legal_structure_signature}\"")
-        print(f"  │    {conn_ctv} [SQ {sq_ctv}{ch_ctv}{bm_ctv.ljust(4)}] CoreThreatShadowVacuum ─┬─► Sign: 0x{threat_shadow_structure_sign} {ch_ctv} {tg_ctv}")
-        print(f"  │    {vl_ctv}                                       └─► Signature: \"{threat_shadow_structure_signature}\"")        
+        print(f"  │    {conn_ct} [SQ {sq_ct}{ch_ct}{bm_ct.ljust(4)}] existentialCoreThreat ─┬──► Sign: 0x{threat_structure_sign} {ch_ct} {tg_ct}")
+        print(f"  │    {vl_ct}                                        └──► Signature: \"{threat_structure_signature}\"")
+        print(f"  │    {conn_ctl} [SQ {sq_ctl}{ch_ctl}{bm_ctl.ljust(4)}] CoreThreatLegal         ─┬──► Sign: 0x{threat_legal_structure_sign} {ch_ctl} {tg_ctl}")
+        print(f"  │    {vl_ctl}                                        └──► Signature: \"{threat_legal_structure_signature}\"")
+        print(f"  │    {conn_ctv} [SQ {sq_ctv}{ch_ctv}{bm_ctv.ljust(4)}] CoreThreatShadowVacuum   ─┬─► Sign: 0x{threat_shadow_structure_sign} {ch_ctv} {tg_ctv}")
+        print(f"  │    {vl_ctv}                                         └─► Signature: \"{threat_shadow_structure_signature}\"")        
         print(f"  │    {conn_cts} [SQ {sq_cts}{ch_cts}{bm_cts.ljust(4)}] existentialCoreThreat.py  ─┬─► Sign: 0x{threat_structures_sign} {ch_cts} {tg_cts}")
-        print(f"  │                                              └─► Signature: \"{threat_structures_signature}\"")
+        print(f"  │                                                 └─► Signature: \"{threat_structures_signature}\"")
         print("─ │ ─", end="")
         print("─" * 130)
         print(f"  └── [SQ {sq_ch} : {bm_ch.ljust(4)}] existen...CoreSignatures.py  ──┬─► Sign: 0x{chain_structures_sign} | {tg_ch}")
-        print(f"                                                 └─► Signature: \"{chain_structures_signature}\"")
+        print(f"                                                    └─► Signature: \"{chain_structures_signature}\"")
         print("─" * 135)
 
         # Build safe mapping dictionaries for sequence tracking and raw tuple row lookups natively
@@ -887,7 +887,7 @@ def main():
                 print(f"[-] Layer '{name}' failed bitmask verification: {hex(bitmask)}", file=sys.stderr)
                 sys.exit(1)
 
-        if args.step == "check":
+        if args.step in ["check","verify"]:
             print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
             sys.exit(0)
     
