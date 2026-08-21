@@ -1,4 +1,4 @@
-name: Existenz - Check Ingest Export Divide
+name: Check Ingest Export Divide | Existenz
 # This routine does everything what it should
 # do on the Guthub of Existenz. This gives 
 # confidence that the structure is not 
@@ -50,13 +50,13 @@ jobs:
         PYTHONPATH="${GITHUB_WORKSPACE}" python existenzStruct/tools/check_integrity.py
 
     # Step 5: Execute Suite and Compile Structures (Skipped if fully locked)
-    - name: Existenz - Checking Signatures for core_build
+    - name: Existenz - Verify Signatures - core_build
       if: env.RUN_MODE != 'locked'
       run: |
         python existenzStruct/tools/core_build.py -step check
 
     # Strictly validates the existenzStruct/ directory layout using your contiguous sequence math rules
-    - name: Existenz - Codebase Manifest Audit
+    - name: Existenz - Verify Manifest - verify-master
       if: env.RUN_MODE != 'locked'
       run: |
         PYTHONPATH="${GITHUB_WORKSPACE}" python existenzStruct/tools/core_manifest.py -stage verify-master
@@ -81,6 +81,7 @@ jobs:
         git config --global user.email "32355099+gowildchild@users.noreply.github.com"
       
         cp existenzStruct/master/existentialCore.py dist/
+        cp existenzStruct/master/existentialCoreSignatures.py dist/
         cp existenzStruct/master/existentialCoreThreat.py dist/
         
         git add dist/
