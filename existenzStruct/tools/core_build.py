@@ -651,6 +651,7 @@ def main():
     print(f"[*] Execution Step : --step {args.step}")
     print(f"[*] Strategy Mode  : -run {args.run}")
 
+    # Establish backward-compatible path hooks for your distribution checking layer
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
 
@@ -661,8 +662,7 @@ def main():
         sys.exit(1)
 
     print("[+] Multi-tier security separation handshake verified.")
-    
-    # 1. Compute foundational structured components dynamically across all stages
+
     core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
     core_structure_payload = core_structure.encode('utf-8')
     core_structure_signature = hmac.new(existentialCoreCheckMagic, core_structure_payload, hashlib.sha256).hexdigest()
