@@ -27,6 +27,7 @@ if CURRENT_TOOL_DIR not in sys.path:
     sys.path.insert(0, CURRENT_TOOL_DIR)
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
+int_ver = "v0.76i"
 
 try:
     # Safely load the local signatures file without namespace prefix drift failures
@@ -53,7 +54,7 @@ def make_header(sym: str) -> str:
     padding = f"{sym} " if sym else ""
     raw_lines = [
         "==========================================================================",
-        f"EXISTENZ Platform {existentialCoreVersion} (Private Key Signer)",
+        f"EXISTENZ CORE MASTER Private Key Signer {existentialCoreVersion}",
         "Copyright (c) 2026 by Gunther Voet. All Rights Reserved.",
         "Released under strict Non-Commercial Open-Source License terms.",
         "=========================================================================="
@@ -97,10 +98,11 @@ def main():
         show_version_info()
         sys.exit(0)
 
-    print("┌────────────────────────────────────────────────────────────────┐")
-    print("│     EXISTENZ LOCAL PRIVATE KEY SIGNING SYSTEM                  │")
-    print("└────────────────────────────────────────────────────────────────┘")
+    print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
+    print("│ EXISTENZ OFFLINE PRIVATE KEY SIGNER            by Gunther Voet │")
+    print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ─── ───── ────────────────────────┘")
     print(f"[*] Execution Stage: -stage {args.stage}")
+
     print(f"[*] Configuration   : {args.config}")
 
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
