@@ -837,11 +837,13 @@ def main():
         current_vacuum_payload = current_vacuum_structure.encode('utf-8')
         current_vacuum_hash = hmac.new(existentialCoreCheckMagic, current_vacuum_payload, hashlib.sha256).hexdigest()
 
-        if not hmac.compare_digest(current_vacuum_hash, existentialCoreSignatures.existentialCoreThreatShadowVacuum):
+        target_vacuum_sig = getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET")
+
+        if not hmac.compare_digest(current_vacuum_hash, target_vacuum_sig):
             print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
             print("[-] Unsigned variations detected inside Shadow Vacuum progression map!", file=sys.stderr)
             print(f"[-] Current Code Hash  : {current_vacuum_hash}", file=sys.stderr)
-            print(f"[-] Stored Signed Hash : {existentialCoreSignatures.existentialCoreThreatShadowVacuum}", file=sys.stderr)
+            print(f"[-] Stored Signed Hash : {target_vacuum_sig}", file=sys.stderr)
             print("[-] Compilation halted. Please re-run with '--step sign' using your keys first.", file=sys.stderr)
             sys.exit(1)
 
