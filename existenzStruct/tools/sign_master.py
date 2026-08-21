@@ -184,21 +184,21 @@ def main():
                     private_signature_bytes = loaded_keys[target_key].sign(expected_hash.encode('utf-8'))
                     signature_hex_output = private_signature_bytes.hex()
                     current_row_signatures.append(signature_hex_output)
+
                     print(f"  [+] Signed Layer: {name:<18} | Key: [{target_key}]")
                 except Exception as e:
                     print(f"  [-] Cryptographic signing error on layer '{name}' via [{target_key}]: {e}")
                     sys.exit(1)
-            
-            # For concurrent multi-signing rows, we preserve the primary operational signature slot cleanly
+
             if current_row_signatures:
-                final_sig_hex = current_row_signatures[-1]
-                short_code_hex_output = final_sig_hex[:8]
+                final_sig_hex = ":".join(current_row_signatures) if len(current_row_signatures) > 1 else current_row_signatures[-1]
+                short_code_hex_output = current_row_signatures[-1][:8]
                 computed_asymmetric_signatures.append(
-                    f"    (\"{name}\", \"{short_code_hex_output}\", \"{hash_var}\", \"{final_sig_hex}\", {bitmask}, {sequence})"
+                    f"        (\"{name}\", \"{short_code_hex_output}\", \"{hash_var}\", \"{final_sig_hex}\", {bitmask}, {sequence})"
                 )
-            else:
+            elif not any(private_paths.get(k) for k in required_keys):
                 computed_asymmetric_signatures.append(
-                    f"    (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {sequence})"
+                    f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {sequence})"
                 )
 
         elif args.stage == "verify":
