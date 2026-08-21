@@ -99,12 +99,6 @@ def main():
         if lang_ok:
             print(f"  [+] Passed [{lang.upper()}]: Directory structure verified.")
 
-    # ==========================================================================
-    # TEST STEP 3: HIGH-VOCAL VERBOSE CRYPTOGRAPHIC & CONTENT VALIDATOR
-    # ==========================================================================
-    # ==========================================================================
-    # TEST STEP 3: DYNAMIC ZERO-TRUST CRYPTOGRAPHIC VALIDATION TRACE
-    # ==========================================================================
     print("\n[*] Test Step 3: Auditing Cryptographic Signature Handshake Vaults...")
 
     try:
@@ -143,8 +137,9 @@ def main():
         # Pull core platform verification anchors dynamically from your local system payload context
         expected_sigs["existentialCoreThreatRoot"] = signatures_payload.get("existentialCoreThreatRoot", "")
         expected_sigs["existentialCoreThreatLegal"] = signatures_payload.get("existentialCoreThreatLegal", "")
+        expected_sigs["existentialCoreThreatShadowVacuum"] = signatures_payload.get("existentialCoreThreatShadowVacuum", "")
         expected_sigs["existentialCoreCheck"] = signatures_payload.get("existentialCoreCheck", "")
-
+# check c2
         # Reconstruct true signature handshake tokens inside memory using the live salt bytes
         recalculated_signed_matrix = {}
         if salt_bytes:
@@ -189,8 +184,10 @@ def main():
                                 constants[var_name] = var_val
             return constants
 
-        master_core_vars = parse_master_constants("existenzStruct/master/existentialCore.py")
-        master_threat_vars = parse_master_constants("existenzStruct/master/existentialCoreThreat.py")
+        #master_core_vars = parse_master_constants("existenzStruct/master/existentialCore.py")
+        #master_threat_vars = parse_master_constants("existenzStruct/master/existentialCoreThreat.py")
+        master_core_vars = parse_master_source_constants("existenzStruct/master/existentialCore.py")
+        master_threat_vars = parse_master_source_constants("existenzStruct/master/existentialCoreThreat.py")
 
         def enforce_language_blueprint_values(lang: str, file_rel_path: str, regex_pattern: str, master_map: dict):
             full_path = os.path.join(DIST_DIR, file_rel_path)
