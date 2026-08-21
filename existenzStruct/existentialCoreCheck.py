@@ -18,8 +18,8 @@ from existenzStruct.master.existentialCoreThreat import (
 # ==========================================================================
 existentialCoreCheckVersion    = "v0.76i"
 existentialCoreCheckMagic      = b"EX25IMMUT32CORE7617"
-existentialCoreCheckSign       = 0xb45624fc
-existentialCoreCheckSignature  = "b45624fc09463f05d2e9359db32ae928e084aa81e47bbd33ecde0a58d66d0656"
+existentialCoreCheckSign       = 0xb36d1e03
+existentialCoreCheckSignature  = "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85"
 
 class existentialCoreCheck:
     """
@@ -108,7 +108,7 @@ class existentialCoreCheck:
         # FIXED: Synchronized cleanly to your updated core structure parameters
         sign_existenz        = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
         sign_immutable       = "57c413f8531731df0d2f09a260ea36c7e49269348b553fdeeaa2dd11e7bc4bb9"
-        sign_structure       = "6d07d97272d414f966ea7a9d7b2956b96541fecbcb9079f375408a62b3b6bd6e"
+        sign_structure       = "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
         #sign_canary          = "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
         sign_corechain       = "7c165b32ba3df6d44968d18641470c01eca1e72b3de9b4bc871ef494dbd42c35a"
 
