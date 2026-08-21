@@ -12,7 +12,7 @@ class existentialCoreSignatures:
     existentialCore                              = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
     existentialCoreThreatRoot                    = "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca"
     existentialCoreThreatLegal                   = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"
-    existentialCoreThreat                        = "90f9d7438a0497f54dbe065a64f5f5c111dee8c1184832c280d96c0bd2226689"
+    existentialCoreThreat                        = "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
     existentialCoreCheck                         = "8b4defb0aaf1eb9bcd7b382cf0b4db0aa093eb1b84b8e09d3cf0f73d5b2d37b6"
 
     existentialPublicKeys = (
