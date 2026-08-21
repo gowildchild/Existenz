@@ -735,7 +735,7 @@ def main():
         
         # SELF-CALCULATING CONTIGUOUS CHAIN: Evaluate strict sequential follow-ups
         running_chain_sum = 0
-        expected_next_sequence = None  # DYNAMIC SELECTION: Automatically anchors on the first row to prevent lockout drift
+        expected_next_sequence = 1
         sequence_chain_accumulator = 0
 
         # FIXED ONLY: Enforce a standard chronological sort pass so fields feed into your math in order
@@ -744,10 +744,6 @@ def main():
             if name == "Magic":
                 continue
             
-            # Lock the baseline tracking link onto the very first structural element encountered (order 2)
-            if expected_next_sequence is None:
-                expected_next_sequence = sequence
-
             # If the number strictly follows up consecutively, add it to the running cause-sum
             if sequence == expected_next_sequence:
                 running_chain_sum += sequence
@@ -784,6 +780,23 @@ def main():
         print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
         print("──┴───────────────────────────────────────────────────────────────")
 
+        # INTERACTIVE PASS: Triggers your native local interactive password check matching your variable case format
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as cf:
+                    cfg = json.load(cf)
+                private_paths = cfg.get("private_key_paths", {})
+                
+                for identity in ["Platform", "Developer", "Personal"]:
+                    if identity in active_required_identities:
+                        key_path = private_paths.get(identity)
+                        if key_path:
+                            # Natively hooks your core password getpass prompts on your hard drive
+                            load_ssh_private_key(identity, key_path)
+            except Exception as e:
+                print(f"  [!] Verification Halt: Asymmetric security envelope check bypassed or failed: {e}")
+                sys.exit(1)
+
         if args.run == "WET":
             target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
             os.makedirs(target_master_dir, exist_ok=True)
@@ -818,8 +831,6 @@ def main():
                         f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
             print("[+] Target folder master signatures built.")
         sys.exit(0)
-
-
 
 
 
