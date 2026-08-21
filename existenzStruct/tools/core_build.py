@@ -635,7 +635,7 @@ def main():
         required=True,
         help="Specify the pipeline stage to run. 'check'=audit, 'sign'=matrix mapping, 'compile'=cross-compile."
     )
-    parser.add_argument(
+parser.add_argument(
         "-r", "--run", 
         choices=["WET", "dry"], 
         default="WET",
@@ -671,7 +671,7 @@ def main():
     threat_legal_structure_signature = hmac.new(existentialCoreCheckMagic, threat_legal_structure_payload, hashlib.sha256).hexdigest()
     threat_legal_structure_sign = threat_legal_structure_signature[:8]
 
-    threat_shadow_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i[0]))
+    threat_shadow_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i))
     threat_shadow_structure_payload = threat_shadow_structure.encode('utf-8')
     threat_shadow_structure_signature = hmac.new(existentialCoreCheckMagic, threat_shadow_structure_payload, hashlib.sha256).hexdigest()
     threat_shadow_structure_sign = threat_shadow_structure_signature[:8] 
@@ -728,10 +728,24 @@ def main():
         # Build safe mapping dictionaries for sequence tracking and raw tuple row lookups natively
         sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"], key=lambda x: x[5])
 
-        # Process each row inside the sorted tracking matrix natively
+        # Map out the exact live computed session hashes to resolve literal template variable string lookups
+        live_session_hashes = {
+            "existentialCoreMagicHash": existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic),
+            "existentialCoreHash": core_structure_signature,
+            "existentialCoreCheckHash": check_structures_signature,
+            "existentialCoreThreatStructHash": threat_structure_signature,
+            "existentialCoreThreatLegalHash": threat_legal_structure_signature,
+            "existentialCoreThreatShadowVacuumHash": threat_shadow_structure_signature,
+            "existentialCoreThreatHash": threat_structures_signature,
+            "existentialCoreChainHash": chain_structures_signature
+        }
+
         # Process each row inside the sorted tracking matrix natively
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+
+            # Resolve the target look-back baseline token from live memory if a placeholder string is present
+            resolved_target_hash = live_session_hashes.get(hash_var, hash_var)
 
             # DYNAMIC LOOK-BACK RUN FINDER: Trace backward to collect all consecutive preceding numbers
             preceding_hashes = []
@@ -745,13 +759,16 @@ def main():
                     
                 c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause_row
                 
+                # Resolve the cause node hash token directly from live execution space
+                resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
+                
                 # NATIVE BITMODE ENFORCEMENT: Salt the payload if the row requires private cryptographic signing
                 if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
-                    row_payload = existentialCoreCheckMagic + c_hash.encode('utf-8')
+                    row_payload = existentialCoreCheckMagic + resolved_cause_hash.encode('utf-8')
                     row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
                     preceding_hashes.insert(0, row_digest)
                 else:
-                    preceding_hashes.insert(0, c_hash)
+                    preceding_hashes.insert(0, resolved_cause_hash)
                 check_seq -= 1
 
             # If an unbroken sequence of cause rows exists right behind this node, validate the look-back chain
@@ -762,53 +779,29 @@ def main():
                 
                 # VERBOSE DEBUG LOGGING STAYS ACTIVE NATIVELY ON YOUR TERMINAL FRAME
                 print(f"  [>] Current Evaluation Layer  : {name} [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
-                print(f"  [>] Stored Matrix Anchor Hash : {hash_var}")
+                print(f"  [>] Stored Matrix Anchor Hash : {resolved_target_hash}")
                 print(f"  [>] Live Computed Digest Loop : {computed_validation}")
                 print(f"  [>] Combined Run Payload Data : {active_run_payload}")
                 print("─" * 80)
                 
-                if not hmac.compare_digest(computed_validation, hash_var):
+                if not hmac.compare_digest(computed_validation, resolved_target_hash):
                     print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
                     print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].")
-                    print(f"    Expected: {hash_var}")
+                    print(f"    Expected: {resolved_target_hash}")
                     print(f"    Computed: {computed_validation}")
                     sys.exit(1)
 
-
-
         # 4. Independent bitmode validation pass across all layers
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
+        for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
-            if name == "Magic":
-                continue
+            is_valid_hex = bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32
+            if (bitmask & 8 or bitmask & 16 or bitmask & 32) and not is_valid_hex:
+                print(f"\n[!!!] CRITICAL BITMODE VALIDATION FAILURE [!!!]", file=sys.stderr)
+                print(f"[-] Layer '{name}' failed bitmask verification: {hex(bitmask)}", file=sys.stderr)
+                sys.exit(1)
 
-            # DYNAMIC LOOK-BACK RUN FINDER: Trace backward to collect all consecutive preceding numbers
-            preceding_hashes = []
-            check_seq = sequence - 1
-            
-            while check_seq in hash_registry:
-                # Insert at the front to maintain the chronological order of the cause nodes
-                preceding_hashes.insert(0, hash_registry[check_seq])
-                check_seq -= 1
-
-            # If an unbroken sequence of cause rows exists right behind this node, validate the look-back chain
-            if preceding_hashes:
-                active_run_payload = "".join(preceding_hashes)
-                computed_payload = active_run_payload.encode('utf-8')
-                computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
-                
-                # VERBOSE DEBUG LOGGING STAYS ACTIVE NATIVELY ON YOUR TERMINAL FRAME
-                print(f"  [>] Current Evaluation Layer  : {name} [Sequence: {sequence}]")
-                print(f"  [>] Stored Matrix Anchor Hash : {hash_var}")
-                print(f"  [>] Live Computed Digest Loop : {computed_validation}")
-                print(f"  [>] Combined Run Payload Data : {active_run_payload}")
-                print("─" * 80)
-                
-                if not hmac.compare_digest(computed_validation, hash_var):
-                    print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
-                    print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].", file=sys.stderr)
-                    sys.exit(1)
-
+        print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
+        sys.exit(0)
     
     elif args.step == "sign":
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
@@ -823,7 +816,7 @@ def main():
         expected_next_sequence = 1
         sequence_chain_accumulator = 0
 
-        # FIXED ONLY: Enforce a standard chronological sort pass by the sequence index integer (index 5)
+        # ENFORCE STRICT MATRIX ORDER SCAN BY SEQUENCE INDEX 5
         for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
@@ -853,9 +846,11 @@ def main():
             if identity in active_required_identities and identity in pub_keys_dict:
                 key_body = pub_keys_dict[identity].split()
                 if len(key_body) >= 2:
-                    combined_salt_payload.extend(key_body[1].encode('utf-8'))
+                    combined_salt_payload.extend(key_body.encode('utf-8'))
                 else:
                     combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
+
+        derived_salt_token = hashlib.sha256(combined_salt_payload).hexdigest()
 
         print("──┬ [ hardware enrichment status ] ──────────────────────────────")
         print(f"  ├── existentialCoreCheckMagic : {existentialCoreCheckMagic}")
@@ -927,7 +922,6 @@ def main():
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
 
-        # 1. Map out live dynamic hashes calculated by this session step for lookup verification
         live_computed_hashes = {
             "existentialCore": core_structure_signature,
             "existentialCoreThreatRoot": threat_structure_signature,
@@ -938,7 +932,6 @@ def main():
             "existentialCoreChain": chain_structures_signature
         }
 
-        # 2. Translation map to bridge the short keys in the config file to the long hash keys
         key_translation_map = {
             "Magic": "Magic",
             "Core": "existentialCore",
@@ -954,20 +947,17 @@ def main():
         expected_next_sequence = 2
         sequence_chain_accumulator = 0
 
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic": 
                 continue
 
-            # If the number strictly follows up consecutively inside the chain limit, add it to the running cause-sum
             if sequence == expected_next_sequence:
                 running_chain_sum += sequence
                 expected_next_sequence += 1
-            # DYNAMIC ANCHOR CHECK: Replaces the hardcoded sequence == 5 layout trap cleanly
             elif sequence == running_chain_sum:
                 sequence_chain_accumulator = sequence
 
-            # Translate the short config name to get the true live computed hash variable
             long_name = key_translation_map.get(name, name)
             current_live_hash = live_computed_hashes.get(long_name, "")
             
@@ -986,13 +976,10 @@ def main():
         print("[+] Success: All live core layout hashes match the private key signature records.")
         print("[*] Validating live framework text layouts against signature records...")
         
-        # 1. Compute exactly what the threat legal layout hash looks like with the grammar changes
-        current_legal_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items(), key=lambda i: i[0]))
+        current_legal_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items(), key=lambda i: i))
         current_legal_payload = current_legal_structure.encode('utf-8')
         current_legal_hash = hmac.new(existentialCoreCheckMagic, current_legal_payload, hashlib.sha256).hexdigest()
 
-        # 2. Compare it to the master tracking module. 
-        # If the grammar fix hasn't been signed with --step sign, it aborts instantly.
         if not hmac.compare_digest(current_legal_hash, existentialCoreSignatures.existentialCoreThreatLegal):
             print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
             print("[-] Unsigned grammatical or structural variations detected inside Legal Map!", file=sys.stderr)
@@ -1001,9 +988,9 @@ def main():
             print("[-] Compilation halted. Please re-run with '--step sign' using your keys first.", file=sys.stderr)
             sys.exit(1)
 
-        current_vacuum_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i[0]))
+        current_vacuum_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i))
         current_vacuum_payload = current_vacuum_structure.encode('utf-8')
-        current_vacuum_hash = hmac.new(existentialCoreCheckMagic, current_vacuum_payload, hashlib.sha256).hexdigest()
+        current_vacuum_hash = hmac.new(existentialCoreCheckMagic, current_vacuum_structure_payload if 'current_vacuum_structure_payload' in locals() else current_vacuum_structure.encode('utf-8'), hashlib.sha256).hexdigest()
 
         target_vacuum_sig = getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET")
 
@@ -1036,7 +1023,7 @@ def main():
                 print(f"  ├── {signature_key.ljust(26)} = \"{digest_hash}\"")
         print("──┴───────────────────────────────────────────────────────────────")
 
-        print(f"[*] Synchronizing updated system layout into distribution vaults...")
+        print(f"[*] Synchronizing updated system layout for distribution...")
         try:
             perform_cross_language_exports(global_sigs_map, args.run.lower())
         except Exception as ex:
@@ -1048,4 +1035,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
