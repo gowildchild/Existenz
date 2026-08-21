@@ -786,9 +786,11 @@ def main():
                 
                 if not hmac.compare_digest(computed_validation, resolved_target_hash):
                     print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
-                    print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].")
-                    print(f"    Expected: {resolved_target_hash}")
-                    print(f"    Computed: {computed_validation}")
+                    print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].", file=sys.stderr)
+                    print(f"  [>] Failed Target Anchor Node  : {name}", file=sys.stderr)
+                    print(f"  [>] Expected Stored Hash Value : {resolved_target_hash}", file=sys.stderr)
+                    print(f"  [>] Computed Dynamic Loop Hash : {computed_validation}", file=sys.stderr)
+                    print(f"  [>] Raw Concatenated Payload   : {active_run_payload}", file=sys.stderr)
                     sys.exit(1)
 
         # 4. Independent bitmode validation pass across all layers
