@@ -785,6 +785,9 @@ def main():
         # INTERACTIVE PASS: Triggers your native local interactive password check matching your true file variables
         if os.path.exists(local_cfg_path):
             try:
+                # Import your unified signature handler on-demand from your master tool
+                from existenzStruct.tools.sign_master import load_ssh_private_key
+                
                 with open(local_cfg_path, "r", encoding="utf-8") as cf:
                     cfg = json.load(cf)
                 private_paths = cfg.get("private_key_paths", {})
@@ -792,12 +795,16 @@ def main():
                 for identity in ["Platform", "Developer", "Personal"]:
                     if identity in active_required_identities:
                         key_path = private_paths.get(identity)
-                        if key_path:
-                            # Natively hooks your core password getpass prompts on your hard drive
+                        if key_path and os.path.exists(key_path):
+                            print(f"  [+] Local Key File Found. Executing imported authentication routine for: [{identity}]")
                             load_ssh_private_key(identity, key_path)
+                        else:
+                            print(f"  [-] Alert: Local key path registered but file missing for: [{identity}]")
             except Exception as e:
                 print(f"  [!] Verification Halt: Asymmetric security envelope check bypassed or failed: {e}")
                 sys.exit(1)
+        else:
+            print("  [*] Notice: Local private configuration file absent (GitHub environment). Skipping local private signing pass.")
 
         if args.run == "WET":
             target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
@@ -809,7 +816,8 @@ def main():
             # Clean string parsing pass to avoid b"b'...'" literal formatting string syntax corruption bugs
             if isinstance(existentialCoreCheckMagic, bytes):
                 clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore')
-
+            else:
+                clean_magic_str = str(existentialCoreCheckMagic).replace("b'", "").replace("'", "")
 
             # STABILIZATION PASS: Format the nested tuple elements safely before writing the file stream
             formatted_pkeys = ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys)
@@ -957,3 +965,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
