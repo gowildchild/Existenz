@@ -732,41 +732,18 @@ def main():
 
         # Dynamic Bitmask and Sequence Extraction: Track required key bits and build progression chain
         active_required_identities = set()
-        
-        # SELF-CALCULATING CONTIGUOUS CHAIN: Evaluate strict sequential follow-ups
         running_chain_sum = 0
-        expected_next_sequence = 1
+        expected_next_sequence = 2
         sequence_chain_accumulator = 0
 
-        for layer_meta in existentialCoreSignatures.existentialCoreSigned:
+        # FIXED ORDER SELECTION: Force processing strictly by sequence column index integer order
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
                 continue
             
-            # If the number strictly follows up consecutively, add it to the running cause-sum
-            if sequence == expected_next_sequence:
-                running_chain_sum += sequence
-                expected_next_sequence += 1
-            # If it lands exactly on the accumulated sum of the previous consecutive chain, it is the effect
-            elif sequence == running_chain_sum:
-                sequence_chain_accumulator = sequence
-
-            # Map bitwise configuration flags directly to the cryptographic key handles
-            if bitmask & 8:   active_required_identities.add("Platform")
-            if bitmask & 16:  active_required_identities.add("Developer")
-            if bitmask & 32:  active_required_identities.add("Personal")
-
-        # Initialize signature payload base anchoring constant
-        combined_salt_payload = bytearray(existentialCoreCheckMagic)
-        
-        # Lock the dynamic self-calculating chain progression value straight into the foundational salt stream
-        combined_salt_payload.extend(str(sequence_chain_accumulator).encode('utf-8'))
-
-        # Enforce key evaluation block strictly following the bitmask configuration criteria
-        for identity in ["Platform", "Developer", "Personal"]:
-            if identity in active_required_identities and identity in pub_keys_dict:
-                key_body = pub_keys_dict[identity].split()
-                if len(key_body) >= 2:
+            # If the number strictly follows up consecutively inside the chain limit, add it to the running cause-sum
+            if sequence == expected_next_sequence and sequence = 2:
                     combined_salt_payload.extend(key_body[1].encode('utf-8'))
                 else:
                     combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
@@ -814,6 +791,7 @@ def main():
             print("[+] Target folder master signatures built.")
         sys.exit(0)
 
+
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
         print("[*] Enforcing asymmetric bitmask key requirements check...")
@@ -842,22 +820,22 @@ def main():
         }
 
         # 3. CRITICAL SIGNATURE GATEKEEPER LOOP: Abort if keys haven't signed the current layout state
-        # FIXED: Actively computes the consecutive chain progression logic to prevent ordering out-of-bounds exploits
+        # FIXED ORDER SELECTION: Force processing strictly by sequence column index integer order
         running_chain_sum = 0
-        expected_next_sequence = 1
+        expected_next_sequence = 2
         sequence_chain_accumulator = 0
 
-        for layer_meta in existentialCoreSignatures.existentialCoreSigned:
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic": 
                 continue
 
-            # If the number strictly follows up consecutively, add it to the running cause-sum
-            if sequence == expected_next_sequence:
+            # If the number strictly follows up consecutively inside the chain limit, add it to the running cause-sum
+            if sequence == expected_next_sequence and sequence <= 4:
                 running_chain_sum += sequence
                 expected_next_sequence += 1
             # If it lands exactly on the accumulated sum of the previous consecutive chain, it is the effect
-            elif sequence == running_chain_sum:
+            elif sequence == running_chain_sum and sequence == 5:
                 sequence_chain_accumulator = sequence
 
             # Translate the short config name to get the true live computed hash variable
@@ -945,3 +923,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
