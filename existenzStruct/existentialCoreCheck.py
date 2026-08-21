@@ -11,6 +11,7 @@ from existenzStruct.master.existentialCore import existentialCore
 from existenzStruct.master.existentialCoreThreat import (
     existentialCoreThreat, 
     existentialCoreThreatLegal,
+    existentialCoreThreatShadowVacuum,
     existentialCoreThreatSignatures
 )
 
@@ -131,4 +132,18 @@ class existentialCoreCheck:
         
         # FIXED: Routes target lookup natively through your class container vault
         expected_token = hex(existentialCoreThreatSignatures.existentialCoreThreatLegalSign)[2:]
+        return hmac.compare_digest(computed_token, expected_token)
+
+    @classmethod
+    def check_integrity_shadow(cls) -> bool:
+        """
+        Deterministically verifies the threat map has not been tampered with.
+        """
+        serialized_map = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items()))
+        payload_bytes = serialized_map.encode('utf-8')
+        
+        computed_hash = hmac.new(existentialCoreCheckMagic, payload_bytes, hashlib.sha256).digest()
+        computed_token = computed_hash[:4].hex()
+
+        expected_token = hex(existentialCoreThreatSignatures.existentialCoreThreatShadowVacuumSign)[2:]
         return hmac.compare_digest(computed_token, expected_token)
