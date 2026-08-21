@@ -720,9 +720,9 @@ def main():
             if bitmask > 1 and (bitmask & 1):
                 tags.append("+CHN:M")
             if bitmask & 2:
-                tags.append("+M")
+                tags.append("+MAG")
             if bitmask & 4:
-                tags.append("+H")
+                tags.append("+HSH")
             if bitmask & 64:
                 tags.append("+CHN:C")
             if bitmask & 128:
@@ -738,7 +738,7 @@ def main():
                 else:
                     return f"{hex(bitmask)}", str(seq), "\033[91m[ !!! NOT SIGNED !!! ]\033[0m"
                     
-            return f"{hex(bitmask)}", str(seq), "|".join(tags)
+            return f"{hex(bitmask)}", str(seq), " ".join(tags)
 
         print("[*] Stage 1: Evaluating core cryptographic structures...")
         print("─" * 125)
@@ -756,24 +756,24 @@ def main():
         bm_ch, sq_ch, tg_ch = get_layer_tags("CoreChain")
 
         print("  │ ")
-        print(f"  ├── [{bm_c.ljust(4)}][SQ{sq_c}] existentialCore.py       ─┬─► Sign: 0x{core_structure_sign} | {tg_c}")
+        print(f"  ├── [{bm_c.ljust(4)}][SQ{sq_c}] existentialCore.py          ─┬─► Sign: 0x{core_structure_sign} | {tg_c}")
         print(f"  │                                            └─► Signature : \"{core_structure_signature}\"")
         if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
             print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer!", file=sys.stderr)
             sys.exit(1)
         print(f"  ├── class existentialCoreThreatSignatures:")
-        print(f"  │    ├── [{bm_ct.ljust(4)}][SQ{sq_ct}] CoreThreatStruct     ──► Sign: 0x{threat_structure_sign} | {tg_ct}")
+        print(f"  │    ├── [{bm_ct.ljust(4)}][SQ{sq_ct}] CoreThreatStruct        ──► Sign: 0x{threat_structure_sign} | {tg_ct}")
         print(f"  │    │                                        └──► Signature : \"{threat_structure_signature}\"")
-        print(f"  │    ├── [{bm_ctl.ljust(4)}][SQ{sq_ctl}] CoreThreatLegal      ──► Sign: 0x{threat_legal_structure_sign} | {tg_ctl}")
+        print(f"  │    ├── [{bm_ctl.ljust(4)}][SQ{sq_ctl}] CoreThreatLegal         ──► Sign: 0x{threat_legal_structure_sign} | {tg_ctl}")
         print(f"  │    │                                        └──► Signature : \"{threat_legal_structure_signature}\"")
-        print(f"  │    ├── [{bm_ctv.ljust(4)}][SQ{sq_ctv}] CoreThreatShadowVac  ──► Sign: 0x{threat_shadow_structure_sign} | {tg_ctv}")
+        print(f"  │    ├── [{bm_ctv.ljust(4)}][SQ{sq_ctv}] CoreThreatShadowVac     ──► Sign: 0x{threat_shadow_structure_sign} | {tg_ctv}")
         print(f"  │    │                                        └──► Signature : \"{threat_shadow_structure_signature}\"")        
-        print(f"  │    └── [{bm_cts.ljust(4)}][SQ{sq_cts}] CoreThreat           ──► Sign: 0x{threat_structures_sign} | {tg_cts}")
+        print(f"  │    └── [{bm_cts.ljust(4)}][SQ{sq_cts}] CoreThreat              ──► Sign: 0x{threat_structures_sign} | {tg_cts}")
         print(f"  │                                            └──► Signature : \"{threat_structures_signature}\"")
-        print(f"  ├── [{bm_cc.ljust(4)}][SQ{sq_cc}] existentialCoreCheck.py  ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
+        print(f"  ├── [{bm_cc.ljust(4)}][SQ{sq_cc}] existentialCoreCheck.py     ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
         print(f"  │                                            └─► Signature : \"{check_structures_signature}\"")
         print("= │ ====================================================================================================================")
-        print(f"  └── [{bm_ch.ljust(4)}][SQ{sq_ch}] ...ntialCoreSignatures.py ┬─► Sign: 0x{chain_structures_sign} | {tg_ch}")
+        print(f"  └── [{bm_ch.ljust(4)}][SQ{sq_ch}] ...ntialCoreSignatures.py    ┬─► Sign: 0x{chain_structures_sign} | {tg_ch}")
         print(f"                                               └─► Signature : \"{chain_structures_signature}\"")
         print("─" * 125)
 
