@@ -699,10 +699,16 @@ def main():
 
         pub_keys_dict = {name: key_str for name, key_str in existentialCoreSignatures.existentialPublicKeys}
 
-        # Dynamic Bitmask Extraction: Identify which key bits are explicitly required by the tracking layers
+        # Dynamic Bitmask and Sequence Extraction: Track required key bits and build progression chain
         active_required_identities = set()
+        sequence_chain_accumulator = 0
+
         for layer_meta in existentialCoreSignatures.existentialCoreSigned:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+            
+            # Accumulate sequential dependencies dynamically to verify the 1 + 2 + 1 = 4 field rule
+            if name in ["Core", "CoreCheck", "CoreThreatStruct"]:
+                sequence_chain_accumulator += sequence
             
             # Map bitwise configuration flags directly to your cryptographic key handles
             if bitmask & 8:   active_required_identities.add("Platform")
@@ -712,6 +718,9 @@ def main():
         # Initialize signature payload base anchoring constant
         combined_salt_payload = bytearray(existentialCoreCheckMagic)
         
+        # Lock the dynamic sequence progression value straight into the foundational salt stream
+        combined_salt_payload.extend(str(sequence_chain_accumulator).encode('utf-8'))
+
         # Enforce key evaluation block strictly following your bitmask configuration criteria
         for identity in ["Platform", "Developer", "Personal"]:
             if identity in active_required_identities and identity in pub_keys_dict:
@@ -725,6 +734,7 @@ def main():
 
         print("──┬ [ hardware enrichment status ] ──────────────────────────────")
         print(f"  ├── existentialCoreCheckMagic : {existentialCoreCheckMagic}")
+        print(f"  ├── Sequence Progression sum  : {sequence_chain_accumulator} (Field Order Matrix)")
         print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
         print("──┴───────────────────────────────────────────────────────────────")
 
@@ -792,10 +802,15 @@ def main():
         }
 
         # 3. CRITICAL SIGNATURE GATEKEEPER LOOP: Abort if keys haven't signed the current layout state
+        # FIXED: Actively computes the dynamic order chain requirements matching the sign track parameters
+        sequence_chain_accumulator = 0
         for layer_meta in existentialCoreSignatures.existentialCoreSigned:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic": 
                 continue
+
+            if name in ["Core", "CoreCheck", "CoreThreatStruct"]:
+                sequence_chain_accumulator += sequence
 
             # Translate the short config name to get the true live computed hash variable
             long_name = key_translation_map.get(name, name)
