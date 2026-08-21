@@ -205,6 +205,12 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
     with open(os.path.join(dist_dir, "esphome", "single", "esphomeThreat.yaml"), "w", encoding="utf-8") as f:
         f.write(make_header("#") + "substitutions:\n" + "\n".join(f"  {k}: \"{widths['f_expr'](v)}\" # {clean_context_description(cmnts.get(k, ''))}" for k, v in threat_ord.items()) + "\n")
 
+    with open(os.path.join(dist_dir, "esphome", "single", "esphomeThreatLegal.yaml"), "w", encoding="utf-8") as f:
+        f.write(make_header("#") + "substitutions:\n" + "\n".join(f"  LEGAL_{str(k)}: \"{v}\"" for k, v in legal_ord.items()) + "\n")
+    if vacuum_ord:
+        with open(os.path.join(dist_dir, "esphome", "single", "esphomeThreatShadowVacuum.yaml"), "w", encoding="utf-8") as f:
+            f.write(make_header("#") + "substitutions:\n" + "\n".join(f"  VACUUM_{str(k)}: \"{v}\"" for k, v in vacuum_ord.items()) + "\n")
+
 
 def _export_python_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
     """Generates the isolated Python package subsystem tracks with original gate logic perfectly preserved."""
@@ -606,7 +612,16 @@ def perform_cross_language_exports(signatures_map: dict, mode: str):
     _export_infrastructure_scripts(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
 
     with open(os.path.join(dist_dir, "esphome", "existentialCores.yaml"), "w", encoding="utf-8") as f:
-        f.write(make_header("#") + " # ESPHome Consolidated Entrypoint Wrapper Config\ninclude:\n  - single/esphomeCore.yaml\n  - single/esphomeThreat.yaml\n")
+        include_lines = [
+            make_header("#") + " # ESPHome Consolidated Entrypoint Wrapper Config",
+            "include:",
+            "  - single/esphomeCore.yaml",
+            "  - single/esphomeThreat.yaml",
+            "  - single/esphomeThreatLegal.yaml"
+        ]
+        if vacuum_ord:
+            include_lines.append("  - single/esphomeThreatShadowVacuum.yaml")
+        f.write("\n".join(include_lines) + "\n")
 
     print(f"  [+] Decoupled target groups written directly to: {dist_dir}/")
 
