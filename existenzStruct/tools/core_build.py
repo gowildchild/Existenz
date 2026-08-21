@@ -635,7 +635,7 @@ def main():
         required=True,
         help="Specify the pipeline stage to run. 'check'=audit, 'sign'=matrix mapping, 'compile'=cross-compile."
     )
-parser.add_argument(
+    parser.add_argument(
         "-r", "--run", 
         choices=["WET", "dry"], 
         default="WET",
