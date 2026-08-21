@@ -738,8 +738,8 @@ def main():
         expected_next_sequence = 1
         sequence_chain_accumulator = 0
 
-        # FIXED ONLY: Enforce a strict standard sequence sort pass so fields feed into your math chronologically
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
+        # FIXED ONLY: Enforce a standard sequence sort pass so fields feed into your math chronologically
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[-1]):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
                 continue
@@ -814,6 +814,7 @@ def main():
                         f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
             print("[+] Target folder master signatures built.")
         sys.exit(0)
+
 
 
     elif args.step == "compile":
