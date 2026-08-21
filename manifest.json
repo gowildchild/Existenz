@@ -60,7 +60,7 @@
     "existenzStruct/tools/core_debug.py": "957531a87f16fcba6445e4d022abd179c732c94e588c5374915f60824dc7f8d6",
     "existenzStruct/tools/core_manifest.py": "da7d413c7cd56af716155fde047f5a681f23499d52aa3b9aa6a526c26bd6fe46",
     "existenzStruct/tools/core_telemetry.py": "f68be7b3e8d2336f1bbea65f69da13d6bef422d381b2a2f2657fc43fbf6c24cc",
-    "existenzStruct/tools/sign_master.py": "617a1b143802470bdf1d25f6116bd946583f6ff08fb55fe04da615ee4897d523",
+    "existenzStruct/tools/sign_master.py": "e92d26ac64b298eb14d4bf40c86889dc9a18de9ab43bf5522fcbcff4faf884c7",
     "existenzStruct/tools/test_integrity.py": "04b56dd5b1cf8698819dd196fa8117fdeb7bb91ab106729c31082594435dbd41",
     "existenzStruct/tools/test_sign.py": "3dd1c7ea5a1d3c069074cb0f53a07b9060b5b026d06365ead9df40ffdb73d404"
   },
