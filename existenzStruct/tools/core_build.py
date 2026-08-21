@@ -356,21 +356,21 @@ from single.existentialCoreThreat import existentialCoreThreat, existentialCoreT
 def _execute_existenz_platform_autocheck():
     """Internal zero-trust gatekeeper. Automatically fires upon import."""
     if not existentialCoreCheck.check_integrity_legal():
-        print("[-] CRITICAL ERROR: Threat Legal Map corruption detected!", file=sys.stderr)
+        print("[-] CRITICAL ERROR: existentialCoreThreatLegal corruption detected!", file=sys.stderr)
         sys.exit(1)
         
     # NEW: Actively catch any runtime drift or corruption inside the shadow vacuum layers
     if hasattr(existentialCoreCheck, 'check_integrity_vacuum') and not existentialCoreCheck.check_integrity_vacuum():
-        print("[-] CRITICAL ERROR: Shadow Vacuum Map corruption detected!", file=sys.stderr)
+        print("[-] CRITICAL ERROR: existentialCoreThreatShadowVacuum corruption detected!", file=sys.stderr)
         sys.exit(1)
 
     pristine_vector = existentialCore.CANARY_S_STATE
     if not existentialCoreCheck.check_integrity(pristine_vector):
-        print("[-] CRITICAL ERROR: Foundational Kernel or Checklist mismatch!", file=sys.stderr)
+        print("[-] CRITICAL ERROR: existentialCoreCheck issue detected!", file=sys.stderr)
         sys.exit(1)
 
 _execute_existenz_platform_autocheck()
-__all__ = ['existentialCore', 'existentialCoreThreat', 'existentialCoreThreatShadowVacuum', 'existentialCoreCheck', 'existentialCoreCheckVersion']
+__all__ = ['existentialCore', 'existentialCoreThreat', 'existentialCoreThreatLegal', 'existentialCoreThreatShadowVacuum', 'existentialCoreCheck', 'existentialCoreCheckVersion']
 ''')
 
 def _export_cpp_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
@@ -439,7 +439,6 @@ def _export_perl_framework(dist_dir: str, core_ord: dict, threat_ord: dict, lega
                 f"    'existentialCore' => '{sigs['existentialCore']}',\n"
                 f"    'existentialCoreThreatRoot' => '{sigs['existentialCoreThreatRoot']}',\n"
                 f"    'existentialCoreThreatLegal' => '{sigs['existentialCoreThreatLegal']}',\n"
-                # NEW: Expose the standalone signature token for the vacuum layer explicitly within the Perl vault module
                 f"    'existentialCoreThreatShadowVacuum' => '{sigs['existentialCoreThreatShadowVacuum']}',\n"
                 f"    'existentialCoreThreat' => '{sigs['existentialCoreThreat']}',\n"
                 f"    'existentialCoreCheck' => '{sigs['existentialCoreCheck']}'\n);\n\n"
@@ -545,7 +544,6 @@ def _export_infrastructure_scripts(dist_dir: str, core_ord: dict, threat_ord: di
                 f"existentialCore=\"{sigs['existentialCore']}\"\n"
                 f"existentialCoreThreatRoot=\"{sigs['existentialCoreThreatRoot']}\"\n"
                 f"existentialCoreThreatLegal=\"{sigs['existentialCoreThreatLegal']}\"\n"
-                # NEW: Expose the standalone signature token variable within the Bash distribution scripts
                 f"existentialCoreThreatShadowVacuum=\"{sigs['existentialCoreThreatShadowVacuum']}\"\n"
                 f"existentialCoreThreat=\"{sigs['existentialCoreThreat']}\"\n"
                 f"existentialCoreCheck=\"{sigs['existentialCoreCheck']}\"\n\n"
@@ -710,7 +708,7 @@ def main():
         print(f"  ├── existentialCore.py        ─┬─► existentialCoreSign                      = 0x{core_structure_sign}")
         print(f"  │                              └─► existentialCoreSignature                 = \"{core_structure_signature}\"")
         if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
-            print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer!", file=sys.stderr)
+            print("[-] CRITICAL ALERT: existentialCore Signature Error!", file=sys.stderr)
             sys.exit(1)
         print(f"  ├── existentialCoreThreat.py ─┬► class existentialCoreThreatSignatures:")
         print(f"  │                             ├──► existentialCoreThreatSign                = 0x{threat_structure_sign}")
@@ -770,12 +768,12 @@ def main():
             computed_validation = hmac.new(existentialCoreCheckMagic, combined_run_bytes, hashlib.sha256).hexdigest()
             
             if not hmac.compare_digest(computed_validation, anchor_hash):
-                print(f"\n[!!!] CRITICAL RUN SERIES INTEGRITY FAILURE [!!!]", file=sys.stderr)
+                print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
                 print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{anchor_name}' Sequence [{anchor_seq}].", file=sys.stderr)
                 # DIAGNOSTIC DATA OUTPUTS NATIVELY BROUGHT TO YOUR SCREEN:
-                print(f"  [>] Stored Target Hash in File : {anchor_hash}")
-                print(f"  [>] Live Computed Hash in Loop : {computed_validation}")
-                print(f"  [>] Raw Combined Loop Payload  : {combined_run_bytes.decode('utf-8', errors='ignore')}")
+                print(f"  [>] Current : {anchor_hash}")
+                print(f"  [>] Computed : {computed_validation}")
+                print(f"  [>] Payload : {combined_run_bytes.decode('utf-8', errors='ignore')}")
                 sys.exit(1)
 
         # 4. Independent bitmode validation pass across all layers
