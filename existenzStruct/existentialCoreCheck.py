@@ -19,8 +19,8 @@ from existenzStruct.master.existentialCoreThreat import (
 # ==========================================================================
 existentialCoreCheckVersion    = "v0.76j"
 existentialCoreCheckMagic      = b"EX25IMMUT32CORE7617"
-existentialCoreCheckSign       = 0xb36d1e03
-existentialCoreCheckSignature  = "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85"
+existentialCoreCheckSign       = 0x8b4defb0
+existentialCoreCheckSignature  = "8b4defb0aaf1eb9bcd7b382cf0b4db0aa093eb1b84b8e09d3cf0f73d5b2d37b6"
 
 class existentialCoreCheck:
     """
