@@ -643,7 +643,7 @@ def main():
     args = parser.parse_args()
 
     print("┌────────────────────────────────────────────────────────────────┐")
-    print(f"│ EXISTENZ CORE BUILDING v0.76j ({existentialCoreVersion})                  │")
+    print(f"│ EXISTENZ CORE BUILDING v0.76j ({existentialCoreVersion}) by Gunther Voet │")
     print("└────────────────────────────────────────────────────────────────┘")
     print(f"Execution Step : --step {args.step}  |  Strategy Mode  : -run {args.run}")
 
@@ -740,11 +740,11 @@ def main():
             return f"{hex(bitmask)}", str(seq), " ".join(tags)
 
         print("[*] Stage 1: Evaluating core cryptographic structures...")
-        print("─" * 125)
+        print("─" * 129)
         print(f"  [>] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
         print(f"  [>] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
         print(f"──┬ [ inside {existentialCoreVersion}     ] ", end="")
-        print("─" * 100)
+        print("─" * 111)
         
         # Resolve live configuration states directly for your unified dashboard view frame
         bm_c, sq_c, tg_c = get_layer_tags("Core")
@@ -762,14 +762,14 @@ def main():
             print("  [*] Structural Validation Issue for CORE!", file=sys.stderr)
             sys.exit(1)
         print(f"  ├── class existentialCoreThreatSignatures:")
-        print(f"  │    ├── [SQ{sq_ct}][{bm_ct.ljust(4)}] CoreThreatStruct       ─┬──► Sign: 0x{threat_structure_sign} | {tg_ct}")
+        print(f"  │    ├── [SQ{sq_ct}][{bm_ct.ljust(4)}] CoreThreatStruct      ─┬──► Sign: 0x{threat_structure_sign} | {tg_ct}")
         print(f"  │    │                                      └──► Signature: \"{threat_structure_signature}\"")
-        print(f"  │    ├── [SQ{sq_ctl}][{bm_ctl.ljust(4)}] CoreThreatLegal      ─┬──► Sign: 0x{threat_legal_structure_sign} | {tg_ctl}")
+        print(f"  │    ├── [SQ{sq_ctl}][{bm_ctl.ljust(4)}] CoreThreatLegal       ─┬──► Sign: 0x{threat_legal_structure_sign} | {tg_ctl}")
         print(f"  │    │                                      └──► Signature : \"{threat_legal_structure_signature}\"")
         print(f"  │    ├── [SQ{sq_ctv}][{bm_ctv.ljust(4)}] CoreThreatShadowVacuum ─┬─► Sign: 0x{threat_shadow_structure_sign} | {tg_ctv}")
         print(f"  │    │                                      └──► Signature : \"{threat_shadow_structure_signature}\"")        
-        print(f"  │    └── [SQ{sq_cts}][{bm_cts.ljust(4)}] CoreThreat            ─┬─► Sign: 0x{threat_structures_sign} | {tg_cts}")
-        print(f"  │                                            └──► Signature : \"{threat_structures_signature}\"")
+        print(f"  │    └── [SQ{sq_cts}][{bm_cts.ljust(4)}] CoreThreat             ─┬─► Sign: 0x{threat_structures_sign} | {tg_cts}")
+        print(f"  │                                           └──► Signature : \"{threat_structures_signature}\"")
         print(f"  ├── [SQ{sq_cc}][{bm_cc.ljust(4)}] existentialCoreCheck.py     ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
         print(f"  │                                            └─► Signature : \"{check_structures_signature}\"")
         print("─ │ ─", end="")
