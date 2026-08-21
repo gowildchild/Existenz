@@ -735,19 +735,42 @@ def main():
         
         # SELF-CALCULATING CONTIGUOUS CHAIN: Evaluate strict sequential follow-ups
         running_chain_sum = 0
-        expected_next_sequence = 2
+        expected_next_sequence = 1
         sequence_chain_accumulator = 0
 
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
+        # FIXED ONLY: Enforce a strict standard sequence sort pass so fields feed into your math chronologically
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
                 continue
             
-            # If the number strictly follows up consecutively inside the chain limit, add it to the running cause-sum
-            if sequence == expected_next_sequence and sequence = 2:
-                combined_salt_payload.extend(key_body[1].encode('utf-8'))
-            else:
-                combined_salt_payload.extend(clean_key_str.encode('utf-8'))
+            # If the number strictly follows up consecutively, add it to the running cause-sum
+            if sequence == expected_next_sequence:
+                running_chain_sum += sequence
+                expected_next_sequence += 1
+            # If it lands exactly on the accumulated sum of the previous consecutive chain, it is the effect
+            elif sequence == running_chain_sum:
+                sequence_chain_accumulator = sequence
+
+            # Map bitwise configuration flags directly to the cryptographic key handles
+            if bitmask & 8:   active_required_identities.add("Platform")
+            if bitmask & 16:  active_required_identities.add("Developer")
+            if bitmask & 32:  active_required_identities.add("Personal")
+
+        # Initialize signature payload base anchoring constant
+        combined_salt_payload = bytearray(existentialCoreCheckMagic)
+        
+        # Lock the dynamic self-calculating chain progression value straight into the foundational salt stream
+        combined_salt_payload.extend(str(sequence_chain_accumulator).encode('utf-8'))
+
+        # Enforce key evaluation block strictly following the bitmask configuration criteria
+        for identity in ["Platform", "Developer", "Personal"]:
+            if identity in active_required_identities and identity in pub_keys_dict:
+                key_body = pub_keys_dict[identity].split()
+                if len(key_body) >= 2:
+                    combined_salt_payload.extend(key_body[1].encode('utf-8'))
+                else:
+                    combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
 
         derived_salt_token = hashlib.sha256(combined_salt_payload).hexdigest()
 
@@ -791,6 +814,7 @@ def main():
                         f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
             print("[+] Target folder master signatures built.")
         sys.exit(0)
+
 
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
@@ -873,7 +897,6 @@ def main():
             print("[-] Compilation halted. Please re-run with '--step sign' using your keys first.", file=sys.stderr)
             sys.exit(1)
 
-        # 3. New: Compute and compare the live shadow vacuum mapping matrix against master signed state
         current_vacuum_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i[0]))
         current_vacuum_payload = current_vacuum_structure.encode('utf-8')
         current_vacuum_hash = hmac.new(existentialCoreCheckMagic, current_vacuum_payload, hashlib.sha256).hexdigest()
@@ -888,7 +911,6 @@ def main():
             print("[-] Compilation halted. Please re-run with '--step sign' using your keys first.", file=sys.stderr)
             sys.exit(1)
 
-        # 4. Double-check core properties to make sure no registers were altered
         if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
             print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
             print("[-] Core register structure mismatch against stored private signature records. Aborting.", file=sys.stderr)
