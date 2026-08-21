@@ -780,10 +780,12 @@ def main():
         print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
         print("──┴───────────────────────────────────────────────────────────────")
 
+        local_cfg_path = os.path.abspath(os.path.join(REPO_ROOT, "sign_integrity_config.json"))
+
         # INTERACTIVE PASS: Triggers your native local interactive password check matching your true file variables
-        if os.path.exists(DEFAULT_CONFIG_PATH):
+        if os.path.exists(local_cfg_path):
             try:
-                with open(DEFAULT_CONFIG_PATH, "r", encoding="utf-8") as cf:
+                with open(local_cfg_path, "r", encoding="utf-8") as cf:
                     cfg = json.load(cf)
                 private_paths = cfg.get("private_key_paths", {})
                 
@@ -807,8 +809,7 @@ def main():
             # Clean string parsing pass to avoid b"b'...'" literal formatting string syntax corruption bugs
             if isinstance(existentialCoreCheckMagic, bytes):
                 clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore')
-            else:
-                clean_magic_str = str(existentialCoreCheckMagic).replace("b'", "").replace("'", "")
+
 
             # STABILIZATION PASS: Format the nested tuple elements safely before writing the file stream
             formatted_pkeys = ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys)
@@ -951,10 +952,8 @@ def main():
             print(f"[-] GENERATION ERROR: Compilation layer broken during matrix step execution track.", file=sys.stderr)
             raise ex
 
-        print("[+] Vault synchronization locked down.")
         print("[+] SUCCESS: Structural session processing completed cleanly with exit code 0.")
 
 
 if __name__ == "__main__":
     main()
-
