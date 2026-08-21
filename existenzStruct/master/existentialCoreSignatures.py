@@ -5,7 +5,7 @@
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
 
-existentialCoreVersion                       = "v0.76j"
+existentialCoreVersion                       = "v0.76k"
 existentialCoreCheckMagic                    = b"EX25IMMUT32CORE7617"
 existentialCoreCheckSignatures               = "e22a58a6eea9fb10edfe8dd2754761851d00b4669754010e54f1eb423ea298bb"
 
