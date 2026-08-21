@@ -730,10 +730,10 @@ def main():
         # STRICT CONTIGUOUS SEQUENCE RUN VERIFICATION
         print("[*] Enforcing dynamic consecutive block chaining and bitmode validation...")
         
-        # 1. Gather all valid rule rows sorted chronologically by their sequence index
+        # 1. Gather all valid rule rows sorted chronologically by their sequence index integer (index 5)
         sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"], key=lambda x: x[5])
         
-        # 2. Group items into continuous unbroken sequence blocks dynamically
+        # 2. Group items into continuous unbroken sequence blocks dynamically by comparing index 5
         sequence_groups = []
         current_group = []
         
@@ -755,7 +755,7 @@ def main():
             
             anchor_name, _, anchor_hash, _, _, anchor_seq = anchor_row
             
-            # String together the hash variables of all preceding cause nodes in this block
+            # String together the hash variables (index 2) of all preceding cause nodes in this block
             rolling_hash_chain_payload = "".join(row[2] for row in cause_rows)
             
             computed_payload = rolling_hash_chain_payload.encode('utf-8')
