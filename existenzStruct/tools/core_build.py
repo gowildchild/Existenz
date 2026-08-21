@@ -768,7 +768,7 @@ def main():
             if identity in active_required_identities and identity in pub_keys_dict:
                 key_body = pub_keys_dict[identity].split()
                 if len(key_body) >= 2:
-                    combined_salt_payload.extend(key_body[1].encode('utf-8'))
+                    combined_salt_payload.extend(key_body.encode('utf-8'))
                 else:
                     combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
 
@@ -779,6 +779,23 @@ def main():
         print(f"  ├── Sequence Progression sum  : {sequence_chain_accumulator} (Field Order Matrix)")
         print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
         print("──┴───────────────────────────────────────────────────────────────")
+
+        # INTERACTIVE PASS: Loop through your required keys and prompt for passwords before compiling
+        if os.path.exists(DEFAULT_CONFIG_PATH):
+            try:
+                with open(DEFAULT_CONFIG_PATH, "r", encoding="utf-8") as cf:
+                    cfg = json.load(cf)
+                private_paths = cfg.get("private_key_paths", {})
+                
+                for identity in ["Platform", "Developer", "Personal"]:
+                    if identity in active_required_identities:
+                        key_path = private_paths.get(identity)
+                        if key_path:
+                            # Triggers your native interactive password getpass prompt loop
+                            load_ssh_private_key(identity, key_path)
+            except Exception as e:
+                print(f"  [!] Verification Halt: Asymmetric security envelope check bypassed or failed: {e}")
+                sys.exit(1)
 
         if args.run == "WET":
             target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
@@ -814,6 +831,7 @@ def main():
                         f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
             print("[+] Target folder master signatures built.")
         sys.exit(0)
+
 
 
 
