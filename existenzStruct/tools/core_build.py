@@ -777,13 +777,37 @@ def main():
                 sys.exit(1)
 
         # 4. Independent bitmode validation pass across all layers
-        for layer_meta in sorted_rules:
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
-            is_valid_hex = bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32
-            if (bitmask & 8 or bitmask & 16 or bitmask & 32) and not is_valid_hex:
-                print(f"\n[!!!] CRITICAL BITMODE VALIDATION FAILURE [!!!]", file=sys.stderr)
-                print(f"[-] Layer '{name}' failed bitmask verification: {hex(bitmask)}", file=sys.stderr)
-                sys.exit(1)
+            if name == "Magic":
+                continue
+
+            # DYNAMIC LOOK-BACK RUN FINDER: Trace backward to collect all consecutive preceding numbers
+            preceding_hashes = []
+            check_seq = sequence - 1
+            
+            while check_seq in hash_registry:
+                # Insert at the front to maintain the chronological order of the cause nodes
+                preceding_hashes.insert(0, hash_registry[check_seq])
+                check_seq -= 1
+
+            # If an unbroken sequence of cause rows exists right behind this node, validate the look-back chain
+            if preceding_hashes:
+                active_run_payload = "".join(preceding_hashes)
+                computed_payload = active_run_payload.encode('utf-8')
+                computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
+                
+                # VERBOSE DEBUG LOGGING STAYS ACTIVE NATIVELY ON YOUR TERMINAL FRAME
+                print(f"  [>] Current Evaluation Layer  : {name} [Sequence: {sequence}]")
+                print(f"  [>] Stored Matrix Anchor Hash : {hash_var}")
+                print(f"  [>] Live Computed Digest Loop : {computed_validation}")
+                print(f"  [>] Combined Run Payload Data : {active_run_payload}")
+                print("─" * 80)
+                
+                if not hmac.compare_digest(computed_validation, hash_var):
+                    print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
+                    print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].", file=sys.stderr)
+                    sys.exit(1)
 
     
     elif args.step == "sign":
