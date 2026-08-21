@@ -80,6 +80,12 @@ def main():
     print("\n[*] Test Step 2: Evaluating Language Isolation Package Targets...")
 
     target_languages = {
+        "root_agnostic": [
+            "existentialCoreThreatLegal.yml", 
+            "existentialCoreThreatShadowVacuum.yml", 
+            "existentialCoreThreatLegal.md", 
+            "existentialCoreThreatShadowVacuum.md"
+        ],
         "python": ["existentialCores.py", "existentialCoreCheck.py", "single/existentialCore.py", "single/existentialCoreThreat.py", "single/existentialCoreSignatures.py"],
         "cpp": ["existentialCores.hpp", "existentialCoreCheck.hpp", "single/existentialCore.hpp", "single/existentialCoreThreat.hpp", "single/existentialCoreSignatures.hpp"],
         "perl": ["existentialCores.pm", "existentialCoreCheck.pm", "single/existentialCore.pm", "single/existentialCoreThreat.pm", "single/existentialCoreSignatures.pm"],
