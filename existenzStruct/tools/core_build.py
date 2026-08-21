@@ -701,47 +701,52 @@ def main():
         # Build a temporary mapping dictionary from your dynamic matrix tuple array
         matrix_rules_lookup = {}
         for row in existentialCoreSignatures.existentialCoreSigned:
-            if row[0] != "Magic":
-                matrix_rules_lookup[row[0]] = row  # Store entire row data mapped to Name
+            if row != "Magic":
+                matrix_rules_lookup[row] = row  # Store entire row data mapped to Name
 
         # Helper function to dynamically check live signature states and compile compact tags
         def get_layer_tags(layer_name):
             if layer_name not in matrix_rules_lookup:
                 return "0x00", "0", "+H"
             
-            # Extract raw elements natively from your matrix tuples
             name, short_var, hash_var, sign_var, bitmask, seq = matrix_rules_lookup[layer_name]
             
-            # Determine if this layer's bitmask strictly demands asymmetric private key signing
+            # Determine asymmetric private key validation requirements based on your true bit flags
             requires_signing = bool(bitmask & 8 or bitmask & 16 or bitmask & 32)
+            is_signed = len(sign_var) >= 64 and not sign_var.startswith(name) and sign_var != short_var + "9d3f0dca9fc8"
             
-            # CRITICAL STATE CHECK: Verify if the signature slot contains a fallback template or an actual hex string token
-            is_signed = len(sign_var) >= 64 and not sign_var.startswith(layer_name) and sign_var != short_var + "9d3f0dca9fc8"
+            tags = []
             
-            tags = ["+H"]  # Base layout code layout hash is always computed
+            # 1. Evaluate your native structural flags (1=None/Part of Chain, 2=MAGIC, 4=SHA256, 64=Chain, 128=Order)
+            if bitmask > 1 and (bitmask & 1):
+                tags.append("+CHN:M")
+            if bitmask & 2:
+                tags.append("+M")
             if bitmask & 4:
-                tags.append("+CHAIN")
-                
+                tags.append("+H")
+            if bitmask & 64:
+                tags.append("+CHN:C")
+            if bitmask & 128:
+                tags.append("+ORD")
+
+            # 2. Append asymmetric signature metadata states cleanly into the tag stream
             if requires_signing:
                 if is_signed:
-                    tags.append("+M")  # Sealed coupled with Magic Key
-                    if bitmask & 8:   tags.append("+PK:PFM")
-                    if bitmask & 16:  tags.append("+PK:DEV")
-                    if bitmask & 32:  tags.append("+PK:PSN")
+                    tags.append("+PK:")
+                    if bitmask & 8:   tags.append(" PFM")
+                    if bitmask & 16:  tags.append(" DEV")
+                    if bitmask & 32:  tags.append(" PSN")
                 else:
-                    # SCREAMING UNAUTHENTICATED BACKDOOR ALERT:
                     return f"{hex(bitmask)}", str(seq), "\033[91m[ !!! NOT SIGNED !!! ]\033[0m"
-            else:
-                if bitmask & 60 or bitmask & 126 or bitmask & 255:
-                    tags.append("+MAG")
                     
-            return f"{hex(bitmask)}", str(seq), " ".join(tags)
+            return f"{hex(bitmask)}", str(seq), "|".join(tags)
 
         print("[*] Stage 1: Evaluating core cryptographic structures...")
         print("─" * 125)
         print(f"  [>] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
         print(f"  [>] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
         print(f"──┬ [ inside {existentialCoreVersion}     ] ──────────────────────────────────────────────────────────────────────────────────────────────")
+
         # Resolve live configuration states directly for your unified dashboard view frame
         bm_c, sq_c, tg_c = get_layer_tags("Core")
         bm_cc, sq_cc, tg_cc = get_layer_tags("CoreCheck")
@@ -768,7 +773,7 @@ def main():
         print(f"  │                                            └──► Signature : \"{threat_structures_signature}\"")
         print(f"  ├── [{bm_cc.ljust(4)}][SQ{sq_cc}] existentialCoreCheck.py  ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
         print(f"  │                                            └─► Signature : \"{check_structures_signature}\"")
-        print("= │ ===============================================================================================================")
+        print("= │ ====================================================================================================================")
         print(f"  └── [{bm_ch.ljust(4)}][SQ{sq_ch}] ...ntialCoreSignatures.py ┬─► Sign: 0x{chain_structures_sign} | {tg_ch}")
         print(f"                                               └─► Signature : \"{chain_structures_signature}\"")
         print("─" * 125)
