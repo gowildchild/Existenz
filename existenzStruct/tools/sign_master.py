@@ -92,7 +92,7 @@ def main():
         sys.exit(0)
 
     print("┌────────────────────────────────────────────────────────────────┐")
-    print("│ EXISTENZ LOCAL PRIV-KEY SIGNING SYSTEM                         │")
+    print("│ EXISTENZ LOCAL PRIVATE KEY SIGNING SYSTEM                      │")
     print("└────────────────────────────────────────────────────────────────┘")
     print(f"[*] Execution Stage: -stage {args.stage}")
     print(f"[*] Configuration  : {args.config}")
@@ -116,6 +116,7 @@ def main():
         "CoreThreat":       existentialCoreSignatures.existentialCoreThreat,
         "CoreThreatStruct": existentialCoreSignatures.existentialCoreThreatRoot,
         "CoreThreatLegal":  existentialCoreSignatures.existentialCoreThreatLegal,
+        "CoreThreatShadowVacuum": getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET"),
         "CoreCheck":        existentialCoreSignatures.existentialCoreCheck,
         "CoreChain":        existentialCoreSignatures.existentialCoreCheck
     }
@@ -127,12 +128,26 @@ def main():
     )
 
     if args.stage == "verify":
-        print(f"[*] Active Magic Token : {existentialCoreCheckMagic.decode('utf-8', errors='ignore')}")
+        # FIXED: Prevents string decode attribute crash bugs
+        clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic)
+        print(f"[*] Active Magic Token : {clean_magic_str}")
         print("──┬ [ COMPREHENSIVE ONE-LINE AUDIT OVERVIEW ] ────────────────────────────────────")
+
+    running_chain_sum = 0
+    expected_next_sequence = 1
+    sequence_chain_accumulator = 0
 
     for struct_rule in sorted_signing_rules:
         name, short_var, hash_var, sign_var, bitmask, sequence = struct_rule
         
+        # ADDED: Evaluates consecutive integers dynamically to capture the sliding chain logic
+        if name != "Magic":
+            if sequence == expected_next_sequence:
+                running_chain_sum += sequence
+                expected_next_sequence += 1
+            elif sequence == running_chain_sum:
+                sequence_chain_accumulator = sequence
+
         # Pull key assignments from bitmask settings natively
 
         # Evaluate bits independently to capture all cumulative multi-signature requirements
@@ -194,6 +209,7 @@ def main():
 
             print(f"  ├──[{sequence}] {name:<18} 0x{live_short} : {expected_hash}")
             print(f"  ├──[{sequence}] [ {status_lbl} ] 0x{display_sig}")
+
 #        # --- EXECUTION TRACK B: THE SINGLE ONE-LINE DESCRIPTIVE AUDIT VERIFY ROUTINE ---
 #        elif args.stage == "verify":
 #            is_signed = len(sign_var) > 40 and not sign_var.startswith("existential")
@@ -218,6 +234,8 @@ def main():
 
     if args.stage == "verify":
         print("──┴───────────────────────────────────────────────────────────────────────────────")
+        # ADDED: Prints out the verified sliding-window cumulative execution chain token
+        print(f"[+] Audit sequence chain check sum computed: {sequence_chain_accumulator}")
         print("[+] Audit validation tracking execution pass completed.")
         sys.exit(0)
 
@@ -229,15 +247,20 @@ def main():
         output_signatures_file = os.path.join(TARGET_DIST_DIR, "existentialCoreSignatures.py")
         print(f"\n[*] Committing complete asymmetric signature array to: {output_signatures_file}")
 
+        # FIXED: Resolves literal string interpolation crashing on raw byte arrays
+        clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic)
+        target_vacuum_sig = getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET")
+
         with open(output_signatures_file, "w", encoding="utf-8") as f:
             f.write(make_header("#") +
                     f"existentialCoreVersion                       = \"{existentialCoreVersion}\"\n"
-                    f"existentialCoreCheckMagic                    = b\"{existentialCoreCheckMagic.decode('utf-8', errors='ignore')}\"\n"
+                    f"existentialCoreCheckMagic                    = b\"{clean_magic_str}\"\n"
                     f"existentialCoreCheckSignature                = \"{existentialCoreSignatures.existentialCoreCheck}\"\n\n"
                     f"class existentialCoreSignatures:\n"
                     f"    existentialCore                              = \"{existentialCoreSignatures.existentialCore}\"\n"
                     f"    existentialCoreThreatRoot                    = \"{existentialCoreSignatures.existentialCoreThreatRoot}\"\n"
                     f"    existentialCoreThreatLegal                   = \"{existentialCoreSignatures.existentialCoreThreatLegal}\"\n"
+                    f"    existentialCoreThreatShadowVacuum            = \"{target_vacuum_sig}\"\n"
                     f"    existentialCoreThreat                        = \"{existentialCoreSignatures.existentialCoreThreat}\"\n"
                     f"    existentialCoreCheck                         = \"{existentialCoreSignatures.existentialCoreCheck}\"\n\n"
                     f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys) + "\n    )\n\n"
@@ -247,3 +270,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
