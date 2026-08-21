@@ -146,13 +146,12 @@ I've designed a world where an individual can look a corrupt society in the face
 
 It also shows the escalation mechanics of betrayal by placing `TRUST_BROKEN` which triggers at bits 20, 22, 24 and 26:
 * **Bit-20** breaks `TRUST_HUMAN_RIGHTS` -> destroys `SHIELD_HUMAN_RIGHTS` (Institutional betrayal)
-* **Bit-22** breaks `TRUST_FUGITIVE_SAFETY` -> Destroys `SHIELD_FUGITIVE_RIGHTS` (Sovereign protection layer fails)
-* **Bit-24** breaks `TRUST_DIGITAL_SPACE` -> Destroys `SHIELD_ONLINE_RIGHTS` (Online cyber-bullying, proxy attacks, hate mobs).
-* **Bit-26** breaks `TRUST_CORE_ALLIANCE` -> Destroys `SHIELD_AQUIRED_RIGHTS` (Deep personal betrayal, the final point of no return)
+* **Bit-22** breaks `TRUST_INCLUSIVE_RIGHTS` -> Destroys `SHIELD_INCLUSIVE_RIGHTS` (Ableism is not done)
+* **Bit-24** breaks `TRUST_BASIC_RIGHTS` -> Destroys `SHIELD_BASIC_RIGHTS` (Sovereign protection).
 
 By building trust parameters as a sequential, mirroring staircase, the Existenz Platform handles human betrayal with absolute, non-negotiable honesty.
 
-The progressive escalation of system betrayal and subsequent shield invalidation across bits \(20, 22, 24,\) and \(26\) is formalized by the bitwise generation function:
+The progressive escalation of system betrayal and subsequent shield invalidation across bits \(20, 22, 24, 26\) is formalized by the bitwise generation function:
 
 $$\mathcal{T}_{\text{broken}}(b) = \sum_{k=0}^{3} 2^{20 + 2k} \cdot \delta_{b, \, 20 + 2k}$$
 
