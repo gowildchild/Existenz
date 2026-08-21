@@ -28,8 +28,8 @@ pub mod existential_core_signatures {
         ("CoreCheck", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d"),
         ("CoreThreatStruct", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d"),
         ("CoreThreatLegal", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d"),
-        ("CoreThreat", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d"),
         ("CoreThreatShadowVacuum", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d"),
+        ("CoreThreat", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d"),
         ("CoreChain", "faddd14fdefb46154f26bdc052e457e0a63edd9c619af12b2e1aad55f8a7a14d")
     ];
 }
