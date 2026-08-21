@@ -653,7 +653,7 @@ def main():
         print("[*] Verifying integrity of existentz cryptographic structures... ") 
     
     print("┌─────────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
-    print(f"│ EXISTENZ CORE BUILDER {pub_ver}     by Gunther Voet              │")
+    print(f"│ EXISTENZ CORE BUILDER {pub_ver}      by Gunther Voet              │")
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ────────────────────────────────────┘")
     print(f"Execution Step : --step {args.step}  |  Strategy Mode  : -run {args.run}")
 
@@ -736,13 +736,13 @@ def main():
             tags = []
             # 1. Evaluate your native structural flags (1=None/Part of Chain, 2=MAGIC, 4=SHA256, 64=Chain, 128=Order)
             if bitmask > 1 and (bitmask & 1):
-                tags.append("+[CHAIN]")
+                tags.append("+[CHN]")
             if bitmask & 2:
                 tags.append("+[MAGIC]")
             if bitmask & 4:
                 tags.append("+[SHA256]")
             if bitmask & 64:
-                tags.append("+[/CHAIN]")
+                tags.append("+[/CHN]")
             if bitmask & 128:
                 tags.append("+[ORDER]")
 
@@ -774,10 +774,10 @@ def main():
 
 
         print("  │ ")
-        print(f"  ├── [SQ {sq_c} {bm_c.ljust(4)}] existentialCore.py          ─┬─► Sign: 0x{core_structure_sign} | {tg_c}")
-        print(f"  │                                            └─► Signature : \"{core_structure_signature}\"")
-        print(f"  ├── [SQ {sq_cc} {bm_cc.ljust(4)}] existentialCoreCheck.py     ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
-        print(f"  │                                            └─► Signature: \"{check_structures_signature}\"")
+        print(f"  ├── [SQ {sq_c} | {bm_c.ljust(4)}] existentialCore.py          ─┬─► Sign: 0x{core_structure_sign} | {tg_c}")
+        print(f"  │                                              └─► Signature: \"{core_structure_signature}\"")
+        print(f"  ├── [SQ {sq_cc} | {bm_cc.ljust(4)}] existentialCoreCheck.py     ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
+        print(f"  │                                              └─► Signature: \"{check_structures_signature}\"")
 
         if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
             print("  [*] Structural Validation Issue for CORE!", file=sys.stderr)
@@ -785,17 +785,17 @@ def main():
         print(f"  │  ")            
         print(f"  ├──► class existentialCoreThreatSignatures ────────────  ── ─ ── ─────  ─  ─ ─   ─ ─ ─  ─►")
         print(f"  │    {conn_ct} [SQ {sq_ct}{ch_ct}{bm_ct.ljust(4)}] CoreThreatStructure   ─┬──► Sign: 0x{threat_structure_sign} {ch_ct} {tg_ct}")
-        print(f"  │    {vl_ct}                                    └──► Signature: \"{threat_structure_signature}\"")
+        print(f"  │    {vl_ct}                                      └──► Signature: \"{threat_structure_signature}\"")
         print(f"  │    {conn_ctl} [SQ {sq_ctl}{ch_ctl}{bm_ctl.ljust(4)}] CoreThreatLegal       ─┬──► Sign: 0x{threat_legal_structure_sign} {ch_ctl} {tg_ctl}")
-        print(f"  │    {vl_ctl}                                    └──► Signature: \"{threat_legal_structure_signature}\"")
+        print(f"  │    {vl_ctl}                                      └──► Signature: \"{threat_legal_structure_signature}\"")
         print(f"  │    {conn_ctv} [SQ {sq_ctv}{ch_ctv}{bm_ctv.ljust(4)}] CoreThreatShadowVacuum ─┬─► Sign: 0x{threat_shadow_structure_sign} {ch_ctv} {tg_ctv}")
-        print(f"  │    {vl_ctv}                                     └─► Signature: \"{threat_shadow_structure_signature}\"")        
+        print(f"  │    {vl_ctv}                                       └─► Signature: \"{threat_shadow_structure_signature}\"")        
         print(f"  │    {conn_cts} [SQ {sq_cts}{ch_cts}{bm_cts.ljust(4)}] CoreThreat             ─┬─► Sign: 0x{threat_structures_sign} {ch_cts} {tg_cts}")
-        print(f"  │                                            └─► Signature: \"{threat_structures_signature}\"")
+        print(f"  │                                              └─► Signature: \"{threat_structures_signature}\"")
         print("─ │ ─", end="")
         print("─" * 130)
-        print(f"  └── [SQ {sq_ch} {bm_ch.ljust(4)}] ...ntialCoreSignatures.py  ──┬─► Sign: 0x{chain_structures_sign} | {tg_ch}")
-        print(f"                                               └─► Signature: \"{chain_structures_signature}\"")
+        print(f"  └── [SQ {sq_ch} : {bm_ch.ljust(4)}] existen...CoreSignatures.py  ──┬─► Sign: 0x{chain_structures_sign} | {tg_ch}")
+        print(f"                                                 └─► Signature: \"{chain_structures_signature}\"")
         print("─" * 135)
 
         # Build safe mapping dictionaries for sequence tracking and raw tuple row lookups natively
