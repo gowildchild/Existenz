@@ -628,7 +628,7 @@ def perform_cross_language_exports(signatures_map: dict, mode: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="EXISTENZ PLATFORM UNIFIED INTEGRITY SUITE & CROSS-COMPILER"
+        description="Existenz cross-compile builder and private signing suite"
     )
     parser.add_argument(
         "-step", "--step",
@@ -643,11 +643,12 @@ def main():
         help="Execution strategy state constraint. 'dry' bypasses filesystem modifications."
     )
     args = parser.parse_args()
-    pub_ver = existentialCoreVersion
+    pub_ver = existentialCoreVersion or None
     if pub_ver != int_ver:
         pub_ver = existentialCoreVersion + "/" + int_ver
     else:
         pub_ver = "[" + int_ver + "]"
+        
     print("┌────────────────────────────────────────────────────────────────┐")
     print(f"│ EXISTENZ CORE BUILDING {pub_ver}     by Gunther Voet            │")
     print("└────────────────────────────────────────────────────────────────┘")
@@ -756,7 +757,7 @@ def main():
                 else:
                     return f"{hex(bitmask)}", str(seq), "\033[91m[ !!! NOT SIGNED !!! ]\033[0m"
                     
-            return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line
+            return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line, chain_arrow
 
         print("─" * 129)
         print(f"  [>] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
@@ -764,7 +765,6 @@ def main():
         print(f"──┬ [ Existenz {existentialCoreVersion}   ] ", end="")
         print("─" * 111)
         
-        # Resolve live configuration states directly for your unified dashboard view frame
         bm_c, sq_c, tg_c, _, _, _ = get_layer_tags("Core")
         bm_cc, sq_cc, tg_cc, _, _, _ = get_layer_tags("CoreCheck")
         bm_ch, sq_ch, tg_ch, _, _, _ = get_layer_tags("CoreChain")        
