@@ -643,16 +643,15 @@ def main():
     args = parser.parse_args()
 
     print("┌────────────────────────────────────────────────────────────────┐")
-    print(f"│ EXISTENZ CORE BUILDER ENGINE v0.76j ({existentialCoreVersion})                      │")
+    print(f"│ EXISTENZ CORE BUILDING v0.76j ({existentialCoreVersion})                  │")
     print("└────────────────────────────────────────────────────────────────┘")
-    print(f"[*] Execution Step : --step {args.step}")
-    print(f"[*] Strategy Mode  : -run {args.run}")
+    print(f"Execution Step : --step {args.step}  |  Strategy Mode  : -run {args.run}")
 
     # Establish backward-compatible path hooks for your distribution checking layer
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
 
-    print("[+] Multi-tier security separation handshake verified.")
+    # print("[+] Signatures")
 
     # Flintstones
     core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
@@ -745,7 +744,7 @@ def main():
         print(f"  [>] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
         print(f"  [>] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
         print(f"──┬ [ inside {existentialCoreVersion}     ] ", end="")
-        print("─" * 125)
+        print("─" * 100)
         
         # Resolve live configuration states directly for your unified dashboard view frame
         bm_c, sq_c, tg_c = get_layer_tags("Core")
@@ -763,21 +762,21 @@ def main():
             print("  [*] Structural Validation Issue for CORE!", file=sys.stderr)
             sys.exit(1)
         print(f"  ├── class existentialCoreThreatSignatures:")
-        print(f"  │    ├── [SQ{sq_ct}][{bm_ct.ljust(4)}] CoreThreatStruct        ┬─► Sign: 0x{threat_structure_sign} | {tg_ct}")
-        print(f"  │    │                                      └──► Signature : \"{threat_structure_signature}\"")
-        print(f"  │    ├── [SQ{sq_ctl}][{bm_ctl.ljust(4)}] CoreThreatLegal         ┬─► Sign: 0x{threat_legal_structure_sign} | {tg_ctl}")
+        print(f"  │    ├── [SQ{sq_ct}][{bm_ct.ljust(4)}] CoreThreatStruct       ─┬──► Sign: 0x{threat_structure_sign} | {tg_ct}")
+        print(f"  │    │                                      └──► Signature: \"{threat_structure_signature}\"")
+        print(f"  │    ├── [SQ{sq_ctl}][{bm_ctl.ljust(4)}] CoreThreatLegal      ─┬──► Sign: 0x{threat_legal_structure_sign} | {tg_ctl}")
         print(f"  │    │                                      └──► Signature : \"{threat_legal_structure_signature}\"")
-        print(f"  │    ├── [SQ{sq_ctv}][{bm_ctv.ljust(4)}] CoreThreatShadowVacuum  ┬─► Sign: 0x{threat_shadow_structure_sign} | {tg_ctv}")
+        print(f"  │    ├── [SQ{sq_ctv}][{bm_ctv.ljust(4)}] CoreThreatShadowVacuum ─┬─► Sign: 0x{threat_shadow_structure_sign} | {tg_ctv}")
         print(f"  │    │                                      └──► Signature : \"{threat_shadow_structure_signature}\"")        
-        print(f"  │    └── [SQ{sq_cts}][{bm_cts.ljust(4)}] CoreThreat              ┬─► Sign: 0x{threat_structures_sign} | {tg_cts}")
+        print(f"  │    └── [SQ{sq_cts}][{bm_cts.ljust(4)}] CoreThreat            ─┬─► Sign: 0x{threat_structures_sign} | {tg_cts}")
         print(f"  │                                            └──► Signature : \"{threat_structures_signature}\"")
         print(f"  ├── [SQ{sq_cc}][{bm_cc.ljust(4)}] existentialCoreCheck.py     ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
         print(f"  │                                            └─► Signature : \"{check_structures_signature}\"")
         print("─ │ ─", end="")
         print("─" * 125)
-        print(f"  └── [SQ{sq_ch}][{bm_ch.ljust(4)}] ...ntialCoreSignatures.py    ┬─► Sign: 0x{chain_structures_sign} | {tg_ch}")
-        print(f"                                               └─► Signature : \"{chain_structures_signature}\"")
-        print("─" * 125)
+        print(f"  └── [SQ{sq_ch}][{bm_ch.ljust(4)}] ...ntialCoreSignatures.py  ──┬─► Sign: 0x{chain_structures_sign} | {tg_ch}")
+        print(f"                                               └─► Signature: \"{chain_structures_signature}\"")
+        print("─" * 130)
 
         # Build safe mapping dictionaries for sequence tracking and raw tuple row lookups natively
         sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"], key=lambda x: x[5])
