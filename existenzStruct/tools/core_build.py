@@ -648,7 +648,10 @@ def main():
         pub_ver = existentialCoreVersion + "/" + int_ver
     else:
         pub_ver = "[" + int_ver + "]"
-        
+
+    if args.step == "check":
+        print("[*] Verifying integrity of existentz cryptographic structures... ") 
+    
     print("┌────────────────────────────────────────────────────────────────┐")
     print(f"│ EXISTENZ CORE BUILDING {pub_ver}     by Gunther Voet            │")
     print("└────────────────────────────────────────────────────────────────┘")
@@ -704,8 +707,6 @@ def main():
     existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
 
     if args.step == "check" or args.step == "compile":
-        print("[*] Verifying integrity of existentz cryptographic structures... ")        
-        # Build a temporary mapping dictionary from your dynamic matrix tuple array
         matrix_rules_lookup = {}
         for row in existentialCoreSignatures.existentialCoreSigned:
             if row[0] != "Magic":
@@ -713,6 +714,7 @@ def main():
 
         # Helper function to dynamically check live signature states and compile compact tags
         def get_layer_tags(layer_name, is_last_in_group=False):
+            chain_arrow = None
             if layer_name not in matrix_rules_lookup:
                 return "0x00", "0", "+H", "├──", "│  ", "└──" if is_last_in_group else "├──"
             
@@ -723,14 +725,12 @@ def main():
             is_signed = len(sign_var) >= 64 and not sign_var.startswith(name) and sign_var != short_var + "9d3f0dca9fc8"
             connector = None
             v_line    = None
-            chain_arrow = None
             is_chain_member = bool(bitmask > 1 and (bitmask & 1))
             if is_chain_member:
                 chain_arrow = "►"
                 connector = "╚══" if is_last_in_group else "╠══"
                 v_line    = "║  "
             else:
-                chain_arrow = " "
                 connector = "└──" if is_last_in_group else "├──"
                 v_line    = "│  "
                 
