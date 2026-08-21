@@ -738,7 +738,7 @@ def main():
         current_series_run = []
         
         for row in sorted_rules:
-            if not current_series_run or row == current_series_run[-1] + 1:
+            if not current_series_run or row[5] == current_series_run[-1][5] + 1:
                 current_series_run.append(row)
             else:
                 if len(current_series_run) > 1:
@@ -746,6 +746,7 @@ def main():
                 current_series_run = [row]
         if len(current_series_run) > 1:
             active_series_runs.append(current_series_run)
+
 
         # 3. Process each continuous series run strictly by its relative sequence boundaries
         for run_series in active_series_runs:
