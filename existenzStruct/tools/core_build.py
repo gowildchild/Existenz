@@ -732,21 +732,22 @@ def main():
 
         # Dynamic Bitmask and Sequence Extraction: Track required key bits and build progression chain
         active_required_identities = set()
+        
+        # SELF-CALCULATING CONTIGUOUS CHAIN: Evaluate strict sequential follow-ups
         running_chain_sum = 0
         expected_next_sequence = 2
         sequence_chain_accumulator = 0
 
-        # FIXED ORDER SELECTION: Force processing strictly by sequence column index integer order
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
                 continue
             
             # If the number strictly follows up consecutively inside the chain limit, add it to the running cause-sum
-            if sequence == expected_next_sequence and sequence == 2:
+            if sequence == expected_next_sequence and sequence = 2:
                 combined_salt_payload.extend(key_body[1].encode('utf-8'))
             else:
-                combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
+                combined_salt_payload.extend(clean_key_str.encode('utf-8'))
 
         derived_salt_token = hashlib.sha256(combined_salt_payload).hexdigest()
 
@@ -790,7 +791,6 @@ def main():
                         f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
             print("[+] Target folder master signatures built.")
         sys.exit(0)
-
 
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
