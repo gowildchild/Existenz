@@ -650,7 +650,6 @@ def main():
     print("└────────────────────────────────────────────────────────────────┘")
     print(f"[*] Execution Step : --step {args.step}")
     print(f"[*] Strategy Mode  : -run {args.run}")
-    print(f"[*] Configuration   : {args.config}")
 
     # Establish backward-compatible path hooks for your distribution checking layer
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
