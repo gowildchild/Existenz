@@ -780,10 +780,10 @@ def main():
         print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
         print("──┴───────────────────────────────────────────────────────────────")
 
-        # INTERACTIVE PASS: Triggers your native local interactive password check matching your variable case format
-        if os.path.exists(CONFIG_FILE):
+        # INTERACTIVE PASS: Triggers your native local interactive password check matching your true file variables
+        if os.path.exists(DEFAULT_CONFIG_PATH):
             try:
-                with open(CONFIG_FILE, "r", encoding="utf-8") as cf:
+                with open(DEFAULT_CONFIG_PATH, "r", encoding="utf-8") as cf:
                     cfg = json.load(cf)
                 private_paths = cfg.get("private_key_paths", {})
                 
@@ -831,6 +831,7 @@ def main():
                         f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
             print("[+] Target folder master signatures built.")
         sys.exit(0)
+
 
 
 
