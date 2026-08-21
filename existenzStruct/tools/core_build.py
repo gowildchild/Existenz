@@ -646,7 +646,7 @@ def main():
     args = parser.parse_args()
 
     print("┌────────────────────────────────────────────────────────────────┐")
-    print(f"│ EXISTENZ CORE BUILDER ENGINE v0.76i ({existentialCoreVersion})                      │")
+    print(f"│ EXISTENZ CORE BUILDER ENGINE v0.76j ({existentialCoreVersion})                      │")
     print("└────────────────────────────────────────────────────────────────┘")
     print(f"[*] Execution Step : --step {args.step}")
     print(f"[*] Strategy Mode  : -run {args.run}")
@@ -657,6 +657,7 @@ def main():
 
     print("[+] Multi-tier security separation handshake verified.")
 
+    # Flintstones
     core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
     core_structure_payload = core_structure.encode('utf-8')
     core_structure_signature = hmac.new(existentialCoreCheckMagic, core_structure_payload, hashlib.sha256).hexdigest()
@@ -682,7 +683,7 @@ def main():
     threat_structures_signature = hmac.new(existentialCoreCheckMagic, threat_structures_payload, hashlib.sha256).hexdigest()
     threat_structures_sign = threat_structures_signature[:8]
 
-    check_structures = f"{core_structure}||{threat_structures}"
+    check_structures = f"{core_structure}||{threat_structures}||{threat_shadow_structure}"
     check_structures_payload = check_structures.encode('utf-8')
     check_structures_signature = hmac.new(existentialCoreCheckMagic, check_structures_payload, hashlib.sha256).hexdigest()
     check_structures_sign = check_structures_signature[:8]
@@ -708,6 +709,9 @@ def main():
         print("  │ ")
         print(f"  ├── existentialCore.py        ─┬─► existentialCoreSign                      = 0x{core_structure_sign}")
         print(f"  │                              └─► existentialCoreSignature                 = \"{core_structure_signature}\"")
+        if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
+            print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer!", file=sys.stderr)
+            sys.exit(1)
         print(f"  ├── existentialCoreThreat.py ─┬► class existentialCoreThreatSignatures:")
         print(f"  │                             ├──► existentialCoreThreatSign                = 0x{threat_structure_sign}")
         print(f"  │                             ├──► existentialCoreThreatSignature           = \"{threat_structure_signature}\"")
@@ -722,10 +726,6 @@ def main():
         print("= │ ===============================================================================================================")
         print(f"  └── ...ntialCoreSignatures.py  ┬─► existentialCoreChainSign                 = 0x{chain_structures_sign}")
         print(f"                                 └─► existentialCoreChainSignature            = \"{chain_structures_signature}\"")
-
-        if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
-            print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer!", file=sys.stderr)
-            sys.exit(1)
 
         # ENGINE PASS: Enforce dynamic continuous series rule tracking matrix validations
         print("[*] Enforcing dynamic consecutive run tracking and bitmode validation...")
@@ -834,22 +834,50 @@ def main():
                 else:
                     combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
 
-
-        derived_salt_token = hashlib.sha256(combined_salt_payload).hexdigest()
-
         print("──┬ [ hardware enrichment status ] ──────────────────────────────")
         print(f"  ├── existentialCoreCheckMagic : {existentialCoreCheckMagic}")
         print(f"  ├── Sequence Progression sum  : {sequence_chain_accumulator} (Field Order Matrix)")
         print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
         print("──┴───────────────────────────────────────────────────────────────")
 
-        # FIXED: Look up configuration directly relative to where the engine executes
+        if args.run == "WET":
+            target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+            os.makedirs(target_master_dir, exist_ok=True)
+            target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
+            
+            print(f"[*] Compiling dynamic lockbook signatures file into: {target_sig_file}")
+            
+            if isinstance(existentialCoreCheckMagic, bytes):
+                clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore')
+            else:
+                clean_magic_str = str(existentialCoreCheckMagic).replace("b'", "").replace("'", "")
+
+            formatted_pkeys = ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys)
+            formatted_signed = ",\n".join(f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {seq})" 
+                                           for name, short_var, hash_var, sign_var, bitmask, seq in existentialCoreSignatures.existentialCoreSigned)
+
+            # Step 1: Write the template parameters to disk first to establish sign_master's structural imports
+            with open(target_sig_file, "w", encoding="utf-8") as f:
+                f.write(make_header("#") +
+                        f"existentialCoreVersion                       = \"{existentialCoreVersion}\"\n"
+                        f"existentialCoreCheckMagic                    = b\"{clean_magic_str}\"\n"
+                        f"existentialCoreCheckSignatures               = \"{derived_salt_token}\"\n\n"
+                        f"class existentialCoreSignatures:\n"
+                        f"    existentialCore                              = \"{core_structure_signature}\"\n"
+                        f"    existentialCoreThreatRoot                    = \"{threat_structure_signature}\"\n"
+                        f"    existentialCoreThreatLegal                   = \"{threat_legal_structure_signature}\"\n"
+                        f"    existentialCoreThreatShadowVacuum            = \"{threat_shadow_structure_signature}\"\n"
+                        f"    existentialCoreThreat                        = \"{threat_structures_signature}\"\n"
+                        f"    existentialCoreCheck                         = \"{check_structures_signature}\"\n\n"
+                        f"    existentialPublicKeys = (\n{formatted_pkeys}\n    )\n\n"
+                        f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
+            print("[+] Target folder master signatures built.")
+
+        # Step 2: Now that the file sits safely on disk, parse configuration and fire the interactive passphrase block
         local_cfg_path = os.path.abspath(os.path.join(REPO_ROOT, "sign_integrity_config.json"))
 
-        # INTERACTIVE PASS: Triggers your native local interactive password check matching your true file variables
         if os.path.exists(local_cfg_path):
             try:
-                # Dynamic import inside the block to completely prevent cross-module scoping crashes
                 from existenzStruct.tools.sign_master import load_ssh_private_key
                 
                 with open(local_cfg_path, "r", encoding="utf-8") as cf:
@@ -871,39 +899,6 @@ def main():
         else:
             print("  [*] Notice: sign_integrity_config.json absent. Skipping local key load phase.")
 
-        if args.run == "WET":
-            target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
-            os.makedirs(target_master_dir, exist_ok=True)
-            target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
-            
-            print(f"[*] Compiling dynamic lockbook signatures file into: {target_sig_file}")
-            
-            # Clean string parsing pass to avoid b"b'...'" literal formatting string syntax corruption bugs
-            if isinstance(existentialCoreCheckMagic, bytes):
-                clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore')
-            else:
-                clean_magic_str = str(existentialCoreCheckMagic).replace("b'", "").replace("'", "")
-
-            # STABILIZATION PASS: Format the nested tuple elements safely before writing the file stream
-            formatted_pkeys = ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys)
-            formatted_signed = ",\n".join(f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {seq})" 
-                                           for name, short_var, hash_var, sign_var, bitmask, seq in existentialCoreSignatures.existentialCoreSigned)
-
-            with open(target_sig_file, "w", encoding="utf-8") as f:
-                f.write(make_header("#") +
-                        f"existentialCoreVersion                       = \"{existentialCoreVersion}\"\n"
-                        f"existentialCoreCheckMagic                    = b\"{clean_magic_str}\"\n"
-                        f"existentialCoreCheckSignatures               = \"{derived_salt_token}\"\n\n"
-                        f"class existentialCoreSignatures:\n"
-                        f"    existentialCore                              = \"{core_structure_signature}\"\n"
-                        f"    existentialCoreThreatRoot                    = \"{threat_structure_signature}\"\n"
-                        f"    existentialCoreThreatLegal                   = \"{threat_legal_structure_signature}\"\n"
-                        f"    existentialCoreThreatShadowVacuum            = \"{threat_shadow_structure_signature}\"\n"
-                        f"    existentialCoreThreat                        = \"{threat_structures_signature}\"\n"
-                        f"    existentialCoreCheck                         = \"{check_structures_signature}\"\n\n"
-                        f"    existentialPublicKeys = (\n{formatted_pkeys}\n    )\n\n"
-                        f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
-            print("[+] Target folder master signatures built.")
         sys.exit(0)
 
     elif args.step == "compile":
