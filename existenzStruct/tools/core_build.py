@@ -641,9 +641,14 @@ def main():
         help="Execution strategy state constraint. 'dry' bypasses filesystem modifications."
     )
     args = parser.parse_args()
-
+    int_ver = "v0.76j"
+    pub_ver = existentialCoreVersion
+    if pub_ver != int_ver:
+        pub_ver = existentialCoreVersion + "/" + int_ver
+    else:
+        pub_ver = "[" + int_ver + "]"
     print("┌────────────────────────────────────────────────────────────────┐")
-    print(f"│ EXISTENZ CORE BUILDING v0.76j ({existentialCoreVersion}) by Gunther Voet │")
+    print(f"│ EXISTENZ CORE BUILDING {pub_ver}   by Gunther Voet      │")
     print("└────────────────────────────────────────────────────────────────┘")
     print(f"Execution Step : --step {args.step}  |  Strategy Mode  : -run {args.run}")
 
