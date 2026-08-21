@@ -708,7 +708,7 @@ def main():
         print(f"  ├── existentialCore.py        ─┬─► existentialCoreSign                      = 0x{core_structure_sign}")
         print(f"  │                              └─► existentialCoreSignature                 = \"{core_structure_signature}\"")
         if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
-            print("[-] CRITICAL ALERT: existentialCore Signature Error!", file=sys.stderr)
+            print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer!", file=sys.stderr)
             sys.exit(1)
         print(f"  ├── existentialCoreThreat.py ─┬► class existentialCoreThreatSignatures:")
         print(f"  │                             ├──► existentialCoreThreatSign                = 0x{threat_structure_sign}")
@@ -724,57 +724,54 @@ def main():
         print("= │ ===============================================================================================================")
         print(f"  └── ...ntialCoreSignatures.py  ┬─► existentialCoreChainSign                 = 0x{chain_structures_sign}")
         print(f"                                 └─► existentialCoreChainSignature            = \"{chain_structures_signature}\"")
-
-        # ENGINE PASS: Enforce dynamic continuous series rule tracking matrix validations
-        print("[*] Enforcing dynamic consecutive run tracking and bitmode validation...")
         
-        # 1. Sort the dynamic rule array strictly by the sequence integer (index 5)
-        sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row != "Magic"], key=lambda x: x)
-        
-        # 2. Extract into independent, fluid lists of consecutive runs completely on the fly
-        active_series_runs = []
-        current_series_run = []
-        
-        for row in sorted_rules:
-            if not current_series_run or row[5] == current_series_run[-1][5] + 1:
-                current_series_run.append(row)
-            else:
-                if len(current_series_run) > 1:
-                    active_series_runs.append(current_series_run)
-                current_series_run = [row]
-        if len(current_series_run) > 1:
-            active_series_runs.append(current_series_run)
+        # Build safe mapping dictionaries for sequence tracking and raw tuple row lookups natively
+        hash_registry = {row[5]: row[2] for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"}
+        row_registry = {row[5]: row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"}
 
+        # Process each row inside the sorted tracking matrix natively
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
+            name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+            if name == "Magic":
+                continue
 
-        # 3. Process each continuous series run strictly by its relative sequence boundaries
-        for run_series in active_series_runs:
-            anchor_row = run_series[-1]
-            cause_rows = run_series[:-1]
+            # DYNAMIC LOOK-BACK RUN FINDER: Trace backward to collect all consecutive preceding numbers
+            preceding_hashes = []
+            check_seq = sequence - 1
             
-            anchor_name, _, anchor_hash, _, anchor_bitmask, anchor_seq = anchor_row
-            
-            combined_run_bytes = bytearray()
-            
-            for cause in cause_rows:
-                c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause
+            while check_seq in hash_registry:
+                # Retrieve the full metadata row to evaluate bitmask permissions for this cause node
+                cause_row = row_registry[check_seq]
+                c_hash = cause_row[2]
+                c_bitmask = cause_row[4]
                 
+                # NATIVE BITMODE ENFORCEMENT: Salt the payload if the row requires private cryptographic signing
                 if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
                     row_payload = existentialCoreCheckMagic + c_hash.encode('utf-8')
                     row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
-                    combined_run_bytes.extend(row_digest.encode('utf-8'))
+                    preceding_hashes.insert(0, row_digest)
                 else:
-                    combined_run_bytes.extend(c_hash.encode('utf-8'))
-            
-            computed_validation = hmac.new(existentialCoreCheckMagic, combined_run_bytes, hashlib.sha256).hexdigest()
-            
-            if not hmac.compare_digest(computed_validation, anchor_hash):
-                print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
-                print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{anchor_name}' Sequence [{anchor_seq}].", file=sys.stderr)
-                # DIAGNOSTIC DATA OUTPUTS NATIVELY BROUGHT TO YOUR SCREEN:
-                print(f"  [>] Current : {anchor_hash}")
-                print(f"  [>] Computed : {computed_validation}")
-                print(f"  [>] Payload : {combined_run_bytes.decode('utf-8', errors='ignore')}")
-                sys.exit(1)
+                    preceding_hashes.insert(0, c_hash)
+                check_seq -= 1
+
+            # If an unbroken sequence of cause rows exists right behind this node, validate the look-back chain
+            if preceding_hashes:
+                active_run_payload = "".join(preceding_hashes)
+                computed_payload = active_run_payload.encode('utf-8')
+                computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
+                
+                # VERBOSE DEBUG LOGGING STAYS ACTIVE NATIVELY ON YOUR TERMINAL FRAME
+                print(f"  [>] Current Evaluation Layer  : {name} [Sequence: {sequence}]")
+                print(f"  [>] Stored Matrix Anchor Hash : {hash_var}")
+                print(f"  [>] Live Computed Digest Loop : {computed_validation}")
+                print(f"  [>] Combined Run Payload Data : {active_run_payload}")
+                print("─" * 80)
+                
+                if not hmac.compare_digest(computed_validation, hash_var):
+                    print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
+                    print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].", file=sys.stderr)
+                    sys.exit(1)
+
 
         # 4. Independent bitmode validation pass across all layers
         for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
