@@ -574,7 +574,6 @@ def perform_cross_language_exports(signatures_map: dict, mode: str):
                     match = re.search(r"^\s*([A-Za-z0-9_]+)\s*=.*?(#.*)$", line)
                     if match: cmnts[match.group(1).strip()] = match.group(2).strip()
 
-    # FIX: Change 'key=lambda i: i.value' to index 'i[1].value' to fix the tuple attribute crash
     core_ord = {k: v.value for k, v in sorted(existentialCore.__members__.items(), key=lambda i: i[1].value)}
     threat_ord = {k: v.value for k, v in sorted(existentialCoreThreat.__members__.items(), key=lambda i: i[1].value)}
     legal_ord = {int(k): str(v) for k, v in sorted(existentialCoreThreatLegal.items(), key=lambda i: i[0])}
@@ -871,7 +870,7 @@ def main():
         print("──┴───────────────────────────────────────────────────────────────")
 
         if args.run == "WET":
-            target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+            target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
             os.makedirs(target_master_dir, exist_ok=True)
             target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
             
