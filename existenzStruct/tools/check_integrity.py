@@ -28,6 +28,7 @@ try:
     from existenzStruct.master.existentialCoreThreat import (
         existentialCoreThreat, 
         existentialCoreThreatLegal,
+        existentialCoreThreatShadowVacuum,
         existentialCoreThreatSignatures 
     )
 except ImportError as e:
@@ -50,20 +51,26 @@ def verify_structural_hashes() -> bool:
     threat_structure_signature = hmac.new(existentialCoreCheckMagic, threat_structure_payload, hashlib.sha256).hexdigest()
     threat_structure_sign = threat_structure_signature[:8]
     
-    # 3. FORENSIC TRANSLATION LAYER (The International Human Rights Map)
+    # 3a. FORENSIC TRANSLATION LAYER (The International Human Rights Map)
     threat_legal_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items()))
     threat_legal_structure_payload = threat_legal_structure.encode('utf-8')
     threat_legal_structure_signature = hmac.new(existentialCoreCheckMagic, threat_legal_structure_payload, hashlib.sha256).hexdigest()
     threat_legal_structure_sign = threat_legal_structure_signature[:8]
 
+    # 3b. FORENSIC TRANSLATION LAYER (The International Human Rights Map)
+    threat_shadow_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items()))
+    threat_shadow_structure_payload = threat_shadow_structure.encode('utf-8')
+    threat_shadow_structure_signature = hmac.new(existentialCoreCheckMagic, threat_shadow_structure_payload, hashlib.sha256).hexdigest()
+    threat_shadow_structure_sign = threat_shadow_structure_signature[:8]    
+
     # 4. UNIFIED THREAT STRUCTURES LAYER (Threat + Legal Fused Boundary Lock)
-    threat_structures = f"{threat_structure}||{threat_legal_structure}"
+    threat_structures = f"{threat_structure}||{threat_legal_structure}||{threat_shadow_structure}"
     threat_structures_payload = threat_structures.encode('utf-8')
     threat_structures_signature = hmac.new(existentialCoreCheckMagic, threat_structures_payload, hashlib.sha256).hexdigest()
     threat_structures_sign = threat_structures_signature[:8]
 
     # 5. MASTER PLATFORM CHECK STRUCTURES LAYER (Core + Combined ThreatStructures)
-    check_structures = f"{core_structure}||{threat_structures}"
+    check_structures = f"{core_structure}||{threat_structures}||{threat_shadow_structure}"
     check_structures_payload = check_structures.encode('utf-8')
     check_structures_signature = hmac.new(existentialCoreCheckMagic, check_structures_payload, hashlib.sha256).hexdigest()
     check_structures_sign = check_structures_signature[:8]
@@ -80,6 +87,8 @@ def verify_structural_hashes() -> bool:
     print(f"  │                             ├──► existentialCoreThreatSignature           = \"{threat_structure_signature}\"")
     print(f"  │                             ├──► existentialCoreThreatLegalSign           = 0x{threat_legal_structure_sign}")
     print(f"  │                             ├──► existentialCoreThreatLegalSignature      = \"{threat_legal_structure_signature}\"")
+    print(f"  │                             ├──► existentialCoreThreatShadowVacuumSign    = 0x{threat_shadow_structure_sign}")
+    print(f"  │                             ├──► existentialCoreThreatShadowV..Signature  = \"{threat_shadow_structure_signature}\"")    
     print(f"  │                             ├──► existentialCoreThreatStructuresSign      = 0x{threat_structures_sign}")
     print(f"  │                             └──► existentialCoreThreatStructuresSignature = \"{threat_structures_signature}\"")
     print(f"  └── existentialCoreCheck.py   ─┬─► existentialCoreCheckSign                 = 0x{check_structures_sign}")
@@ -92,6 +101,7 @@ def verify_structural_hashes() -> bool:
         ("Core",             core_structure_sign, core_structure_signature,   f"{existentialCoreSign:08x}", existentialCoreSignature),
         ("CoreThreat",       threat_structure_sign, threat_structure_signature, f"{existentialCoreThreatSignatures.existentialCoreThreatSign:08x}", existentialCoreThreatSignatures.existentialCoreThreatSignature),
         ("CoreThreatLegal",  threat_legal_structure_sign, threat_legal_structure_signature, f"{existentialCoreThreatSignatures.existentialCoreThreatLegalSign:08x}", existentialCoreThreatSignatures.existentialCoreThreatLegalSignature),
+        ("CoreThreatShadow", threat_shadow_structure_sign, threat_shadow_structure_signature, f"{existentialCoreThreatSignatures.existentialCoreThreatShadowVacuumSign:08x}", existentialCoreThreatSignatures.existentialCoreThreatShadowVacuumSignature),
         ("CoreThreatStruct", threat_structures_sign, threat_structures_signature, f"{existentialCoreThreatSignatures.existentialCoreThreatStructuresSign:08x}", existentialCoreThreatSignatures.existentialCoreThreatStructuresSignature),
         ("CoreCheck",        check_structures_sign, check_structures_signature, master_system_anchor, existentialCoreCheckSignature)
     )
