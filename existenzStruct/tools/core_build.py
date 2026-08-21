@@ -722,10 +722,11 @@ def main():
         print("= │ ===============================================================================================================")
         print(f"  └── ...ntialCoreSignatures.py  ┬─► existentialCoreChainSign                 = 0x{chain_structures_sign}")
         print(f"                                 └─► existentialCoreChainSignature            = \"{chain_structures_signature}\"")
+
         if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
-            print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer!")
+            print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer!", file=sys.stderr)
             sys.exit(1)
-            
+        
         print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
         sys.exit(0)
 
