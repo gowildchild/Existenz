@@ -26,7 +26,7 @@
     "dist/existentialCoreThreat.xml": "e43eca47d9ba2a02eb6f0747ce5c4f4e166608eaf2181f7cfab6a360a3b99574",
     "dist/existentialCoreThreat.yml": "7aadc0b45b9aa6115fdaaeea08d2ea1c0bf7aa54fc4cc1509933f56fd01c069e",
     "dist/master/existentialCore.py": "c8f98861ea4fb7cfce50d5f12d82bb8b7d011a4b4a346df069fc2c91b66d8583",
-    "dist/master/existentialCoreSignatures.py": "07c61db7366ec77c9a9b860c85db5fa7eca37374a29762c60d70297b010a06a1",
+    "dist/master/existentialCoreSignatures.py": "14ece27abc9070723baede4c119ef466065779a3b3149c12c714de57c891e027",
     "dist/master/existentialCoreThreat.py": "d7f3c3c502ccf3573a678393422e10591462378b9c76fd9f4f70e200b7530d73",
     "dist/master/existentialHumanCore.py": "548861611c8c5dde2af463bed1b00c4e9b1eaf601d4a845221eb80ec2f240256",
     "dist/perl/existentialCoreCheck.pm": "db1033b78ef08e493ace98d7e1c4dd5170f0720a83c785b1fee3edb3ec54b9d4",
@@ -51,16 +51,16 @@
     "dist/rust/single/existentialCoreThreat.rs": "1cf583714ca1d612ce92a249af9c90ec0797a90ffe406ed7396615c8ab4c266d",
     "existenzStruct/master/README.md": "61d5031b505593421783730470f308b761afcb7f88006a6f19bd4c7e79bbcc56",
     "existenzStruct/master/existentialCore.py": "9ec7aab0846bdc9feb8e0cc314b33945256d18f881ced7b0867254c9b5e41fd3",
-    "existenzStruct/master/existentialCoreSignatures.py": "7c0f9f537786e20569cda22109ba42c6bf01ffe71dcbc2e3de456e695bc0f6de",
+    "existenzStruct/master/existentialCoreSignatures.py": "14ece27abc9070723baede4c119ef466065779a3b3149c12c714de57c891e027",
     "existenzStruct/master/existentialCoreThreat.py": "03b089c5fcf5358433ecddf913c5e7fe29938ab14451dc11f9f76842ba05f0ab",
     "existenzStruct/master/existentialHumanCore.py": "2decc0bb05b4d4810320443604373bce2c242dfaf2bb7da7cbc3dc19ac61f7f4",
     "existenzStruct/tools/boot_guard.py": "7e9f3d546a6da7c4696c379fce80d9b012c20f8707be0ebd2efe118c9095addc",
     "existenzStruct/tools/check_integrity.py": "26bb01e972b866f8c89e0a97c84f2892a8d5bf69019a1d1ca97585d4dac3ec63",
-    "existenzStruct/tools/core_build.py": "a1b2b5787496d108231e2222e5ad5fa8ec36412ee0b9ca01e9938259af7fc674",
+    "existenzStruct/tools/core_build.py": "67da4508c7f09fd4495aadf07624eca2ea1f93faa903dc78de2491e3b6c4086e",
     "existenzStruct/tools/core_debug.py": "957531a87f16fcba6445e4d022abd179c732c94e588c5374915f60824dc7f8d6",
     "existenzStruct/tools/core_manifest.py": "493e09df754721c55c23b60bb74ec498011d42ea3044008a82d9614adb680149",
     "existenzStruct/tools/core_telemetry.py": "f68be7b3e8d2336f1bbea65f69da13d6bef422d381b2a2f2657fc43fbf6c24cc",
-    "existenzStruct/tools/sign_master.py": "458c8d3ffd8233caae39fbe1d7a74244a1c79aefd231abdb5b0ca25da0bbd297",
+    "existenzStruct/tools/sign_master.py": "617a1b143802470bdf1d25f6116bd946583f6ff08fb55fe04da615ee4897d523",
     "existenzStruct/tools/test_integrity.py": "04b56dd5b1cf8698819dd196fa8117fdeb7bb91ab106729c31082594435dbd41",
     "existenzStruct/tools/test_sign.py": "3dd1c7ea5a1d3c069074cb0f53a07b9060b5b026d06365ead9df40ffdb73d404"
   },
@@ -70,9 +70,9 @@
     "Platform": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"
   },
   "signatures": {
-    "Developer": "d5c88ac6d13b5ca8aba6220b8dc4dea9de4ae676d5987fd406fece64a1650b2e8abb20a1908ef93c4515e6bb3ac370429f2b84c3490635192304b1d67b4e5e06",
-    "Personal": "c0678361382d8e2a43468d958c86bcc1d5aa02227d9425fec410fdc63425716ab4287746fc91341d2db88a9d61de9ef7f22b0ca5b8c0ed4c845b066589e53c0c",
-    "Platform": "fe4963a76f991ac38a4186f7e1e3bfe06d731f8fc63ea0ed00defe2af58d31dd7a2ef1a3703fcdaf43bddc4ef1e23af772280edd0c467d7491e5c566dfef9b0f"
+    "Developer": "6092be4366ece0a5ad42ec9b207c7a0e9576189109bea84e354edd7a60ba27accf91f58812b9196ca3665097980628311577989905a2437a97f9e08064437a0b",
+    "Personal": "61e17f857408f174e2845bbd86df768c132bdc3dda21519313defc89ac304af131bba0004bbd95b3f5060316f0be4081be9d145d15df4f625b2250a97446d503",
+    "Platform": "2edc5e9b3baad1ba3544cd7b424cb740ed2e477a3f1f8ecaa9548982f08fd4cc290f186bb24a3db6f09bc54f22e977ba28a4d3750aa536ed3e3f238296c0560f"
   },
-  "version": "v0.76i"
+  "version": "v0.76j"
 }
