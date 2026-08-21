@@ -740,19 +740,26 @@ def main():
             "existentialCoreChainHash": chain_structures_signature
         }
 
-        # 1. Map out all sequence numbers active in this execution pass to identify boundaries dynamically
-        all_active_sequences = {row[5] for row in sorted_rules}
+        # Process each row inside the sorted tracking matrix natively
+        for layer_meta in sorted_rules:
+            name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
 
-        # DYNAMIC LOOK-BACK RUN FINDER: Trace backward to collect all consecutive preceding numbers
-        preceding_hashes = []
+            # Resolve the target look-back baseline token from live memory if a placeholder string is present
+            resolved_target_hash = live_session_hashes.get(hash_var, hash_var)
+
+            # 1. Map out all sequence numbers active in this execution pass to identify boundaries dynamically
+            all_active_sequences = {row[5] for row in sorted_rules}
+
+            # DYNAMIC LOOK-BACK RUN FINDER: Trace backward to collect all consecutive preceding numbers
+            preceding_hashes = []
             
             # AUTOMATED GATE: This row is ONLY evaluated as an anchor if a run ends here (neighbor behind, no neighbor ahead)
-        is_terminal_anchor = (sequence - 1 in all_active_sequences) and (sequence + 1 not in all_active_sequences)
+            is_terminal_anchor = (sequence - 1 in all_active_sequences) and (sequence + 1 not in all_active_sequences)
             
-        if is_terminal_anchor:
-            check_seq = sequence - 1
+            if is_terminal_anchor:
+                check_seq = sequence - 1
                 
-            while True:
+                while True:
                     # Dynamically locate the preceding row directly inside the sorted list matching check_seq
                     cause_row = next((row for row in sorted_rules if row[5] == check_seq), None)
                     if not cause_row:
@@ -775,41 +782,41 @@ def main():
                     check_seq -= 1
 
             # Validate the combined look-back chain series if this node is the true terminal anchor point
-        if preceding_hashes:
-            active_run_payload = "".join(preceding_hashes)
+            if preceding_hashes:
+                active_run_payload = "".join(preceding_hashes)
                 
                 # EVALUATE ANCHOR BITMASK: Seal the final lookup byte stream natively using your hardware enrichment token
-            if bitmask & 8 or bitmask & 16 or bitmask & 32:
-                computed_payload = active_run_payload.encode('utf-8')
-                computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
-            else:
-                computed_validation = hashlib.sha256(active_run_payload.encode('utf-8')).hexdigest()
+                if bitmask & 8 or bitmask & 16 or bitmask & 32:
+                    computed_payload = active_run_payload.encode('utf-8')
+                    computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
+                else:
+                    computed_validation = hashlib.sha256(active_run_payload.encode('utf-8')).hexdigest()
                 
                 # VERBOSE DEBUG LOGGING STAYS ACTIVE NATIVELY ON YOUR TERMINAL FRAME
-            print(f"  [>] Current Evaluation Layer  : {name} [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
-            print(f"  [>] Stored Matrix Anchor Hash : {resolved_target_hash}")
-            print(f"  [>] Live Computed Digest Loop : {computed_validation}")
-            print(f"  [>] Combined Run Payload Data : {active_run_payload}")
-            print("─" * 80)
+                print(f"  [>] Current Evaluation Layer  : {name} [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
+                print(f"  [>] Stored Matrix Anchor Hash : {resolved_target_hash}")
+                print(f"  [>] Live Computed Digest Loop : {computed_validation}")
+                print(f"  [>] Combined Run Payload Data : {active_run_payload}")
+                print("─" * 80)
                 
-            if not hmac.compare_digest(computed_validation, resolved_target_hash):
-                print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
-                print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].")
-                print(f"    Expected (Stored) : {resolved_target_hash}")
-                print(f"    Computed (Live)   : {computed_validation}")
-                sys.exit(1)
+                if not hmac.compare_digest(computed_validation, resolved_target_hash):
+                    print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
+                    print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].")
+                    print(f"    Expected (Stored) : {resolved_target_hash}")
+                    print(f"    Computed (Live)   : {computed_validation}")
+                    sys.exit(1)
 
         # 4. Independent bitmode validation pass across all layers
-    for layer_meta in sorted_rules:
-        name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
-        is_valid_hex = bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32
-        if (bitmask & 8 or bitmask & 16 or bitmask & 32) and not is_valid_hex:
-            print(f"\n[!!!] CRITICAL BITMODE VALIDATION FAILURE [!!!]", file=sys.stderr)
-            print(f"[-] Layer '{name}' failed bitmask verification: {hex(bitmask)}", file=sys.stderr)
-            sys.exit(1)
+        for layer_meta in sorted_rules:
+            name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+            is_valid_hex = bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32
+            if (bitmask & 8 or bitmask & 16 or bitmask & 32) and not is_valid_hex:
+                print(f"\n[!!!] CRITICAL BITMODE VALIDATION FAILURE [!!!]", file=sys.stderr)
+                print(f"[-] Layer '{name}' failed bitmask verification: {hex(bitmask)}", file=sys.stderr)
+                sys.exit(1)
 
-    print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
-    sys.exit(0)
+        print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
+        sys.exit(0)
 
 
 
@@ -828,7 +835,7 @@ def main():
         sequence_chain_accumulator = 0
 
         # ENFORCE STRICT MATRIX ORDER SCAN BY SEQUENCE INDEX 5
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
                 continue
@@ -857,7 +864,7 @@ def main():
             if identity in active_required_identities and identity in pub_keys_dict:
                 key_body = pub_keys_dict[identity].split()
                 if len(key_body) >= 2:
-                    combined_salt_payload.extend(key_body.encode('utf-8'))
+                    combined_salt_payload.extend(key_body[1].encode('utf-8'))
                 else:
                     combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
 
