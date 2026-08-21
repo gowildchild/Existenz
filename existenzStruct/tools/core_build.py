@@ -744,9 +744,9 @@ def main():
             
             # If the number strictly follows up consecutively inside the chain limit, add it to the running cause-sum
             if sequence == expected_next_sequence and sequence == 2:
-                    combined_salt_payload.extend(key_body[1].encode('utf-8'))
-                else:
-                    combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
+                combined_salt_payload.extend(key_body[1].encode('utf-8'))
+            else:
+                combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
 
         derived_salt_token = hashlib.sha256(combined_salt_payload).hexdigest()
 
