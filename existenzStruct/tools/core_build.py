@@ -698,50 +698,83 @@ def main():
     existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
 
     if args.step == "check" or args.step == "compile":
-        print("[*] Stage 1: Evaluating core structure...")
-        print("─" * 80)
+        # Build a temporary mapping dictionary from your dynamic matrix tuple array
+        matrix_rules_lookup = {}
+        for row in existentialCoreSignatures.existentialCoreSigned:
+            if row[0] != "Magic":
+                matrix_rules_lookup[row[0]] = row  # Store entire row data mapped to Name
+
+        # Helper function to dynamically check live signature states and compile compact tags
+        def get_layer_tags(layer_name):
+            if layer_name not in matrix_rules_lookup:
+                return "0x00", "0", "+H"
+            
+            # Extract raw elements natively from your matrix tuples
+            name, short_var, hash_var, sign_var, bitmask, seq = matrix_rules_lookup[layer_name]
+            
+            # Determine if this layer's bitmask strictly demands asymmetric private key signing
+            requires_signing = bool(bitmask & 8 or bitmask & 16 or bitmask & 32)
+            
+            # CRITICAL STATE CHECK: Verify if the signature slot contains a fallback template or an actual hex string token
+            is_signed = len(sign_var) >= 64 and not sign_var.startswith(layer_name) and sign_var != short_var + "9d3f0dca9fc8"
+            
+            tags = ["+H"]  # Base layout code layout hash is always computed
+            if bitmask & 4:
+                tags.append("+CHAIN")
+                
+            if requires_signing:
+                if is_signed:
+                    tags.append("+M")  # Sealed coupled with Magic Key
+                    if bitmask & 8:   tags.append("+PK:PFM")
+                    if bitmask & 16:  tags.append("+PK:DEV")
+                    if bitmask & 32:  tags.append("+PK:PSN")
+                else:
+                    # SCREAMING UNAUTHENTICATED BACKDOOR ALERT:
+                    return f"{hex(bitmask)}", str(seq), "\033[91m[ !!! NOT SIGNED !!! ]\033[0m"
+            else:
+                if bitmask & 60 or bitmask & 126 or bitmask & 255:
+                    tags.append("+M")
+                    
+            return f"{hex(bitmask)}", str(seq), "|".join(tags)
+
+        print("[*] Stage 1: Evaluating core cryptographic structures...")
+        print("─" * 125)
         print(f"  [>] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
         print(f"  [>] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
         print(f"──┬ [ inside {existentialCoreVersion}     ] ──────────────────────────────────────────────────────────────────────────────────────────────")
+        # Resolve live configuration states directly for your unified dashboard view frame
+        bm_c, sq_c, tg_c = get_layer_tags("Core")
+        bm_cc, sq_cc, tg_cc = get_layer_tags("CoreCheck")
+        bm_ct, sq_ct, tg_ct = get_layer_tags("CoreThreatStruct")
+        bm_ctl, sq_ctl, tg_ctl = get_layer_tags("CoreThreatLegal")
+        bm_ctv, sq_ctv, tg_ctv = get_layer_tags("CoreThreatShadowVacuum")
+        bm_cts, sq_cts, tg_cts = get_layer_tags("CoreThreat")
+        bm_ch, sq_ch, tg_ch = get_layer_tags("CoreChain")
+
         print("  │ ")
-        print(f"  ├── existentialCore.py        ─┬─► existentialCoreSign                      = 0x{core_structure_sign}")
-        print(f"  │                              └─► existentialCoreSignature                 = \"{core_structure_signature}\"")
+        print(f"  ├── [{bm_c.ljust(4)}][Seq:{sq_c}] existentialCore.py       ─┬─► Sign: 0x{core_structure_sign} | {tg_c}")
+        print(f"  │                                            └─► Signature : \"{core_structure_signature}\"")
         if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
             print("[-] CRITICAL ALERT: Structural validation mismatch inside Core layer!", file=sys.stderr)
             sys.exit(1)
-        print(f"  ├── existentialCoreThreat.py ─┬► class existentialCoreThreatSignatures:")
-        print(f"  │                             ├──► existentialCoreThreatSign                = 0x{threat_structure_sign}")
-        print(f"  │                             ├──► existentialCoreThreatSignature           = \"{threat_structure_signature}\"")
-        print(f"  │                             ├──► existentialCoreThreatLegalSign           = 0x{threat_legal_structure_sign}")
-        print(f"  │                             ├──► existentialCoreThreatLegalSignature      = \"{threat_legal_structure_signature}\"")
-        print(f"  │                             ├──► existentialCoreThreatShadowVacuumSign    = 0x{threat_shadow_structure_sign}")
-        print(f"  │                             ├──► existentialCoreThreatShadowV..Signature  = \"{threat_shadow_structure_signature}\"")        
-        print(f"  │                             ├──► existentialCoreThreatStructuresSign      = 0x{threat_structures_sign}")
-        print(f"  │                             └──► existentialCoreThreatStructuresSignature = \"{threat_structures_signature}\"")
-        print(f"  ├── existentialCoreCheck.py   ─┬─► existentialCoreCheckSign                 = 0x{check_structures_sign}")
-        print(f"  │                              └─► existentialCoreCheckSignature            = \"{check_structures_signature}\"")
+        print(f"  ├── class existentialCoreThreatSignatures:")
+        print(f"  │    ├── [{bm_ct.ljust(4)}][Seq:{sq_ct}] CoreThreatStruct     ──► Sign: 0x{threat_structure_sign} | {tg_ct}")
+        print(f"  │    │                                        └──► Signature : \"{threat_structure_signature}\"")
+        print(f"  │    ├── [{bm_ctl.ljust(4)}][Seq:{sq_ctl}] CoreThreatLegal      ──► Sign: 0x{threat_legal_structure_sign} | {tg_ctl}")
+        print(f"  │    │                                        └──► Signature : \"{threat_legal_structure_signature}\"")
+        print(f"  │    ├── [{bm_ctv.ljust(4)}][Seq:{sq_ctv}] CoreThreatShadowVac  ──► Sign: 0x{threat_shadow_structure_sign} | {tg_ctv}")
+        print(f"  │    │                                        └──► Signature : \"{threat_shadow_structure_signature}\"")        
+        print(f"  │    └── [{bm_cts.ljust(4)}][Seq:{sq_cts}] CoreThreat           ──► Sign: 0x{threat_structures_sign} | {tg_cts}")
+        print(f"  │                                            └──► Signature : \"{threat_structures_signature}\"")
+        print(f"  ├── [{bm_cc.ljust(4)}][Seq:{sq_cc}] existentialCoreCheck.py  ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
+        print(f"  │                                            └─► Signature : \"{check_structures_signature}\"")
         print("= │ ===============================================================================================================")
-        print(f"  └── ...ntialCoreSignatures.py  ┬─► existentialCoreChainSign                 = 0x{chain_structures_sign}")
-        print(f"                                 └─► existentialCoreChainSignature            = \"{chain_structures_signature}\"")
-        print("──┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────")
-        
-        print("[*] Auditing live matrix permission layouts and signature states:")
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
-            name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
-            if name == "Magic":
-                continue
-                
-            active_handles = []
-            if bitmask & 8:   active_handles.append("PLATFORM")
-            if bitmask & 16:  active_handles.append("DEVELOPER")
-            if bitmask & 32:  active_handles.append("PERSONAL")
-            handle_str = f"+MAGIC ({'|'.join(active_handles)})" if active_handles else "+HASH"
-            
-            print(f" [*] Seq {sequence} | Node: '{name.ljust(22)}' (Bitmask: {hex(bitmask)} -> {handle_str})")
-        print("=" * 80)
+        print(f"  └── [{bm_ch.ljust(4)}][Seq:{sq_ch}] ...ntialCoreSignatures.py ┬─► Sign: 0x{chain_structures_sign} | {tg_ch}")
+        print(f"                                               └─► Signature : \"{chain_structures_signature}\"")
+        print("─" * 125)
 
         # Build safe mapping dictionaries for sequence tracking and raw tuple row lookups natively
-        sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row != "Magic"], key=lambda x: x)
+        sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"], key=lambda x: x[5])
 
         # Map out the exact live computed session hashes to resolve literal template variable string lookups
         live_session_hashes = {
@@ -754,6 +787,8 @@ def main():
             "existentialCoreThreatHash": threat_structures_signature,
             "existentialCoreChainHash": chain_structures_signature
         }
+
+
         # Process each row inside the sorted tracking matrix natively
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
