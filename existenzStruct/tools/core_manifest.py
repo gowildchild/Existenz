@@ -34,29 +34,21 @@ def compute_sha256(file_path: str) -> str:
             hasher.update(chunk)
     return hasher.hexdigest()
 
-def gather_workspace_files() -> dict:
-    """Traverses master, tools, and dist folders to generate a complete hash mapping layout."""
+def gather_folder_files(folder_relative_path: str) -> dict:
+    """Traverses a single target folder recursively to catalog all available file hashes."""
     file_matrix = {}
+    full_folder_path = os.path.join(REPO_ROOT, folder_relative_path)
     
-    # Define the 3 strict target paths required by system architecture
-    target_folders = [
-        os.path.join(REPO_ROOT, "existenzStruct", "master"),
-        os.path.join(REPO_ROOT, "existenzStruct", "tools"),
-        os.path.join(REPO_ROOT, "dist")
-    ]
+    if not os.path.exists(full_folder_path):
+        return file_matrix
 
-    for folder_path in target_folders:
-        if not os.path.exists(folder_path):
-            continue
-        for root, _, files in os.walk(folder_path):
-            for file in files:
-                # Do not let the manifest self-hash to avoid feedback loops
-                if file == "existenz_workspace_manifest.json":
-                    continue
-                full_path = os.path.join(root, file)
-                # Save relative path from repo root to make it fully portable across machines
-                rel_path = os.path.relpath(full_path, REPO_ROOT)
-                file_matrix[rel_path] = compute_sha256(full_path)
+    for root, _, files in os.walk(full_folder_path):
+        for file in files:
+            if file == "existenz_workspace_manifest.json":
+                continue
+            full_path = os.path.join(root, file)
+            rel_path = os.path.relpath(full_path, REPO_ROOT)
+            file_matrix[rel_path] = compute_sha256(full_path)
     return file_matrix
 
 def load_private_key(path: str) -> ed25519.Ed25519PrivateKey:
@@ -67,51 +59,78 @@ def load_private_key(path: str) -> ed25519.Ed25519PrivateKey:
     with open(expanded_path, "rb") as k_file:
         key_data = k_file.read()
     return serialization.load_ssh_private_key(key_data, password=None)
-
 def main():
     parser = argparse.ArgumentParser(description="Existenz Platform Asset Manifest Suite")
-    parser.add_argument("-stage", choices=["sign", "verify"], required=True, help="Manifest operation state selection.")
+    # ENFORCED PARAMETERS: Explicit split tracks for both signing and verifying
+    parser.add_argument("-stage", choices=["sign", "sign-master", "sign-dist", "verify-master", "verify-dist"], required=True, help="Manifest operation state selection.")
     parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to your private key routes.")
     args = parser.parse_args()
 
     print("┌────────────────────────────────────────────────────────────────┐")
-    print("│ EXISTENZ CODENAME LEDGER: ARCHITECTURAL MANIFEST MATRIX        │")
+    print("│ EXISTENZ: SHA256 MANIFEST                                      │")
     print("└────────────────────────────────────────────────────────────────┘")
     print(f"[*] Operational Stage : -stage {args.stage}")
     print(f"[*] Ledger Output File: {MANIFEST_OUTPUT}")
 
-    # Extract public keys matrix straight from memory blueprints
     public_keys_dict = {name: key_str for name, key_str in existentialCoreSignatures.existentialPublicKeys}
 
-    if args.stage == "sign":
-        print("[*] Stage: [SIGN] Calculating live workspace code file hashes...")
-        live_files = gather_workspace_files()
-
-        # Check if a manifest already exists on disk so we can preserve old signatures if keys are offline
+    # ==========================================================================
+    # CORE SIGNING BLOCKS (INCREMENTAL RE-SIGN WITH PARTIAL PRESERVATION)
+    # ==========================================================================
+    if args.stage in ["sign", "sign-master", "sign-dist"]:
+        print(f"[*] Stage: [{args.stage.upper()}] Scanning targeted directories...")
+        
+        # Pull down the existing file baseline records to guarantee signature persistence
+        stored_files = {}
         existing_signatures = {}
         if os.path.exists(MANIFEST_OUTPUT):
             try:
                 with open(MANIFEST_OUTPUT, "r", encoding="utf-8") as mf:
                     old_data = json.load(mf)
+                    stored_files = old_data.get("files", {})
                     existing_signatures = old_data.get("signatures", {})
             except Exception:
                 pass
+
+        # Dynamically evaluate the target execution space parameters
+        live_files = {}
+        if args.stage == "sign-master":
+            live_files.update(gather_folder_files("existenzStruct/master"))
+            live_files.update(gather_folder_files("existenzStruct/tools"))
+            # Preserve existing compiled dist records untouched
+            for k, v in stored_files.items():
+                if k.startswith("dist/"): live_files[k] = v
+        elif args.stage == "sign-dist":
+            live_files.update(gather_folder_files("dist"))
+            # Preserve existing source file records untouched
+            for k, v in stored_files.items():
+                if k.startswith("existenzStruct/"): live_files[k] = v
+        else: # Full global baseline overwrite ("sign")
+            live_files.update(gather_folder_files("existenzStruct/master"))
+            live_files.update(gather_folder_files("existenzStruct/tools"))
+            live_files.update(gather_folder_files("dist"))
 
         manifest_data = {
             "version": existentialCoreVersion,
             "public_keys": public_keys_dict,
             "files": live_files,
-            "signatures": existing_signatures # Start with existing signatures to prevent deletion
+            "signatures": existing_signatures
         }
 
-        # Attempt to sign the ledger using available private key pathways
+        # Check if the master files are present at all. If empty, force complete signing rules block.
+        has_master_records = any(k.startswith("existenzStruct/") for k in manifest_data["files"])
+        if not has_master_records and args.stage == "sign-dist":
+            print("  [!] AUTOMATION OVERRIDE: Master metadata completely absent. Injecting source footprints.")
+            manifest_data["files"].update(gather_folder_files("existenzStruct/master"))
+            manifest_data["files"].update(gather_folder_files("existenzStruct/tools"))
+
+        # Asymmetric Cryptographic Signing Handshake Suite
         if os.path.exists(args.config):
             try:
                 with open(args.config, "r", encoding="utf-8") as cf:
                     cfg = json.load(cf)
                 key_routes = cfg.get("private_key_paths", {})
                 
-                # Cryptographically bind files map and public key structures together into a sorted byte stream
                 payload_to_sign = {
                     "files": manifest_data["files"],
                     "public_keys": manifest_data["public_keys"]
@@ -130,21 +149,22 @@ def main():
             except Exception as e:
                 print(f"  [!] Intercepted exception during key signature routing: {e}")
 
-        # Highlight which private signatures are still missing/unresolved
-        missing_signatures = [k for k in ["Platform", "Developer", "Personal"] if k prejudices not in manifest_data["signatures"]]
+        # Flag missing signatures visibly
+        missing_signatures = [k for k in ["Platform", "Developer", "Personal"] if k not in manifest_data["signatures"]]
         if missing_signatures:
             print(f"  [!] ATTENTION: The following private signatures are PENDING/MISSING: {missing_signatures}")
         else:
             print("  [+] Status: All 3 asymmetric private signatures are successfully committed.")
 
-        # Commit manifest cleanly to disk at repository root level
         with open(MANIFEST_OUTPUT, "w", encoding="utf-8") as mf:
             json.dump(manifest_data, mf, indent=2, sort_keys=True)
         print(f"[+] Success: Manifest update flushed cleanly to disk.")
         sys.exit(0)
 
-    elif args.stage == "verify":
-        print("[*] Stage: [VERIFY] Conducting workspace validation pass...")
+    # ==========================================================================
+    # CORE VERIFICATION BLOCKS (ISOLATED SPACE TESTING)
+    # ==========================================================================
+    elif args.stage in ["verify-master", "verify-dist"]:
         if not os.path.exists(MANIFEST_OUTPUT):
             print("[-] CRITICAL ERROR: manifest file missing. Execute -stage sign first.")
             sys.exit(1)
@@ -154,12 +174,25 @@ def main():
 
         stored_files = stored_manifest.get("files", {})
         stored_signatures = stored_manifest.get("signatures", {})
-        live_files = gather_workspace_files()
         
+        if args.stage == "verify-master":
+            print("[*] Stage: [VERIFY-MASTER] Sweeping source layout folders...")
+            live_files = {}
+            live_files.update(gather_folder_files("existenzStruct/master"))
+            live_files.update(gather_folder_files("existenzStruct/tools"))
+        else:
+            print("[*] Stage: [VERIFY-DIST] Sweeping compiled language vaults...")
+            live_files = gather_folder_files("dist")
+
         has_drift = False
 
-        # 1. Audit file mutations, alterations, or sudden structural deletions
+        # 1. Audit mutations or layout updates within the targeted tracks scope
         for rel_path, expected_hash in stored_files.items():
+            if args.stage == "verify-master" and not rel_path.startswith("existenzStruct/"):
+                continue
+            if args.stage == "verify-dist" and not rel_path.startswith("dist/"):
+                continue
+
             if rel_path not in live_files:
                 print(f"  [-] DELETION DETECTED: Required tracking file missing -> {rel_path}")
                 has_drift = True
@@ -169,24 +202,22 @@ def main():
                 print(f"      Live Dynamic Hash : {live_files[rel_path]}")
                 has_drift = True
 
-        # 2. Audit unexpected untracked file injections inside any of the 3 key folders
+        # 2. Catch unexpected external folder injections
         for rel_path in live_files:
             if rel_path not in stored_files:
                 print(f"  [!] UNTRACKED INJECTION: Unauthorized asset exposed -> {rel_path}")
                 has_drift = True
 
-        # 3. Audit private key validation status
+        # 3. Handle private signature reporting loops safely
         missing_signatures = [k for k in ["Platform", "Developer", "Personal"] if k not in stored_signatures]
         if missing_signatures:
-            print(f"  [!] WARNING: Manifest contains UNRESOLVED private key requirements! Missing: {missing_signatures}")
+            print(f"  [!] WARNING: Manifest contains UNRESOLVED private key signatures! Missing: {missing_signatures}")
 
         if has_drift:
-            print("\n[!] VERIFICATION FAILED: Workspace data alignment errors exposed!")
+            print(f"\n[!] VERIFICATION FAILED: {args.stage.upper()} alignment errors exposed!")
             sys.exit(1)
         else:
-            print("\n[+] SUCCESS: Workspace folders match manifest logs perfectly.")
-            if missing_signatures:
-                print("[!] Status code set to 0, but you must sign this layout with your private keys on your air-gapped rig.")
+            print(f"\n[+] SUCCESS: Checked tracks inside {args.stage.upper()} are perfectly secure.")
             sys.exit(0)
 
 if __name__ == "__main__":
