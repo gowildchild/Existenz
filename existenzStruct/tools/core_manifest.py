@@ -94,7 +94,8 @@ def main():
     print("│ EXISTENZ SHA256 MANIFEST                       by Gunther Voet │")
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘")
     print(f"[*] Operational Stage : -stage {args.stage}")
-    print(f"[*] Configuration File: {args.config}")
+    if not args.stage in ["verify-dist","verify-master","verify","check"]:
+      print(f"[*] Configuration File: {args.config}")
     print(f"[*] Ledger Output File: {MANIFEST_OUTPUT}")
 
     public_keys_dict = {name: key_str for name, key_str in existentialCoreSignatures.existentialPublicKeys}
