@@ -16,7 +16,7 @@ from cryptography.hazmat.primitives import serialization
 # Natively bridge your existing workspace root paths and master config files
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
-MANIFEST_OUTPUT = os.path.join(REPO_ROOT, "existenz_workspace_manifest.json")
+MANIFEST_OUTPUT = os.path.join(REPO_ROOT, "manifest.json")
 
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
@@ -50,7 +50,7 @@ def gather_folder_files(folder_relative_path: str) -> dict:
             
         for file in files:
             # Skip the manifest ledger itself and any temporary compiled byte fragments
-            if file == "existenz_workspace_manifest.json" or file.endswith(".pyc"):
+            if file == "manifest.json" or file.endswith(".pyc"):
                 continue
             full_path = os.path.join(root, file)
             rel_path = os.path.relpath(full_path, REPO_ROOT)
