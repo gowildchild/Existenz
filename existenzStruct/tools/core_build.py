@@ -653,7 +653,7 @@ def main():
         print("[*] Verifying integrity of existentz cryptographic structures... ") 
     
     print("┌─────────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
-    print(f"│ EXISTENZ CORE BUILDER {pub_ver}     by Gunther Voet            │")
+    print(f"│ EXISTENZ CORE BUILDER {pub_ver}     by Gunther Voet              │")
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ────────────────────────────────────┘")
     print(f"Execution Step : --step {args.step}  |  Strategy Mode  : -run {args.run}")
 
@@ -716,7 +716,7 @@ def main():
         def get_layer_tags(layer_name, is_last_in_group=False):
             chain_arrow = None
             if layer_name not in matrix_rules_lookup:
-                return "0x00", "0", "+H", "├──", "│  ", "└──" if is_last_in_group else "├──"
+                return "0x00", "0", "+[HASH]+", "├──", "│  ", "└──" if is_last_in_group else "├──"
             
             name, short_var, hash_var, sign_var, bitmask, seq = matrix_rules_lookup[layer_name]
             requires_signing = bool(bitmask & 8 or bitmask & 16 or bitmask & 32)
@@ -725,42 +725,42 @@ def main():
             v_line    = None
             is_chain_member = bool(bitmask > 1 and (bitmask & 1))
             if is_chain_member:
-                chain_arrow = "►"
+                chain_arrow = " ► "
                 connector = "╚══" if is_last_in_group else "╠══"
                 v_line    = "║  "
             else:
-                chain_arrow = "|"
+                chain_arrow = " | "
                 connector = "└──" if is_last_in_group else "├──"
                 v_line    = "│  "
                 
             tags = []
             # 1. Evaluate your native structural flags (1=None/Part of Chain, 2=MAGIC, 4=SHA256, 64=Chain, 128=Order)
             if bitmask > 1 and (bitmask & 1):
-                tags.append("+CHN►M")
+                tags.append("+[CHAIN]")
             if bitmask & 2:
-                tags.append("+MAG")
+                tags.append("+[MAGIC]")
             if bitmask & 4:
-                tags.append("+HSH")
+                tags.append("+[SHA256]")
             if bitmask & 64:
-                tags.append("+CHN►C")
+                tags.append("+[/CHAIN]")
             if bitmask & 128:
-                tags.append("+ORD")
+                tags.append("+[ORDER]")
 
             # 2. Append asymmetric signature metadata states cleanly into the tag stream
             if requires_signing:
                 if is_signed:
-                    tags.append("+PK:")
+                    tags.append("+PK: ")
                     if bitmask & 8:   tags.append("PFM")
                     if bitmask & 16:  tags.append("DEV")
                     if bitmask & 32:  tags.append("PSN")
                 else:
-                    return f"{hex(bitmask)}", str(seq), "\033[91m[ !!! NOT SIGNED !!! ]\033[0m"
+                    return f"{hex(bitmask)}", str(seq), "\033[91m[ ! NOT SIGNED ! ]\033[0m", "├──", "│  ", "└──" if is_last_in_group else "├──"
                     
             return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line, chain_arrow
 
-        print("─" * 129)
-        print(f"  [>] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
-        print(f"  [>] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
+        print("─" * 134)
+        print(f"  [MAGIC] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
+        print(f"  [CHECK] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
         print(f"──┬ [ Existenz {existentialCoreVersion}   ] ", end="")
         print("─" * 111)
         
@@ -782,9 +782,8 @@ def main():
         if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
             print("  [*] Structural Validation Issue for CORE!", file=sys.stderr)
             sys.exit(1)
-            
-        print(f"  ├──► class existentialCoreThreatSignatures ────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ─►")
-        print(f"  │  ")
+        print(f"  │  ")            
+        print(f"  ├──► class existentialCoreThreatSignatures ────────────  ── ─ ── ─────  ─  ─ ─   ─ ─ ─  ─►")
         print(f"  │    {conn_ct} [SQ {sq_ct}{ch_ct}{bm_ct.ljust(4)}] CoreThreatStructure   ─┬──► Sign: 0x{threat_structure_sign} {ch_ct} {tg_ct}")
         print(f"  │    {vl_ct}                                    └──► Signature: \"{threat_structure_signature}\"")
         print(f"  │    {conn_ctl} [SQ {sq_ctl}{ch_ctl}{bm_ctl.ljust(4)}] CoreThreatLegal       ─┬──► Sign: 0x{threat_legal_structure_sign} {ch_ctl} {tg_ctl}")
@@ -794,10 +793,10 @@ def main():
         print(f"  │    {conn_cts} [SQ {sq_cts}{ch_cts}{bm_cts.ljust(4)}] CoreThreat             ─┬─► Sign: 0x{threat_structures_sign} {ch_cts} {tg_cts}")
         print(f"  │                                            └─► Signature: \"{threat_structures_signature}\"")
         print("─ │ ─", end="")
-        print("─" * 125)
+        print("─" * 130)
         print(f"  └── [SQ {sq_ch} {bm_ch.ljust(4)}] ...ntialCoreSignatures.py  ──┬─► Sign: 0x{chain_structures_sign} | {tg_ch}")
         print(f"                                               └─► Signature: \"{chain_structures_signature}\"")
-        print("─" * 130)
+        print("─" * 135)
 
         # Build safe mapping dictionaries for sequence tracking and raw tuple row lookups natively
         sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"], key=lambda x: x[5])
