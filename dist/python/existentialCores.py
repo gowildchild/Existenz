@@ -8,7 +8,7 @@
 import sys
 from existentialCoreCheck import existentialCoreCheck, existentialCoreCheckVersion
 from single.existentialCore import existentialCore
-# UPDATED: Import your new shadow vacuum structure right into the runtime module
+# UPDATED: Import the new shadow vacuum structure right into the runtime module
 from single.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal, existentialCoreThreatShadowVacuum
 
 def _execute_existenz_platform_autocheck():
