@@ -726,24 +726,24 @@ def main():
         print(f"                                 └─► existentialCoreChainSignature            = \"{chain_structures_signature}\"")
         
         # Build safe mapping dictionaries for sequence tracking and raw tuple row lookups natively
-        hash_registry = {row[5]: row[2] for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"}
-        row_registry = {row[5]: row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"}
+        sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"], key=lambda x: x[5])
 
         # Process each row inside the sorted tracking matrix natively
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
+        # Process each row inside the sorted tracking matrix natively
+        for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
-            if name == "Magic":
-                continue
 
             # DYNAMIC LOOK-BACK RUN FINDER: Trace backward to collect all consecutive preceding numbers
             preceding_hashes = []
             check_seq = sequence - 1
             
-            while check_seq in hash_registry:
-                # Retrieve the full metadata row to evaluate bitmask permissions for this cause node
-                cause_row = row_registry[check_seq]
-                c_hash = cause_row[2]
-                c_bitmask = cause_row[4]
+            while True:
+                # Dynamically locate the preceding row directly inside the sorted list matching check_seq
+                cause_row = next((row for row in sorted_rules if row[5] == check_seq), None)
+                if not cause_row:
+                    break
+                    
+                c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause_row
                 
                 # NATIVE BITMODE ENFORCEMENT: Salt the payload if the row requires private cryptographic signing
                 if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
@@ -761,7 +761,7 @@ def main():
                 computed_validation = hmac.new(existentialCoreCheckMagic, computed_payload, hashlib.sha256).hexdigest()
                 
                 # VERBOSE DEBUG LOGGING STAYS ACTIVE NATIVELY ON YOUR TERMINAL FRAME
-                print(f"  [>] Current Evaluation Layer  : {name} [Sequence: {sequence}]")
+                print(f"  [>] Current Evaluation Layer  : {name} [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
                 print(f"  [>] Stored Matrix Anchor Hash : {hash_var}")
                 print(f"  [>] Live Computed Digest Loop : {computed_validation}")
                 print(f"  [>] Combined Run Payload Data : {active_run_payload}")
@@ -769,8 +769,11 @@ def main():
                 
                 if not hmac.compare_digest(computed_validation, hash_var):
                     print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
-                    print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].", file=sys.stderr)
+                    print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].")
+                    print(f"    Expected: {hash_var}")
+                    print(f"    Computed: {computed_validation}")
                     sys.exit(1)
+
 
 
         # 4. Independent bitmode validation pass across all layers
