@@ -18,6 +18,8 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
+int_ver = "v0.76j"
+
 try:
     from existenzStruct.master.existentialCore import existentialCore
     from existenzStruct.master.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal, existentialCoreThreatShadowVacuum
@@ -31,7 +33,7 @@ except ImportError as e:
 def show_version_info():
     """Prints the strict system metadata, author ownership, and licensing terms."""
     print("==================================================================")
-    print(f"THE EXISTENZ PLATFORM (Local Signing Suite & Cross-Compiler {existentialCoreVersion})")
+    print(f"EXISTENZ CORE BUILDER (Signing Suite & Cross-Compiler {existentialCoreVersion})")
     print("Copyright (c) 2026 by Gunther Voet. All Rights Reserved.")
     print("─" * 66)
     print("Released under strict Non-Commercial Open-Source License terms.")
@@ -44,8 +46,8 @@ def make_header(sym: str) -> str:
     padding = f"{sym} " if sym else ""
     raw_lines = [
         "==========================================================================",
-        "THE EXISTENZ PLATFORM (AUTOMATED BLUEPRINT COMPILATION)",
-        f"Version: {existentialCoreVersion} | Framework Namespace Lock",
+        "EXISTENZ CORE BUILDER (Signing Suite & Cross-Compiler",
+        f"Version: {existentialCoreVersion} | Github Deployment",
         "Copyright (c) 2026 by Gunther Voet. All Rights Reserved.",
         "Released under strict Non-Commercial Open-Source License terms.",
         "=========================================================================="
@@ -641,7 +643,6 @@ def main():
         help="Execution strategy state constraint. 'dry' bypasses filesystem modifications."
     )
     args = parser.parse_args()
-    int_ver = "v0.76j"
     pub_ver = existentialCoreVersion
     if pub_ver != int_ver:
         pub_ver = existentialCoreVersion + "/" + int_ver
@@ -709,16 +710,25 @@ def main():
                 matrix_rules_lookup[row[0]] = row  # Store entire row data mapped to Name
 
         # Helper function to dynamically check live signature states and compile compact tags
-        def get_layer_tags(layer_name):
+        def get_layer_tags(layer_name, is_last_in_group=False):
             if layer_name not in matrix_rules_lookup:
-                return "0x00", "0", "+HASH"
+                return "0x00", "0", "+H", "├──", "│  ", "└──" if is_last_in_group else "├──"
             
             name, short_var, hash_var, sign_var, bitmask, seq = matrix_rules_lookup[layer_name]
             
             # Identify asymmetric private key validation requirements based on your true bit flags
             requires_signing = bool(bitmask & 8 or bitmask & 16 or bitmask & 32)
             is_signed = len(sign_var) >= 64 and not sign_var.startswith(name) and sign_var != short_var + "9d3f0dca9fc8"
-            
+            connector = None
+            v_line    = None
+            is_chain_member = bool(bitmask > 1 and (bitmask & 1))
+            if is_chain_member:
+                connector = "╚══" if is_last_in_group else "╠══"
+                v_line    = "║  "
+            else:
+                connector = "└──" if is_last_in_group else "├──"
+                v_line    = "│  "
+                
             tags = []
             # 1. Evaluate your native structural flags (1=None/Part of Chain, 2=MAGIC, 4=SHA256, 64=Chain, 128=Order)
             if bitmask > 1 and (bitmask & 1):
@@ -742,7 +752,7 @@ def main():
                 else:
                     return f"{hex(bitmask)}", str(seq), "\033[91m[ !!! NOT SIGNED !!! ]\033[0m"
                     
-            return f"{hex(bitmask)}", str(seq), " ".join(tags)
+            return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line
 
         print("[*] Verifying cryptographic structures . . .")
         print("─" * 129)
@@ -752,13 +762,14 @@ def main():
         print("─" * 111)
         
         # Resolve live configuration states directly for your unified dashboard view frame
-        bm_c, sq_c, tg_c = get_layer_tags("Core")
-        bm_cc, sq_cc, tg_cc = get_layer_tags("CoreCheck")
-        bm_ct, sq_ct, tg_ct = get_layer_tags("CoreThreatStruct")
-        bm_ctl, sq_ctl, tg_ctl = get_layer_tags("CoreThreatLegal")
-        bm_ctv, sq_ctv, tg_ctv = get_layer_tags("CoreThreatShadowVacuum")
-        bm_cts, sq_cts, tg_cts = get_layer_tags("CoreThreat")
-        bm_ch, sq_ch, tg_ch = get_layer_tags("CoreChain")
+        bm_c, sq_c, tg_c, _, _ = get_layer_tags("Core")
+        bm_cc, sq_cc, tg_cc, _, _ = get_layer_tags("CoreCheck")
+        bm_ch, sq_ch, tg_ch, _, _ = get_layer_tags("CoreChain")        
+        bm_ct, sq_ct, tg_ct, conn_ct, vl_ct = get_layer_tags("CoreThreatStruct")
+        bm_ctl, sq_ctl, tg_ctl, conn_ctl, vl_ctl = get_layer_tags("CoreThreatLegal")
+        bm_ctv, sq_ctv, tg_ctv, conn_ctv, vl_ctv = get_layer_tags("CoreThreatShadowVacuum")
+        bm_cts, sq_cts, tg_cts, conn_cts, vl_cts = get_layer_tags("CoreThreat")
+
 
         print("  │ ")
         print(f"  ├── [SQ{sq_c}][{bm_c.ljust(4)}] existentialCore.py          ─┬─► Sign: 0x{core_structure_sign} | {tg_c}")
@@ -767,13 +778,13 @@ def main():
             print("  [*] Structural Validation Issue for CORE!", file=sys.stderr)
             sys.exit(1)
         print(f"  ├── class existentialCoreThreatSignatures:")
-        print(f"  │    ├── [SQ{sq_ct}][{bm_ct.ljust(4)}] CoreThreatStruct      ─┬──► Sign: 0x{threat_structure_sign} | {tg_ct}")
-        print(f"  │    │                                      └──► Signature: \"{threat_structure_signature}\"")
-        print(f"  │    ├── [SQ{sq_ctl}][{bm_ctl.ljust(4)}] CoreThreatLegal       ─┬──► Sign: 0x{threat_legal_structure_sign} | {tg_ctl}")
-        print(f"  │    │                                      └──► Signature: \"{threat_legal_structure_signature}\"")
-        print(f"  │    ├── [SQ{sq_ctv}][{bm_ctv.ljust(4)}] CoreThreatShadowVacuum ─┬─► Sign: 0x{threat_shadow_structure_sign} | {tg_ctv}")
-        print(f"  │    │                                       └─► Signature: \"{threat_shadow_structure_signature}\"")        
-        print(f"  │    └── [SQ{sq_cts}][{bm_cts.ljust(4)}] CoreThreat             ─┬─► Sign: 0x{threat_structures_sign} | {tg_cts}")
+        print(f"  │    {conn_ct} [SQ{sq_ct}][{bm_ct.ljust(4)}] CoreThreatStruct      ─┬──► Sign: 0x{threat_structure_sign} | {tg_ct}")
+        print(f"  │    {vl_ct}                                      └──► Signature: \"{threat_structure_signature}\"")
+        print(f"  │    {conn_ctl} [SQ{sq_ctl}][{bm_ctl.ljust(4)}] CoreThreatLegal       ─┬──► Sign: 0x{threat_legal_structure_sign} | {tg_ctl}")
+        print(f"  │    {vl_ctl}                                      └──► Signature: \"{threat_legal_structure_signature}\"")
+        print(f"  │    {conn_ctv} [SQ{sq_ctv}][{bm_ctv.ljust(4)}] CoreThreatShadowVacuum ─┬─► Sign: 0x{threat_shadow_structure_sign} | {tg_ctv}")
+        print(f"  │    {vl_ctv}                                       └─► Signature: \"{threat_shadow_structure_signature}\"")        
+        print(f"  │    {conn_cts} [SQ{sq_cts}][{bm_cts.ljust(4)}] CoreThreat             ─┬─► Sign: 0x{threat_structures_sign} | {tg_cts}")
         print(f"  │                                            └─► Signature: \"{threat_structures_signature}\"")
         print(f"  ├── [SQ{sq_cc}][{bm_cc.ljust(4)}] existentialCoreCheck.py     ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
         print(f"  │                                            └─► Signature: \"{check_structures_signature}\"")
