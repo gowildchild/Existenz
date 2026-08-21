@@ -651,17 +651,17 @@ def main():
     print(f"[*] Execution Step : --step {args.step}")
     print(f"[*] Strategy Mode  : -run {args.run}")
 
-    # Establish global root paths and directories
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
 
-    # FIXED GUARD ENGINE: Allow --step sign to run even if the target signature file does not exist yet
+    # FIXED GUARD ENGINE: Drop the validation wall specifically during bootstrapping passes
     if args.step != "sign" and not os.path.exists(target_sig_file):
         print(f"[-] CRITICAL ERROR: Foundational compiled lockbook structure missing inside dist/master/.", file=sys.stderr)
         print(f"    Please execute 'core_build.py -step sign' first to generate base parameters.", file=sys.stderr)
         sys.exit(1)
 
     print("[+] Multi-tier security separation handshake verified.")
+    
     # 1. Compute foundational structured components dynamically across all stages
     core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
     core_structure_payload = core_structure.encode('utf-8')
