@@ -23,13 +23,18 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
 TARGET_DIST_DIR = os.path.join(REPO_ROOT, "dist", "master")
 
+CURRENT_TOOL_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_TOOL_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_TOOL_DIR)
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-try:
-    # Dynamically extract tracking variables directly from public signatures file
-    from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreCheckMagic, existentialCoreCheckSignature, existentialCoreVersion
 
+try:
+    # Safely load the local signatures file without namespace prefix drift failures
+    import existentialCoreSignatures
+    from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
+    
 except ImportError:
     print("[-] CRITICAL ERROR: Foundational compiled lockbook structure missing inside dist/master/.")
     print("    Please execute 'core_build.py -step sign' first to generate base parameters.")
