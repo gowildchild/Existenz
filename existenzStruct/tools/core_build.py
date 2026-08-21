@@ -706,8 +706,8 @@ def main():
 
         # Helper function to dynamically check live signature states and compile compact tags
         def get_layer_tags(layer_name):
-            if layer_name not in matrix_rules_lookup:
-                return "0x00", "0", "+H"
+            #if layer_name not in matrix_rules_lookup:
+            #    return "0x00", "0", "+H"
             
             name, short_var, hash_var, sign_var, bitmask, seq = matrix_rules_lookup[layer_name]
             
