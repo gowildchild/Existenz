@@ -53,7 +53,7 @@ jobs:
     - name: Existenz - Checking Signatures for core_build
       if: env.RUN_MODE != 'locked'
       run: |
-        python existenzStruct/tools/core_build.py -step verify
+        python existenzStruct/tools/core_build.py -step check
 
     # Strictly validates the existenzStruct/ directory layout using your contiguous sequence math rules
     - name: Existenz - Codebase Manifest Audit
