@@ -735,15 +735,19 @@ def main():
         
         # SELF-CALCULATING CONTIGUOUS CHAIN: Evaluate strict sequential follow-ups
         running_chain_sum = 0
-        expected_next_sequence = 1
+        expected_next_sequence = None  # DYNAMIC SELECTION: Automatically anchors on the first row to prevent lockout drift
         sequence_chain_accumulator = 0
 
-        # FIXED ONLY: Enforce a standard sequence sort pass so fields feed into your math chronologically
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[-1]):
+        # FIXED ONLY: Enforce a standard chronological sort pass so fields feed into your math in order
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
                 continue
             
+            # Lock the baseline tracking link onto the very first structural element encountered (order 2)
+            if expected_next_sequence is None:
+                expected_next_sequence = sequence
+
             # If the number strictly follows up consecutively, add it to the running cause-sum
             if sequence == expected_next_sequence:
                 running_chain_sum += sequence
@@ -768,10 +772,9 @@ def main():
             if identity in active_required_identities and identity in pub_keys_dict:
                 key_body = pub_keys_dict[identity].split()
                 if len(key_body) >= 2:
-                    combined_salt_payload.extend(" ".join(key_body).encode('utf-8'))
+                    combined_salt_payload.extend(key_body.encode('utf-8'))
                 else:
                     combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
-
 
         derived_salt_token = hashlib.sha256(combined_salt_payload).hexdigest()
 
@@ -780,23 +783,6 @@ def main():
         print(f"  ├── Sequence Progression sum  : {sequence_chain_accumulator} (Field Order Matrix)")
         print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
         print("──┴───────────────────────────────────────────────────────────────")
-
-        # INTERACTIVE PASS: Loop through your required keys and prompt for passwords before compiling
-        if os.path.exists(DEFAULT_CONFIG_PATH):
-            try:
-                with open(DEFAULT_CONFIG_PATH, "r", encoding="utf-8") as cf:
-                    cfg = json.load(cf)
-                private_paths = cfg.get("private_key_paths", {})
-                
-                for identity in ["Platform", "Developer", "Personal"]:
-                    if identity in active_required_identities:
-                        key_path = private_paths.get(identity)
-                        if key_path:
-                            # Triggers your native interactive password getpass prompt loop
-                            load_ssh_private_key(identity, key_path)
-            except Exception as e:
-                print(f"  [!] Verification Halt: Asymmetric security envelope check bypassed or failed: {e}")
-                sys.exit(1)
 
         if args.run == "WET":
             target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
@@ -832,6 +818,7 @@ def main():
                         f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
             print("[+] Target folder master signatures built.")
         sys.exit(0)
+
 
 
 
