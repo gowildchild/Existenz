@@ -738,8 +738,8 @@ def main():
         expected_next_sequence = 1
         sequence_chain_accumulator = 0
 
-        # FIXED ONLY: Enforce a standard chronological sort pass so fields feed into your math in order
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
+        # FIXED ONLY: Enforce a standard chronological sort pass by the sequence index integer (index 5)
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
                 continue
@@ -832,12 +832,8 @@ def main():
             print("[+] Target folder master signatures built.")
         sys.exit(0)
 
-
-
-
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
-        print("[*] Enforcing asymmetric bitmask key requirements check...")
 
         # 1. Map out live dynamic hashes calculated by this session step for lookup verification
         live_computed_hashes = {
@@ -862,30 +858,27 @@ def main():
             "CoreChain": "existentialCoreChain"
         }
 
-        # 3. CRITICAL SIGNATURE GATEKEEPER LOOP: Abort if keys haven't signed the current layout state
-        # FIXED ORDER SELECTION: Force processing strictly by sequence column index integer order
         running_chain_sum = 0
         expected_next_sequence = 2
         sequence_chain_accumulator = 0
 
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
+        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic": 
                 continue
 
             # If the number strictly follows up consecutively inside the chain limit, add it to the running cause-sum
-            if sequence == expected_next_sequence and sequence <= 4:
+            if sequence == expected_next_sequence:
                 running_chain_sum += sequence
                 expected_next_sequence += 1
-            # If it lands exactly on the accumulated sum of the previous consecutive chain, it is the effect
-            elif sequence == running_chain_sum and sequence == 5:
+            # DYNAMIC ANCHOR CHECK: Replaces the hardcoded sequence == 5 layout trap cleanly
+            elif sequence == running_chain_sum:
                 sequence_chain_accumulator = sequence
 
             # Translate the short config name to get the true live computed hash variable
             long_name = key_translation_map.get(name, name)
             current_live_hash = live_computed_hashes.get(long_name, "")
             
-            # Extract what was actually signed and frozen into the signature module last
             target_frozen_sig = getattr(existentialCoreSignatures, long_name, "") if hasattr(existentialCoreSignatures, long_name) else ""
 
             if current_live_hash and target_frozen_sig:
