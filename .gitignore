@@ -1,6 +1,7 @@
 sign_integrity_config.json
 *.key
 *.pem
+CNAME
 id_*
 id_*.pub
 prompt.txt
