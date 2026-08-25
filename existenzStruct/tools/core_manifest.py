@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # ==========================================================================
 # EXISTENZ (MANIFEST MULTI-SIGNATURE GENERATOR)
-# File: core_manifest.py v0.76i
+# File: core_manifest.py v0.76j
 # Purpose: Tracks, hashes, and validates code updates across master, tools, and dist.
 # ==========================================================================
 import os
@@ -265,7 +265,7 @@ def main():
                     key_path = key_routes.get(identity)
                     if key_path:
                         expanded_path = os.path.expanduser(key_path)
-                        if os.path.exists(expanded_path):
+                        if os.path.exists(expanded_path) and not REPO_GITHUB:
                             priv_key = load_private_key(identity, expanded_path)
                             sig_bytes = priv_key.sign(serialized_manifest_body)
                             manifest_data["signatures"][identity] = sig_bytes.hex()
