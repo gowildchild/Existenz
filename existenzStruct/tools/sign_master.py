@@ -31,7 +31,7 @@ int_ver = "v0.76i"
 
 try:
     # Safely load the local signatures file without namespace prefix drift failures
-    import existentialCoreSignatures
+    import existenzStruct.master.existentialCoreSignatures
     from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
     
 except ImportError:
