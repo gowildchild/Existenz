@@ -13,7 +13,7 @@ import getpass
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
 
-INT_VERSION = "v0.76j"
+INT_VERSION = "v0.76k"
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
 MANIFEST_OUTPUT = os.path.join(REPO_ROOT, "manifest.json")
@@ -191,7 +191,7 @@ def main():
     if args.stage in ["sign", "sign-master", "sign-dist","sign-tools"]:
         error_handler.notice(
             level="info",
-            message="Stage: [{args.stage.upper()}] Scanning targeted directories..."
+            message=f"Stage: [{args.stage.upper()}] Scanning targeted directories..."
         )
 
         # Pull down the existing file baseline records to guarantee signature persistence
