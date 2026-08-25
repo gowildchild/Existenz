@@ -218,10 +218,8 @@ $$\mathcal{S}_{\text{state}} = \left( \mathcal{M}_{\text{exist}} \land \neg\left
 # Released under strict Non-Commercial Open-Source License terms.
 # Commercial use requires immediate written license and explicit payment.
 # ==========================================================================
-# VERSION: v0.76f
+# VERSION: v0.76k
 ##
-import hmac
-import hashlib
 from enum import IntFlag
 
 class existentialCore(IntFlag):
@@ -301,6 +299,10 @@ class existentialCoreThreat(IntFlag):
     CANARY_4_PERSONAL       = 1 << 17
     CANARY_5_RIGHTS         = 1 << 23
     CANARY_6_CIVIC          = 1 << 27
+    # CANARY_7_EXPLOITATION   = existentialCore.CANARY_S_STATE | existentialCore.PROPERTY
+    CANARY_7_EXPLOITATION   = 0x055005f7
+    # CANARY_8_PREDATORY      = existentialCore.CANARY_S_COLLIDE | existentialCore.PRESENCE
+    CANARY_8_PREDATORY      = 0x8882a608
 
     SIGN_THREAT_RIGHTS_LEGAL = 0x6d07d972
     SIGN_THREAT_EXISTENZ     = 0x5beba3df
@@ -311,33 +313,41 @@ class existentialCoreThreat(IntFlag):
 existentialCoreThreatLegal = {
     existentialCoreThreat.THREAT_EXISTENCE:        "LEGAL_CAT1_MURDER",
     existentialCoreThreat.THREAT_AUTONOMY:         "LEGAL_CAT2_PHYSICAL_VIOLATION",
-    existentialCoreThreat.THREAT_INTEGRITY:        "LEGAL_CAT3_COERSION",
-    existentialCoreThreat.CANARY_1_SOVEREIGN:      "LEGAL_CAT4_CHARACTER_ASSASINATION",
+    existentialCoreThreat.THREAT_INTEGRITY:        "LEGAL_CAT3_COERCION",
+    existentialCoreThreat.CANARY_1_SOVEREIGN:      "LEGAL_CAT4_CHARACTER_ASSASSINATION",
     existentialCoreThreat.THREAT_PSYCHOLOGY:       "LEGAL_CAT5_PSYCHOLOGICAL_INTIMIDATION",
     existentialCoreThreat.THREAT_PHYSICAL:         "LEGAL_CAT2_PHYSICAL_VIOLATION",
     existentialCoreThreat.THREAT_ABLEISM:          "LEGAL_CAT6_ABLEISM",
     existentialCoreThreat.THREAT_DEVELOPMENT:      "LEGAL_CAT8_INTELLECTUAL_PIRACY",
-    existentialCoreThreat.THREAT_PROPERTY:         "LEGAL_CAT9_THEFTH",
+    existentialCoreThreat.THREAT_PROPERTY:         "LEGAL_CAT9_THEFT",
     existentialCoreThreat.CANARY_3_SYSTEMIC:       "LEGAL_CAN1_SYSTEMCRISIS",
-    1 << 14:                                       "LEGAL_CAN2_EXPLOITATION",
+    existentialCoreThreat.CANARY_7_EXPLOITATION:   "LEGAL_CAN2_EXPLOITATION",
     existentialCoreThreat.THREAT_RIGHTS_HUMAN:     "LEGAL_CAN3_HUMAN",
     existentialCoreThreat.THREAT_RIGHTS_INCLUSIVE: "LEGAL_CAN4_INCLUSION",
-    1 << 40:                                       "LEGAL_CAN5_PREDATORY"
+    existentialCoreThreat.CANARY_8_PREDATORY:      "LEGAL_CAN5_PREDATORY"
 }
 
+existentialCoreThreatShadowVacuum = {
+    existentialCoreThreat.THREAT_EXISTENCE:        "VACUUM_DEHUMANISATION",
+    existentialCoreThreat.THREAT_AUTONOMY:         "VACUUM_DISFRANCHISEMENT",
+    existentialCoreThreat.THREAT_INTEGRITY:        "VACUUM_CORRUPTION",
+    existentialCoreThreat.THREAT_PSYCHOLOGY:       "VACUUM_ATTRITION_PSYCHOLOGY",
+    existentialCoreThreat.THREAT_PHYSICAL:         "VACUUM_SOMATIC_DRAIN",
+    existentialCoreThreat.THREAT_ABLEISM:          "VACUUM_NEURONORMATIVITY",
+    existentialCoreThreat.THREAT_DEVELOPMENT:      "VACUUM_ATTRITION_INSTITUTIONAL",
+    existentialCoreThreat.THREAT_PROPERTY:         "VACUUM_SYSTEMIC_DESPOILMENT",
+    existentialCoreThreat.THREAT_PRESENCE:         "VACUUM_PANOPTICISM",
 
-# ==========================================================================
-# UNIVERSAL CRYPTOGRAPHIC BOUNDARY (CONSOLIDATED STRUCTURE)
-# ==========================================================================
-class existentialCoreThreatSignatures:
-    """Consolidated hardware-salted cryptographic locks for the threat ecosystem."""
-    existentialCoreThreatSign                = 0x57c413f8
-    existentialCoreThreatSignature           = "57c413f8531731df0d2f09a260ea36c7e49269348b553fdeeaa2dd11e7bc4bb9"
-    existentialCoreThreatLegalSign           = 0x6d07d972
-    existentialCoreThreatLegalSignature      = "6d07d97272d414f966ea7a9d7b2956b96541fecbcb9079f375408a62b3b6bd6e"
-    existentialCoreThreatStructuresSign      = 0x759533df
-    existentialCoreThreatStructuresSignature = "759533dfd2a276046bc62985b17df7cefb999a1c3a07b7b983e5ee278d80302d"
-
+    existentialCoreThreat.CANARY_1_SOVEREIGN:      "VACUUM_DRIFT_SOVEREIGN",
+    existentialCoreThreat.CANARY_2_SOMATIC:        "VACUUM_DRIFT_SOMATIC",
+    existentialCoreThreat.CANARY_3_SYSTEMIC:       "VACUUM_DRIFT_SYSTEMIC",
+    
+    existentialCoreThreat.THREAT_RIGHTS_HUMAN:     "VACUUM_INVERT_COMPLIANCE",
+    existentialCoreThreat.THREAT_RIGHTS_INCLUSIVE: "VACUUM_INVERT_NORMALIZATION",
+    existentialCoreThreat.THREAT_RIGHTS_BASIC:     "VACUUM_INVERT_INERTIA",
+    existentialCoreThreat.CANARY_7_EXPLOITATION:   "VACUUM_PARASITISM",
+    existentialCoreThreat.CANARY_8_PREDATORY:      "VACUUM_HARVESTING"
+}
 
 class ExistentialRipple(IntFlag):
     
