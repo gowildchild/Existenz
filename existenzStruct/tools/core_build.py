@@ -662,7 +662,8 @@ def main():
     # Establish backward-compatible path hooks for your distribution checking layer
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
-
+    
+    
     # Flintstones
     core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
     core_structure_payload = core_structure.encode('utf-8')
@@ -679,10 +680,10 @@ def main():
     threat_legal_structure_signature = hmac.new(existentialCoreCheckMagic, threat_legal_structure_payload, hashlib.sha256).hexdigest()
     threat_legal_structure_sign = threat_legal_structure_signature[:8]
 
-    threat_shadow_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i))
+    threat_shadow_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items()))
     threat_shadow_structure_payload = threat_shadow_structure.encode('utf-8')
     threat_shadow_structure_signature = hmac.new(existentialCoreCheckMagic, threat_shadow_structure_payload, hashlib.sha256).hexdigest()
-    threat_shadow_structure_sign = threat_shadow_structure_signature[:8] 
+    threat_shadow_structure_sign = threat_shadow_structure_signature[:8]
 
     threat_structures = f"{threat_structure}||{threat_legal_structure}||{threat_shadow_structure}"
     threat_structures_payload = threat_structures.encode('utf-8')
@@ -693,7 +694,6 @@ def main():
     check_structures_payload = check_structures.encode('utf-8')
     check_structures_signature = hmac.new(existentialCoreCheckMagic, check_structures_payload, hashlib.sha256).hexdigest()
     check_structures_sign = check_structures_signature[:8]
-
     
     cores_master_path = os.path.abspath(os.path.join(REPO_ROOT, "dist", "existentialCores.json"))
     cores_structure_signature = ""
@@ -1001,14 +1001,15 @@ def main():
         if args.step == "sign":
             sys.exit(0)
 
+
+
+    
     elif args.step in ["compile", "merge"]:
         # Phase A: Standalone or Early Pipeline Execution
         if args.step == "merge":
             print("[*] Running Stage: [MERGE] Explicitly consolidating distributed json core files...")
         else:
             print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
-
-            # 1. First-Pass Verification: Validate individual components before touching distribution vaults
             for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x[5]):
                 name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
                 if name in ["Magic", "Cores", "CoreChain"]: 
@@ -1017,6 +1018,7 @@ def main():
                 long_name = key_translation_map.get(name, name)
                 current_live_hash = live_computed_hashes.get(long_name, "")
                 target_frozen_sig = getattr(existentialCoreSignatures, long_name, "") if hasattr(existentialCoreSignatures, long_name) else ""
+
 
                 if current_live_hash and target_frozen_sig:
                     if not hmac.compare_digest(current_live_hash, target_frozen_sig):
@@ -1033,6 +1035,23 @@ def main():
                 print(f"[-] GENERATION ERROR: Exporter layer broken.", file=sys.stderr)
                 raise ex
 
+        if args.run == "WET" and os.path.exists(core_p) and os.path.exists(threat_p):
+            try:
+                with open(core_p, "r", encoding="utf-8") as f:
+                    c_json = json.load(f)
+                with open(threat_p, "r", encoding="utf-8") as f:
+                    t_json = json.load(f)
+
+                master_catalog = {**c_json, **t_json}
+            
+                # Form the file in the workspace directory first
+                with open(out_p, "w", encoding="utf-8") as f:
+                    json.dump(master_catalog, f, indent=2)
+                print("[+] EARLY COMPILATION: Master catalog consolidated cleanly before hash initialization.")
+            except Exception as ex:
+                print(f"[-] Early Splicer Pipeline Error: {ex}", file=sys.stderr)
+
+        
         if args.run == "WET":
             try:
                 dist_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist"))
@@ -1058,6 +1077,7 @@ def main():
                 print(f"[-] Splicer Pipeline Error: {ex}", file=sys.stderr)
                 sys.exit(1)
 
+        # Phase C: Second-Pass Cryptographic Verification (Runs ONLY during compile completions)
         if args.step == "compile":
             print("[*] Finalizing compilation pipeline with terminal hash-chain audits...")
             
@@ -1080,7 +1100,6 @@ def main():
             chain_structures_signature = hmac.new(existentialCoreCheckMagic, chain_payload_string.encode('utf-8'), hashlib.sha256).hexdigest()
             live_computed_hashes["existentialCoreChain"] = chain_structures_signature
             live_session_hashes["existentialCoreChainHash"] = chain_structures_signature
-
 
             # 2. Complete terminal evaluation of look-back links and Order 9 Master Envelope rules
             for layer_meta in sorted_rules:
