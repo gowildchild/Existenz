@@ -858,6 +858,11 @@ def main():
                         preceding_hashes.insert(0, resolved_cause_hash)
                         chain_metadata_log.insert(0, f" [*] Seq {c_seq}+HASH  | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
 
+                    # 🚀 CHAIN SEPARATION PROTECTION: If the processed row is not part of the active chain (bitmask & 1 == 0),
+                    # we have hit the literal starting boundary where the run began. Stop tracing immediately!
+                    if not (c_bitmask & 1):
+                        break
+
                     # Step backward past the node we just processed to continue the look-back run
                     check_seq -= 1
 
@@ -898,6 +903,7 @@ def main():
         if args.step in ["check", "verify"]:
             print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
             sys.exit(0)
+
 
     elif args.step == "sign":
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
