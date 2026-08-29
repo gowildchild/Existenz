@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # ==========================================================================
 # EXISTENZ (MANIFEST MULTI-SIGNATURE GENERATOR)
-# File: core_manifest.py v0.76
+# File: core_manifest.py v0.76l
 # Purpose: Tracks, hashes, and validates code updates across master, tools, and dist.
 # ==========================================================================
 import os
