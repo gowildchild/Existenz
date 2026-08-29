@@ -215,38 +215,83 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
             f.write(make_header("#") + "substitutions:\n" + "\n".join(f"  VACUUM_{str(k)}: \"{v}\"" for k, v in vacuum_ord.items()) + "\n")
 
     try:
-        # Re-parse the compiled structural strings from memory blocks to preserve line formatting
-        core_block_payload = json.loads("{\n" + "\n".join(build_aligned_json_block("existentialCore", core_ord, cmnts)) + "\n}")
-        threat_block_payload = json.loads("\n".join(json_t))
+        # Calculate strict column width thresholds over unified layouts
+        all_combined_keys = list(core_ord.keys()) + list(threat_ord.keys())
+        max_k_len = max(len(k) for k in all_combined_keys)
         
-        # Merge individual components into the unified framework catalog dictionary
-        master_catalog_dictionary = {**core_block_payload, **threat_block_payload}
+        all_combined_vals = list(str(v) for v in core_ord.values()) + list(str(v) for v in threat_ord.values())
+        max_v_len = max(len(v) for v in all_combined_vals)
         
-        # Resolve target master path and distribution folder mapping locations
+        # Generate the shared bitmask expression mappings cleanly
+        expr_map = {}
+        for k, v in {**core_ord, **threat_ord}.items():
+            if v <= 0:
+                expr_map[k] = "0"
+            elif (v & (v - 1)) == 0:
+                expr_map[k] = f"1 << {v.bit_length() - 1}"
+            else:
+                expr_map[k] = f"0x{v:08x}"
+        max_ex_len = max(len(ex) for ex in expr_map.values())
+
+        # Construct flat root structure lines matching build_aligned_json_block output loops
+        def compile_flat_json_lines(ordered_layout: dict):
+            lines_buffer = []
+            for k, v in ordered_layout.items():
+                raw_cmnt = cmnts.get(k, "")
+                clean_cmnt = clean_context_description(raw_cmnt).replace('"', '\\"')
+                struct_type = parse_structural_type(raw_cmnt, k)
+                
+                k_pad = f'"{k}":'.ljust(max_k_len + 3)
+                v_pad = f'{v},'.ljust(max_v_len + 2)
+                ex_pad = f'"{expr_map[k]}",'.ljust(max_ex_len + 4)
+                t_pad = f'"{struct_type}",'.ljust(14)
+                lines_buffer.append(f'  {k_pad}{{\"value\": {v_pad}\"expr\": {ex_pad}\"type\": {t_pad}\"comment\": \"{clean_cmnt}\"}}')
+            return lines_buffer
+
+        # Compile matching entries back-to-back into an active tracking memory array
+        json_lines_master = ["{"]
+        
+        # Append core and threat entries cleanly as a flattened block with valid list slicing delimiters
+        combined_property_lines = compile_flat_json_lines(core_ord) + compile_flat_json_lines(threat_ord)
+        json_lines_master.append(",\n".join(combined_property_lines) + ",")
+        
+        # Inject structural legal reference metadata maps
+        json_lines_master.append('  "existentialCoreThreatLegal": {')
+        max_l_k = max(len(str(lk)) for lk in legal_ord.keys())
+        legal_lines = ",\n".join(f'    "{lk}":'.ljust(max_l_k + 11) + f'"{lv}"' for lk, lv in legal_ord.items())
+        json_lines_master.append(legal_lines + "\n  },")
+        
+        # Inject structural vacuum reference metadata maps
+        if vacuum_ord:
+            json_lines_master.append('  "existentialCoreThreatShadowVacuum": {')
+            max_v_k = max(len(str(vk)) for vk in vacuum_ord.keys())
+            vacuum_lines = ",\n".join(f'    "{vk}":'.ljust(max_v_k + 11) + f'"{vv}"' for vk, vv in vacuum_ord.items())
+            json_lines_master.append(vacuum_lines + "\n  },")
+
+        # Terminate file footprint layout using your dynamic threat signature variable
+        json_lines_master.append(f'  "existentialCoreThreatSignature": "{sigs["existentialCoreThreat"]}"\n}}')
+        raw_final_payload_string = "\n".join(json_lines_master)
+
+        # Establish physical repository path configurations
         master_folder_path = os.path.abspath(os.path.join(dist_dir, "..", "existenzStruct", "master"))
         os.makedirs(master_folder_path, exist_ok=True)
         
         master_catalog_destination = os.path.join(master_folder_path, "existentialCores.json")
         distribution_cache_destination = os.path.join(dist_dir, "existentialCores.json")
-        
-        # 🚀 TARGET LOCKBOOK PATH: Establish a copy inside dist/master/ to clear post-write audits
-        dist_master_folder_path = os.path.join(dist_dir, "master")
-        os.makedirs(dist_master_folder_path, exist_ok=True)
-        dist_master_destination = os.path.join(dist_master_folder_path, "existentialCores.json")
-        
-        # Write master workspace source-of-truth file
+        dist_master_destination = os.path.join(dist_dir, "master", "existentialCores.json")
+        os.makedirs(os.path.dirname(dist_master_destination), exist_ok=True)
+
+        # Output the formatted files simultaneously to clear tracking loops and post-write checks
         with open(master_catalog_destination, "w", encoding="utf-8") as f:
-            json.dump(master_catalog_dictionary, f, indent=2)
+            f.write(raw_final_payload_string + "\n")
         print(f"  [+] Unified master folder matrix built: {master_catalog_destination}")
             
-        # Replicate down into distribution directory cache root
         with open(distribution_cache_destination, "w", encoding="utf-8") as f:
-            json.dump(master_catalog_dictionary, f, indent=2)
+            f.write(raw_final_payload_string + "\n")
         print(f"  [+] Synced validation asset target out: {distribution_cache_destination}")
         
-        # Replicate down into distribution master subfolder location
         with open(dist_master_destination, "w", encoding="utf-8") as f:
-            json.dump(master_catalog_dictionary, f, indent=2)
+            f.write(raw_final_payload_string + "\n")
         print(f"  [+] Synced lockbook check cache out: {dist_master_destination}")
             
     except Exception as merge_error:
