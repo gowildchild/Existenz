@@ -18,7 +18,8 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-int_ver = "v0.76l"
+int_ver = "v0.76.13"
+int_ver_codename = "mama"
 
 try:
     from existenzStruct.master.existentialCore import existentialCore
@@ -692,16 +693,29 @@ def main():
     check_structures_signature = hmac.new(existentialCoreCheckMagic, check_structures_payload, hashlib.sha256).hexdigest()
     check_structures_sign = check_structures_signature[:8]
 
+    
+    cores_master_path = os.path.abspath(os.path.join(REPO_ROOT, "dist", "existentialCores.json"))
+    cores_structure_signature = ""
+    cores_structure_sign = ""
+    if os.path.exists(cores_master_path):
+    with open(cores_master_path, "rb") as f:
+        cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
+        cores_structure_sign = cores_structure_signature[:8]
+    else:
+        cores_structure_signature = "existentialCoreSignaturesCores"
+    
     chain_payload_string = (
         existentialCoreCheckMagic.decode('utf-8', errors='ignore') +
         core_structure_signature +
         threat_structures_signature +
-        check_structures_signature
+        check_structures_signature +
+        cores_structure_signature
     )
+    
     chain_structures_payload = chain_payload_string.encode('utf-8')
     chain_structures_signature = hmac.new(existentialCoreCheckMagic, chain_structures_payload, hashlib.sha256).hexdigest()
     chain_structures_sign = chain_structures_signature[:8]
-
+        
     existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
 
     if args.step in ["check","verify","compile","merge"]:
@@ -770,8 +784,8 @@ def main():
         bm_ct, sq_ct, tg_ct, conn_ct, vl_ct, ch_ct = get_layer_tags("CoreThreatStruct", is_last_in_group=False)
         bm_ctl, sq_ctl, tg_ctl, conn_ctl, vl_ctl, ch_ctl = get_layer_tags("CoreThreatLegal", is_last_in_group=False)
         bm_ctv, sq_ctv, tg_ctv, conn_ctv, vl_ctv, ch_ctv = get_layer_tags("CoreThreatShadowVacuum", is_last_in_group=False)
-        bm_cts, sq_cts, tg_cts, conn_cts, vl_cts, ch_cts = get_layer_tags("CoreThreat", is_last_in_group=True)
-
+        bm_cts, sq_cts, tg_cts, conn_cts, vl_cts, ch_cts = get_layer_tags("CoreThreat", is_last_in_group=False)
+        bm_ctc, sq_ctc, tg_ctc, conn_ctc, vl_ctc, ch_ctc = get_layer_tags("Cores", is_last_in_group=True)
 
         print("  │ ")
         print(f"  ├── [SQ {sq_c} | {bm_c.ljust(4)}] existentialCore.py          ─┬─► Sign: 0x{core_structure_sign} | {tg_c}")
@@ -810,7 +824,9 @@ def main():
             "existentialCoreThreatLegalHash": threat_legal_structure_signature,
             "existentialCoreThreatShadowVacuumHash": threat_shadow_structure_signature,
             "existentialCoreThreatHash": threat_structures_signature,
+            "existentialCoresHash": cores_structure_signature,            
             "existentialCoreChainHash": chain_structures_signature
+
         }
 
 
@@ -969,7 +985,8 @@ def main():
                         f"    existentialCoreThreatLegal                   = \"{threat_legal_structure_signature}\"\n"
                         f"    existentialCoreThreatShadowVacuum            = \"{threat_shadow_structure_signature}\"\n"
                         f"    existentialCoreThreat                        = \"{threat_structures_signature}\"\n"
-                        f"    existentialCoreCheck                         = \"{check_structures_signature}\"\n\n"
+                        f"    existentialCoreCheck                         = \"{check_structures_signature}\"\n"
+                        f"    existentialCores                             = \"{cores_structure_signature}\"\n\n"
                         f"    existentialPublicKeys = (\n{formatted_pkeys}\n    )\n\n"
                         f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
             print("[+] Target folder master signatures built.")
@@ -1012,6 +1029,7 @@ def main():
             "existentialCoreThreatShadowVacuum": threat_shadow_structure_signature,
             "existentialCoreThreat": threat_structures_signature,
             "existentialCoreCheck": check_structures_signature,
+            "existentialCores": cores_structure_signature,
             "existentialCoreChain": chain_structures_signature
         }
 
@@ -1023,7 +1041,8 @@ def main():
             "CoreThreatLegal": "existentialCoreThreatLegal",
             "CoreThreatShadowVacuum": "existentialCoreThreatShadowVacuum",
             "CoreThreat": "existentialCoreThreat",
-            "CoreChain": "existentialCoreChain"
+            "Cores": "existentialCores",            
+            "CoreChain": "existentialCoreChain",           
         }
 
         running_chain_sum = 0
@@ -1097,6 +1116,7 @@ def main():
             "existentialCoreThreatShadowVacuum": threat_shadow_structure_signature,
             "existentialCoreThreat": threat_structures_signature,
             "existentialCoreCheck": check_structures_signature,
+            "existentialCores": cores_structure_signature,
             "existentialCoreCheckSignatures": getattr(existentialCoreSignatures, "existentialCoreCheckSignatures", "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484")
         }
         
