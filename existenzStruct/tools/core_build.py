@@ -830,6 +830,7 @@ def main():
 
 
         # Process each row inside the sorted tracking matrix natively
+        # Process each row inside the sorted tracking matrix natively
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
 
@@ -843,20 +844,26 @@ def main():
             preceding_hashes = []
             chain_metadata_log = []
             
-            # AUTOMATED GATE: This row is ONLY evaluated as an anchor if a run ends here (neighbor behind, no neighbor ahead)
-            is_terminal_anchor = (sequence - 1 in all_active_sequences) and (sequence + 1 not in all_active_sequences)
+            # 🚀 FIXED FLAG GATE: Enforces a look-back checkpoint explicitly using your 'bitmask & 64' (END OF CHAIN) rule!
+            is_terminal_anchor = bool(bitmask & 64)
             
             if is_terminal_anchor:
+                # Start searching backward from the layer right behind this anchor
                 check_seq = sequence - 1
                 
-                while True:
+                while check_seq >= 0:
+                    # 🚀 GAP-RESILIENT WALKER: Finds the next active row in the ledger sequence, even if there are integer gaps!
                     cause_row = next((row for row in sorted_rules if row == check_seq), None)
+                    
                     if not cause_row:
-                        break
+                        # If this specific integer index is empty (like 7 or 8), step backward to check the previous lane slot
+                        check_seq -= 1
+                        continue
                         
                     c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause_row
                     resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
 
+                    # Evaluate asymmetric signature masking layers using your exact bit rules
                     if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
                         row_payload = existentialCoreCheckMagic + resolved_cause_hash.encode('utf-8')
                         row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
@@ -866,12 +873,15 @@ def main():
                         preceding_hashes.insert(0, resolved_cause_hash)
                         chain_metadata_log.insert(0, f" [*] Seq {c_seq}+HASH  | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
 
+                    # Step backward past the node we just processed to continue the look-back run
                     check_seq -= 1
 
             # Validate the combined look-back chain series if this node is the true terminal anchor point
             if preceding_hashes:
                 active_run_payload = "".join(preceding_hashes)
-                computed_validation = resolved_target_hash
+                
+                # 🚀 CRYPTOGRAPHIC HASH CHAIN ASSIGNMENT: Computes the unified SHA-256 fingerprint pass natively!
+                computed_validation = hmac.new(existentialCoreCheckMagic, active_run_payload.encode('utf-8'), hashlib.sha256).hexdigest()
                 
                 # Output the full trace elements natively matching your layout requirements
                 for log_line in chain_metadata_log:
@@ -891,6 +901,7 @@ def main():
                     print(f"    Expected (Stored in Field) : {resolved_target_hash}")
                     print(f"    Computed (Live Calculated) : {computed_validation}")
                     sys.exit(1)
+
         # 4. Independent bitmode validation pass across all layers
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
@@ -900,9 +911,10 @@ def main():
                 print(f"[-] Layer '{name}' failed bitmask verification: {hex(bitmask)}", file=sys.stderr)
                 sys.exit(1)
 
-        if args.step in ["check","verify"]:
+        if args.step in ["check", "verify"]:
             print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
             sys.exit(0)
+
     
     elif args.step == "sign":
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
