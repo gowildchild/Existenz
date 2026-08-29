@@ -849,6 +849,7 @@ def main():
 
                     if not (c_bitmask & 1):
                         break
+                        
                     resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
 
                     if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
@@ -864,10 +865,26 @@ def main():
 
             # Validate the combined look-back chain series if this node is the true terminal anchor point
             if preceding_hashes:
-                active_run_payload = "".join(preceding_hashes)
-                
-                # 🚀 CRYPTOGRAPHIC HASH CHAIN ASSIGNMENT: Computes the unified SHA-256 fingerprint pass natively!
-                computed_validation = hmac.new(existentialCoreCheckMagic, active_run_payload.encode('utf-8'), hashlib.sha256).hexdigest()
+                # 🚀 ZERO HARDCODING ARCHITECTURE: Matrix path determined purely by bitmask state!
+                if (bitmask & 64) and not (bitmask & 128):
+                    # Flag 64 is active, Flag 128 is inactive: Structured milestone layout snap
+                    # Collect the raw components straight from the parent runtime environment dynamically
+                    dynamic_components = []
+                    for r_meta in sorted_rules:
+                        r_name, r_short, r_hash, r_sign, r_bitmask, r_seq = r_meta
+                        if (r_bitmask & 1) and not (r_bitmask & 64) and (r_seq < sequence):
+                            struct_var_name = r_hash.replace("Hash", "_structure")
+                            if struct_var_name in locals():
+                                dynamic_components.append(locals()[struct_var_name])
+                            elif struct_var_name in globals():
+                                dynamic_components.append(globals()[struct_var_name])
+                    
+                    active_run_payload = "||".join(dynamic_components)
+                    computed_validation = hmac.new(existentialCoreCheckMagic, active_run_payload.encode('utf-8'), hashlib.sha256).hexdigest()
+                else:
+                    # Flag 128 is active (Sequence 9 / CoreChain / 255): Execute continuous rolling hash stream pass
+                    active_run_payload = "".join(preceding_hashes)
+                    computed_validation = hmac.new(existentialCoreCheckMagic, active_run_payload.encode('utf-8'), hashlib.sha256).hexdigest()
                 
                 # Output the full trace elements natively matching your layout requirements
                 for log_line in chain_metadata_log:
