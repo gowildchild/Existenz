@@ -27,7 +27,7 @@
     "dist/existentialCoreThreat.xml": "e43eca47d9ba2a02eb6f0747ce5c4f4e166608eaf2181f7cfab6a360a3b99574",
     "dist/existentialCoreThreat.yml": "7aadc0b45b9aa6115fdaaeea08d2ea1c0bf7aa54fc4cc1509933f56fd01c069e",
     "dist/master/existentialCore.py": "c8f98861ea4fb7cfce50d5f12d82bb8b7d011a4b4a346df069fc2c91b66d8583",
-    "dist/master/existentialCoreSignatures.py": "2b0537ed9d504ac2acabf3fe141b0949a3f4a6d159236299c820070f2718f95c",
+    "dist/master/existentialCoreSignatures.py": "5b0434a4c11b4300e67107ef1f0133fdd821c42fe00496205e760cb1e3c22033",
     "dist/master/existentialCoreThreat.py": "d7f3c3c502ccf3573a678393422e10591462378b9c76fd9f4f70e200b7530d73",
     "dist/master/existentialHumanCore.py": "548861611c8c5dde2af463bed1b00c4e9b1eaf601d4a845221eb80ec2f240256",
     "dist/perl/existentialCoreCheck.pm": "db1033b78ef08e493ace98d7e1c4dd5170f0720a83c785b1fee3edb3ec54b9d4",
@@ -57,7 +57,7 @@
     "existenzStruct/master/existentialHumanCore.py": "2decc0bb05b4d4810320443604373bce2c242dfaf2bb7da7cbc3dc19ac61f7f4",
     "existenzStruct/tools/boot_guard.py": "7e9f3d546a6da7c4696c379fce80d9b012c20f8707be0ebd2efe118c9095addc",
     "existenzStruct/tools/check_integrity.py": "26bb01e972b866f8c89e0a97c84f2892a8d5bf69019a1d1ca97585d4dac3ec63",
-    "existenzStruct/tools/core_build.py": "120f51e2eba7431f13025737eb6538f801241542c9782ca3e7ff8aeb690f7d0c",
+    "existenzStruct/tools/core_build.py": "85e3cf778bd79ebb055d83b2522fcd609c52019989352e9d2f5f4689effeffa7",
     "existenzStruct/tools/core_debug.py": "957531a87f16fcba6445e4d022abd179c732c94e588c5374915f60824dc7f8d6",
     "existenzStruct/tools/core_manifest.py": "c2081d60af57ffd6317ec580ab01eb7b75e459ffab7bc213f693fdbb886c856a",
     "existenzStruct/tools/core_telemetry.py": "f68be7b3e8d2336f1bbea65f69da13d6bef422d381b2a2f2657fc43fbf6c24cc",
@@ -71,9 +71,9 @@
     "Platform": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"
   },
   "signatures": {
-    "Developer": "48520a33c068ea00df6afb7b0a7acd3789b995b57262ce45406914f8be121730d6d6071855308bf17d9b9ba82344f113ce794381c24d4ed40c4b933848d6620c",
-    "Personal": "f3cf425a195d34ae66347e41b27b8cac6277a22d852d1ae08a4e65eb0c528e3fd37ccb0bfa74cd6c87cccb1a11a79269faa8ff28e3fda9db39cac40c6cdebe0d",
-    "Platform": "929f710ee43ade252d1c61b693156c2e68ecf7839a5fa2a85ba25a368947496d6e919ac187c025a613ba3caa78f72eb2e79b0134c5cabd3aba086aca95988c0e"
+    "Developer": "bfcc46c9d45d5e93716274cda309176c1bf9b83d608a74f651db306127ba0fac308a4c9c74d8cc0cbfaf8ff6177a81599d5df03ad35b758dde4d7ffe0885aa00",
+    "Personal": "8a914a2e73fc25dc288d9190c3be37a02bb26fd260c942ef8d897f06b112a15028daaf416e160ffae8be2d7de6c2fc2ba8bf580079296fce7324b0b31c568a0d",
+    "Platform": "4fc7db93efd818cd126b953f8b149c4890e6e16dca1ae97f1aa9492dc78e425a25e3f261ea3b28695f04fb05ba9cad15da525749535aced3b487cd301aecfe0b"
   },
   "version": "v0.76k"
 }
