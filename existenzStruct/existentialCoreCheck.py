@@ -3,7 +3,7 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
-# v0.76g
+# v0.76.13
 # Veritas - Public Security Guardian - final Check.
 import hmac
 import hashlib
@@ -17,10 +17,10 @@ from existenzStruct.master.existentialCoreThreat import (
 
 # CRITICAL FILE-GLOBAL ARCHITECTURAL ANCHORS
 # ==========================================================================
-existentialCoreCheckVersion    = "v0.76j"
+existentialCoreCheckVersion    = "v0.76.13"
 existentialCoreCheckMagic      = b"EX25IMMUT32CORE7617"
-existentialCoreCheckSign       = 0xb36d1e03
-existentialCoreCheckSignature  = "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85"
+existentialCoreCheckSign       = 0x8b4defb0
+existentialCoreCheckSignature  = "8b4defb0aaf1eb9bcd7b382cf0b4db0aa093eb1b84b8e09d3cf0f73d5b2d37b6"
 
 class existentialCoreCheck:
     """
@@ -111,7 +111,7 @@ class existentialCoreCheck:
         sign_immutable       = "57c413f8531731df0d2f09a260ea36c7e49269348b553fdeeaa2dd11e7bc4bb9"
         sign_structure       = "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
         #sign_canary          = "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
-        sign_corechain       = "7c165b32ba3df6d44968d18641470c01eca1e72b3de9b4bc871ef494dbd42c35a"
+        sign_corechain       = "b53416022fc024be48bdd3e35b0474afb249ca4a4a8e5cd83a9ea4539b914573"
 
         if (active_register_state & existentialCore.CANARY_S_COLLIDE) != 0:
             return False
