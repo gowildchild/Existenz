@@ -648,10 +648,11 @@ def main():
     if pub_ver != int_ver:
         pub_ver = existentialCoreVersion + "/" + int_ver
     else:
-        pub_ver = "[" + int_ver + "]"
+        pub_ver = int_ver
 
     if args.step in ["check","verify"]:
-        print("[*] Verifying integrity of existentz cryptographic structures... ") 
+        print("[*] Verifying integrity of existentz cryptographic structures... ")
+        existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
     
     print("┌─────────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
     print(f"│ EXISTENZ CORE BUILDER {pub_ver}                   by Gunther Voet │")
@@ -838,7 +839,6 @@ def main():
             if is_terminal_anchor:
                 check_seq = sequence - 1
                 while check_seq >= 0:
-                    # 🚀 GAP-RESILIENT WALKER: Finds the next active row in the ledger sequence, even if there are integer gaps!
                     cause_row = next((row for row in sorted_rules if row[5] == check_seq), None)
                     
                     if not cause_row:
@@ -846,9 +846,10 @@ def main():
                         continue
                         
                     c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause_row
+                    if not (c_bitmask & 1):
+                        break
                     resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
 
-                    # Evaluate asymmetric signature masking layers using your exact bit rules
                     if c_bitmask & 8 or c_bitmask & 16 or c_bitmask & 32:
                         row_payload = existentialCoreCheckMagic + resolved_cause_hash.encode('utf-8')
                         row_digest = hmac.new(existentialCoreCheckMagic, row_payload, hashlib.sha256).hexdigest()
@@ -858,12 +859,6 @@ def main():
                         preceding_hashes.insert(0, resolved_cause_hash)
                         chain_metadata_log.insert(0, f" [*] Seq {c_seq}+HASH  | Node: '{c_name}' (Bitmask: {hex(c_bitmask)})")
 
-                    # 🚀 CHAIN SEPARATION PROTECTION: If the processed row is not part of the active chain (bitmask & 1 == 0),
-                    # we have hit the literal starting boundary where the run began. Stop tracing immediately!
-                    if not (c_bitmask & 1):
-                        break
-
-                    # Step backward past the node we just processed to continue the look-back run
                     check_seq -= 1
 
             # Validate the combined look-back chain series if this node is the true terminal anchor point
@@ -1037,7 +1032,6 @@ def main():
                 print(f"[-] GENERATION ERROR: Exporter layer broken.", file=sys.stderr)
                 raise ex
 
-        # Phase B: The Merge Core (Fires for both explicit merges and compilation post-processing)
         if args.run == "WET":
             try:
                 dist_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist"))
@@ -1063,7 +1057,6 @@ def main():
                 print(f"[-] Splicer Pipeline Error: {ex}", file=sys.stderr)
                 sys.exit(1)
 
-        # Phase C: Second-Pass Cryptographic Verification (Runs ONLY during compile completions)
         if args.step == "compile":
             print("[*] Finalizing compilation pipeline with terminal hash-chain audits...")
             
@@ -1076,7 +1069,6 @@ def main():
                     live_computed_hashes["existentialCores"] = cores_structure_signature
                     live_session_hashes["existentialCoresHash"] = cores_structure_signature
 
-            # Recalculate terminal master chain envelope using the updated Cores signature
             chain_payload_string = (
                 existentialCoreCheckMagic.decode('utf-8', errors='ignore') +
                 core_structure_signature +
@@ -1087,6 +1079,7 @@ def main():
             chain_structures_signature = hmac.new(existentialCoreCheckMagic, chain_payload_string.encode('utf-8'), hashlib.sha256).hexdigest()
             live_computed_hashes["existentialCoreChain"] = chain_structures_signature
             live_session_hashes["existentialCoreChainHash"] = chain_structures_signature
+
 
             # 2. Complete terminal evaluation of look-back links and Order 9 Master Envelope rules
             for layer_meta in sorted_rules:
