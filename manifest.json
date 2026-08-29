@@ -19,7 +19,7 @@
     "dist/existentialCore.py": "9ec7aab0846bdc9feb8e0cc314b33945256d18f881ced7b0867254c9b5e41fd3",
     "dist/existentialCore.xml": "a19affd15f368257bb898af174e59eb635bccca6f31a797c0d302a3fa708230b",
     "dist/existentialCore.yml": "3e0b0dee690396f91f9d2e791d549a2caa3956e9dda32154e193f78f0944c494",
-    "dist/existentialCoreSignatures.py": "38b0719fd658129ea998f3658e89e1e444f314ee740fc7b1239e18707a65743e",
+    "dist/existentialCoreSignatures.py": "0d4cee4aa29402c00758474a1a02662c20ff63ab57e74c0fdb8b4f39d1fd56c0",
     "dist/existentialCoreThreat.csv": "ac428eecbb6396f014f6d936219f2eaef991b227b915777ab2df4b02d4b1159d",
     "dist/existentialCoreThreat.json": "7c5706da65443df9e5c41c28412861f7d897205198ffe7c81fe945dfe59ec7b5",
     "dist/existentialCoreThreat.md": "606f5a7386d48fc6b434b34245e94879a0d7fb75dc2636b3c8f7bf3f3f5a42bf",
@@ -52,7 +52,7 @@
     "dist/rust/single/existentialCoreThreat.rs": "1cf583714ca1d612ce92a249af9c90ec0797a90ffe406ed7396615c8ab4c266d",
     "existenzStruct/master/README.md": "61d5031b505593421783730470f308b761afcb7f88006a6f19bd4c7e79bbcc56",
     "existenzStruct/master/existentialCore.py": "9ec7aab0846bdc9feb8e0cc314b33945256d18f881ced7b0867254c9b5e41fd3",
-    "existenzStruct/master/existentialCoreSignatures.py": "38b0719fd658129ea998f3658e89e1e444f314ee740fc7b1239e18707a65743e",
+    "existenzStruct/master/existentialCoreSignatures.py": "0d4cee4aa29402c00758474a1a02662c20ff63ab57e74c0fdb8b4f39d1fd56c0",
     "existenzStruct/master/existentialCoreThreat.py": "03b089c5fcf5358433ecddf913c5e7fe29938ab14451dc11f9f76842ba05f0ab",
     "existenzStruct/master/existentialHumanCore.py": "2decc0bb05b4d4810320443604373bce2c242dfaf2bb7da7cbc3dc19ac61f7f4",
     "existenzStruct/tools/boot_guard.py": "7e9f3d546a6da7c4696c379fce80d9b012c20f8707be0ebd2efe118c9095addc",
@@ -75,5 +75,5 @@
     "Personal": "c538b374afa8aedc67b33db87d7d661582aedf05931b88cd57238bdc605a58acc85eabe73552c34e485e403005295ee49482aded62779b51e415543d8ec8a000",
     "Platform": "8992bf1e71cb09216978f0a008efefb93a934990fe6e02f1f46704d9afe1425d418fe698f45dd62225d70159bd83efe076d2e62f4df324b101c999406958c707"
   },
-  "version": "v0.76l"
+  "version": "v0.76.13"
 }
