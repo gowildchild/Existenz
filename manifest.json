@@ -27,7 +27,7 @@
     "dist/existentialCoreThreat.xml": "e43eca47d9ba2a02eb6f0747ce5c4f4e166608eaf2181f7cfab6a360a3b99574",
     "dist/existentialCoreThreat.yml": "7aadc0b45b9aa6115fdaaeea08d2ea1c0bf7aa54fc4cc1509933f56fd01c069e",
     "dist/master/existentialCore.py": "c8f98861ea4fb7cfce50d5f12d82bb8b7d011a4b4a346df069fc2c91b66d8583",
-    "dist/master/existentialCoreSignatures.py": "5b0434a4c11b4300e67107ef1f0133fdd821c42fe00496205e760cb1e3c22033",
+    "dist/master/existentialCoreSignatures.py": "2b0537ed9d504ac2acabf3fe141b0949a3f4a6d159236299c820070f2718f95c",
     "dist/master/existentialCoreThreat.py": "d7f3c3c502ccf3573a678393422e10591462378b9c76fd9f4f70e200b7530d73",
     "dist/master/existentialHumanCore.py": "548861611c8c5dde2af463bed1b00c4e9b1eaf601d4a845221eb80ec2f240256",
     "dist/perl/existentialCoreCheck.pm": "db1033b78ef08e493ace98d7e1c4dd5170f0720a83c785b1fee3edb3ec54b9d4",
@@ -71,9 +71,9 @@
     "Platform": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"
   },
   "signatures": {
-    "Developer": "bfcc46c9d45d5e93716274cda309176c1bf9b83d608a74f651db306127ba0fac308a4c9c74d8cc0cbfaf8ff6177a81599d5df03ad35b758dde4d7ffe0885aa00",
-    "Personal": "8a914a2e73fc25dc288d9190c3be37a02bb26fd260c942ef8d897f06b112a15028daaf416e160ffae8be2d7de6c2fc2ba8bf580079296fce7324b0b31c568a0d",
-    "Platform": "4fc7db93efd818cd126b953f8b149c4890e6e16dca1ae97f1aa9492dc78e425a25e3f261ea3b28695f04fb05ba9cad15da525749535aced3b487cd301aecfe0b"
+    "Developer": "47282654d0a60587d13920f65946f2ba01ebb5828adf7545e58411b34920928cee5e8e8d7c22bc695a501390865b9d19bfc6192b5019cdcfa88e5bb94d586f03",
+    "Personal": "c538b374afa8aedc67b33db87d7d661582aedf05931b88cd57238bdc605a58acc85eabe73552c34e485e403005295ee49482aded62779b51e415543d8ec8a000",
+    "Platform": "8992bf1e71cb09216978f0a008efefb93a934990fe6e02f1f46704d9afe1425d418fe698f45dd62225d70159bd83efe076d2e62f4df324b101c999406958c707"
   },
   "version": "v0.76k"
 }
