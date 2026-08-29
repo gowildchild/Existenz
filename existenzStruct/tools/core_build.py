@@ -846,6 +846,7 @@ def main():
                         continue
                         
                     c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause_row
+
                     if not (c_bitmask & 1):
                         break
                     resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
