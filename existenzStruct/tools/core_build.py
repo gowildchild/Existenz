@@ -233,8 +233,7 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
                 expr_map[k] = f"0x{v:08x}"
         max_ex_len = max(len(ex) for ex in expr_map.values())
 
-        # Construct flat root structure lines matching build_aligned_json_block output loops
-        def compile_flat_json_lines(ordered_layout: dict):
+        def compile_nested_json_lines(ordered_layout: dict):
             lines_buffer = []
             for k, v in ordered_layout.items():
                 raw_cmnt = cmnts.get(k, "")
@@ -245,39 +244,43 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
                 v_pad = f'{v},'.ljust(max_v_len + 2)
                 ex_pad = f'"{expr_map[k]}",'.ljust(max_ex_len + 4)
                 t_pad = f'"{struct_type}",'.ljust(14)
-                lines_buffer.append(f'  {k_pad}{{\"value\": {v_pad}\"expr\": {ex_pad}\"type\": {t_pad}\"comment\": \"{clean_cmnt}\"}}')
-            return lines_buffer
+                lines_buffer.append(f'        {k_pad}{{\"value\": {v_pad}\"expr\": {ex_pad}\"type\": {t_pad}\"comment\": \"{clean_cmnt}\"}}')
+            return ",\n".join(lines_buffer)
 
-        # Compile matching entries back-to-back into an active tracking memory array
         json_lines_master = ["{"]
         
-        # Append core and threat entries cleanly as a flattened block with valid list slicing delimiters
-        combined_property_lines = compile_flat_json_lines(core_ord) + compile_flat_json_lines(threat_ord)
-        json_lines_master.append(",\n".join(combined_property_lines) + ",")
+        json_lines_master.append('    "existentialCore": {')
+        json_lines_master.append(compile_nested_json_lines(core_ord))
+        json_lines_master.append("    },")
+        
+        json_lines_master.append('    "existentialCoreThreat": {')
+        json_lines_master.append(compile_nested_json_lines(threat_ord))
+        json_lines_master.append("    },")
         
         # Inject structural legal reference metadata maps
-        json_lines_master.append('  "existentialCoreThreatLegal": {')
+        json_lines_master.append('    "existentialCoreThreatLegal": {')
         max_l_k = max(len(str(lk)) for lk in legal_ord.keys())
-        legal_lines = ",\n".join(f'    "{lk}":'.ljust(max_l_k + 11) + f'"{lv}"' for lk, lv in legal_ord.items())
-        json_lines_master.append(legal_lines + "\n  },")
+        legal_lines = ",\n".join(f'        "{lk}":'.ljust(max_l_k + 11) + f'"{lv}"' for lk, lv in legal_ord.items())
+        json_lines_master.append(legal_lines + "\n    },")
         
         # Inject structural vacuum reference metadata maps
         if vacuum_ord:
-            json_lines_master.append('  "existentialCoreThreatShadowVacuum": {')
+            json_lines_master.append('    "existentialCoreThreatShadowVacuum": {')
             max_v_k = max(len(str(vk)) for vk in vacuum_ord.keys())
-            vacuum_lines = ",\n".join(f'    "{vk}":'.ljust(max_v_k + 11) + f'"{vv}"' for vk, vv in vacuum_ord.items())
-            json_lines_master.append(vacuum_lines + "\n  },")
+            vacuum_lines = ",\n".join(f'        "{vk}":'.ljust(max_v_k + 11) + f'"{vv}"' for vk, vv in vacuum_ord.items())
+            json_lines_master.append(vacuum_lines + "\n    },")
 
         # Terminate file footprint layout using your dynamic threat signature variable
-        json_lines_master.append(f'  "existentialCoreThreatSignature": "{sigs["existentialCoreThreat"]}"\n}}')
+        json_lines_master.append(f'    "existentialCoreThreatSignature": "{sigs["existentialCoreThreat"]}"\n}}')
         raw_final_payload_string = "\n".join(json_lines_master)
 
-        # Establish physical repository path configurations
+        # 🚀 RE-ALIGNED PATH CODES: Correctly traveling backward past the dist directory cache
         master_folder_path = os.path.abspath(os.path.join(dist_dir, "..", "existenzStruct", "master"))
         os.makedirs(master_folder_path, exist_ok=True)
         
         master_catalog_destination = os.path.join(master_folder_path, "existentialCores.json")
         distribution_cache_destination = os.path.join(dist_dir, "existentialCores.json")
+        
         dist_master_destination = os.path.join(dist_dir, "master", "existentialCores.json")
         os.makedirs(os.path.dirname(dist_master_destination), exist_ok=True)
 
