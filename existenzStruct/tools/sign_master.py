@@ -20,7 +20,8 @@ from cryptography.hazmat.primitives import serialization
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
-TARGET_DIST_DIR = os.path.join(REPO_ROOT, "dist", "master")
+#TARGET_DIST_DIR = os.path.join(REPO_ROOT, "dist", "master")
+TARGET_DIST_DIR = os.path.join(REPO_ROOT, "existenzStruct", "master")
 
 CURRENT_TOOL_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_TOOL_DIR not in sys.path:
