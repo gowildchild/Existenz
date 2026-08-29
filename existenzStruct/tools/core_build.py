@@ -633,9 +633,9 @@ def main():
     )
     parser.add_argument(
         "-step", "--step",
-        choices=["verify","check", "sign", "compile"],
+        choices=["verify","check", "sign", "compile","merge"],
         required=True,
-        help="Specify the pipeline stage to run. 'check'=audit, 'sign'=matrix mapping, 'compile'=cross-compile."
+        help="Run Pipeline Stage. 'check'=audit, 'sign'=matrix mapping, 'compile'=cross-compile, 'merge'=create cores."
     )
     parser.add_argument(
         "-r", "--run", 
@@ -698,9 +698,9 @@ def main():
     cores_structure_signature = ""
     cores_structure_sign = ""
     if os.path.exists(cores_master_path):
-    with open(cores_master_path, "rb") as f:
-        cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
-        cores_structure_sign = cores_structure_signature[:8]
+        with open(cores_master_path, "rb") as f:
+            cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
+            cores_structure_sign = cores_structure_signature[:8]
     else:
         cores_structure_signature = "existentialCoreSignaturesCores"
     
@@ -806,6 +806,8 @@ def main():
         print(f"  │    {vl_ctv}                                          └─► Signature: \"{threat_shadow_structure_signature}\"")        
         print(f"  │    {conn_cts} [SQ {sq_cts}{ch_cts}{bm_cts.ljust(4)}] existentialCoreThreat.py  ─┬─► Sign: 0x{threat_structures_sign} {ch_cts} {tg_cts}")
         print(f"  │                                                 └─► Signature: \"{threat_structures_signature}\"")
+        print(f"  │    {conn_ctc} [SQ {sq_ctc}{ch_ctc}{bm_ctc.ljust(4)}] existentialCores.json   ─┬─► Sign: 0x{cores_structure_sign} {ch_ctc} {tg_ctc}")
+        print(f"  │                                                 └─► Signature: \"{cores_structure_signature}\"")
         print("─ │ ─", end="")
         print("─" * 130)
         print(f"  └── [SQ {sq_ch} : {bm_ch.ljust(4)}] existen...CoreSignatures.py   ──┬─► Sign: 0x{chain_structures_sign} | {tg_ch}")
@@ -824,9 +826,8 @@ def main():
             "existentialCoreThreatLegalHash": threat_legal_structure_signature,
             "existentialCoreThreatShadowVacuumHash": threat_shadow_structure_signature,
             "existentialCoreThreatHash": threat_structures_signature,
-            "existentialCoresHash": cores_structure_signature,            
+            "existentialCoresHash": cores_structure_signature,
             "existentialCoreChainHash": chain_structures_signature
-
         }
 
 
@@ -909,41 +910,30 @@ def main():
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
 
         pub_keys_dict = {name: key_str for name, key_str in existentialCoreSignatures.existentialPublicKeys}
-
-        # Dynamic Bitmask and Sequence Extraction: Track required key bits and build progression chain
-        active_required_identities = set()
-        
-        # SELF-CALCULATING CONTIGUOUS CHAIN: Evaluate strict sequential follow-ups
+        active_required_identities = set()        
         running_chain_sum = 0
         expected_next_sequence = 1
         sequence_chain_accumulator = 0
 
-        # ENFORCE STRICT MATRIX ORDER SCAN BY SEQUENCE INDEX 5
         for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if name == "Magic":
                 continue
-            
-            # If the number strictly follows up consecutively, add it to the running cause-sum
             if sequence == expected_next_sequence:
                 running_chain_sum += sequence
                 expected_next_sequence += 1
-            # If it lands exactly on the accumulated sum of the previous consecutive chain, it is the effect
+
             elif sequence == running_chain_sum:
                 sequence_chain_accumulator = sequence
 
-            # Map bitwise configuration flags directly to the cryptographic key handles
             if bitmask & 8:   active_required_identities.add("Platform")
             if bitmask & 16:  active_required_identities.add("Developer")
             if bitmask & 32:  active_required_identities.add("Personal")
 
-        # Initialize signature payload base anchoring constant
         combined_salt_payload = bytearray(existentialCoreCheckMagic)
         
-        # Lock the dynamic self-calculating chain progression value straight into the foundational salt stream
         combined_salt_payload.extend(str(sequence_chain_accumulator).encode('utf-8'))
 
-        # Enforce key evaluation block strictly following the bitmask configuration criteria
         for identity in ["Platform", "Developer", "Personal"]:
             if identity in active_required_identities and identity in pub_keys_dict:
                 key_body = pub_keys_dict[identity].split()
@@ -995,13 +985,10 @@ def main():
 
         if os.path.exists(local_cfg_path):
             try:
-                from existenzStruct.tools.sign_master import load_ssh_private_key
-                
+                from existenzStruct.tools.sign_master import load_ssh_private_key                
                 with open(local_cfg_path, "r", encoding="utf-8") as cf:
                     cfg = json.load(cf)
-                
                 private_paths = cfg.get("private_key_paths", {})
-                
                 for identity in ["Platform", "Developer", "Personal"]:
                     if identity in active_required_identities:
                         key_path = private_paths.get(identity)
@@ -1019,152 +1006,130 @@ def main():
         if args.step == "sign":
             sys.exit(0)
 
-    elif args.step == "compile":
-        print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
+    elif args.step in ["compile", "merge"]:
+        # 🚀 ISOLATED EXECUTION LAYER: Signature check loops and exporters run ONLY under the compile timeline
+        if args.step == "compile":
+            print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
 
-        live_computed_hashes = {
-            "existentialCore": core_structure_signature,
-            "existentialCoreThreatRoot": threat_structure_signature,
-            "existentialCoreThreatLegal": threat_legal_structure_signature,
-            "existentialCoreThreatShadowVacuum": threat_shadow_structure_signature,
-            "existentialCoreThreat": threat_structures_signature,
-            "existentialCoreCheck": check_structures_signature,
-            "existentialCores": cores_structure_signature,
-            "existentialCoreChain": chain_structures_signature
-        }
+            live_computed_hashes = {
+                "existentialCore": core_structure_signature,
+                "existentialCoreThreatRoot": threat_structure_signature,
+                "existentialCoreThreatLegal": threat_legal_structure_signature,
+                "existentialCoreThreatShadowVacuum": threat_shadow_structure_signature,
+                "existentialCoreThreat": threat_structures_signature,
+                "existentialCoreCheck": check_structures_signature,
+                "existentialCores": cores_structure_signature,
+                "existentialCoreChain": chain_structures_signature
+            }
 
-        key_translation_map = {
-            "Magic": "Magic",
-            "Core": "existentialCore",
-            "CoreCheck": "existentialCoreCheck",
-            "CoreThreatStruct": "existentialCoreThreatRoot",
-            "CoreThreatLegal": "existentialCoreThreatLegal",
-            "CoreThreatShadowVacuum": "existentialCoreThreatShadowVacuum",
-            "CoreThreat": "existentialCoreThreat",
-            "Cores": "existentialCores",            
-            "CoreChain": "existentialCoreChain",           
-        }
+            key_translation_map = {
+                "Magic": "Magic",
+                "Core": "existentialCore",
+                "CoreCheck": "existentialCoreCheck",
+                "CoreThreatStruct": "existentialCoreThreatRoot",
+                "CoreThreatLegal": "existentialCoreThreatLegal",
+                "CoreThreatShadowVacuum": "existentialCoreThreatShadowVacuum",
+                "CoreThreat": "existentialCoreThreat",
+                "Cores": "existentialCores",            
+                "CoreChain": "existentialCoreChain",           
+            }
 
-        running_chain_sum = 0
-        expected_next_sequence = 2
-        sequence_chain_accumulator = 0
+            running_chain_sum = 0
+            expected_next_sequence = 2
+            sequence_chain_accumulator = 0
 
-        for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
-            name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
-            if name == "Magic": 
-                continue
+            for layer_meta in sorted(existentialCoreSignatures.existentialCoreSigned, key=lambda x: x):
+                name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+                if name == "Magic": 
+                    continue
 
-            if sequence == expected_next_sequence:
-                running_chain_sum += sequence
-                expected_next_sequence += 1
-            elif sequence == running_chain_sum:
-                sequence_chain_accumulator = sequence
+                if sequence == expected_next_sequence:
+                    running_chain_sum += sequence
+                    expected_next_sequence += 1
+                elif sequence == running_chain_sum:
+                    sequence_chain_accumulator = sequence
 
-            long_name = key_translation_map.get(name, name)
-            current_live_hash = live_computed_hashes.get(long_name, "")
+                long_name = key_translation_map.get(name, name)
+                current_live_hash = live_computed_hashes.get(long_name, "")
+                
+                target_frozen_sig = getattr(existentialCoreSignatures, long_name, "") if hasattr(existentialCoreSignatures, long_name) else ""
+
+                if current_live_hash and target_frozen_sig:
+                    if not hmac.compare_digest(current_live_hash, target_frozen_sig):
+                        print(f"\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
+                        print(f"[-] Unsigned modifications exposed: '{name}'", file=sys.stderr)
+                        print(f"[-] Live Code Hash:        {current_live_hash}", file=sys.stderr)
+                        print(f"[-] Last Signed Master Hash: {target_frozen_sig}", file=sys.stderr)
+                        print(f"[-] Bitmask Requirement:    {hex(bitmask)} (Requires private key authorization sync)", file=sys.stderr)
+                        print("[-] Compilation terminated safely. No distribution assets were modified.", file=sys.stderr)
+                        sys.exit(1)
+
+            print("[+] Success: All hashes match private key signature records.")
+            print("[*] Validating live framework signatures...")
             
-            target_frozen_sig = getattr(existentialCoreSignatures, long_name, "") if hasattr(existentialCoreSignatures, long_name) else ""
+            current_legal_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items(), key=lambda i: i))
+            current_legal_payload = current_legal_structure.encode('utf-8')
+            current_legal_hash = hmac.new(existentialCoreCheckMagic, current_legal_payload, hashlib.sha256).hexdigest()
 
-            if current_live_hash and target_frozen_sig:
-                if not hmac.compare_digest(current_live_hash, target_frozen_sig):
-                    print(f"\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
-                    print(f"[-] Unsigned modifications exposed: '{name}'", file=sys.stderr)
-                    print(f"[-] Live Code Hash:        {current_live_hash}", file=sys.stderr)
-                    print(f"[-] Last Signed Master Hash: {target_frozen_sig}", file=sys.stderr)
-                    print(f"[-] Bitmask Requirement:    {hex(bitmask)} (Requires private key authorization sync)", file=sys.stderr)
-                    print("[-] Compilation terminated safely. No distribution assets were modified.", file=sys.stderr)
-                    sys.exit(1)
+            if not hmac.compare_digest(current_legal_hash, existentialCoreSignatures.existentialCoreThreatLegal):
+                print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
+                print("[-] Unsigned structural variations detected inside Legal Map!", file=sys.stderr)
+                print(f"[-] Current Code Hash  : {current_legal_hash}", file=sys.stderr)
+                print(f"[-] Stored Signed Hash : {existentialCoreSignatures.existentialCoreThreatLegal}", file=sys.stderr)
+                print("[-] Compilation halted. Please re-run with '--step sign' using private keys first.", file=sys.stderr)
+                sys.exit(1)
 
-        print("[+] Success: All hashes match private key signature records.")
-        print("[*] Validating live framework signatures...")
-        
-        current_legal_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items(), key=lambda i: i))
-        current_legal_payload = current_legal_structure.encode('utf-8')
-        current_legal_hash = hmac.new(existentialCoreCheckMagic, current_legal_payload, hashlib.sha256).hexdigest()
+            current_vacuum_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i))
+            current_vacuum_payload = current_vacuum_structure.encode('utf-8')
+            current_vacuum_hash = hmac.new(existentialCoreCheckMagic, current_vacuum_structure.encode('utf-8'), hashlib.sha256).hexdigest()
 
-        if not hmac.compare_digest(current_legal_hash, existentialCoreSignatures.existentialCoreThreatLegal):
-            print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
-            print("[-] Unsigned structural variations detected inside Legal Map!", file=sys.stderr)
-            print(f"[-] Current Code Hash  : {current_legal_hash}", file=sys.stderr)
-            print(f"[-] Stored Signed Hash : {existentialCoreSignatures.existentialCoreThreatLegal}", file=sys.stderr)
-            print("[-] Compilation halted. Please re-run with '--step sign' using private keys first.", file=sys.stderr)
-            sys.exit(1)
+            target_vacuum_sig = getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET")
 
-        current_vacuum_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i))
-        current_vacuum_payload = current_vacuum_structure.encode('utf-8')
-        current_vacuum_hash = hmac.new(existentialCoreCheckMagic, current_vacuum_structure.encode('utf-8'), hashlib.sha256).hexdigest()
+            if not hmac.compare_digest(current_vacuum_hash, target_vacuum_sig):
+                print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
+                print("[-] Unsigned variations detected inside Shadow Vacuum progression map!", file=sys.stderr)
+                print(f"[-] Current Code Hash  : {current_vacuum_hash}", file=sys.stderr)
+                print(f"[-] Stored Signed Hash : {target_vacuum_sig}", file=sys.stderr)
+                print("[-] Compilation halted. Please re-run with '--step sign' using your keys first.", file=sys.stderr)
+                sys.exit(1)
 
-        target_vacuum_sig = getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET")
+            if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
+                print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
+                print("[-] Core structure mismatch with private signatures.", file=sys.stderr)
+                sys.exit(1)
+            
+            global_sigs_map = {
+                "existentialCore": core_structure_signature,
+                "existentialCoreThreatRoot": threat_structure_signature,
+                "existentialCoreThreatLegal": threat_legal_structure_signature,
+                "existentialCoreThreatShadowVacuum": threat_shadow_structure_signature,
+                "existentialCoreThreat": threat_structures_signature,
+                "existentialCoreCheck": check_structures_signature,
+                "existentialCores": cores_structure_signature,
+                "existentialCoreCheckSignatures": getattr(existentialCoreSignatures, "existentialCoreCheckSignatures", "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484")
+            }
+            
+            print("──┬ [ verified signatures blueprint ] ────────────────────────────")
+            for signature_key, digest_hash in global_sigs_map.items():
+                if signature_key != "existentialCoreCheckSignatures":
+                    print(f"  ├── {signature_key.ljust(26)} = \"{digest_hash}\"")
+            print("──┴───────────────────────────────────────────────────────────────")
 
-        if not hmac.compare_digest(current_vacuum_hash, target_vacuum_sig):
-            print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
-            print("[-] Unsigned variations detected inside Shadow Vacuum progression map!", file=sys.stderr)
-            print(f"[-] Current Code Hash  : {current_vacuum_hash}", file=sys.stderr)
-            print(f"[-] Stored Signed Hash : {target_vacuum_sig}", file=sys.stderr)
-            print("[-] Compilation halted. Please re-run with '--step sign' using your keys first.", file=sys.stderr)
-            sys.exit(1)
-
-        if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
-            print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
-            print("[-] Core structure mismatch with private signatures.", file=sys.stderr)
-            sys.exit(1)
-        
-        global_sigs_map = {
-            "existentialCore": core_structure_signature,
-            "existentialCoreThreatRoot": threat_structure_signature,
-            "existentialCoreThreatLegal": threat_legal_structure_signature,
-            "existentialCoreThreatShadowVacuum": threat_shadow_structure_signature,
-            "existentialCoreThreat": threat_structures_signature,
-            "existentialCoreCheck": check_structures_signature,
-            "existentialCores": cores_structure_signature,
-            "existentialCoreCheckSignatures": getattr(existentialCoreSignatures, "existentialCoreCheckSignatures", "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484")
-        }
-        
-        print("──┬ [ verified signatures blueprint ] ────────────────────────────")
-        for signature_key, digest_hash in global_sigs_map.items():
-            if signature_key != "existentialCoreCheckSignatures":
-                print(f"  ├── {signature_key.ljust(26)} = \"{digest_hash}\"")
-        print("──┴───────────────────────────────────────────────────────────────")
-
-        print(f"[*] Synchronizing updated system layout into distribution vaults...")
-        try:
-            perform_cross_language_exports(global_sigs_map, args.run.lower())
-        except Exception as ex:
-            print(f"[-] GENERATION ERROR: Compilation layer broken during matrix step execution track.", file=sys.stderr)
-            raise ex
-
-        print("[+] SUCCESS: Structural session processing completed cleanly!")
-
-        print("[*] Running Stage: [AUTO-MERGE] Consolidating distributed json schemas...")
-        if args.run == "WET":
+            print(f"[*] Synchronizing updated system layout into distribution vaults...")
             try:
-                dist_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist"))
-                core_p = os.path.join(dist_dir, "existentialCore.json")
-                threat_p = os.path.join(dist_dir, "existentialCoreThreat.json")
-                out_p = os.path.join(dist_dir, "existentialCores.json")
-
-                if os.path.exists(core_p) and os.path.exists(threat_p):
-                    with open(core_p, "r", encoding="utf-8") as f:
-                        c_json = json.load(f)
-                    with open(threat_p, "r", encoding="utf-8") as f:
-                        t_json = json.load(f)
-
-                    # Seamless object spread merge across schemas
-                    master_catalog = {**c_json, **t_json}
-
-                    with open(out_p, "w", encoding="utf-8") as f:
-                        json.dump(master_catalog, f, indent=2)
-                    print("  [+] Automated Splicer: Master catalog unified at dist/existentialCores.json")
+                perform_cross_language_exports(global_sigs_map, args.run.lower())
             except Exception as ex:
-                print(f"  [-] Automated Splicer Fault: {ex}", file=sys.stderr)
-        else:
-            print("  [INFO] Bypassing filesystem writes due to dry strategy constraint.")
+                print(f"[-] GENERATION ERROR: Compilation layer broken during matrix step execution track.", file=sys.stderr)
+                raise ex
 
-    elif args.step in ["compile","merge"]:
+            print("[+] SUCCESS: Structural session OK!")
+
+        # 🚀 SHARED POST-PROCESSING CONSOLIDATION: Fires for compile completions and standalone merges
         if args.step == "merge":
             print("[*] Running Stage: [MERGE] Explicitly consolidating distributed json core files...")
         else:
-            print("[*] Running Stage: [AUTO-MERGE] Finalizing compilation with layout consolidation...")
+            print("[*] Running Stage: [AUTO-MERGE] Consolidating distributed json schemas...")
+
         if args.run == "WET":
             try:
                 dist_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist"))
@@ -1185,13 +1150,15 @@ def main():
 
                 with open(out_p, "w", encoding="utf-8") as f:
                     json.dump(master_catalog, f, indent=2)
-                print("[+] SUCCESS: Master catalog consolidated cleanly at dist/existentialCores.json")
+                
+                if args.step == "merge":
+                    print("[+] SUCCESS: Master catalog consolidated cleanly at dist/existentialCores.json")
+                else:
+                    print("  [+] Automated dist/existentialCores.json")
             except Exception as ex:
-                print(f"[-] Standalone Splicer Error: {ex}", file=sys.stderr)
-                sys.exit(1)
+                print(f"  [-] Automated Splicer Fault: {ex}", file=sys.stderr)
         else:
-            print("[INFO] Bypassing filesystem writes due to dry strategy constraint.")
-
+            print("  [INFO] DRY Strategy.")
 
 if __name__ == "__main__":
     main()
