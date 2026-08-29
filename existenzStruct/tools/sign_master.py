@@ -27,7 +27,7 @@ if CURRENT_TOOL_DIR not in sys.path:
     sys.path.insert(0, CURRENT_TOOL_DIR)
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
-int_ver = "v0.76i"
+int_ver = "v0.76.13"
 
 try:
     # Safely load the local signatures file without namespace prefix drift failures
@@ -129,6 +129,7 @@ def main():
         "CoreThreatLegal": existentialCoreSignatures.existentialCoreThreatLegal,
         "CoreThreatShadowVacuum": getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET"),
         "CoreCheck": existentialCoreSignatures.existentialCoreCheck,
+        "Cores": existentialCoreSignatures.existentialCores,
         "CoreItem": existentialCoreSignatures.existentialCoreCheck
     }
 
@@ -249,6 +250,7 @@ def main():
                     f"    existentialCoreThreatLegal                   = \"{existentialCoreSignatures.existentialCoreThreatLegal}\"\n"
                     f"    existentialCoreThreatShadowVacuum            = \"{target_vacuum_sig}\"\n"
                     f"    existentialCoreThreat                        = \"{existentialCoreSignatures.existentialCoreThreat}\"\n"
+                    f"    existentialCores                             = \"{existentialCoreSignatures.existentialCores}\"\n"                    
                     f"    existentialCoreCheck                         = \"{existentialCoreSignatures.existentialCoreCheck}\"\n\n"
                     f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys) + "\n    )\n\n"
                     f"    existentialCoreSigned = (\n" + ",\n".join(computed_asymmetric_signatures) + "\n    )\n")
