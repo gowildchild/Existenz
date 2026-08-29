@@ -107,7 +107,7 @@ def main():
 
     print(f"[*] Configuration   : {args.config}")
     target_master_dir = ""
-    if ({args.dest} == "master") {
+    if (args.dest == "master") {
       target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
       TARGET_DIST_DIR = os.path.join(REPO_ROOT, "existenzStruct", "master")
     } else {
