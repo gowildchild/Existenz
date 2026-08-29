@@ -701,8 +701,6 @@ def main():
         with open(cores_master_path, "rb") as f:
             cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
             cores_structure_sign = cores_structure_signature[:8]
-    else:
-        cores_structure_signature = "existentialCoreSignaturesCores"
     
     chain_payload_string = (
         existentialCoreCheckMagic.decode('utf-8', errors='ignore') +
@@ -806,7 +804,7 @@ def main():
         print(f"  │    {vl_ctv}                                          └─► Signature: \"{threat_shadow_structure_signature}\"")        
         print(f"  │    {conn_cts} [SQ {sq_cts}{ch_cts}{bm_cts.ljust(4)}] existentialCoreThreat.py  ─┬─► Sign: 0x{threat_structures_sign} {ch_cts} {tg_cts}")
         print(f"  │                                                 └─► Signature: \"{threat_structures_signature}\"")
-        print(f"  │    {conn_ctc} [SQ {sq_ctc}{ch_ctc}{bm_ctc.ljust(4)}] existentialCores.json   ─┬─► Sign: 0x{cores_structure_sign} {ch_ctc} {tg_ctc}")
+        print(f"  │    {conn_ctc} [SQ {sq_ctc}{ch_ctc}{bm_ctc.ljust(4)}] existentialCores.json     ─┬─► Sign: 0x{cores_structure_sign} {ch_ctc} {tg_ctc}")
         print(f"  │                                                 └─► Signature: \"{cores_structure_signature}\"")
         print("─ │ ─", end="")
         print("─" * 130)
