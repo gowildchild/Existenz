@@ -20,8 +20,8 @@ from cryptography.hazmat.primitives import serialization
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
-#TARGET_DIST_DIR = os.path.join(REPO_ROOT, "dist", "master")
-TARGET_DIST_DIR = os.path.join(REPO_ROOT, "existenzStruct", "master")
+TARGET_DIST_DIR = os.path.join(REPO_ROOT, "dist", "master")
+#TARGET_DIST_DIR = os.path.join(REPO_ROOT, "existenzStruct", "master")
 
 CURRENT_TOOL_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_TOOL_DIR not in sys.path:
@@ -93,6 +93,7 @@ def main():
     parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to local private key location config file.")
     parser.add_argument("-run", choices=["wet", "dry"], default="wet", help="Execution mutation layer gate. Default is 'wet'.")
     parser.add_argument("-v", "--version", action="store_true", help="Display platform version metadata.")
+    parser.add_argument("-dest","--dest", choices=["master","dist"], default="dist", help="Which build to sign")
     args = parser.parse_args()
 
     if args.version:
@@ -105,8 +106,14 @@ def main():
     print(f"[*] Execution Stage: -stage {args.stage}")
 
     print(f"[*] Configuration   : {args.config}")
-
-    target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+    target_master_dir = ""
+    if ({args.dest} == "master") {
+      target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
+      TARGET_DIST_DIR = os.path.join(REPO_ROOT, "existenzStruct", "master")
+    } else {
+      target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+      TARGET_DIST_DIR = os.path.join(REPO_ROOT, "dist", "master")
+    }
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
 
     if not os.path.exists(args.config):
