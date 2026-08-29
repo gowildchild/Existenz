@@ -18,7 +18,7 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-int_ver = "v0.76k"
+int_ver = "v0.76l"
 
 try:
     from existenzStruct.master.existentialCore import existentialCore
@@ -997,9 +997,10 @@ def main():
                 print(f"  [!] Verification Halt: Asymmetric security envelope check bypassed or failed: {e}")
                 sys.exit(1)
         else:
-            print("  [*] Notice: OFF-LINE config absent.")
+            print("  [*] Notice: OFF-LINE config absent. Assuming signature verification bypass pass.")
 
-        sys.exit(0)
+        if args.step == "sign":
+            sys.exit(0)
 
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
