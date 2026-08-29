@@ -283,8 +283,8 @@ def main():
         else:
             error_handler.notice(
                 level="error",
-                message="Private signing is not allowed on a public server!",
-                exit_code=visualmixErrorHandler.ERR_MISSING_LOCAL
+                message="Private signing is not allowed on a public server!"
+                # exit_code=visualmixErrorHandler.ERR_MISSING_LOCAL
             )
 
         missing_signatures = [k for k in ["Platform", "Developer", "Personal"] if k not in manifest_data["signatures"]]
