@@ -872,7 +872,7 @@ def main():
                 for log_line in chain_metadata_log:
                     print(log_line)
 
-                 print("=" * 80)
+                print("=" * 80)
                 print(f"  [>] RUN SERIES EVALUATION LAYER  : '{name}' [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
                 print(f"  [>] ELEMENT IN THE MATRIX FIELD  : \"{hash_var}\"")
                 print(f"  [>] RESOLVED VALUE IN FIELD      : {resolved_target_hash}")
