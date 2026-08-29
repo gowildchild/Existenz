@@ -7,7 +7,7 @@
 
 existentialCoreVersion                       = "v0.76.13"
 existentialCoreCheckMagic                    = b"EX25IMMUT32CORE7617"
-existentialCoreCheckSignatures               = "8b4defb0aaf1eb9bcd7b382cf0b4db0aa093eb1b84b8e09d3cf0f73d5b2d37b6"
+existentialCoreCheckSignatures               = "c83f2a0d6fadeeb69346e33fcabf4433c91c40f70bdaf79b9f5fb6b6096d0a4c"
 
 class existentialCoreSignatures:
     existentialCore                              = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
