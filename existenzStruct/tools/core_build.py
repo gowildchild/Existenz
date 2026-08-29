@@ -229,15 +229,25 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
         master_catalog_destination = os.path.join(master_folder_path, "existentialCores.json")
         distribution_cache_destination = os.path.join(dist_dir, "existentialCores.json")
         
+        # 🚀 TARGET LOCKBOOK PATH: Establish a copy inside dist/master/ to clear post-write audits
+        dist_master_folder_path = os.path.join(dist_dir, "master")
+        os.makedirs(dist_master_folder_path, exist_ok=True)
+        dist_master_destination = os.path.join(dist_master_folder_path, "existentialCores.json")
+        
         # Write master workspace source-of-truth file
         with open(master_catalog_destination, "w", encoding="utf-8") as f:
             json.dump(master_catalog_dictionary, f, indent=2)
         print(f"  [+] Unified master folder matrix built: {master_catalog_destination}")
             
-        # Replicate down into distribution directory cache
+        # Replicate down into distribution directory cache root
         with open(distribution_cache_destination, "w", encoding="utf-8") as f:
             json.dump(master_catalog_dictionary, f, indent=2)
         print(f"  [+] Synced validation asset target out: {distribution_cache_destination}")
+        
+        # Replicate down into distribution master subfolder location
+        with open(dist_master_destination, "w", encoding="utf-8") as f:
+            json.dump(master_catalog_dictionary, f, indent=2)
+        print(f"  [+] Synced lockbook check cache out: {dist_master_destination}")
             
     except Exception as merge_error:
         import sys
@@ -1046,6 +1056,8 @@ def main():
                         f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
             print("[+] Target folder master signatures built.")
 
+
+        
         local_cfg_path = os.path.abspath(os.path.join(REPO_ROOT, "sign_integrity_config.json"))
 
         if os.path.exists(local_cfg_path):
