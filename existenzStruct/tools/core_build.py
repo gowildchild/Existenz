@@ -694,8 +694,8 @@ def main():
     check_structures_payload = check_structures.encode('utf-8')
     check_structures_signature = hmac.new(existentialCoreCheckMagic, check_structures_payload, hashlib.sha256).hexdigest()
     check_structures_sign = check_structures_signature[:8]
-    
-    cores_master_path = os.path.abspath(os.path.join(REPO_ROOT, "dist", "existentialCores.json"))
+
+    cores_master_path = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master", "existentialCores.json"))
     cores_structure_signature = ""
     cores_structure_sign = ""
     if os.path.exists(cores_master_path):
