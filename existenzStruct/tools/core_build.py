@@ -214,6 +214,37 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
         with open(os.path.join(dist_dir, "esphome", "single", "esphomeThreatShadowVacuum.yaml"), "w", encoding="utf-8") as f:
             f.write(make_header("#") + "substitutions:\n" + "\n".join(f"  VACUUM_{str(k)}: \"{v}\"" for k, v in vacuum_ord.items()) + "\n")
 
+    try:
+        # Re-parse the compiled structural strings from memory blocks to preserve line formatting
+        core_block_payload = json.loads("{\n" + "\n".join(build_aligned_json_block("existentialCore", core_ord, cmnts)) + "\n}")
+        threat_block_payload = json.loads("\n".join(json_t))
+        
+        # Merge individual components into the unified framework catalog dictionary
+        master_catalog_dictionary = {**core_block_payload, **threat_block_payload}
+        
+        # Resolve target master path and distribution folder mapping locations
+        master_folder_path = os.path.abspath(os.path.join(dist_dir, "..", "existenzStruct", "master"))
+        os.makedirs(master_folder_path, exist_ok=True)
+        
+        master_catalog_destination = os.path.join(master_folder_path, "existentialCores.json")
+        distribution_cache_destination = os.path.join(dist_dir, "existentialCores.json")
+        
+        # Write master workspace source-of-truth file
+        with open(master_catalog_destination, "w", encoding="utf-8") as f:
+            json.dump(master_catalog_dictionary, f, indent=2)
+        print(f"  [+] Unified master folder matrix built: {master_catalog_destination}")
+            
+        # Replicate down into distribution directory cache
+        with open(distribution_cache_destination, "w", encoding="utf-8") as f:
+            json.dump(master_catalog_dictionary, f, indent=2)
+        print(f"  [+] Synced validation asset target out: {distribution_cache_destination}")
+            
+    except Exception as merge_error:
+        import sys
+        print(f"  [!] Build Exception: Failed to execute automated master catalog synthesis: {merge_error}", file=sys.stderr)
+        sys.exit(1)
+
+
 
 def _export_python_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
     """Generates the isolated Python package subsystem tracks with original gate logic perfectly preserved."""
