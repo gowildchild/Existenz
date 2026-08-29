@@ -13,7 +13,7 @@ import getpass
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
 
-INT_VERSION = "v0.76k"
+INT_VERSION = "v0.76l"
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
 MANIFEST_OUTPUT = os.path.join(REPO_ROOT, "manifest.json")
@@ -25,22 +25,23 @@ if REPO_ROOT not in sys.path:
 
 class visualmixErrorHandler:
     """Handles script termination and formats logs cleanly for both Local and GitHub environments."""
-    ERR_GENERAL         = 1
-    ERR_ARGPARSE        = 2
-    ERR_MISSING_CORE    = 4
-    ERR_MISSING_LOCAL   = 8
-    ERR_MISSING_CONFIG  = 16
-    ERR_MISSING_FILE    = 32
-    ERR_MISSING_SIGN    = 62
-    ERR_MISSING_KEY     = 63
-    ERR_KEY             = 64
-    ERR_KEY_DRIFTING    = 65
-    ERR_KEY_VALUE       = 66
-    ERR_KEY_FORMAT      = 67
-    ERR_MISSING_EXECUTE = 126
-    ERR_MISSING_EXE     = 127
-    ERR_UNKNOWN         = 254
-    ERR_OUT_OF_RANGE    = 255
+    ERR_GENERAL          = 1
+    ERR_ARGPARSE         = 2
+    ERR_MISSING_CORE     = 4
+    ERR_MISSING_LOCAL    = 8
+    ERR_MISSING_CONFIG   = 16
+    ERR_MISSING_FILE     = 32
+    ERR_MISSING_MANIFEST = 33
+    ERR_MISSING_SIGN     = 62
+    ERR_MISSING_KEY      = 63
+    ERR_KEY              = 64
+    ERR_KEY_DRIFTING     = 65
+    ERR_KEY_VALUE        = 66
+    ERR_KEY_FORMAT       = 67
+    ERR_MISSING_EXECUTE  = 126
+    ERR_MISSING_EXE      = 127
+    ERR_UNKNOWN          = 254
+    ERR_OUT_OF_RANGE     = 255
     ERR_MAP = {
         "error":   ("\033[1;31m[!] ERROR",   "::error", True),
         "warning": ("\033[1;33m[?] Warning", "::warning", True),
@@ -314,7 +315,7 @@ def main():
         if not os.path.exists(MANIFEST_OUTPUT):
             error_handler.notice(
                 level="error",
-                message=f"manifest file is missing, execute -stage sign first.",
+                message=f"Manifest file is missing, execute -stage sign first.",
                 exit_code=visualmixErrorHandler.ERR_MISSING_MANIFEST
             )
 
@@ -332,7 +333,6 @@ def main():
             live_files = {}
             live_files.update(gather_folder_files("existenzStruct/master"))
             live_files.update(gather_folder_files("existenzStruct/tools"))
-            live_files = {}
             live_files.update(gather_folder_files("dist"))
         elif args.stage == "verify-master":
             error_handler.notice(
@@ -364,7 +364,9 @@ def main():
                 continue
             if args.stage == "verify-dist" and not rel_path.startswith("dist/"):
                 continue
-
+            if args.stage == "verify-tools" and not rel_path.startswith("existenzStruct/tools/"):
+                continue
+                
             if rel_path not in live_files:
                 error_handler.notice(
                     level="warning",
