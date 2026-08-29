@@ -814,8 +814,7 @@ def main():
 
         # Build safe mapping dictionaries for sequence tracking and raw tuple row lookups natively
         sorted_rules = sorted([row for row in existentialCoreSignatures.existentialCoreSigned if row[0] != "Magic"], key=lambda x: x[5])
-
-        # Map out the exact live computed session hashes to resolve literal template variable string lookups
+        
         live_session_hashes = {
             "existentialCoreMagicHash": existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic),
             "existentialCoreHash": core_structure_signature,
@@ -828,35 +827,21 @@ def main():
             "existentialCoreChainHash": chain_structures_signature
         }
 
-
-        # Process each row inside the sorted tracking matrix natively
-        # Process each row inside the sorted tracking matrix natively
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
-
-            # Resolve the target look-back baseline token from live memory if a placeholder string is present
             resolved_target_hash = live_session_hashes.get(hash_var, hash_var)
-
-            # 1. Map out all sequence numbers active in this execution pass to identify boundaries dynamically
-            all_active_sequences = {row for row in sorted_rules}
-
-            # DYNAMIC LOOK-BACK RUN FINDER: Trace backward to collect all consecutive preceding numbers
+            all_active_sequences = {row[5] for row in sorted_rules}
             preceding_hashes = []
             chain_metadata_log = []
-            
-            # 🚀 FIXED FLAG GATE: Enforces a look-back checkpoint explicitly using your 'bitmask & 64' (END OF CHAIN) rule!
             is_terminal_anchor = bool(bitmask & 64)
             
             if is_terminal_anchor:
-                # Start searching backward from the layer right behind this anchor
                 check_seq = sequence - 1
-                
                 while check_seq >= 0:
                     # 🚀 GAP-RESILIENT WALKER: Finds the next active row in the ledger sequence, even if there are integer gaps!
-                    cause_row = next((row for row in sorted_rules if row == check_seq), None)
+                    cause_row = next((row for row in sorted_rules if row[5] == check_seq), None)
                     
                     if not cause_row:
-                        # If this specific integer index is empty (like 7 or 8), step backward to check the previous lane slot
                         check_seq -= 1
                         continue
                         
@@ -887,7 +872,7 @@ def main():
                 for log_line in chain_metadata_log:
                     print(log_line)
 
-                print("=" * 80)
+                 print("=" * 80)
                 print(f"  [>] RUN SERIES EVALUATION LAYER  : '{name}' [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
                 print(f"  [>] ELEMENT IN THE MATRIX FIELD  : \"{hash_var}\"")
                 print(f"  [>] RESOLVED VALUE IN FIELD      : {resolved_target_hash}")
@@ -902,7 +887,6 @@ def main():
                     print(f"    Computed (Live Calculated) : {computed_validation}")
                     sys.exit(1)
 
-        # 4. Independent bitmode validation pass across all layers
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             is_valid_hex = bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32
@@ -915,7 +899,6 @@ def main():
             print("[+] SUCCESS: Core cryptographic structural validations verified clean.")
             sys.exit(0)
 
-    
     elif args.step == "sign":
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
 
