@@ -1,11 +1,11 @@
 # ==========================================================================
 # THE EXISTENZ PLATFORM (AUTOMATED BLUEPRINT COMPILATION)
-# Version: v0.76j | Framework Namespace Lock
+# Version: v0.76 | Framework Namespace Lock
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
 
-existentialCoreVersion                       = "v0.76k"
+existentialCoreVersion                       = "v0.76.13"
 existentialCoreCheckMagic                    = b"EX25IMMUT32CORE7617"
 existentialCoreCheckSignatures               = "e22a58a6eea9fb10edfe8dd2754761851d00b4669754010e54f1eb423ea298bb"
 
@@ -16,6 +16,7 @@ class existentialCoreSignatures:
     existentialCoreThreatShadowVacuum            = "9b1d1bcf4903c7c26a6b75dd2e0c341ddab3594c2514c99e5d8e6b4651bfcc69"
     existentialCoreThreat                        = "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
     existentialCoreCheck                         = "8b4defb0aaf1eb9bcd7b382cf0b4db0aa093eb1b84b8e09d3cf0f73d5b2d37b6"
+    existentialCores                             = "existentialCoreSignaturesCores"
 
     existentialPublicKeys = (
         ("Platform", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"),
@@ -31,5 +32,6 @@ class existentialCoreSignatures:
         ("CoreThreatLegal", "cf73b021", "existentialCoreThreatLegalHash", "cf73b021381f426ad53910a83a1a5ce15ab6c3ea200e6e6818a805ca22328b13c7aacfc8a9cb5083abd633687e7693cc2c38310d026a36e59dfbd75cf592eb0b", 31, 3),
         ("CoreThreatShadowVacuum", "4f42af6a", "existentialCoreThreatShadowVacuumHash", "4f42af6a6be5078c95f186936058f8872553d523879b287e575f77e4180e4fc9a215e6bb30a6fd744ed85880945c133509ecf318ce4ca79caad6b7e1a50c1d01", 31, 4),
         ("CoreThreat", "79b1e69e", "existentialCoreThreatHash", "79b1e69ed3a999fc6ed1d92c92f90f920d1052c4b5d93d17bed0ec90ed0bac6833aaa16301c843f70ac7a959e462a1efccbdb7958b610501d9f7c4c4bb07200b", 127, 5),
+        ("Cores", "existentialCoresSign", "existentialCoresHash", "existentialCoresSignature", 7, 7),
         ("CoreChain", "11c39300", "existentialCoreChainHash", "11c393009d3f0dca9fc83c0c76c02a89737cfffbbcbb974cf2632d8d797e4dd42616ec3b8b625718314bbc146792259884300beae923af01cc26ab6713472308", 255, 9)
     )
