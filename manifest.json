@@ -57,11 +57,11 @@
     "existenzStruct/master/existentialHumanCore.py": "2decc0bb05b4d4810320443604373bce2c242dfaf2bb7da7cbc3dc19ac61f7f4",
     "existenzStruct/tools/boot_guard.py": "7e9f3d546a6da7c4696c379fce80d9b012c20f8707be0ebd2efe118c9095addc",
     "existenzStruct/tools/check_integrity.py": "26bb01e972b866f8c89e0a97c84f2892a8d5bf69019a1d1ca97585d4dac3ec63",
-    "existenzStruct/tools/core_build.py": "a1e2d701eed24295daf0b55810fc9ac7c0766c6046564084570ea4e52520f5ba",
+    "existenzStruct/tools/core_build.py": "85e3cf778bd79ebb055d83b2522fcd609c52019989352e9d2f5f4689effeffa7",
     "existenzStruct/tools/core_debug.py": "957531a87f16fcba6445e4d022abd179c732c94e588c5374915f60824dc7f8d6",
     "existenzStruct/tools/core_manifest.py": "c2081d60af57ffd6317ec580ab01eb7b75e459ffab7bc213f693fdbb886c856a",
     "existenzStruct/tools/core_telemetry.py": "f68be7b3e8d2336f1bbea65f69da13d6bef422d381b2a2f2657fc43fbf6c24cc",
-    "existenzStruct/tools/sign_master.py": "e92d26ac64b298eb14d4bf40c86889dc9a18de9ab43bf5522fcbcff4faf884c7",
+    "existenzStruct/tools/sign_master.py": "f78be82c7b56e80298c28f27f83e9d968ca2ddc101364e10b579518dfabcb46f",
     "existenzStruct/tools/test_integrity.py": "04b56dd5b1cf8698819dd196fa8117fdeb7bb91ab106729c31082594435dbd41",
     "existenzStruct/tools/test_sign.py": "3dd1c7ea5a1d3c069074cb0f53a07b9060b5b026d06365ead9df40ffdb73d404"
   },
@@ -75,5 +75,5 @@
     "Personal": "f3cf425a195d34ae66347e41b27b8cac6277a22d852d1ae08a4e65eb0c528e3fd37ccb0bfa74cd6c87cccb1a11a79269faa8ff28e3fda9db39cac40c6cdebe0d",
     "Platform": "929f710ee43ade252d1c61b693156c2e68ecf7839a5fa2a85ba25a368947496d6e919ac187c025a613ba3caa78f72eb2e79b0134c5cabd3aba086aca95988c0e"
   },
-  "version": "v0.76L"
+  "version": "v0.76k"
 }
