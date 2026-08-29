@@ -18,7 +18,7 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-int_ver = "v0.76j"
+int_ver = "v0.76k"
 
 try:
     from existenzStruct.master.existentialCore import existentialCore
@@ -704,7 +704,7 @@ def main():
 
     existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
 
-    if args.step in ["check","verify","compile"]:
+    if args.step in ["check","verify","compile","merge"]:
         print("")        
         matrix_rules_lookup = {}
         for row in existentialCoreSignatures.existentialCoreSigned:
@@ -937,7 +937,6 @@ def main():
                     combined_salt_payload.extend(pub_keys_dict[identity].encode('utf-8'))
 
         derived_salt_token = hashlib.sha256(combined_salt_payload).hexdigest()
-
         print("──┬ [ hardware enrichment status ] ──────────────────────────────")
         print(f"  ├── existentialCoreCheckMagic : {existentialCoreCheckMagic}")
         print(f"  ├── Sequence Progression sum  : {sequence_chain_accumulator} (Field Order Matrix)")
@@ -959,7 +958,6 @@ def main():
             formatted_signed = ",\n".join(f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {seq})" 
                                            for name, short_var, hash_var, sign_var, bitmask, seq in existentialCoreSignatures.existentialCoreSigned)
 
-            # Step 1: Write the template parameters to disk first to establish sign_master's structural imports
             with open(target_sig_file, "w", encoding="utf-8") as f:
                 f.write(make_header("#") +
                         f"existentialCoreVersion                       = \"{existentialCoreVersion}\"\n"
@@ -976,7 +974,6 @@ def main():
                         f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
             print("[+] Target folder master signatures built.")
 
-        # Step 2: Now that the file sits safely on disk, parse configuration and fire the interactive passphrase block
         local_cfg_path = os.path.abspath(os.path.join(REPO_ROOT, "sign_integrity_config.json"))
 
         if os.path.exists(local_cfg_path):
@@ -995,19 +992,18 @@ def main():
                             print(f"  [+] Active local key found. Launching authentication prompt for: [{identity}]")
                             load_ssh_private_key(identity, key_path)
                         else:
-                            print(f"  [-] Warning: Path for identity [{identity}] does not point to a valid file target.")
+                            print(f"  [-] Warning: Invalid target path for [{identity}]")
             except Exception as e:
                 print(f"  [!] Verification Halt: Asymmetric security envelope check bypassed or failed: {e}")
                 sys.exit(1)
         else:
-            print("  [*] Notice: sign_integrity_config.json absent. Skipping local key load phase.")
+            print("  [*] Notice: OFF-LINE config absent.")
 
         sys.exit(0)
 
     elif args.step == "compile":
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
 
-        # 1. Map out live dynamic hashes calculated by this session step for lookup verification
         live_computed_hashes = {
             "existentialCore": core_structure_signature,
             "existentialCoreThreatRoot": threat_structure_signature,
@@ -1018,7 +1014,6 @@ def main():
             "existentialCoreChain": chain_structures_signature
         }
 
-        # 2. Translation map to bridge the short keys in the config file to the long hash keys
         key_translation_map = {
             "Magic": "Magic",
             "Core": "existentialCore",
@@ -1039,11 +1034,9 @@ def main():
             if name == "Magic": 
                 continue
 
-            # If the number strictly follows up consecutively inside the chain limit, add it to the running cause-sum
             if sequence == expected_next_sequence:
                 running_chain_sum += sequence
                 expected_next_sequence += 1
-            # DYNAMIC ANCHOR CHECK: Replaces the hardcoded sequence == 5 layout trap cleanly
             elif sequence == running_chain_sum:
                 sequence_chain_accumulator = sequence
 
@@ -1055,27 +1048,26 @@ def main():
             if current_live_hash and target_frozen_sig:
                 if not hmac.compare_digest(current_live_hash, target_frozen_sig):
                     print(f"\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
-                    print(f"[-] Unsigned modifications exposed inside tracking hook Layer: '{name}'", file=sys.stderr)
+                    print(f"[-] Unsigned modifications exposed: '{name}'", file=sys.stderr)
                     print(f"[-] Live Code Hash:        {current_live_hash}", file=sys.stderr)
                     print(f"[-] Last Signed Master Hash: {target_frozen_sig}", file=sys.stderr)
                     print(f"[-] Bitmask Requirement:    {hex(bitmask)} (Requires private key authorization sync)", file=sys.stderr)
                     print("[-] Compilation terminated safely. No distribution assets were modified.", file=sys.stderr)
                     sys.exit(1)
 
-        print("[+] Success: All live core layout hashes match the private key signature records.")
-        print("[*] Validating live framework text layouts against signature records...")
+        print("[+] Success: All hashes match private key signature records.")
+        print("[*] Validating live framework signatures...")
         
-        # 1. Compute exactly what the threat legal layout hash looks like with the grammar changes
         current_legal_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatLegal.items(), key=lambda i: i))
         current_legal_payload = current_legal_structure.encode('utf-8')
         current_legal_hash = hmac.new(existentialCoreCheckMagic, current_legal_payload, hashlib.sha256).hexdigest()
 
         if not hmac.compare_digest(current_legal_hash, existentialCoreSignatures.existentialCoreThreatLegal):
             print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
-            print("[-] Unsigned grammatical or structural variations detected inside Legal Map!", file=sys.stderr)
+            print("[-] Unsigned structural variations detected inside Legal Map!", file=sys.stderr)
             print(f"[-] Current Code Hash  : {current_legal_hash}", file=sys.stderr)
             print(f"[-] Stored Signed Hash : {existentialCoreSignatures.existentialCoreThreatLegal}", file=sys.stderr)
-            print("[-] Compilation halted. Please re-run with '--step sign' using your keys first.", file=sys.stderr)
+            print("[-] Compilation halted. Please re-run with '--step sign' using private keys first.", file=sys.stderr)
             sys.exit(1)
 
         current_vacuum_structure = "".join(f"{k}:{v}" for k, v in sorted(existentialCoreThreatShadowVacuum.items(), key=lambda i: i))
@@ -1094,7 +1086,7 @@ def main():
 
         if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
             print("\n[!!!] CRITICAL SECURITY ABORT [!!!]", file=sys.stderr)
-            print("[-] Core register structure mismatch against stored private signature records. Aborting.", file=sys.stderr)
+            print("[-] Core structure mismatch with private signatures.", file=sys.stderr)
             sys.exit(1)
         
         global_sigs_map = {
@@ -1120,7 +1112,64 @@ def main():
             print(f"[-] GENERATION ERROR: Compilation layer broken during matrix step execution track.", file=sys.stderr)
             raise ex
 
-        print("[+] SUCCESS: Structural session processing completed cleanly with exit code 0.")
+        print("[+] SUCCESS: Structural session processing completed cleanly!")
+
+        print("[*] Running Stage: [AUTO-MERGE] Consolidating distributed json schemas...")
+        if args.run == "WET":
+            try:
+                dist_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist"))
+                core_p = os.path.join(dist_dir, "existentialCore.json")
+                threat_p = os.path.join(dist_dir, "existentialCoreThreat.json")
+                out_p = os.path.join(dist_dir, "existentialCores.json")
+
+                if os.path.exists(core_p) and os.path.exists(threat_p):
+                    with open(core_p, "r", encoding="utf-8") as f:
+                        c_json = json.load(f)
+                    with open(threat_p, "r", encoding="utf-8") as f:
+                        t_json = json.load(f)
+
+                    # Seamless object spread merge across schemas
+                    master_catalog = {**c_json, **t_json}
+
+                    with open(out_p, "w", encoding="utf-8") as f:
+                        json.dump(master_catalog, f, indent=2)
+                    print("  [+] Automated Splicer: Master catalog unified at dist/existentialCores.json")
+            except Exception as ex:
+                print(f"  [-] Automated Splicer Fault: {ex}", file=sys.stderr)
+        else:
+            print("  [INFO] Bypassing filesystem writes due to dry strategy constraint.")
+
+    elif args.step in ["compile","merge"]:
+        if args.step == "merge":
+            print("[*] Running Stage: [MERGE] Explicitly consolidating distributed json core files...")
+        else:
+            print("[*] Running Stage: [AUTO-MERGE] Finalizing compilation with layout consolidation...")
+        if args.run == "WET":
+            try:
+                dist_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist"))
+                core_p = os.path.join(dist_dir, "existentialCore.json")
+                threat_p = os.path.join(dist_dir, "existentialCoreThreat.json")
+                out_p = os.path.join(dist_dir, "existentialCores.json")
+
+                if not os.path.exists(core_p) or not os.path.exists(threat_p):
+                    print("[-] Error: Core source components absent inside build cache directory.", file=sys.stderr)
+                    sys.exit(1)
+
+                with open(core_p, "r", encoding="utf-8") as f:
+                    c_json = json.load(f)
+                with open(threat_p, "r", encoding="utf-8") as f:
+                    t_json = json.load(f)
+
+                master_catalog = {**c_json, **t_json}
+
+                with open(out_p, "w", encoding="utf-8") as f:
+                    json.dump(master_catalog, f, indent=2)
+                print("[+] SUCCESS: Master catalog consolidated cleanly at dist/existentialCores.json")
+            except Exception as ex:
+                print(f"[-] Standalone Splicer Error: {ex}", file=sys.stderr)
+                sys.exit(1)
+        else:
+            print("[INFO] Bypassing filesystem writes due to dry strategy constraint.")
 
 
 if __name__ == "__main__":
