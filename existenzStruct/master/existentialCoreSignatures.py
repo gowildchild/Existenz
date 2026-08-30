@@ -2,7 +2,7 @@
 # EXISTENZ CORE MASTER Private Key Signer v0.76.15
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
-# ==========================================================================
+# ==========================================================================s
 
 existentialCoreVersion                       = "v0.76.15"
 existentialCoreCheckMagic                    = b"EX25IMMUT32CORE7617"
