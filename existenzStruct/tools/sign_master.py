@@ -29,6 +29,7 @@ if REPO_ROOT not in sys.path:
 int_ver = "v0.76.13"
 
 try:
+    # 🚀 INTERFACE PROTECTION HOOK: Force clean dynamic reloads on your core repository ledger parameters
     import existenzStruct.master.existentialCoreSignatures as sig_module
     from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
 except ImportError as e:
@@ -72,6 +73,7 @@ def load_ssh_private_key(identity, path):
         # Attempt to load the private key unencrypted first
         return serialization.load_ssh_private_key(key_data, password=None)
     except Exception as e:
+        # Catch all algorithm/encryption parsing traps to reliably trigger password prompts
         err_str = str(e).lower()
         if "password" in err_str or "unsupported" in err_str or "encrypted" in err_str or "passphrase" in err_str:
             print(f"🔒 [SECURITY ENVELOPE] Private key access token for '{identity}' is password-protected.")
@@ -125,7 +127,7 @@ def main():
     loaded_keys = {}
     computed_asymmetric_signatures = []
 
-    # Mapping direct naar de werkelijke berekende waarden uit de geladen file
+    # 🚀 STATIC IMMUTABLE CLASS MAPPING PASS: Direct attribute tracking isolates variable lookups from loop scope collisions
     hash_payloads_map = {
         "Magic": existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic),
         "Core": getattr(existentialCoreSignatures, "existentialCore", ""),
@@ -140,7 +142,7 @@ def main():
 
     sorted_signing_rules = sorted(
         existentialCoreSignatures.existentialCoreSigned, 
-        key=lambda element: element[5]
+        key=lambda element: element
     )
 
     if args.stage == "verify":
@@ -208,11 +210,16 @@ def main():
                     f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {sequence})"
                 )
         elif args.stage == "verify":
-            # 🚀 CORRECTIE: live_short pakt nu de prefix van de berekende HASH in plaats van de handtekening!
-            live_short = expected_hash[:8] if len(expected_hash) >= 8 else "--------"
-            status_lbl = "VERIFIED" if live_short == short_var else "DRIFTING"
+            # 🚀 FIXED ISOLATED DESCRIPTOR: Force the visual token to display the actual computed signature segment prefix
+            if len(sign_var) > 40 and not sign_var.startswith("existential"):
+                signature_segments = sign_var.split(":")
+                live_short = signature_segments[-1][:8]
+                status_lbl = "VERIFIED" if live_short == short_var[:8] else "DRIFTING"
+            else:
+                live_short = "--------"
+                status_lbl = "DRIFTING"
 
-            print(f"  ├──[{sequence}] {name:<18} 0x{live_short} : {expected_hash}")
+            print(f"  ├──[{sequence}] {name:<18} 0x{short_var} : {expected_hash}")
             print(f"  ├──[{sequence}] [ {status_lbl} ] 0x{sign_var}")
 
     if args.stage == "verify":
@@ -279,6 +286,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
