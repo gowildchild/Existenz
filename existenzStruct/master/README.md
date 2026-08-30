@@ -1,4 +1,4 @@
-## The Master Blueprints
+## The Master Blueprints 
 
 This directory houses the foundational, immutable source parameters of the Existenz Platform.
 
