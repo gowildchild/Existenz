@@ -27,7 +27,7 @@ if CURRENT_TOOL_DIR not in sys.path:
     sys.path.insert(0, CURRENT_TOOL_DIR)
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
-int_ver = "v0.76.13"
+int_ver = "v0.76.14"
 
 try:
     # Safely load the local signatures file without namespace prefix drift failures
