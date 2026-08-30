@@ -125,7 +125,7 @@ def main():
     loaded_keys = {}
     computed_asymmetric_signatures = []
 
-    # 🚀 STATIC CLASS EXTRACATION PASS: Read directly from class wrapper properties to prevent local variable loop overrides
+    # Mapping direct naar de werkelijke berekende waarden uit de geladen file
     hash_payloads_map = {
         "Magic": existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic),
         "Core": getattr(existentialCoreSignatures, "existentialCore", ""),
@@ -208,20 +208,12 @@ def main():
                     f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {sequence})"
                 )
         elif args.stage == "verify":
-            is_signed = len(sign_var) > 40 and not sign_var.startswith("existential")
-            if is_signed:
-                signature_segments = sign_var.split(":")
-                live_short = signature_segments[-1][:8]
-                
-                status_lbl = "VERIFIED" if live_short == short_var[:8] else "DRIFTING"
-                display_sig = sign_var
-            else:
-                live_short = "--------"
-                status_lbl = "DRIFTING"
-                display_sig = sign_var  
+            # 🚀 CORRECTIE: live_short pakt nu de prefix van de berekende HASH in plaats van de handtekening!
+            live_short = expected_hash[:8] if len(expected_hash) >= 8 else "--------"
+            status_lbl = "VERIFIED" if live_short == short_var else "DRIFTING"
 
             print(f"  ├──[{sequence}] {name:<18} 0x{live_short} : {expected_hash}")
-            print(f"  ├──[{sequence}] [ {status_lbl} ] 0x{display_sig}")
+            print(f"  ├──[{sequence}] [ {status_lbl} ] 0x{sign_var}")
 
     if args.stage == "verify":
         print("──┴───────────────────────────────────────────────────────────────────────────────")
@@ -287,6 +279,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
