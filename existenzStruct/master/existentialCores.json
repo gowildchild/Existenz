@@ -60,15 +60,15 @@
     "SIGN_THREAT_CANARY": {       "value": 3223243294,  "expr": "0xc01eca1e",  "type": "SIGNATURE", "comment": ""                                             }
   },
   "existentialCoreBitmask": {
-    "CANARY_0_SOVEREIGN":         [3,  "0x6",       1,1],
-    "CANARY_1_SOMATIC":           [9,  "0x30",      1,1],
-    "CANARY_2_ABLEISM":           [13, "0xC0",      1,1],
-    "CANARY_3_MATERIAL":          [17, "0x300",     1,0],
-    "CANARY_4_SAFETY":            [21, "0xC00",     1,0],
-    "CANARY_5_DURESS":            [25, "0x3000",    1,0],
-    "CANARY_7_RIGHTS":            [26, "0x15005F7", 1,1],
-    "CANARY_8_RESERVED":          [29, "0xC000",    0,0],
-    "CANARY_9_RESERVED":          [30, "0xD0000",   0,0]    
+    "CANARY_0_SOVEREIGN":         [3,  "0x6",       1,1,0],
+    "CANARY_1_SOMATIC":           [9,  "0x30",      1,1,0],
+    "CANARY_2_ABLEISM":           [13, "0xC0",      1,1,1],
+    "CANARY_3_MATERIAL":          [17, "0x300",     1,0,1],
+    "CANARY_4_SAFETY":            [21, "0xC00",     1,0,2],
+    "CANARY_5_DURESS":            [25, "0x3000",    1,0,2],
+    "CANARY_7_RIGHTS":            [26, "0x15005F7", 1,1,0],
+    "CANARY_8_RESERVED":          [29, "0xC000",    0,0,2],
+    "CANARY_9_RESERVED":          [30, "0xD0000",   0,0,2]    
   },
   "existentialCoreThreatLegal": {
     "1":                         "LEGAL_CAT1_MURDER",
