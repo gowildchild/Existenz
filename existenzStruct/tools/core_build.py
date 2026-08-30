@@ -696,11 +696,11 @@ def main():
     cores_structure_signature = ""
     cores_structure_sign = ""
     if os.path.exists(cores_master_path):
-    with open(cores_master_path, "rb") as f:
-        cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
-        cores_structure_sign = cores_structure_signature[:8]
-    else:
-        cores_structure_signature = "existentialCoreSignaturesCores"
+        with open(cores_master_path, "rb") as f:
+            cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
+            cores_structure_sign = cores_structure_signature[:8]
+        else:
+            cores_structure_signature = "existentialCoreSignaturesCores"
     
     #chain_payload_string = (
     #    existentialCoreCheckMagic.decode('utf-8', errors='ignore') +
