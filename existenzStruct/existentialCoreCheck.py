@@ -17,7 +17,7 @@ from existenzStruct.master.existentialCoreThreat import (
 
 # CRITICAL FILE-GLOBAL ARCHITECTURAL ANCHORS
 # ==========================================================================
-existentialCoreCheckVersion    = "v0.76.14"
+existentialCoreCheckVersion    = "v0.76.15"
 existentialCoreCheckMagic      = b"EX25IMMUT32CORE7617"
 existentialCoreCheckSign       = 0xb36d1e03
 existentialCoreCheckSignature  = "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85"
