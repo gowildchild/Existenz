@@ -132,7 +132,7 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
     
     raw_consolidated_lines = [
         "{\n",
-        f'  "existentialCore": {{\n {", ".join(build_aligned_json_block("existentialCore", core_ord, cmnts)[1:-1])}\n  }},\n',
+        f'  "existentialCore": {{\n {", ".join(build_aligned_json_block("existentialCore", core_ord, cmnts)[1:-1])}  }},\n',
         f'  "existentialCoreThreat": {{\n {", ".join(build_aligned_json_block("existentialCoreThreat", threat_ord, cmnts)[1:-1])}\n  }},\n',
         "  \"existentialCoreThreatLegal\": {\n" + ",\n".join(f'    "{lk}": "{lv}"' for lk, lv in legal_ord.items()) + "\n  }"
     ] 
@@ -393,7 +393,7 @@ def _execute_existenz_platform_autocheck():
         sys.exit(1)
 
 _execute_existenz_platform_autocheck()
-__all__ = ['existentialCore', 'existentialCores', 'existentialCoreThreat', 'existentialCoreThreatLegal', 'existentialCoreThreatShadowVacuum', 'existentialCoreCheck', 'existentialCoreCheckVersion']
+__all__ = ['existentialCore', 'existentialCoreThreat', 'existentialCoreThreatLegal', 'existentialCoreThreatShadowVacuum', 'existentialCoreCheck', 'existentialCoreCheckVersion']
 ''')
 
 def _export_cpp_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
@@ -784,23 +784,26 @@ def main():
                 
             tags = []
             # 1. Evaluate your native structural flags (1=None/Part of Chain, 2=MAGIC, 4=SHA256, 64=Chain, 128=Order)
-            if bitmask > 1 and (bitmask & 1): tags.append("+[CHN]")
-            if bitmask & 2: tags.append("+[MAGIC]")
-            if bitmask & 4: tags.append("+[SHA256]")
-            if bitmask & 64: tags.append("+[/CHN]")
-            if bitmask & 128: tags.append("+[ORDER]")
 
-            if requires_signing:
-                tags.append("+PK:" + ("+PFM" if bitmask & 8 else "") + ("+DEV" if bitmask & 16 else "") + ("+PSN" if bitmask & 32 else ""))
+            if is_signed:
+                if bitmask > 1 and (bitmask & 1): tags.append("+[CHN]")
+                if bitmask & 2: tags.append("+[MAGIC]")
+                if bitmask & 4: tags.append("+[SHA256]")
+                if bitmask & 64: tags.append("+[/CHN]")
+                if bitmask & 128: tags.append("+[ORDER]")
             else:
-                tags.append("-PK:" + ("-PFM" if bitmask & 8 else "") + ("-DEV" if bitmask & 16 else "") + ("-PSN" if bitmask & 32 else ""))
+                if requires_signing:
+                    tags.append("+PK:" + ("+PFM" if bitmask & 8 else "") + ("+DEV" if bitmask & 16 else "") + ("+PSN" if bitmask & 32 else ""))
+                else:
+                    tags.append("-PK:" + ("-PFM" if bitmask & 8 else "") + ("-DEV" if bitmask & 16 else "") + ("-PSN" if bitmask & 32 else ""))
+                    
             if not is_signed and requires_signing:
                 return f"{hex(bitmask)}", str(seq), f"\033[91m[ ! NOT SIGNED ! ] {' '.join(tags)}\033[0m", "├──", "│ ", " └► " if is_last_in_group else "├──"
             return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line, chain_arrow
 
         #print("─" * 134)
 #    if args.step in ["check","verify","compile"]: 
-    if args.step in ["check","verify"]: 
+    if args.step in ["check","verify","sign"]: 
         print(f"  [MAGIC] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
         print(f"  [CHECK] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
         print("")        
@@ -1049,14 +1052,15 @@ def main():
                     dist_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist"))
                     core_p, threat_p, out_p = os.path.join(dist_dir, "existentialCore.json"), os.path.join(dist_dir, "existentialCoreThreat.json"), os.path.join(dist_dir, "existentialCores.json")
                     if not os.path.exists(core_p) or not os.path.exists(threat_p):
-                        print("[-] Error: Core source components absent inside build cache directory.", file=sys.stderr); sys.exit(1)
+                        print("[-] Error: Core source components absent inside build cache directory.", file=sys.stderr); 
+                        sys.exit(1)
                     with open(core_p, "r", encoding="utf-8") as f: 
                         c_json = json.load(f)
                     with open(threat_p, "r", encoding="utf-8") as f: 
                         t_json = json.load(f)
                     master_catalog = {**c_json, **t_json}
                     with open(out_p, "w", encoding="utf-8") as f: 
-                        json.dump(master_catalog, f, indent=2)
+                        json.dump(master_catalog, f, indent=1)
                     print("[+] SUCCESS: Master catalog consolidated cleanly at dist/existentialCores.json")
                 except Exception as ex: 
                     print(f"[-] Standalone Splicer Error: {ex}", file=sys.stderr); 
