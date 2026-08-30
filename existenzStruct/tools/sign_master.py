@@ -29,7 +29,6 @@ if REPO_ROOT not in sys.path:
 int_ver = "v0.76.13"
 
 try:
-    # 🚀 INTERFACE PROTECTION HOOK: Force clean dynamic reloads on your core repository ledger parameters
     import existenzStruct.master.existentialCoreSignatures as sig_module
     from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
 except ImportError as e:
@@ -73,7 +72,6 @@ def load_ssh_private_key(identity, path):
         # Attempt to load the private key unencrypted first
         return serialization.load_ssh_private_key(key_data, password=None)
     except Exception as e:
-        # Catch all algorithm/encryption parsing traps to reliably trigger password prompts
         err_str = str(e).lower()
         if "password" in err_str or "unsupported" in err_str or "encrypted" in err_str or "passphrase" in err_str:
             print(f"🔒 [SECURITY ENVELOPE] Private key access token for '{identity}' is password-protected.")
@@ -127,22 +125,22 @@ def main():
     loaded_keys = {}
     computed_asymmetric_signatures = []
 
-    # 🚀 FIX RESOLVED: Combined getattr with fallback matching to prevent zero-hash signature calculation corruption
+    # 🚀 STATIC CLASS EXTRACATION PASS: Read directly from class wrapper properties to prevent local variable loop overrides
     hash_payloads_map = {
         "Magic": existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic),
-        "Core": getattr(sig_module, "existentialCore", ""),
-        "CoreCheck": getattr(sig_module, "existentialCoreCheck", ""),
-        "CoreThreatStruct": getattr(sig_module, "existentialCoreThreatStruct", getattr(sig_module, "existentialCoreThreatRoot", "")),
-        "CoreThreatLegal": getattr(sig_module, "existentialCoreThreatLegal", ""),
-        "CoreThreatShadowVacuum": getattr(sig_module, "existentialCoreThreatShadowVacuum", ""),
-        "CoreThreat": getattr(sig_module, "existentialCoreThreat", ""),
-        "Cores": getattr(sig_module, "existentialCores", ""),
-        "CoreChain": getattr(sig_module, "existentialCoreChain", "")
+        "Core": getattr(existentialCoreSignatures, "existentialCore", ""),
+        "CoreCheck": getattr(existentialCoreSignatures, "existentialCoreCheck", ""),
+        "CoreThreatStruct": getattr(existentialCoreSignatures, "existentialCoreThreatStruct", getattr(existentialCoreSignatures, "existentialCoreThreatRoot", "")),
+        "CoreThreatLegal": getattr(existentialCoreSignatures, "existentialCoreThreatLegal", ""),
+        "CoreThreatShadowVacuum": getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", ""),
+        "CoreThreat": getattr(existentialCoreSignatures, "existentialCoreThreat", ""),
+        "Cores": getattr(existentialCoreSignatures, "existentialCores", ""),
+        "CoreChain": getattr(existentialCoreSignatures, "existentialCoreChain", "")
     }
 
     sorted_signing_rules = sorted(
         existentialCoreSignatures.existentialCoreSigned, 
-        key=lambda element: element
+        key=lambda element: element[5]
     )
 
     if args.stage == "verify":
