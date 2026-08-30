@@ -754,7 +754,7 @@ def main():
     chain_structures_sign = chain_structures_signature[:8]
     # existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
 
-    if args.step in ["check","verify","compile","merge"]:
+    if args.step in ["check","verify","compile","merge","sign"]:
         print("")        
         matrix_rules_lookup = {}
         for row in existentialCoreSignatures.existentialCoreSigned:
