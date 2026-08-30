@@ -130,14 +130,14 @@ def main():
     # 🚀 ATTRIBUTE NAME ALIGNMENT CORRECTIONS: Unified to synchronize flawlessly with reflection lookups
     hash_payloads_map = {
         "Magic": existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic),
-        "Core": existentialCoreSignatures.existentialCore,
-        "CoreThreat": existentialCoreSignatures.existentialCoreThreat,
-        "CoreThreatStruct": getattr(existentialCoreSignatures, "existentialCoreThreatStruct", getattr(existentialCoreSignatures, "existentialCoreThreatRoot", "")),
-        "CoreThreatLegal": existentialCoreSignatures.existentialCoreThreatLegal,
-        "CoreThreatShadowVacuum": getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET"),
-        "CoreCheck": existentialCoreSignatures.existentialCoreCheck,
-        "Cores": getattr(existentialCoreSignatures, "existentialCores", "NOT_SIGNED_YET"),
-        "CoreChain": getattr(existentialCoreSignatures, "existentialCoreChain", "")
+        "Core": getattr(sig_module, "existentialCore", ""),
+        "CoreCheck": getattr(sig_module, "existentialCoreCheck", ""),
+        "CoreThreatStruct": getattr(sig_module, "existentialCoreThreatStruct", ""),
+        "CoreThreatLegal": getattr(sig_module, "existentialCoreThreatLegal", ""),
+        "CoreThreatShadowVacuum": getattr(sig_module, "existentialCoreThreatShadowVacuum", ""),
+        "CoreThreat": getattr(sig_module, "existentialCoreThreat", ""),
+        "Cores": getattr(sig_module, "existentialCores", ""),
+        "CoreChain": getattr(sig_module, "existentialCoreChain", "")
     }
 
     # Order everything cleanly by sequence hierarchy (Sequence 0 -> 1 -> 2 -> 3 -> 9)
