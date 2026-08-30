@@ -1,0 +1,22 @@
+# ==========================================================================
+# EXISTENZ CORE BUILDER (Signing Suite & Cross-Compiler
+# Version: v0.76.15 | Github Deployment
+# Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
+# Released under strict Non-Commercial Open-Source License terms.
+# ==========================================================================
+
+substitutions:
+  LEGAL_1: "LEGAL_CAT1_MURDER"
+  LEGAL_2: "LEGAL_CAT2_PHYSICAL_VIOLATION"
+  LEGAL_4: "LEGAL_CAT3_COERCION"
+  LEGAL_8: "LEGAL_CAT4_CHARACTER_ASSASSINATION"
+  LEGAL_16: "LEGAL_CAT5_PSYCHOLOGICAL_INTIMIDATION"
+  LEGAL_32: "LEGAL_CAT2_PHYSICAL_VIOLATION"
+  LEGAL_64: "LEGAL_CAT6_ABLEISM"
+  LEGAL_128: "LEGAL_CAT8_INTELLECTUAL_PIRACY"
+  LEGAL_256: "LEGAL_CAT9_THEFT"
+  LEGAL_8192: "LEGAL_CAN1_SYSTEMCRISIS"
+  LEGAL_1048576: "LEGAL_CAN3_HUMAN"
+  LEGAL_4194304: "LEGAL_CAN4_INCLUSION"
+  LEGAL_89130487: "LEGAL_CAN2_EXPLOITATION"
+  LEGAL_2290263560: "LEGAL_CAN5_PREDATORY"

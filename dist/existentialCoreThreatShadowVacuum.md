@@ -1,0 +1,28 @@
+# Existenz Reference: existentialCoreThreatShadowVacuum
+
+> ==========================================================================
+> EXISTENZ CORE BUILDER (Signing Suite & Cross-Compiler
+> Version: v0.76.15 | Github Deployment
+> Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
+> Released under strict Non-Commercial Open-Source License terms.
+> ==========================================================================
+
+| Register Key Index | Mapped Shadow Vacuum Context Definition Name |
+| :--- | :--- |
+| `1` | `VACUUM_DEHUMANISATION` |
+| `2` | `VACUUM_DISFRANCHISEMENT` |
+| `4` | `VACUUM_CORRUPTION` |
+| `8` | `VACUUM_DRIFT_SOVEREIGN` |
+| `16` | `VACUUM_ATTRITION_PSYCHOLOGY` |
+| `32` | `VACUUM_SOMATIC_DRAIN` |
+| `64` | `VACUUM_NEURONORMATIVITY` |
+| `128` | `VACUUM_ATTRITION_INSTITUTIONAL` |
+| `256` | `VACUUM_SYSTEMIC_DESPOILMENT` |
+| `512` | `VACUUM_DRIFT_SOMATIC` |
+| `1024` | `VACUUM_PANOPTICISM` |
+| `8192` | `VACUUM_DRIFT_SYSTEMIC` |
+| `1048576` | `VACUUM_INVERT_COMPLIANCE` |
+| `4194304` | `VACUUM_INVERT_NORMALIZATION` |
+| `16777216` | `VACUUM_INVERT_INERTIA` |
+| `89130487` | `VACUUM_PARASITISM` |
+| `2290263560` | `VACUUM_HARVESTING` |
