@@ -192,7 +192,6 @@ def main():
                         sys.exit(1)
                 
                 try:
-                    # Execute asymmetric cryptographic signature over our target framework properties
                     private_signature_bytes = loaded_keys[target_key].sign(expected_hash.encode('utf-8'))
                     signature_hex_output = private_signature_bytes.hex()
                     current_row_signatures.append(signature_hex_output)
@@ -243,19 +242,18 @@ def main():
         clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic)
         target_vacuum_sig = getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET")
 
-        # Capture the proper current structural signatures dynamically inside outer variables
         core_sig = existentialCoreSignatures.existentialCore
         threat_struct_sig = getattr(existentialCoreSignatures, "existentialCoreThreatStruct", getattr(existentialCoreSignatures, "existentialCoreThreatRoot", ""))
         legal_sig = existentialCoreSignatures.existentialCoreThreatLegal
         threat_sig = existentialCoreSignatures.existentialCoreThreat
         cores_sig = getattr(existentialCoreSignatures, "existentialCores", "NOT_SIGNED_YET")
         check_sig = existentialCoreSignatures.existentialCoreCheck
+        core_chain_pure_hash = chain_structures_signature if 'chain_structures_signature' in locals() else check_sig
 
         final_core_chain_sig = "NOT_SIGNED_YET"
         if computed_asymmetric_signatures:
             for sig_line in computed_asymmetric_signatures:
                 if '"CoreChain"' in sig_line:
-                    # 🚀 FIXED STRING INDEX: Extracts the pure signature string component (index 7) instead of the list array!
                     parts = sig_line.split('"')
                     if len(parts) >= 8:
                         final_core_chain_sig = parts[7]
@@ -273,7 +271,7 @@ def main():
             f"    existentialCoreThreat                        = \"{threat_sig}\"\n"
             f"    existentialCores                             = \"{cores_sig}\"\n"                    
             f"    existentialCoreCheck                         = \"{check_sig}\"\n"
-            f"    existentialCoreChain                         = \"{final_core_chain_sig}\"\n\n"
+            f"    existentialCoreChain                         = \"{core_chain_pure_hash}\"\n\n"
             f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys) + "\n    )\n\n"
             f"    existentialCoreSigned = (\n" + ",\n".join(computed_asymmetric_signatures) + "\n    )\n"
         )
@@ -281,7 +279,6 @@ def main():
         with open(output_signatures_file, "w", encoding="utf-8") as f:
             f.write(signatures_content)
 
-        # 🚀 AUTOMATED DUAL-WRITE SYNCHRONIZATION PASS: Keeps master/ and dist/ maps completely unified down to the bit
         try:
             if args.dest == "master":
                 alt_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
