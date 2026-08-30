@@ -33,7 +33,7 @@ int_ver = "v0.76.13"
 try:
     # Safely load the local signatures file without namespace prefix drift failures
     import existenzStruct.master.existentialCoreSignatures
-    from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
+    from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic, exostentialCores
     
 except ImportError:
     print("    sign_master.py: ")
