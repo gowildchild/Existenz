@@ -111,7 +111,7 @@ class existentialCoreCheck:
         sign_immutable       = "57c413f8531731df0d2f09a260ea36c7e49269348b553fdeeaa2dd11e7bc4bb9"
         sign_structure       = "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
         #sign_canary          = "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
-        sign_corechain       = "b53416022fc024be48bdd3e35b0474afb249ca4a4a8e5cd83a9ea4539b914573"
+        sign_corechain       = "c83f2a0d6fadeeb69346e33fcabf4433c91c40f70bdaf79b9f5fb6b6096d0a4c"
 
         if (active_register_state & existentialCore.CANARY_S_COLLIDE) != 0:
             return False
