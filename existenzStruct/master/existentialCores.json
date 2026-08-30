@@ -1,4 +1,4 @@
-{ 
+{
   "existentialCore": {    
     "EXISTENCE": {                    "value": 1, "expr": "1 << 0",         "type": "PILLAR",      "comment": "You, alive, with a body"                       },
     "AUTONOMY": {                     "value": 2, "expr": "1 << 1",         "type": "PILLAR",      "comment": "The Sovereign Right to Choose"                 },
