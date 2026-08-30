@@ -1,5 +1,5 @@
 # ==========================================================================
-# EXISTENZ CORE MASTER Private Key Signer v0.76.13
+# EXISTENZ CORE MASTER Private Key Signer v0.76.15
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
