@@ -2,7 +2,7 @@
 # ==========================================================================
 # THE EXISTENZ PLATFORM (Local Signing Suite & Cross-Compiler v0.76i)
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
-# ==========================================================================
+# ==========================================================================S
 # FILE: existenzStruct/tools/core_build.py
 # 
 import os
