@@ -615,7 +615,12 @@ def perform_cross_language_exports(signatures_map: dict, mode: str):
     full_qkeys = list(existentialCoreSignatures.existentialCoreSigned)
     full_psigned = []
 
-    salt_bytes = bytes.fromhex(signatures_map['existentialCoreCheckSignatures'])
+
+    salt_token = signatures_map.get('existentialCoreCheckSignatures', '00' * 32)
+    if not salt_token or not all(c in '0123456789abcdefABCDEF' for c in salt_token) or len(salt_token) < 32:
+        salt_token = '00' * 32
+    salt_bytes = bytes.fromhex(salt_token)    
+    #salt_bytes = bytes.fromhex(signatures_map['existentialCoreCheckSignatures'])
     for name, short_var, hash_var, sign_var, bitmask, sequence in existentialCoreSignatures.existentialCoreSigned:
         if hash_var == "existentialCoreMagicHash":
             token_hash = hmac.new(salt_bytes, existentialCoreCheckMagic, hashlib.sha256).hexdigest()
