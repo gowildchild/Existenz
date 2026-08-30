@@ -4,7 +4,7 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
 # Released under strict Non-Commercial Open-Source License terms.
 # Commercial use requires immediate written license and explicit payment.
-# ==========================================================================c
+# ==========================================================================
 # FILE: struct/existentialCores.py
 # v0.76f -- exactly the same as existentialCoreImport.py ; just shorter
 #
