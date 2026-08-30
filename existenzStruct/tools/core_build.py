@@ -1072,7 +1072,8 @@ def main():
         print(f"  ├── Derived Salt Token Token  : \"{derived_salt_token}\"")
         print("──┴───────────────────────────────────────────────────────────────")
         if args.run == "WET":
-            target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+            # 🚀 WORKSPACE RE-ALIGNMENT: Resolve baseline master path first
+            target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
             os.makedirs(target_master_dir, exist_ok=True)
             target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
             
@@ -1087,25 +1088,36 @@ def main():
             formatted_signed = ",\n".join(f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {seq})" 
                                            for name, short_var, hash_var, sign_var, bitmask, seq in existentialCoreSignatures.existentialCoreSigned)
 
+            raw_signature_payload = (
+                make_header("#") +
+                f"existentialCoreVersion                       = \"{existentialCoreVersion}\"\n"
+                f"existentialCoreCheckMagic                    = b\"{clean_magic_str}\"\n"
+                f"existentialCoreCheckSignatures               = \"{derived_salt_token}\"\n\n"
+                f"class existentialCoreSignatures:\n"
+                f"    existentialCore                              = \"{core_structure_signature}\"\n"
+                f"    existentialCoreThreatRoot                    = \"{threat_structure_signature}\"\n"
+                f"    existentialCoreThreatLegal                   = \"{threat_legal_structure_signature}\"\n"
+                f"    existentialCoreThreatShadowVacuum            = \"{threat_shadow_structure_signature}\"\n"
+                f"    existentialCoreThreat                        = \"{threat_structures_signature}\"\n"
+                f"    existentialCoreCheck                         = \"{check_structures_signature}\"\n"
+                f"    existentialCores                             = \"{cores_structure_signature}\"\n\n"
+                f"    existentialPublicKeys = (\n{formatted_pkeys}\n    )\n\n"
+                f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n"
+            )
+
+            # Write out to the source tree master repository folder
             with open(target_sig_file, "w", encoding="utf-8") as f:
-                f.write(make_header("#") +
-                        f"existentialCoreVersion                       = \"{existentialCoreVersion}\"\n"
-                        f"existentialCoreCheckMagic                    = b\"{clean_magic_str}\"\n"
-                        f"existentialCoreCheckSignatures               = \"{derived_salt_token}\"\n\n"
-                        f"class existentialCoreSignatures:\n"
-                        f"    existentialCore                              = \"{core_structure_signature}\"\n"
-                        f"    existentialCoreThreatRoot                    = \"{threat_structure_signature}\"\n"
-                        f"    existentialCoreThreatLegal                   = \"{threat_legal_structure_signature}\"\n"
-                        f"    existentialCoreThreatShadowVacuum            = \"{threat_shadow_structure_signature}\"\n"
-                        f"    existentialCoreThreat                        = \"{threat_structures_signature}\"\n"
-                        f"    existentialCoreCheck                         = \"{check_structures_signature}\"\n"
-                        f"    existentialCores                             = \"{cores_structure_signature}\"\n\n"
-                        f"    existentialPublicKeys = (\n{formatted_pkeys}\n    )\n\n"
-                        f"    existentialCoreSigned = (\n{formatted_signed}\n    )\n")
+                f.write(raw_signature_payload)
             print("[+] Target folder master signatures built.")
 
+            # 🚀 CACHE PASS-THROUGH: Mirror file straight down into distribution folder structure
+            dist_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+            os.makedirs(dist_master_dir, exist_ok=True)
+            dist_sig_file = os.path.join(dist_master_dir, "existentialCoreSignatures.py")
+            with open(dist_sig_file, "w", encoding="utf-8") as f:
+                f.write(raw_signature_payload)
+            print(f"[+] Synced master signature ledger mirrored directly down to: {dist_sig_file}")
 
-        
         local_cfg_path = os.path.abspath(os.path.join(REPO_ROOT, "sign_integrity_config.json"))
 
         if os.path.exists(local_cfg_path):
@@ -1131,9 +1143,6 @@ def main():
         if args.step == "sign":
             sys.exit(0)
 
-
-
-    
     elif args.step in ["compile", "merge"]:
         # Phase A: Standalone or Early Pipeline Execution
         if args.step == "merge":
@@ -1148,7 +1157,6 @@ def main():
                 long_name = key_translation_map.get(name, name)
                 current_live_hash = live_computed_hashes.get(long_name, "")
                 target_frozen_sig = getattr(existentialCoreSignatures, long_name, "") if hasattr(existentialCoreSignatures, long_name) else ""
-
 
                 if current_live_hash and target_frozen_sig:
                     if not hmac.compare_digest(current_live_hash, target_frozen_sig):
@@ -1165,54 +1173,12 @@ def main():
                 print(f"[-] GENERATION ERROR: Exporter layer broken.", file=sys.stderr)
                 raise ex
 
-        if args.run == "WET" and os.path.exists(core_p) and os.path.exists(threat_p):
-            try:
-                with open(core_p, "r", encoding="utf-8") as f:
-                    c_json = json.load(f)
-                with open(threat_p, "r", encoding="utf-8") as f:
-                    t_json = json.load(f)
-
-                master_catalog = {**c_json, **t_json}
-            
-                # Form the file in the workspace directory first
-                with open(out_p, "w", encoding="utf-8") as f:
-                    json.dump(master_catalog, f, indent=2)
-                print("[+] EARLY COMPILATION: Master catalog consolidated cleanly before hash initialization.")
-            except Exception as ex:
-                print(f"[-] Early Splicer Pipeline Error: {ex}", file=sys.stderr)
-
-        
-        if args.run == "WET":
-            try:
-                dist_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist"))
-                core_p = os.path.join(dist_dir, "existentialCore.json")
-                threat_p = os.path.join(dist_dir, "existentialCoreThreat.json")
-                out_p = os.path.join(dist_dir, "existentialCores.json")
-
-                if not os.path.exists(core_p) or not os.path.exists(threat_p):
-                    print("[-] Error: Core Cache Error.", file=sys.stderr)
-                    sys.exit(1)
-
-                with open(core_p, "r", encoding="utf-8") as f:
-                    c_json = json.load(f)
-                with open(threat_p, "r", encoding="utf-8") as f:
-                    t_json = json.load(f)
-
-                master_catalog = {**c_json, **t_json}
-
-                with open(out_p, "w", encoding="utf-8") as f:
-                    json.dump(master_catalog, f, indent=2)
-                print("[+] SUCCESS: Master catalog consolidated cleanly at dist/existentialCores.json")
-            except Exception as ex:
-                print(f"[-] Splicer Pipeline Error: {ex}", file=sys.stderr)
-                sys.exit(1)
-
         # Phase C: Second-Pass Cryptographic Verification (Runs ONLY during compile completions)
         if args.step == "compile":
             print("[*] Finalizing compilation pipeline with terminal hash-chain audits...")
             
-            # Recalculate the FRESH hash of the file we just wrote to disk!
-            cores_master_path = os.path.abspath(os.path.join(REPO_ROOT, "dist", "existentialCores.json"))
+            # Recalculate the FRESH hash of the file we just wrote to disk inside master!
+            cores_master_path = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master", "existentialCores.json"))
             if os.path.exists(cores_master_path):
                 with open(cores_master_path, "rb") as f:
                     cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
@@ -1256,3 +1222,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
