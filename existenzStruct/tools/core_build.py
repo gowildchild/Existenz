@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # ==========================================================================
 # THE EXISTENZ PLATFORM (Local Signing Suite & Cross-Compiler v0.76i)
-# Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
+# Copyright (c) 2026 by Gunther Voet. All Rights Reserved. s
 # ==========================================================================
 # FILE: existenzStruct/tools/core_build.py
 # 
