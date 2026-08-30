@@ -97,9 +97,9 @@ def load_ssh_private_key(identity, path):
 
 def main():
     parser = argparse.ArgumentParser(description="The Existenz Platform: Master Asymmetric Private Signer")
-    parser.add_argument("-override", "--override", choices=["yes", "no"], default="no", required=True, help="Override lock")
+    parser.add_argument("-override", "--override", choices=["yes", "no"], default="no", help="Override start-lock")
     parser.add_argument("-stage", "--stage", choices=["verify", "sign"], required=True, help="Operational state selection.")
-    parser.add_argument("-dist", "--dist", choices=["existenzStruct", "dist"], default="existenzStruct", required=True, help="Sign which distro.")
+    parser.add_argument("-dist", "--dist", choices=["existenzStruct", "dist"], default="existenzStruct", required=False, help="Sign which distro.")
     parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to local private key location config file.")
     parser.add_argument("-run", choices=["wet", "dry"], default="wet", help="Execution mutation layer gate. Default is 'wet'.")
     parser.add_argument("-v", "--version", action="store_true", help="Display platform version metadata.")
