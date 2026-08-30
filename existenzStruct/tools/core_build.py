@@ -135,6 +135,7 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
         f'  "existentialCoreThreat": {{\n {", ".join(build_aligned_json_block("existentialCoreThreat", threat_ord, cmnts)[1:-1])}\n  }},\n',
         "  \"existentialCoreThreatLegal\": {\n" + ",\n".join(f'    "{lk}": "{lv}"' for lk, lv in legal_ord.items()) + "\n  }"
     ] 
+    
     if vacuum_ord:
         json_t.append("    \"existentialCoreThreatShadowVacuum\": {")
         max_v_k = max(len(str(k)) for k in vacuum_ord.keys())
@@ -690,6 +691,25 @@ def main():
     core_structure_payload = core_structure.encode('utf-8')
     core_structure_signature = hmac.new(existentialCoreCheckMagic, core_structure_payload, hashlib.sha256).hexdigest()
     core_structure_sign = core_structure_signature[:8]
+
+    cores_master_path = os.path.abspath(os.path.join(target_master_dir, "dist", "existentialCores.json"))
+    cores_structure_signature = ""
+    cores_structure_sign = ""
+    if os.path.exists(cores_master_path):
+    with open(cores_master_path, "rb") as f:
+        cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
+        cores_structure_sign = cores_structure_signature[:8]
+    else:
+        cores_structure_signature = "existentialCoreSignaturesCores"
+    
+    #chain_payload_string = (
+    #    existentialCoreCheckMagic.decode('utf-8', errors='ignore') +
+    #    core_structure_signature +
+    #    threat_structures_signature +
+    #    check_structures_signature +
+    #    cores_structure_signature
+    #)    
+    
     existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
 
     threat_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCoreThreat.__members__.items()))
@@ -779,6 +799,7 @@ def main():
         print("─" * 111)
         
         bm_c, sq_c, tg_c, _, _, _ = get_layer_tags("Core")
+        bm_cb, sq_cb, tg_cb, _, _, _ = get_layer_tags("Cores")        
         bm_cc, sq_cc, tg_cc, _, _, _ = get_layer_tags("CoreCheck")
         bm_ch, sq_ch, tg_ch, _, _, _ = get_layer_tags("CoreChain")        
         bm_ct, sq_ct, tg_ct, conn_ct, vl_ct, ch_ct = get_layer_tags("CoreThreatStruct", is_last_in_group=False)
@@ -790,6 +811,8 @@ def main():
         print("  │ ")
         print(f"  ├── [SQ {sq_c} | {bm_c.ljust(4)}] existentialCore.py          ─┬─► Sign: 0x{core_structure_sign} | {tg_c}")
         print(f"  │                                              └─► Signature: \"{core_structure_signature}\"")
+        print(f"  ├── [SQ {sq_cb} | {bm_cb.ljust(4)}] existentialCores.json     ─┬─► Sign: 0x{cores_structure_sign} | {tg_cb}")
+        print(f"  │                                              └─► Signature: \"{cores_structure_signature}\"")        
         print(f"  ├── [SQ {sq_cc} | {bm_cc.ljust(4)}] existentialCoreCheck.py     ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
         print(f"  │                                              └─► Signature: \"{check_structures_signature}\"")
 
@@ -820,6 +843,7 @@ def main():
         live_session_hashes = {
             "existentialCoreMagicHash": existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic),
             "existentialCoreHash": core_structure_signature,
+            "existentialCoresHash": cores_structure_signature,
             "existentialCoreCheckHash": check_structures_signature,
             "existentialCoreThreatStructHash": threat_structure_signature,
             "existentialCoreThreatLegalHash": threat_legal_structure_signature,
@@ -947,6 +971,7 @@ def main():
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
         live_computed_hashes = {
             "existentialCore": core_structure_signature, 
+            "existentialCores": cores_structure_signature,
             "existentialCoreThreatRoot": threat_structure_signature, 
             "existentialCoreThreatLegal": threat_legal_structure_signature,
             "existentialCoreThreatShadowVacuum": threat_shadow_structure_signature, 
@@ -957,6 +982,7 @@ def main():
         key_translation_map = {
             "Magic": "Magic", 
             "Core": "existentialCore", 
+            "Cores": "existentialCores", 
             "CoreCheck": "existentialCoreCheck", 
             "CoreThreatStruct": "existentialCoreThreatRoot", 
             "CoreThreatLegal": "existentialCoreThreatLegal", 
@@ -987,6 +1013,7 @@ def main():
         
         global_sigs_map = {
             "existentialCore": core_structure_signature, 
+            "existentialCores": cores_structure_signature,
             "existentialCoreThreatRoot": threat_structure_signature, 
             "existentialCoreThreatLegal": threat_legal_structure_signature,
             "existentialCoreThreatShadowVacuum": threat_shadow_structure_signature, 
@@ -997,7 +1024,7 @@ def main():
         print("──┬ [ verified signatures blueprint ] ────────────────────────────")
         for signature_key, digest_hash in global_sigs_map.items():
             if signature_key != "existentialCoreCheckSignatures": 
-                print(f" ├── {signature_key.ljust(26)} = \"{digest_hash}\"")
+                print(f"  ├── {signature_key.ljust(26)} = \"{digest_hash}\"")
         print("──┴───────────────────────────────────────────────────────────────\n[*] Synchronizing updated system layout into distribution vaults...")
         try: 
             perform_cross_language_exports(global_sigs_map, args.run.lower())
