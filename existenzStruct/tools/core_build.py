@@ -215,7 +215,7 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
             f.write(make_header("#") + "substitutions:\n" + "\n".join(f"  VACUUM_{str(k)}: \"{v}\"" for k, v in vacuum_ord.items()) + "\n")
 
     try:
-        # Calculate strict column width thresholds over unified layouts
+        # Calculate strict column width thresholds over unified layouts for precise layout padding
         all_combined_keys = list(core_ord.keys()) + list(threat_ord.keys())
         max_k_len = max(len(k) for k in all_combined_keys)
         
@@ -233,6 +233,7 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
                 expr_map[k] = f"0x{v:08x}"
         max_ex_len = max(len(ex) for ex in expr_map.values())
 
+        # Construct flat root structure lines matching build_aligned_json_block output loops
         def compile_nested_json_lines(ordered_layout: dict):
             lines_buffer = []
             for k, v in ordered_layout.items():
@@ -247,11 +248,13 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
                 lines_buffer.append(f'        {k_pad}{{\"value\": {v_pad}\"expr\": {ex_pad}\"type\": {t_pad}\"comment\": \"{clean_cmnt}\"}}')
             return ",\n".join(lines_buffer)
 
+        # Build structural array blocks separated cleanly by container headers
         json_lines_master = ["{"]
         
-        json_lines_master.append('    "existentialCore": {')
+        # 🚀 NEWLINES INSTANTIATED: Forces a carriage return right after opening braces and handles one entry per line
+        json_lines_master.append('    "existentialCore": {\n')
         json_lines_master.append(compile_nested_json_lines(core_ord))
-        json_lines_master.append("    },")
+        json_lines_master.append("\n    },")
         
         json_lines_master.append('    "existentialCoreThreat": {')
         json_lines_master.append(compile_nested_json_lines(threat_ord))
