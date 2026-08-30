@@ -1,4 +1,4 @@
-## Mapping internal mechanics (introspection) with brutal complex outside world systematics
+## Mapping internal mechanics (introspection) with brutal complex outside world systematics 
 
 # The Architecture of Asymmetric Exploitation: A Forensic Analysis of Systemic Paradoxes
 
