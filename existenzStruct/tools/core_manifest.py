@@ -13,7 +13,7 @@ import getpass
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
 
-INT_VERSION = "v0.76.13"
+INT_VERSION = "v0.76.14"
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
 MANIFEST_OUTPUT = os.path.join(REPO_ROOT, "manifest.json")
