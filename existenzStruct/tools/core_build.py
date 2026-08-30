@@ -120,19 +120,31 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
     """Outputs agnostic formats (JSON, XML, YAML, CSV, Markdown) straight to the root of dist/."""
     with open(os.path.join(dist_dir, "existentialCore.json"), "w", encoding="utf-8") as f:
         f.write("{\n" + "\n".join(build_aligned_json_block("existentialCore", core_ord, cmnts)) + "\n}\n")
-
+    master_catalog_path = os.path.abspath(os.path.join(dist_dir, "..", "existenzStruct", "existentialCores.json"))
+    os.makedirs(os.path.dirname(master_catalog_path), exist_ok=True)            
     json_t = ["{", "\n".join(build_aligned_json_block("existentialCoreThreat", threat_ord, cmnts)) + ",", "    \"existentialCoreThreatLegal\": {"]
     max_l_k = max(len(str(k)) for k in legal_ord.keys())
     json_t.append(",\n".join(f'        "{lk}":'.ljust(max_l_k + 11) + f'"{lv}"' for lk, lv in legal_ord.items()) + "\n    },")
+    raw_consolidated_lines = [
+        "{\n",
+        f'  "existentialCore": {{\n {", ".join(build_aligned_json_block("existentialCore", core_ord, cmnts)[1:-1])}\n  }},\n',
+        f'  "existentialCoreThreat": {{\n {", ".join(build_aligned_json_block("existentialCoreThreat", threat_ord, cmnts)[1:-1])}\n  }},\n',
+        "  \"existentialCoreThreatLegal\": {\n" + ",\n".join(f'    "{lk}": "{lv}"' for lk, lv in legal_ord.items()) + "\n  }"
+    ]    
     if vacuum_ord:
         json_t.append("    \"existentialCoreThreatShadowVacuum\": {")
         max_v_k = max(len(str(k)) for k in vacuum_ord.keys())
         json_t.append(",\n".join(f'        "{vk}":'.ljust(max_v_k + 11) + f'"{vv}"' for vk, vv in vacuum_ord.items()) + "\n    },")
+        raw_consolidated_lines[-1] += ",\n"
+        raw_consolidated_lines.append("  \"existentialCoreThreatShadowVacuum\": {\n" + ",\n".join(f'    "{vk}": "{vv}"' for vk, vv in vacuum_ord.items()) + "\n  }")
+        raw_consolidated_lines.append(f',\n  "existentialCoreThreatSignature": "{sigs["existentialCoreThreat"]}"\n}}')        
         
     json_t.append(f'    "existentialCoreThreatSignature": "{sigs["existentialCoreThreat"]}"\n}}')
     with open(os.path.join(dist_dir, "existentialCoreThreat.json"), "w", encoding="utf-8") as f:
         f.write("\n".join(json_t) + "\n")
-
+    with open(master_catalog_path, "w", encoding="utf-8") as f:
+        f.write("".join(raw_consolidated_lines) + "\n")
+    
     def escape_xml_attr(txt: str) -> str:
         return txt.replace('&', '&amp;').replace('"', '&quot;').replace("'", '&apos;').replace('<', '&lt;').replace('>', '&gt;')
 
