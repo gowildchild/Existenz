@@ -214,8 +214,9 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
         with open(os.path.join(dist_dir, "esphome", "single", "esphomeThreatShadowVacuum.yaml"), "w", encoding="utf-8") as f:
             f.write(make_header("#") + "substitutions:\n" + "\n".join(f"  VACUUM_{str(k)}: \"{v}\"" for k, v in vacuum_ord.items()) + "\n")
 
+    # 🚀 SINGLE-LINE INDENTED ENTRY GENERATION TRACK
     try:
-        # Calculate strict column width thresholds over unified layouts for precise layout padding
+        # Calculate strict column width thresholds over unified layouts for unified alignment
         all_combined_keys = list(core_ord.keys()) + list(threat_ord.keys())
         max_k_len = max(len(k) for k in all_combined_keys)
         
@@ -233,57 +234,48 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
                 expr_map[k] = f"0x{v:08x}"
         max_ex_len = max(len(ex) for ex in expr_map.values())
 
-        # Construct flat root structure lines matching build_aligned_json_block output loops
-        def compile_nested_json_lines(ordered_layout: dict):
+        # Construct flat root structure lines packed tightly as a continuous single-line string
+        def compile_horizontal_json_string(ordered_layout: dict):
             lines_buffer = []
             for k, v in ordered_layout.items():
                 raw_cmnt = cmnts.get(k, "")
                 clean_cmnt = clean_context_description(raw_cmnt).replace('"', '\\"')
                 struct_type = parse_structural_type(raw_cmnt, k)
                 
-                k_pad = f'"{k}":'.ljust(max_k_len + 3)
-                v_pad = f'{v},'.ljust(max_v_len + 2)
-                ex_pad = f'"{expr_map[k]}",'.ljust(max_ex_len + 4)
-                t_pad = f'"{struct_type}",'.ljust(14)
-                lines_buffer.append(f'        {k_pad}{{\"value\": {v_pad}\"expr\": {ex_pad}\"type\": {t_pad}\"comment\": \"{clean_cmnt}\"}}')
-            return ",\n".join(lines_buffer)
+                k_pad = f'"{k}":'
+                v_pad = f'{v},'
+                ex_pad = f'"{expr_map[k]}",'
+                t_pad = f'"{struct_type}",'
+                lines_buffer.append(f'{k_pad}{{\"value\": {v_pad} \"expr\": {ex_pad} \"type\": {t_pad} \"comment\": \"{clean_cmnt}\"}}')
+            return ", ".join(lines_buffer)
 
-        # Build structural array blocks separated cleanly by container headers
-        json_lines_master = ["{"]
-        
-        # 🚀 NEWLINES INSTANTIATED: Forces a carriage return right after opening braces and handles one entry per line
-        json_lines_master.append('    "existentialCore": {\n')
-        json_lines_master.append(compile_nested_json_lines(core_ord))
-        json_lines_master.append("\n    },")
-        
-        json_lines_master.append('    "existentialCoreThreat": {')
-        json_lines_master.append(compile_nested_json_lines(threat_ord))
-        json_lines_master.append("    },")
+        # Re-assemble the master string explicitly using backslashes to control carriage returns
+        raw_final_payload_string = (
+            "{\n"
+            f'    "existentialCore": {{\n        {compile_horizontal_json_string(core_ord)}\n    }},\n'
+            f'    "existentialCoreThreat": {{\n        {compile_horizontal_json_string(threat_ord)}\n    }},\n'
+        )
         
         # Inject structural legal reference metadata maps
-        json_lines_master.append('    "existentialCoreThreatLegal": {')
         max_l_k = max(len(str(lk)) for lk in legal_ord.keys())
         legal_lines = ",\n".join(f'        "{lk}":'.ljust(max_l_k + 11) + f'"{lv}"' for lk, lv in legal_ord.items())
-        json_lines_master.append(legal_lines + "\n    },")
+        raw_final_payload_string += f'    "existentialCoreThreatLegal": {{\n{legal_lines}\n    }},\n'
         
         # Inject structural vacuum reference metadata maps
         if vacuum_ord:
-            json_lines_master.append('    "existentialCoreThreatShadowVacuum": {')
             max_v_k = max(len(str(vk)) for vk in vacuum_ord.keys())
             vacuum_lines = ",\n".join(f'        "{vk}":'.ljust(max_v_k + 11) + f'"{vv}"' for vk, vv in vacuum_ord.items())
-            json_lines_master.append(vacuum_lines + "\n    },")
+            raw_final_payload_string += f'    "existentialCoreThreatShadowVacuum": {{\n{vacuum_lines}\n    }},\n'
 
         # Terminate file footprint layout using your dynamic threat signature variable
-        json_lines_master.append(f'    "existentialCoreThreatSignature": "{sigs["existentialCoreThreat"]}"\n}}')
-        raw_final_payload_string = "\n".join(json_lines_master)
+        raw_final_payload_string += f'    "existentialCoreThreatSignature": "{sigs["existentialCoreThreat"]}"\n}}'
 
-        # 🚀 RE-ALIGNED PATH CODES: Correctly traveling backward past the dist directory cache
+        # Establish physical repository path configurations
         master_folder_path = os.path.abspath(os.path.join(dist_dir, "..", "existenzStruct", "master"))
         os.makedirs(master_folder_path, exist_ok=True)
         
         master_catalog_destination = os.path.join(master_folder_path, "existentialCores.json")
         distribution_cache_destination = os.path.join(dist_dir, "existentialCores.json")
-        
         dist_master_destination = os.path.join(dist_dir, "master", "existentialCores.json")
         os.makedirs(os.path.dirname(dist_master_destination), exist_ok=True)
 
@@ -304,6 +296,7 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
         import sys
         print(f"  [!] Build Exception: Failed to execute automated master catalog synthesis: {merge_error}", file=sys.stderr)
         sys.exit(1)
+
 
 
 
