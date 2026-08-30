@@ -661,8 +661,10 @@ def main():
     if pub_ver != int_ver:
         pub_ver = existentialCoreVersion + "/" + int_ver
     else:
-        pub_ver = "[" + int_ver + "]"
+        pub_ver = int_ver
 
+    existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
+    
     if args.step in ["check","verify"]:
         print("[*] Verifying integrity of existentz cryptographic structures... ") 
     
