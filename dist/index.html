@@ -81,6 +81,7 @@
         const LOG_URL = '../existenzStruct/master/existentialBuild.log';
         
         let schemaData = null;
+        // Boot with your precise architectural hardware baseline sequence value
         let globalSystemRegister = 0x1727FFF; 
 
         async function initDashboard() {
@@ -103,7 +104,8 @@
                 }
                 schemaData = JSON.parse(rawText);
 
-                // Initial Safe Start Guard: Ensure default canopy registers read high (1)
+                // Initial Safe Start Guard: Ensure all Canary flag bit registers are explicitly
+                // turned high (1) inside the baseline registry mask so they start up healthy at boot.
                 Object.entries(schemaData.existentialCore).forEach(([key, item]) => {
                     if (item.type === 'CANARY') {
                         globalSystemRegister |= parseInt(item.value); 
@@ -123,11 +125,21 @@
             document.getElementById('meta-info').innerText = `v${meta.CoreVersion || '0'} | ${meta.CoreAuthor || 'Admin'} | Baseline: 0x1727FFF`;
         }
 
-        function toggleRegisterBit(bitValue) {
+        function toggleRegisterBitSimple(bitValue) {
             globalSystemRegister ^= parseInt(bitValue);
             evaluateDynamicCircuitsAndRender();
         }
+        function toggleRegisterBit(bitValue) {
+            const targetWeight = parseInt(bitValue);
 
+            if (targetWeight === 1) {
+                console.warn("You cannot unexist, this structure is supposed to protect you for that!");
+                return; 
+            }
+            globalSystemRegister ^= targetWeight;
+            evaluateDynamicCircuitsAndRender();
+        }
+        
         function evaluateDynamicCircuitsAndRender() {
             const jsonBitmasks = schemaData.existentialCoreBitmask || {};
 
@@ -137,11 +149,15 @@
                 const maskWeight = parseInt(ruleArray[1], 16); 
                 const canaryBitWeight = 1 << bitPos;
 
-                const isCircuitSecure = (globalSystemRegister & maskWeight) === maskWeight;
+                // FIXED CIRCUIT EVALUATION: Checks if the system register drops ANY bits that are 
+                // both active in the monitoring mask and meant to be high under standard 0x1727FFF conditions.
+                const activeMaskRequirement = maskWeight & 0x1727FFF;
+                const isCircuitSecure = (globalSystemRegister & activeMaskRequirement) === activeMaskRequirement;
+
                 if (isCircuitSecure) {
-                    globalSystemRegister |= canaryBitWeight; 
+                    globalSystemRegister |= canaryBitWeight; // Keep Canary active (Secure)
                 } else {
-                    globalSystemRegister &= ~canaryBitWeight; 
+                    globalSystemRegister &= ~canaryBitWeight; // Kill Canary bit (Tripped)
                 }
             });
 
@@ -167,7 +183,6 @@
                 let allowUserInteraction = false;
                 let permissionBadgesHtml = "";
 
-                // Optimized Micro-Sizing for full screen overview visibility
                 if (isCanary) {
                     const isTripped = !isBitOn;
                     statusBadge = isTripped
@@ -209,7 +224,6 @@
                 if (item.type === 'RIGHTS') icon = "⚖️";
                 if (item.type === 'SHIELD') icon = "🧱";
 
-                // Ultra-tight card height layout structure specifications
                 card.className = `p-1.5 rounded border transition flex flex-col justify-between h-[52px] ${cardStyle}`;
                 card.innerHTML = `
                     <div class="flex justify-between items-start gap-1">
@@ -217,7 +231,7 @@
                         ${statusBadge}
                     </div>
                     <div class="flex justify-between items-center text-[8px] font-mono text-slate-500 mt-1 pt-0.5 border-t border-slate-900/40">
-                        <span>${item.expr ? item.expr.trim() : 'Bit ' + dynamicRule?.[0]}</span>
+                        <span>${item.expr ? item.expr.trim() : 'Bit ' + (dynamicRule ? dynamicRule[0] : '')}</span>
                         ${permissionBadgesHtml || `<span class="opacity-30 text-[7px] uppercase font-bold">${item.type || 'CANARY'}</span>`}
                     </div>
                 `;
