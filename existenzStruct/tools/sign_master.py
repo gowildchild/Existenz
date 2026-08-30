@@ -16,7 +16,7 @@ import hmac
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
 #import existentialCoreSignatures
-#from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
+#from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagicd
 
 get_distro = "master"
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
