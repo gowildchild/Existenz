@@ -53,6 +53,7 @@ def make_header(sym: str) -> str:
         "=========================================================================="
     ]
     return "".join(f"{padding}{line}\n" for line in raw_lines) + "\n"
+    
 def parse_structural_type(comment_str: str, key_name: str) -> str:
     """Derives type strictly from the variable prefix first to prevent comment collision bugs."""
     if "RIGHTS" in key_name or "_RIGHTS" in key_name: return "RIGHTS"
@@ -575,6 +576,7 @@ def _export_infrastructure_scripts(dist_dir: str, core_ord: dict, threat_ord: di
 def perform_cross_language_exports(signatures_map: dict, mode: str):
     """Orchestrates structured step-by-step cross-language build matrix outputs safely."""
     dist_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist"))
+    
     if mode == "dry": return
 
     langs = ["python", "perl", "cpp", "php", "rust", "bash", "esphome"]
