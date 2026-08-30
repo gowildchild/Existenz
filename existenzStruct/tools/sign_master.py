@@ -36,9 +36,10 @@ try:
     from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
     
 except ImportError:
+    print("    sign_master.py: ")
     print("[!] CRITICAL ERROR: Foundational compiled lockbook structure missing inside dist/master/.")
     print("    Please execute 'core_build.py -step sign' first to generate base parameters.")
-    sys.exit(1)
+    #sys.exit(1)
 
 def show_version_info():
     """Prints the strict system metadata, author ownership, and licensing terms."""
