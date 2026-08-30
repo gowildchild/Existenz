@@ -952,6 +952,15 @@ def main():
 
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+            if len(sign_var) >= 64 and ":" in sign_var:
+                # Use the short variant trailing signature component matching your compilation pass
+                resolved_target_hash = sign_var.split(":")[-1]
+            else:
+                resolved_target_hash = live_session_hashes.get(hash_var, hash_var)
+                
+            all_active_sequences = {row[5] for row in sorted_rules}
+            preceding_hashes = []
+            
             resolved_target_hash = live_session_hashes.get(hash_var, hash_var)
             all_active_sequences = {row[5] for row in sorted_rules}
             preceding_hashes = []
