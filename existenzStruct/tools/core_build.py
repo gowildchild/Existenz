@@ -863,7 +863,7 @@ def main():
                 v_line    = "║  "
             else:
                 chain_arrow = " | "
-                connector = "└──" if is_last_in_group else "├──"
+                connector = "└─►" if is_last_in_group else "├──"
                 v_line    = "│  "
                 
             tags = []
@@ -887,7 +887,7 @@ def main():
                     if bitmask & 16:  tags.append("DEV")
                     if bitmask & 32:  tags.append("PSN")
                 else:
-                    return f"{hex(bitmask)}", str(seq), "\033[91m[ ! NOT SIGNED ! ]\033[0m", "├──", "│  ", "└──" if is_last_in_group else "├──"
+                    return f"{hex(bitmask)}", str(seq), " " . " ".join(tags), connector, v_line, chain_arrow . " \033[91m[ ! NOT SIGNED ! ]\033[0m", "├──", "│  ", "└──" if is_last_in_group else "├──"
                     
             return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line, chain_arrow
 
