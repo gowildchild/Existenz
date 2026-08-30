@@ -13,7 +13,7 @@ class existentialCoreSignatures:
     """Master repository vault consolidating all 256-bit immutable platform layer signatures."""
 
     existentialCore                              = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
-    existentialCores                             = "5f6480ca778be1d4fe206a52da09a68b9a7e6c01a7444db65d0662206b855692"
+    existentialCores                             = "3c5fbbceb1b2a76ca4ca0acde4b947430311c0a3d884faab3c703b13f1267198"
     existentialCoreThreatRoot                    = "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca"
     existentialCoreThreatLegal                   = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"
     existentialCoreThreatShadowVacuum            = "9b1d1bcf4903c7c26a6b75dd2e0c341ddab3594c2514c99e5d8e6b4651bfcc69"
