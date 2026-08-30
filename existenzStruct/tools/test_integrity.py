@@ -3,7 +3,7 @@
 # THE EXISTENZ PLATFORM (AUTOMATED WORKSPACE VERIFICATION SUITE)
 # File: test_integrity.py
 # Purpose: Deep structural, cross-language, and cryptographic validation
-# ==========================================================================
+# ========================================================================== 
 
 import os
 import sys
