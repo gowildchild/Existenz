@@ -36,7 +36,7 @@ try:
     from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
     
 except ImportError:
-    print("[-] CRITICAL ERROR: Foundational compiled lockbook structure missing inside dist/master/.")
+    print("[!] CRITICAL ERROR: Foundational compiled lockbook structure missing inside dist/master/.")
     print("    Please execute 'core_build.py -step sign' first to generate base parameters.")
     sys.exit(1)
 
