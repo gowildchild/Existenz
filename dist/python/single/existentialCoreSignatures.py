@@ -13,7 +13,7 @@ class existentialCoreSignatures:
     """Master repository vault consolidating all 256-bit immutable platform layer signatures."""
 
     existentialCore                              = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
-    existentialCores                             = "3c5fbbceb1b2a76ca4ca0acde4b947430311c0a3d884faab3c703b13f1267198"
+    existentialCores                             = "bb11656cb916db4245e1ac23cf9b04f03fddcc492faf420e9d0ecf54e4384af8"
     existentialCoreThreatRoot                    = "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca"
     existentialCoreThreatLegal                   = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"
     existentialCoreThreatShadowVacuum            = "9b1d1bcf4903c7c26a6b75dd2e0c341ddab3594c2514c99e5d8e6b4651bfcc69"
@@ -29,8 +29,8 @@ class existentialCoreSignatures:
     existentialPrivateSigned = (
         ("Magic", "46145468df9a2178e371c9918cb7ba8d77f9970b4bdb5fdad8350daa646cf263"),
         ("Core", "b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad"),
-        ("Cores", "b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad"),
         ("CoreCheck", "b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad"),
+        ("Cores", "b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad"),
         ("CoreThreatStruct", "b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad"),
         ("CoreThreatLegal", "b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad"),
         ("CoreThreatShadowVacuum", "b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad"),
