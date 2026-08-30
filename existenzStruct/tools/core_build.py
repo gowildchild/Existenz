@@ -823,7 +823,7 @@ def main():
         print("  │ ")
         print(f"  ├── [SQ {sq_c} | {bm_c.ljust(4)}] existentialCore.py          ─┬─► Sign: 0x{core_structure_sign} | {tg_c}")
         print(f"  │                                              └─► Signature: \"{core_structure_signature}\"")
-        print(f"  ├── [SQ {sq_cb} | {bm_cb.ljust(4)}] existentialCores.json     ─┬─► Sign: 0x{cores_structure_sign} | {tg_cb}")
+        print(f"  ├── [SQ {sq_cb} | {bm_cb.ljust(4)}] existentialCores.json       ─┬─► Sign: 0x{cores_structure_sign} | {tg_cb}")
         print(f"  │                                              └─► Signature: \"{cores_structure_signature}\"")        
         print(f"  ├── [SQ {sq_cc} | {bm_cc.ljust(4)}] existentialCoreCheck.py     ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
         print(f"  │                                              └─► Signature: \"{check_structures_signature}\"")
