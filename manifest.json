@@ -59,7 +59,7 @@
     "existenzStruct/tools/check_integrity.py": "26bb01e972b866f8c89e0a97c84f2892a8d5bf69019a1d1ca97585d4dac3ec63",
     "existenzStruct/tools/core_build.py": "2a2219eaf3351d5490a9b8a87b37fe840c933aeff1cad6459afc69b9e56529d4",
     "existenzStruct/tools/core_debug.py": "957531a87f16fcba6445e4d022abd179c732c94e588c5374915f60824dc7f8d6",
-    "existenzStruct/tools/core_manifest.py": "393fbad96a46d3ff21e05f2ef8854a8e9cf3805f39b13ddc8dcc3d627a172aaf",
+    "existenzStruct/tools/core_manifest.py": "3c46966499694ae40131e4d9f504aa5cfe4a2bb52f2d252b9ec479f9c409e1a8",
     "existenzStruct/tools/core_telemetry.py": "f68be7b3e8d2336f1bbea65f69da13d6bef422d381b2a2f2657fc43fbf6c24cc",
     "existenzStruct/tools/sign_master.py": "437662a11e8ce2ab6b6f3188ff30b484790602fd7d47ad2b995efcc55330603b",
     "existenzStruct/tools/test_integrity.py": "04b56dd5b1cf8698819dd196fa8117fdeb7bb91ab106729c31082594435dbd41",
