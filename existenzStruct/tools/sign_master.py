@@ -103,17 +103,17 @@ def main():
     print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
     print("│ EXISTENZ OFFLINE PRIVATE KEY SIGNER            by Gunther Voet │")
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ─── ───── ────────────────────────┘")
-    print(f"[*] Execution Stage: -stage {args.stage}")
-
+    print(f"[*] Execution Stage: -stage {args.stage}    -dest {args.dest}")
     print(f"[*] Configuration   : {args.config}")
     target_master_dir = ""
-    if (args.dest == "master") {
-      target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
-      TARGET_DIST_DIR = os.path.join(REPO_ROOT, "existenzStruct", "master")
-    } else {
-      target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
-      TARGET_DIST_DIR = os.path.join(REPO_ROOT, "dist", "master")
-    }
+    TARGET_DIST_DIR = ""
+    if args.dest == "master":
+        target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
+        TARGET_DIST_DIR = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
+    else:
+        target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+        TARGET_DIST_DIR = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+        
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
 
     if not os.path.exists(args.config):
