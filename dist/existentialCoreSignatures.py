@@ -1,13 +1,12 @@
 # ==========================================================================
-# EXISTENZ CORE BUILDER (Signing Suite & Cross-Compiler
-# Version: v0.76.14 | Github Deployment
+# EXISTENZ CORE MASTER Private Key Signer v0.76.13
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
 
 existentialCoreVersion                       = "v0.76.14"
 existentialCoreCheckMagic                    = b"EX25IMMUT32CORE7617"
-existentialCoreCheckSignatures               = "9dd52f155210da140644725f6f95f0663018472e54425c97417e0b0620782292"
+existentialCoreCheckSignature                = "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85"
 
 class existentialCoreSignatures:
     existentialCore                              = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
@@ -15,6 +14,7 @@ class existentialCoreSignatures:
     existentialCoreThreatLegal                   = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"
     existentialCoreThreatShadowVacuum            = "9b1d1bcf4903c7c26a6b75dd2e0c341ddab3594c2514c99e5d8e6b4651bfcc69"
     existentialCoreThreat                        = "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
+    existentialCores                             = "18d3aeb347a36d7033dd2555b7ddfdde67b289e662ff2c6a8fb03d9562063ab6"
     existentialCoreCheck                         = "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85"
 
     existentialPublicKeys = (
