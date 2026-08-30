@@ -138,8 +138,9 @@ def main():
         "CoreThreatLegal": existentialCoreSignatures.existentialCoreThreatLegal,
         "CoreThreatShadowVacuum": getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET"),
         "CoreCheck": existentialCoreSignatures.existentialCoreCheck,
-        "Cores": existentialCoreSignatures.existentialCores,
-        "CoreItem": existentialCoreSignatures.existentialCoreCheck
+        "Cores": getattr(existentialCoreSignatures, "existentialCores", "NOT_SIGNED_YET"),
+        "CoreChain": getattr(existentialCoreSignatures, "existentialCoreChain", "")
+        #"CoreItem": existentialCoreSignatures.existentialCoreCheck
     }
 
     # Order everything cleanly by sequence hierarchy (Sequence 0 -> 1 -> 2 -> 3 -> 9)
