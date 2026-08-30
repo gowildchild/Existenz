@@ -1,14 +1,15 @@
 {
   "files": {
     "dist/existentialCore.py": "4aac3fef94a1dfda89d3901264b98aed9d6e8fdcf6b469ce690349db711efc99",
-    "dist/existentialCoreSignatures.py": "d4e2a25065c75e52a1c670cda236ef83d37183a884b71885a0e2bb3e6fc19094",
-    "dist/existentialCoreThreat.py": "03b089c5fcf5358433ecddf913c5e7fe29938ab14451dc11f9f76842ba05f0ab",
+    "dist/existentialCoreSignatures.py": "96ea2b9d6d27a61edefeb8b765150c5948a7a058759c12c1afe878bbc66504e4",
+    "dist/existentialCoreThreat.py": "fe1552051abf218ee9986dc2dc703934920eede7b243c2530e25b58f0db3ce6f",
     "dist/existentialCores.json": "ccd8bc3409b9d3f2a0c4fc068b21c9fa5e3ebb2cfce865dbb0e176d81888aeb9",
-    "dist/master/existentialCoreSignatures.py": "161c13b1bf3eaebd4eda3bb4f06b6fbcf003aca51809d295552f12368577e48e",
+    "dist/master/existentialCoreSignatures.py": "861c6def4a3e2c62301f145ef2311e62bc5bce74b494ce3cc8c0b0636b7b0e39",
     "existenzStruct/master/README.md": "61d5031b505593421783730470f308b761afcb7f88006a6f19bd4c7e79bbcc56",
     "existenzStruct/master/existentialCore.py": "4aac3fef94a1dfda89d3901264b98aed9d6e8fdcf6b469ce690349db711efc99",
     "existenzStruct/master/existentialCoreSignatures.py": "96ea2b9d6d27a61edefeb8b765150c5948a7a058759c12c1afe878bbc66504e4",
     "existenzStruct/master/existentialCoreThreat.py": "fe1552051abf218ee9986dc2dc703934920eede7b243c2530e25b58f0db3ce6f",
+    "existenzStruct/master/existentialCores.json": "18d3aeb347a36d7033dd2555b7ddfdde67b289e662ff2c6a8fb03d9562063ab6",
     "existenzStruct/master/existentialHumanCore.py": "2decc0bb05b4d4810320443604373bce2c242dfaf2bb7da7cbc3dc19ac61f7f4",
     "existenzStruct/tools/boot_guard.py": "7e9f3d546a6da7c4696c379fce80d9b012c20f8707be0ebd2efe118c9095addc",
     "existenzStruct/tools/check_integrity.py": "26bb01e972b866f8c89e0a97c84f2892a8d5bf69019a1d1ca97585d4dac3ec63",
@@ -26,9 +27,9 @@
     "Platform": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"
   },
   "signatures": {
-    "Developer": "34bfd4c1dc40fc78f08f06fc3b149376d60123fa969fb5b92fb36310b52f02267783236f12264a82d14dbb13011e847937551ddc6eec8b9fac7fc3b5d8e0ed06",
-    "Personal": "799ef28eb292c7f94394b58e1cec693bd1536a7b0df6b34a235511f61199da17b3e1a17345e69785db0f2c2dbbe2d2f5c5d8b981ab7b624b3c17df1620b8ed00",
-    "Platform": "0b3ca5cb6a69b8c855b0ddea45725a1d2828dccc1fd33381eb382c19a284c03ce8256c98b9719abd457046624348e2034a07fcc4c1cfd1aa75c69766af3c020a"
+    "Developer": "37859852ee8a8d164f4bfa9111533ccfcfd46913a689bd5bdbc91176acfba29d1cf9792870f52a8526fbb5324bacab34654929849abef88faab152a6e43c4608",
+    "Personal": "e1e15281784b9e6c363c0d7e0e2cba5e91802ff9a818fb6f8b25e0cd5e411d8fcf6eda17e5715f13f851fd826a5510fa1d8a37bb8e1c885609ddeca5ef346202",
+    "Platform": "c0786f7867b95cbc4fc17d471ef72b510bdcc33d2931110e45a56b9f24a5359f559a9c0be75d58d30f43c68c77b933fe6f4f73813fe787c92cca19ac2ce7320a"
   },
   "version": "v0.76.15"
 }
