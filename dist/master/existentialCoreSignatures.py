@@ -1,32 +1,37 @@
 # ==========================================================================
-# EXISTENZ Platform v0.76g (Private Key Signer)
+# THE EXISTENZ PLATFORM (AUTOMATED BLUEPRINT COMPILATION)
+# Version: v0.76 | Framework Namespace Lock
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
 
-existentialCoreVersion                       = "v0.76g"
+existentialCoreVersion                       = "v0.76.13"
 existentialCoreCheckMagic                    = b"EX25IMMUT32CORE7617"
-existentialCoreCheckSignature                = "7c165b322566e304975917cdc92de03d3ab14e72d1edaefc2ea18f7444ac891c"
+existentialCoreCheckSignatures               = "c83f2a0d6fadeeb69346e33fcabf4433c91c40f70bdaf79b9f5fb6b6096d0a4c"
 
 class existentialCoreSignatures:
     existentialCore                              = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
-    existentialCoreThreatRoot                    = "57c413f8531731df0d2f09a260ea36c7e49269348b553fdeeaa2dd11e7bc4bb9"
-    existentialCoreThreatLegal                   = "6d07d97272d414f966ea7a9d7b2956b96541fecbcb9079f375408a62b3b6bd6e"
-    existentialCoreThreat                        = "759533dfd2a276046bc62985b17df7cefb999a1c3a07b7b983e5ee278d80302d"
-    existentialCoreCheck                         = "7c165b322566e304975917cdc92de03d3ab14e72d1edaefc2ea18f7444ac891c"
+    existentialCoreThreatRoot                    = "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca"
+    existentialCoreThreatLegal                   = "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1"
+    existentialCoreThreatShadowVacuum            = "9b1d1bcf4903c7c26a6b75dd2e0c341ddab3594c2514c99e5d8e6b4651bfcc69"
+    existentialCoreThreat                        = "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
+    existentialCoreCheck                         = "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85"
+    existentialCores                             = "18d3aeb347a36d7033dd2555b7ddfdde67b289e662ff2c6a8fb03d9562063ab6"
 
     existentialPublicKeys = (
         ("Platform", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"),
         ("Developer", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGHTQAOnKU4zaM03kASAKmrsps4ROCx8xMQZ4m12Yo8U existenz-dev-gwc@xsrv.net"),
         ("Personal", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKn1/r+k9+T5OJyoIjcrkj0DBmLq//x0/sffNMJNWofK existenz-dev-gv@xsrv.net")
     )
-    
+
     existentialCoreSigned = (
-        ("Magic", "7faa8872", "existentialCoreMagicHash", "7faa88729e96e6a8795855c4e962d1cef3f9b8d2675819ba383f65e33daa0b9f6e46d27348e0670a6e4a90ebaf1266c3be28cf0412153501830d506c6f808909", 60, 0),
+        ("Magic", "11c39300", "existentialCoreMagicHash", "11c393009d3f0dca9fc83c0c76c02a89737cfffbbcbb974cf2632d8d797e4dd42616ec3b8b625718314bbc146792259884300beae923af01cc26ab6713472308", 60, 0),
         ("Core", "1289de75", "existentialCoreHash", "1289de75fe9506e225779f2f9cfe530c231e81fd4b6d420ee657cfec6e6d3b3a7b0b009a2aad37b7549b8c81e972ff337b0db434f66a67e4d859ef7186467d07", 126, 0),
-        ("CoreCheck", "7faa8872", "existentialCoreCheckHash", "7faa88729e96e6a8795855c4e962d1cef3f9b8d2675819ba383f65e33daa0b9f6e46d27348e0670a6e4a90ebaf1266c3be28cf0412153501830d506c6f808909", 62, 0),
-        ("CoreThreatStruct", "cfac5173", "existentialCoreThreatStructHash", "cfac51731c4614745c0f3d6c867bb0f07b4f2c7144de8a26c0676c5ff93c2a92d64f11568b294e03d598aaf1fb0c647cc1f18cad0dc9e11ccb19054b76bf2c09", 31, 1),
-        ("CoreThreatLegal", "afc8df8c", "existentialCoreThreatLegalHash", "afc8df8ce773f0a5dc492fcaf08686da15601de09ad58ed224284e2e96f5b29d17a4d4c1eb0eff3ed8863eea0e64af1c25be49999d3c5d6de552ad97dbe8ad09", 31, 2),
-        ("CoreThreat", "158ca97c", "existentialCoreThreatHash", "158ca97cd218c2a45c1dcead0cf22ee4bfaf582ad02c5a74cd587059636331b0bd5a6043f9b27bd7c2b8889220aaaee1c9f49a730c79ae61a211633f05392f01", 127, 3),
-        ("CoreChain", "7faa8872", "existentialCoreChainHash", "7faa88729e96e6a8795855c4e962d1cef3f9b8d2675819ba383f65e33daa0b9f6e46d27348e0670a6e4a90ebaf1266c3be28cf0412153501830d506c6f808909", 255, 9)
+        ("CoreCheck", "11c39300", "existentialCoreCheckHash", "11c393009d3f0dca9fc83c0c76c02a89737cfffbbcbb974cf2632d8d797e4dd42616ec3b8b625718314bbc146792259884300beae923af01cc26ab6713472308", 62, 0),
+        ("CoreThreatStruct", "aa808a1f", "existentialCoreThreatStructHash", "aa808a1f4a6f73281378d2875fda658f0866048da37419013c0ebfd846a14a0fda859c5d6d657ce2ab1efec0c07d83320d7d4d437a4aee01e1c83d7893675903", 31, 2),
+        ("CoreThreatLegal", "cf73b021", "existentialCoreThreatLegalHash", "cf73b021381f426ad53910a83a1a5ce15ab6c3ea200e6e6818a805ca22328b13c7aacfc8a9cb5083abd633687e7693cc2c38310d026a36e59dfbd75cf592eb0b", 31, 3),
+        ("CoreThreatShadowVacuum", "4f42af6a", "existentialCoreThreatShadowVacuumHash", "4f42af6a6be5078c95f186936058f8872553d523879b287e575f77e4180e4fc9a215e6bb30a6fd744ed85880945c133509ecf318ce4ca79caad6b7e1a50c1d01", 31, 4),
+        ("CoreThreat", "79b1e69e", "existentialCoreThreatHash", "79b1e69ed3a999fc6ed1d92c92f90f920d1052c4b5d93d17bed0ec90ed0bac6833aaa16301c843f70ac7a959e462a1efccbdb7958b610501d9f7c4c4bb07200b", 127, 5),
+        ("Cores", "existentialCoresSign", "existentialCoresHash", "existentialCoresSignature", 54, 7),
+        ("CoreChain", "11c39300", "existentialCoreChainHash", "11c393009d3f0dca9fc83c0c76c02a89737cfffbbcbb974cf2632d8d797e4dd42616ec3b8b625718314bbc146792259884300beae923af01cc26ab6713472308", 255, 9)
     )
