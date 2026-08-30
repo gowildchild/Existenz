@@ -3,7 +3,7 @@
     "EXISTENCE": {
       "value": 1,
       "expr": "1 << 0",
-      "type": "PILLAR",
+      "type": "PILLARs",
       "comment": "You, alive, with a body"
     },
     "AUTONOMY": {
