@@ -374,5 +374,6 @@
     "89130487": "VACUUM_PARASITISM",
     "2290263560": "VACUUM_HARVESTING"
   },
-  "existentialCoreThreatSignature": "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
+  "existentialCoreThreatSignature": "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3",
+  "existentialCoreVersion": "v0.76.10"
 }
