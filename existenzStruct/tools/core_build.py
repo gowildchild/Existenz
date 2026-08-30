@@ -23,7 +23,7 @@ int_ver = "v0.76.15"
 try:
     from existenzStruct.master.existentialCore import existentialCore
     from existenzStruct.master.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal, existentialCoreThreatShadowVacuum
-    from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreCheckMagic, existentialCoreVersion, existentialCores
+    from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreCheckMagic, existentialCoreVersion
 
 except ImportError as e:
     print(f"[-] Structural layout components unresolved for signing tool: {e}")
