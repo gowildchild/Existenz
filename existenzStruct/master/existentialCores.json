@@ -109,7 +109,7 @@
     "Core":                      "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
   },
   "existentialMeta" {
-    "CoreVersion":               "v0.76.14",
+    "CoreVersion":               "v0.76.14+",
     "CoreAuthor":                "Gunther Voet",
     "CoreWeb":                   "https://existenz.xsrv.net/",
     "CoreDate":                  "20260830"
