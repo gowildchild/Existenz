@@ -13,30 +13,30 @@ import argparse
 import hashlib
 import getpass
 import hmac
-import shutil
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
+#import existentialCoreSignatures
+#from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
 TARGET_DIST_DIR = os.path.join(REPO_ROOT, "dist", "master")
-CURRENT_TOOL_DIR = os.path.dirname(os.path.abspath(__file__))
 
+CURRENT_TOOL_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_TOOL_DIR not in sys.path:
     sys.path.insert(0, CURRENT_TOOL_DIR)
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
-
 int_ver = "v0.76.13"
 
 try:
-    # 🚀 INTERFACE PROTECTION HOOK: Force clean dynamic reloads on ledger parameters
-    import existenzStruct.master.existentialCoreSignatures as sig_module
-    from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
-except ImportError as e:
-    print(" sign_master.py: ")
-    print(f"[!] [CRITICAL ERROR] Foundational compiled lockbook structure missing or corrupted: {e}")
-    print(" Please execute 'core_build.py -step sign' first to generate base parameters.")
+    # Safely load the local signatures file without namespace prefix drift failures
+    import existenzStruct.master.existentialCoreSignatures
+    from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
+    
+except ImportError:
+    print("[-] CRITICAL ERROR: Foundational compiled lockbook structure missing inside dist/master/.")
+    print("    Please execute 'core_build.py -step sign' first to generate base parameters.")
     sys.exit(1)
 
 def show_version_info():
@@ -50,7 +50,7 @@ def show_version_info():
     print("==================================================================")
 
 def make_header(sym: str) -> str:
-    """Generates the standardized platform header signature with language-aware remarks notation."""
+    """Generates the standardized platform header signature with language-aware remarks notation applied to every line."""
     padding = f"{sym} " if sym else ""
     raw_lines = [
         "==========================================================================",
@@ -66,17 +66,19 @@ def load_ssh_private_key(identity, path):
     expanded_path = os.path.expanduser(path)
     if not os.path.exists(expanded_path):
         raise FileNotFoundError(f"[-] Private key missing for '{identity}' at path: {expanded_path}")
+    
     with open(expanded_path, "rb") as k_file:
         key_data = k_file.read()
+        
     try:
         # Attempt to load the private key unencrypted first
         return serialization.load_ssh_private_key(key_data, password=None)
     except Exception as e:
-        # Catch all algorithm/encryption parsing traps to reliably trigger password prompts
+        # FIXED: Catch all algorithm/encryption parsing traps to reliably trigger password prompts
         err_str = str(e).lower()
         if "password" in err_str or "unsupported" in err_str or "encrypted" in err_str or "passphrase" in err_str:
             print(f"🔒 [SECURITY ENVELOPE] Private key access token for '{identity}' is password-protected.")
-            pwd = getpass.getpass(f" Enter interactive pass-phrase for [{identity}]: ").encode('utf-8')
+            pwd = getpass.getpass(f"   Enter interactive pass-phrase for [{identity}]: ").encode('utf-8')
             try:
                 return serialization.load_ssh_private_key(key_data, password=pwd)
             except Exception as ex:
@@ -90,28 +92,20 @@ def main():
     parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to local private key location config file.")
     parser.add_argument("-run", choices=["wet", "dry"], default="wet", help="Execution mutation layer gate. Default is 'wet'.")
     parser.add_argument("-v", "--version", action="store_true", help="Display platform version metadata.")
-    parser.add_argument("-dest","--dest", choices=["master","dist"], default="dist", help="Which build to sign")
     args = parser.parse_args()
 
     if args.version:
         show_version_info()
         sys.exit(0)
 
-    print("┌─────────────────────────────────── ── ─ ── ─ ─ ─ ─ ─ ─ ─ ┐")
+    print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
     print("│ EXISTENZ OFFLINE PRIVATE KEY SIGNER            by Gunther Voet │")
-    print("└─ ── ─ ── ─ ─ ─ ─ ─ ─ ─ ─── ───── ────────────────────────┘")
-    print(f"[*] Execution Stage: -stage {args.stage}    -dest {args.dest}")
+    print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ─── ───── ────────────────────────┘")
+    print(f"[*] Execution Stage: -stage {args.stage}")
+
     print(f"[*] Configuration   : {args.config}")
 
-    target_master_dir = ""
-    TARGET_DIST_DIR = ""
-    if args.dest == "master":
-        target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
-        TARGET_DIST_DIR = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
-    else:
-        target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
-        TARGET_DIST_DIR = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
-
+    target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
 
     if not os.path.exists(args.config):
@@ -120,41 +114,45 @@ def main():
 
     with open(args.config, "r", encoding="utf-8") as cf:
         private_config = json.load(cf)
-        private_paths = private_config.get("private_key_paths", {})
+
+    private_paths = private_config.get("private_key_paths", {})
 
     loaded_keys = {}
     computed_asymmetric_signatures = []
-    session_ledger = {}
-    # 🚀 STATIC IMMUTABLE CLASS MAPPING PASS: Direct attribute tracking isolates variable lookups
+
+    # Map out the exact live hash variables generated by core_build.py
     hash_payloads_map = {
-        "Magic": existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic),
-        "Core": getattr(existentialCoreSignatures, "existentialCore", ""),
-        "CoreCheck": getattr(existentialCoreSignatures, "existentialCoreCheck", ""),
-        "CoreThreatStruct": getattr(existentialCoreSignatures, "existentialCoreThreatStruct", getattr(existentialCoreSignatures, "existentialCoreThreatRoot", "")),
-        "CoreThreatLegal": getattr(existentialCoreSignatures, "existentialCoreThreatLegal", ""),
-        "CoreThreatShadowVacuum": getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", ""),
-        "CoreThreat": getattr(existentialCoreSignatures, "existentialCoreThreat", ""),
-        "Cores": getattr(existentialCoreSignatures, "existentialCores", ""),
-        "CoreChain": getattr(existentialCoreSignatures, "existentialCoreChain", "")
+        "Magic": existentialCoreSignatures.existentialCoreCheck,
+        "Core": existentialCoreSignatures.existentialCore,
+        "CoreThreat": existentialCoreSignatures.existentialCoreThreat,
+        "CoreThreatStruct": existentialCoreSignatures.existentialCoreThreatRoot,
+        "CoreThreatLegal": existentialCoreSignatures.existentialCoreThreatLegal,
+        "CoreThreatShadowVacuum": getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET"),
+        "CoreCheck": existentialCoreSignatures.existentialCoreCheck,
+        "Cores": existentialCoreSignatures.existentialCores,
+        "CoreItem": existentialCoreSignatures.existentialCoreCheck
     }
 
-    # 🚀 CHROMATIC ALIGNMENT REALIGNMENT: Sort explicitly by sequence index [5] to enforce chronological chaining math
+    # Order everything cleanly by sequence hierarchy (Sequence 0 -> 1 -> 2 -> 3 -> 9)
     sorted_signing_rules = sorted(
         existentialCoreSignatures.existentialCoreSigned, 
         key=lambda element: element[5]
     )
 
     if args.stage == "verify":
+        # FIXED: Prevents string decode attribute crash bugs
         clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic)
         print(f"[*] Active Magic Token : {clean_magic_str}")
         print("──┬ [ COMPREHENSIVE ONE-LINE AUDIT OVERVIEW ] ────────────────────────────────────")
-
+        
     running_chain_sum = 0
     expected_next_sequence = 1
     sequence_chain_accumulator = 0
 
     for struct_rule in sorted_signing_rules:
         name, short_var, hash_var, sign_var, bitmask, sequence = struct_rule
+        
+        # ADDED: Evaluates consecutive integers dynamically to capture the sliding chain logic
         if name != "Magic":
             if sequence == expected_next_sequence:
                 running_chain_sum += sequence
@@ -162,10 +160,13 @@ def main():
             elif sequence == running_chain_sum:
                 sequence_chain_accumulator = sequence
 
+        # Pull key assignments from bitmask settings natively
+        # Evaluate bits independently to capture all cumulative multi-signature requirements
         required_keys = []
-        if bitmask & 8: required_keys.append("Platform")
-        if bitmask & 16: required_keys.append("Developer")
-        if bitmask & 32: required_keys.append("Personal")
+        if bitmask & 8:   required_keys.append("Platform")
+        if bitmask & 16:  required_keys.append("Developer")
+        if bitmask & 32:  required_keys.append("Personal")
+        
         if not required_keys:
             required_keys.append("Developer")
 
@@ -177,42 +178,49 @@ def main():
                 if target_key not in loaded_keys:
                     key_path = private_paths.get(target_key)
                     if not key_path:
-                        print(f" [-] Skip: No local physical path registered for key: '{target_key}'.")
+                        print(f"  [-] Skip: No local physical path registered for key: '{target_key}'.")
                         continue
                     try:
                         loaded_keys[target_key] = load_ssh_private_key(target_key, key_path)
                     except Exception as ex:
-                        print(f" [-] Terminal Error opening key for [{target_key}]: {ex}")
+                        print(f"  [-] Terminal Error opening key for [{target_key}]: {ex}")
                         sys.exit(1)
+                
                 try:
                     private_signature_bytes = loaded_keys[target_key].sign(expected_hash.encode('utf-8'))
                     signature_hex_output = private_signature_bytes.hex()
                     current_row_signatures.append(signature_hex_output)
-                    print(f" [+] Signed Layer: {name:<18} | Key: [{target_key}]")
+
+                    print(f"  [+] Signed Layer: {name:<18} | Key: [{target_key}]")
                 except Exception as e:
-                    print(f" [-] Cryptographic signing error on layer '{name}' via [{target_key}]: {e}")
+                    print(f"  [-] Cryptographic signing error on layer '{name}' via [{target_key}]: {e}")
                     sys.exit(1)
 
             if current_row_signatures:
                 final_sig_hex = ":".join(current_row_signatures) if len(current_row_signatures) > 1 else current_row_signatures[-1]
                 short_code_hex_output = current_row_signatures[-1][:8]
                 computed_asymmetric_signatures.append(
-                    f"    (\"{name}\", \"{short_code_hex_output}\", \"{hash_var}\", \"{final_sig_hex}\", {bitmask}, {sequence})"
+                    f"        (\"{name}\", \"{short_code_hex_output}\", \"{hash_var}\", \"{final_sig_hex}\", {bitmask}, {sequence})"
                 )
-        elif not any(private_paths.get(k) for k in required_keys):
-            computed_asymmetric_signatures.append(
-                f"    (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {sequence})"
-            )
+            elif not any(private_paths.get(k) for k in required_keys):
+                computed_asymmetric_signatures.append(
+                    f"        (\"{name}\", \"{short_var}\", \"{hash_var}\", \"{sign_var}\", {bitmask}, {sequence})"
+                )
+
         elif args.stage == "verify":
-            if len(sign_var) > 40 and not sign_var.startswith("existential"):
-                signature_segments = sign_var.split(":")
-                live_short = signature_segments[-1][:8]
+            is_signed = len(sign_var) > 40 and not sign_var.startswith("existential")
+            if is_signed:
+                live_short = sign_var[:8]
                 status_lbl = "VERIFIED" if live_short == short_var[:8] else "DRIFTING"
+                display_sig = sign_var
             else:
                 live_short = "--------"
                 status_lbl = "DRIFTING"
-            print(f"  ├──[{sequence}] {name:<18} 0x{short_var} : {expected_hash}")
-            print(f"  ├──[{sequence}] [ {status_lbl} ] 0x{sign_var}")
+                display_sig = sign_var  # Explicitly print the pending template string variable name
+
+            print(f"  ├──[{sequence}] {name:<18} 0x{live_short} : {expected_hash}")
+            print(f"  ├──[{sequence}] [ {status_lbl} ] 0x{display_sig}")
+
 
     if args.stage == "verify":
         print("──┴───────────────────────────────────────────────────────────────────────────────")
@@ -227,60 +235,30 @@ def main():
 
         output_signatures_file = os.path.join(TARGET_DIST_DIR, "existentialCoreSignatures.py")
         print(f"\n[*] Committing complete asymmetric signature array to: {output_signatures_file}")
-        clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic)
-        
-        core_sig = session_ledger.get("Core", "")
-        threat_struct_sig = session_ledger.get("CoreThreatStruct", "")
-        legal_sig = session_ledger.get("CoreThreatLegal", "")
-        target_vacuum_sig = session_ledger.get("CoreThreatShadowVacuum", "")
-        threat_sig = session_ledger.get("CoreThreat", "")
-        cores_sig = session_ledger.get("Cores", "")
-        check_sig = session_ledger.get("CoreCheck", "")
-        chain_sig = session_ledger.get("CoreChain", "")
 
-        signatures_content = (
-            make_header("#") +
-            f"existentialCoreVersion = \"{existentialCoreVersion}\"\n"
-            f"existentialCoreCheckMagic = b\"{clean_magic_str}\"\n"
-            f"existentialCoreCheckSignature = \"{check_sig}\"\n\n"
-            f"class existentialCoreSignatures:\n"
-            f"    existentialCore = \"{core_sig}\"\n"
-            f"    existentialCoreThreatStruct = \"{threat_struct_sig}\"\n"
-            f"    existentialCoreThreatLegal = \"{legal_sig}\"\n"
-            f"    existentialCoreThreatShadowVacuum = \"{target_vacuum_sig}\"\n"
-            f"    existentialCoreThreat = \"{threat_sig}\"\n"
-            f"    existentialCores = \"{cores_sig}\"\n" 
-            f"    existentialCoreCheck = \"{check_sig}\"\n"
-            f"    existentialCoreChain = \"{chain_sig}\"\n\n"
-            f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys) + "\n    )\n\n"
-            f"    existentialCoreSigned = (\n" + ",\n".join(computed_asymmetric_signatures) + "\n    )\n"
-        )
+        clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic)
+        target_vacuum_sig = getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET")
 
         with open(output_signatures_file, "w", encoding="utf-8") as f:
-            f.write(signatures_content)
-
-        try:
-            if args.dest == "master":
-                alt_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
-            else:
-                alt_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
-                
-            os.makedirs(alt_dir, exist_ok=True)
-            alt_signatures_file = os.path.join(alt_dir, "existentialCoreSignatures.py")
-            with open(alt_signatures_file, "w", encoding="utf-8") as f:
-                f.write(signatures_content)
-            print(f"[+] Multi-folder synchronization mirror updated cleanly at: {alt_signatures_file}")
-        except Exception as sync_ex:
-            print(f"[!] Target Cache Sync Warning: Unable to mirror signed ledger file: {sync_ex}", file=sys.stderr)
+            f.write(make_header("#") +
+                    f"existentialCoreVersion                       = \"{existentialCoreVersion}\"\n"
+                    f"existentialCoreCheckMagic                    = b\"{clean_magic_str}\"\n"
+                    f"existentialCoreCheckSignature                = \"{existentialCoreSignatures.existentialCoreCheck}\"\n\n"
+                    f"class existentialCoreSignatures:\n"
+                    f"    existentialCore                              = \"{existentialCoreSignatures.existentialCore}\"\n"
+                    f"    existentialCoreThreatRoot                    = \"{existentialCoreSignatures.existentialCoreThreatRoot}\"\n"
+                    f"    existentialCoreThreatLegal                   = \"{existentialCoreSignatures.existentialCoreThreatLegal}\"\n"
+                    f"    existentialCoreThreatShadowVacuum            = \"{target_vacuum_sig}\"\n"
+                    f"    existentialCoreThreat                        = \"{existentialCoreSignatures.existentialCoreThreat}\"\n"
+                    f"    existentialCores                             = \"{existentialCoreSignatures.existentialCores}\"\n"                    
+                    f"    existentialCoreCheck                         = \"{existentialCoreSignatures.existentialCoreCheck}\"\n\n"
+                    f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys) + "\n    )\n\n"
+                    f"    existentialCoreSigned = (\n" + ",\n".join(computed_asymmetric_signatures) + "\n    )\n")
 
         print("\n[+] SUCCESS: ASYMMETRIC MULTI-SIGNATURE PASSTHROUGH SYSTEM LOCKED DOWN CLEANLY.")
 
 if __name__ == "__main__":
     main()
-
-
-
-
 
 #        # --- EXECUTION TRACK B: THE SINGLE ONE-LINE DESCRIPTIVE AUDIT VERIFY ROUTINE ---
 #        elif args.stage == "verify":
