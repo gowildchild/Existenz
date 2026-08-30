@@ -576,6 +576,8 @@ def _export_infrastructure_scripts(dist_dir: str, core_ord: dict, threat_ord: di
 def perform_cross_language_exports(signatures_map: dict, mode: str):
     """Orchestrates structured step-by-step cross-language build matrix outputs safely."""
     dist_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist"))
+
+    print(f"  [+] X-Language: {dist_dir}/")
     
     if mode == "dry": return
 
@@ -623,7 +625,7 @@ def perform_cross_language_exports(signatures_map: dict, mode: str):
     _export_php_framework(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
     _export_rust_framework(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("//"), w, full_pkeys, full_psigned)
     _export_infrastructure_scripts(dist_dir, core_ord, threat_ord, legal_ord, vacuum_ord, signatures_map, cmnts, make_header("#"), w, full_pkeys, full_psigned)
-
+    
     with open(os.path.join(dist_dir, "esphome", "existentialCores.yaml"), "w", encoding="utf-8") as f:
         include_lines = [
             make_header("#") + " # ESPHome Consolidated Entrypoint Wrapper Config",
