@@ -1,4 +1,4 @@
-{ 
+{
   "comment": "AUDITING BLUEPRINT: Populate private_key_paths locally. Copy to sign_integrity_config.json and add to .gitignore.",
   "existentialMeta": {
     "CoreVersion": "v0.76i",
