@@ -750,12 +750,12 @@ def main():
     
     
     # Flintstones
-    core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
+    core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items(), key=lambda item: item[1].value))
     core_structure_payload = core_structure.encode('utf-8')
     core_structure_signature = hmac.new(existentialCoreCheckMagic, core_structure_payload, hashlib.sha256).hexdigest()
     core_structure_sign = core_structure_signature[:8]
 
-    threat_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCoreThreat.__members__.items()))
+    threat_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCoreThreat.__members__.items(), key=lambda item: item[1].value))
     threat_structure_payload = threat_structure.encode('utf-8')
     threat_structure_signature = hmac.new(existentialCoreCheckMagic, threat_structure_payload, hashlib.sha256).hexdigest()
     threat_structure_sign = threat_structure_signature[:8]
