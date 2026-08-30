@@ -11,7 +11,7 @@
     <!-- Responsive Layout Header Bar -->
     <header class="max-w-6xl mx-auto border-b border-slate-800 bg-slate-950 p-3 sm:p-4 rounded-t-lg shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
         <div>
-            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-emerald-400">Existenz Master System Matrix</h1>
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-emerald-400">existentialCore & existentialCoreThreat</h1>
             <p id="meta-info" class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5">Streaming 32-bit architectural schema...</p>
         </div>
         <div id="crypto-sig" class="bg-slate-900 border border-slate-800 px-2.5 py-1 rounded font-mono text-slate-400 text-[10px] sm:text-xs w-full md:w-auto text-left md:text-right">
@@ -49,7 +49,6 @@
                 </div>
             </div>
         </section>
-        <!-- Adaptive Split Column View layout (Stacks vertically on small screens) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
             <!-- Left Axis Column: Structural System Core Pillars & Rights Shields -->
@@ -90,9 +89,9 @@
                 }
                 schemaData = JSON.parse(rawText);
 
-                // Initialize: Auto-power all operational/shield parameters on bootup
+                // Initialize: Auto-power all operational, shield, and canary flag bits to ON (1) by default on boot
                 Object.entries(schemaData.existentialCore).forEach(([key, item]) => {
-                    if (item.type !== 'CANARY' && item.type !== 'SIGNATURE') {
+                    if (item.type !== 'SIGNATURE') {
                         const bitVal = parseInt(item.value);
                         if (bitVal && (bitVal & (bitVal - 1)) === 0) {
                             globalSystemRegister |= bitVal; 
@@ -128,11 +127,15 @@
                 const maskWeight = parseInt(ruleArray[1], 16); 
                 const canaryBitWeight = 1 << bitPos;
 
-                const circuitIsSecure = (globalSystemRegister & maskWeight) === maskWeight;
-                if (circuitIsSecure) {
-                    globalSystemRegister |= canaryBitWeight; 
+                // INVERSE SYSTEM FAULT CHECK: A watchdog circuit trips if ANY bit monitored by its mask turns OFF (0)
+                // We check if (system register & maskWeight) matches the complete mask value. 
+                // If it matches, everything is ON (Fine) -> Canary bit stays active (1). If it falls short, it trips -> Canary bit drops to (0).
+                const isCircuitSecure = (globalSystemRegister & maskWeight) === maskWeight;
+
+                if (isCircuitSecure) {
+                    globalSystemRegister |= canaryBitWeight; // Keep Canary active (Secure)
                 } else {
-                    globalSystemRegister &= ~canaryBitWeight; 
+                    globalSystemRegister &= ~canaryBitWeight; // Drop Canary bit (Tripped)
                 }
             });
 
@@ -160,12 +163,13 @@
                 let permissionBadgesHtml = "";
 
                 if (isCanary) {
+                    // Canary status displays SECURE when its tracking bit is high (1), and TRIPPED when it falls to low (0)
                     const isTripped = !isBitOn;
                     statusBadge = isTripped
                         ? `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded font-bold animate-pulse">🚨 TRIPPED</span>`
                         : `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded font-bold">🛡️ SECURE</span>`;
                     
-                    cardStyle = isTripped ? "border-rose-900/60 bg-rose-950/10 text-rose-300" : "border-slate-800 bg-slate-950/40 opacity-70";
+                    cardStyle = isTripped ? "border-rose-900/60 bg-rose-950/10 text-rose-300 animate-pulse" : "border-slate-800 bg-slate-950/40 opacity-70";
                     
                     // Parse custom metadata properties from your bitmask array elements
                     if (dynamicRule) {
@@ -197,7 +201,7 @@
                         ? `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded font-bold font-mono">ON</span>`
                         : `<span class="bg-slate-800 text-slate-500 border border-slate-700/40 text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded font-bold font-mono">OFF</span>`;
                     
-                    cardStyle = isBitOn ? "border-emerald-800/80 bg-slate-950" : "border-slate-800/40 bg-slate-950/20 text-slate-500 opacity-60";
+                    cardStyle = isBitOn ? "border-emerald-800/80 bg-slate-950 text-slate-100" : "border-slate-800/40 bg-slate-950/20 text-slate-500 opacity-60";
                     allowUserInteraction = true;
                 }
 
@@ -219,7 +223,7 @@
                             ${statusBadge}
                         </div>
                         <p class="text-slate-400 text-[10px] sm:text-[11px] mt-1 leading-tight italic line-clamp-1 select-none">
-                            ${item.comment ? `"${item.comment}"` : dynamicRule ? `Circuit Watchdog Mask Monitored: ${dynamicRule[1]}` : 'Operational framework node.'}
+                            ${item.comment ? `` + item.comment + `` : dynamicRule ? `Circuit Watchdog Mask Monitored: ${dynamicRule[1]}` : 'Operational framework node.'}
                         </p>
                         ${permissionBadgesHtml}
                     </div>
