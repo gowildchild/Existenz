@@ -6,83 +6,95 @@
     <title>Existenz | Distribution Schema Viewer</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen text-xs p-2 sm:p-4 selection:bg-emerald-500/30">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen text-[11px] p-2 sm:p-4 selection:bg-emerald-500/30">
 
     <!-- Responsive Layout Header Bar -->
-    <header class="max-w-6xl mx-auto border-b border-slate-800 bg-slate-950 p-3 sm:p-4 rounded-t-lg shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+    <header class="max-w-6xl mx-auto border-b border-slate-800 bg-slate-950 p-3 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
         <div>
-            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-emerald-400">existentialCore & existentialThreat</h1>
-            <p id="meta-info" class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5">Streaming Existenz 32-bit/128-bit</p>
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-emerald-400">Existenz Master System Matrix</h1>
+            <p id="meta-info" class="text-[10px] text-slate-400 mt-0.5">Streaming 32-bit architectural schema...</p>
         </div>
-        <div id="crypto-sig" class="bg-slate-900 border border-slate-800 px-2.5 py-1 rounded font-mono text-slate-400 text-[10px] sm:text-xs w-full md:w-auto text-left md:text-right">
-            Reading dynamic digital signatures...
+        <div id="crypto-sig" class="bg-slate-900 border border-slate-800 px-2.5 py-1 rounded font-mono text-slate-400 text-[10px] w-full md:w-auto text-left md:text-right truncate max-w-xs">
+            Reading dynamic digital matrix signatures...
         </div>
     </header>
 
     <!-- Main Workspace Frame -->
-    <main class="max-w-6xl mx-auto bg-slate-950/40 border-x border-b border-slate-800 p-3 sm:p-4 rounded-b-lg shadow-xl space-y-4 sm:space-y-6">
+    <main class="max-w-6xl mx-auto bg-slate-950/40 border-x border-b border-slate-800 p-3 rounded-b-lg shadow-xl space-y-4">
         
         <!-- Global 32-Bit System Register Console -->
-        <section class="bg-slate-950 border border-slate-800 rounded-lg p-3">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-slate-400 border-b border-slate-900 pb-2 mb-3 gap-1">
-                <span class="font-bold uppercase tracking-wider text-[9px] sm:text-[10px] text-emerald-400">🎛️ Unified Dynamic Register Circuit Interlocking Console</span>
-                <span class="text-slate-500 font-mono text-[9px] sm:text-[10px]">Pillars flip states; Watchdogs evaluate JSON bitmask circuits with permission bounds</span>
+        <section class="bg-slate-950 border border-slate-800 rounded-lg p-2.5">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-slate-400 border-b border-slate-900 pb-1.5 mb-2.5 gap-1">
+                <span class="font-bold uppercase tracking-wider text-[9px] text-emerald-400">existentialCore & existentialCoreThreat</span>
+                <span class="text-slate-500 font-mono text-[9px]">Try by flipping a bit which action it has with the Existenz structure</span>
             </div>
             
             <!-- Global Numerical Multi-Base Output Array Matrix -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-center text-[10px] sm:text-[11px]">
-                <div class="bg-slate-900 border border-slate-800 rounded p-1.5">
-                    <span class="text-[8px] sm:text-[9px] text-slate-500 block uppercase tracking-tight font-sans">Decimal (INT)</span>
-                    <span id="base-dec" class="text-emerald-400 font-bold text-xs sm:text-sm">0</span>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-center text-[10px]">
+                <div class="bg-slate-900 border border-slate-800 rounded p-1">
+                    <span class="text-[8px] text-slate-500 block uppercase font-sans">Decimal (INT)</span>
+                    <span id="base-dec" class="text-emerald-400 font-bold text-xs">0</span>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded p-1.5">
-                    <span class="text-[8px] sm:text-[9px] text-slate-500 block uppercase tracking-tight font-sans">Hexadecimal</span>
-                    <span id="base-hex" class="text-amber-400 font-bold text-xs sm:text-sm">0x00000000</span>
+                <div class="bg-slate-900 border border-slate-800 rounded p-1">
+                    <span class="text-[8px] text-slate-500 block uppercase font-sans">Hexadecimal</span>
+                    <span id="base-hex" class="text-amber-400 font-bold text-xs">0x00000000</span>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded p-1.5">
-                    <span class="text-[8px] sm:text-[9px] text-slate-500 block uppercase tracking-tight font-sans">Octal</span>
-                    <span id="base-oct" class="text-indigo-400 font-bold text-xs sm:text-sm">0o0</span>
+                <div class="bg-slate-900 border border-slate-800 rounded p-1">
+                    <span class="text-[8px] text-slate-500 block uppercase font-sans">Octal</span>
+                    <span id="base-oct" class="text-indigo-400 font-bold text-xs">0o0</span>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded p-1.5">
-                    <span class="text-[8px] sm:text-[9px] text-slate-500 block uppercase tracking-tight font-sans">Binary Frame (32-Bit)</span>
-                    <span id="base-bin" class="text-purple-400 font-bold text-xs sm:text-sm tracking-tighter">00000000000000000000000000000000</span>
+                <div class="bg-slate-900 border border-slate-800 rounded p-1">
+                    <span class="text-[8px] text-slate-500 block uppercase font-sans">Binary Frame (32-Bit)</span>
+                    <span id="base-bin" class="text-purple-400 font-bold text-xs tracking-tighter">00000000000000000000000000000000</span>
                 </div>
             </div>
         </section>
-        <!-- Adaptive Split Column View layout (Stacks vertically on small screens) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Adaptive Split Column View layout -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
             
-            <!-- Left Axis Column: Structural System Core Pillars & Rights Shields -->
-            <section class="space-y-2">
+            <!-- Left Column: Structural System Core Pillars & Rights Shields (Takes up 5/12 of width) -->
+            <section class="md:col-span-5 space-y-2">
                 <div class="border-b border-slate-800 pb-1 mb-2">
-                    <h2 class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1">
+                    <h2 class="text-[10px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1">
                         🛡️ System Core Pillars & Operational Shields
                     </h2>
                 </div>
-                <div id="col-pillars" class="space-y-2"></div>
+                <div id="col-pillars" class="space-y-1.5"></div>
             </section>
 
-            <!-- Right Axis Column: Active Watchdog Canaries -->
-            <section class="space-y-2">
+            <!-- Right Column: Micro-Grid Watchdog Canaries (Takes up 7/12 of width, groups items per 2) -->
+            <section class="md:col-span-7 space-y-2">
                 <div class="border-b border-slate-800 pb-1 mb-2">
-                    <h2 class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
-                        🚨 Dynamic Watchdog Canaries (JSON Interlocking Circuits)
+                    <h2 class="text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
+                        🚨 Watchdog Canaries (Side-by-Side Matrix Overview)
                     </h2>
                 </div>
-                <div id="col-canaries" class="space-y-2"></div>
+                <!-- Dynamic two-column sub-grid wrapper for compact horizontal stacking -->
+                <div id="col-canaries" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
             </section>
         </div>
 
     </main>
-    <!-- 100% Dynamic Array-Compliant 32-Bit Script Engine -->
+    <!-- 100% Dynamic Compact Array-Compliant 32-Bit Script Engine -->
     <script>
-        const JSON_URL = './../existenzStruct/master/existentialCores.json';
+        const JSON_URL = '../existenzStruct/master/existentialCores.json';
+        const LOG_URL = '../existenzStruct/master/existentialBuild.log';
         
         let schemaData = null;
-        // Boot with your precise architectural hardware baseline sequence value
-        let globalSystemRegister = 0x972FFFF; 
+        let globalSystemRegister = 0x1727FFF; 
 
         async function initDashboard() {
+            try {
+                const logResponse = await fetch(LOG_URL);
+                if (logResponse.ok) {
+                    document.getElementById('crypto-sig').innerText = await logResponse.text();
+                } else {
+                    document.getElementById('crypto-sig').innerText = "[System Operational]";
+                }
+            } catch (err) {
+                document.getElementById('crypto-sig').innerText = "[Passive Logging Offline]";
+            }
+
             try {
                 const response = await fetch(JSON_URL);
                 let rawText = await response.text();
@@ -90,6 +102,13 @@
                     rawText = rawText.replace('" existentialMeta" {', '"existentialMeta": {');
                 }
                 schemaData = JSON.parse(rawText);
+
+                // Initial Safe Start Guard: Ensure default canopy registers read high (1)
+                Object.entries(schemaData.existentialCore).forEach(([key, item]) => {
+                    if (item.type === 'CANARY') {
+                        globalSystemRegister |= parseInt(item.value); 
+                    }
+                });
 
                 renderMetaHeader();
                 evaluateDynamicCircuitsAndRender();
@@ -102,7 +121,6 @@
         function renderMetaHeader() {
             const meta = schemaData.existentialMeta || {};
             document.getElementById('meta-info').innerText = `v${meta.CoreVersion || '0'} | ${meta.CoreAuthor || 'Admin'} | Baseline: 0x1727FFF`;
-            document.getElementById('crypto-sig').innerText = `SHA-256 Signature: ${schemaData.existentialSignatures?.Core || 'Unsigned'}`;
         }
 
         function toggleRegisterBit(bitValue) {
@@ -113,19 +131,17 @@
         function evaluateDynamicCircuitsAndRender() {
             const jsonBitmasks = schemaData.existentialCoreBitmask || {};
 
-            // Step 1: Compute dynamic canary states based on literal array values
+            // Compute dynamic canary states based on literal array values
             Object.entries(jsonBitmasks).forEach(([canaryKey, ruleArray]) => {
                 const bitPos = ruleArray[0];
                 const maskWeight = parseInt(ruleArray[1], 16); 
                 const canaryBitWeight = 1 << bitPos;
 
-                // Watchdog rule validation: Is the target interlocking circuit mask fully intact?
                 const isCircuitSecure = (globalSystemRegister & maskWeight) === maskWeight;
-
                 if (isCircuitSecure) {
-                    globalSystemRegister |= canaryBitWeight; // Circuit uncompromised -> Keep active (1)
+                    globalSystemRegister |= canaryBitWeight; 
                 } else {
-                    globalSystemRegister &= ~canaryBitWeight; // Circuit broken -> Drop bit status (0)
+                    globalSystemRegister &= ~canaryBitWeight; 
                 }
             });
 
@@ -142,7 +158,6 @@
                 const bitWeight = parseInt(item.value);
                 const isBitOn = (globalSystemRegister & bitWeight) !== 0;
 
-                // Match framework configurations straight out of your parsed JSON dictionary arrays
                 const dynamicRule = jsonBitmasks[key] || Object.values(jsonBitmasks).find(r => (1 << r[0]) === bitWeight);
                 const isCanary = item.type === 'CANARY' || !!dynamicRule;
 
@@ -152,44 +167,35 @@
                 let allowUserInteraction = false;
                 let permissionBadgesHtml = "";
 
+                // Optimized Micro-Sizing for full screen overview visibility
                 if (isCanary) {
                     const isTripped = !isBitOn;
                     statusBadge = isTripped
-                        ? `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded font-bold animate-pulse">🚨 TRIPPED</span>`
-                        : `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded font-bold">🛡️ SECURE</span>`;
+                        ? `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[8px] px-1 rounded font-bold animate-pulse">🚨 TRIP</span>`
+                        : `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] px-1 rounded font-bold">🛡️ OK</span>`;
                     
                     cardStyle = isTripped ? "border-rose-900/60 bg-rose-950/10 text-rose-300" : "border-slate-800 bg-slate-950/40 opacity-70";
                     
-                    // Safely extract custom metadata flags from your array index offsets
                     if (dynamicRule && Array.isArray(dynamicRule)) {
                         const immVal = dynamicRule[2]; 
                         const reqVal = dynamicRule[3]; 
                         const modVal = dynamicRule[4]; 
                         
-                        const immBadge = immVal === 1 
-                            ? `<span class="bg-slate-900 border border-slate-800 text-slate-400 px-1 py-0.2 rounded text-[7px] uppercase font-bold tracking-tight">🔒 Immutable</span>`
-                            : `<span class="bg-indigo-950/50 border border-indigo-900/40 text-indigo-400 px-1 py-0.2 rounded text-[7px] uppercase font-bold tracking-tight">🔓 Mutable</span>`;
+                        const immBadge = immVal === 1 ? `🔒` : `🔓`;
+                        const reqBadge = reqVal === 1 ? `<span class="text-amber-500 font-bold">⚠️</span>` : ``;
                         
-                        const reqBadge = reqVal === 1 
-                            ? `<span class="bg-amber-500/10 border border-amber-500/20 text-amber-400 px-1 py-0.2 rounded text-[7px] uppercase font-bold tracking-tight">⚠️ Required</span>`
-                            : ``;
+                        let controlLabel = "👁️";
+                        if (modVal === 1) { controlLabel = "🔧"; allowUserInteraction = true; }
+                        else if (modVal === 2) { controlLabel = "🛠️"; allowUserInteraction = true; }
                         
-                        let controlLabel = "👁️ Read-Only";
-                        if (modVal === 1) { controlLabel = "🔧 Toggle Allowed"; allowUserInteraction = true; }
-                        else if (modVal === 2) { controlLabel = "🛠️ Adaptive Config"; allowUserInteraction = true; }
-                        
-                        const ctrlBadge = `<span class="px-1 py-0.2 rounded text-[7px] uppercase font-bold tracking-tight ${
-                            allowUserInteraction ? 'bg-emerald-950/50 border border-emerald-800/40 text-emerald-400' : 'bg-slate-900 border border-slate-800 text-slate-500'
-                        }">${controlLabel}</span>`;
-
-                        permissionBadgesHtml = `<div class="flex flex-wrap gap-1 mt-1.5">${immBadge}${reqBadge}${ctrlBadge}</div>`;
+                        permissionBadgesHtml = `<div class="flex items-center gap-1 text-[8px] mt-0.5 opacity-60">${immBadge} ${reqBadge} ${controlLabel}</div>`;
                     }
                 } else {
                     statusBadge = isBitOn
-                        ? `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded font-bold font-mono">ON</span>`
-                        : `<span class="bg-slate-800 text-slate-500 border border-slate-700/40 text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded font-bold font-mono">OFF</span>`;
+                        ? `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] px-1 rounded font-mono font-bold">ON</span>`
+                        : `<span class="bg-slate-800 text-slate-500 border border-slate-700/40 text-[8px] px-1 rounded font-mono font-bold">OFF</span>`;
                     
-                    cardStyle = isBitOn ? "border-emerald-800/80 bg-slate-950 text-slate-100" : "border-slate-800/40 bg-slate-950/20 text-slate-500 opacity-60";
+                    cardStyle = isBitOn ? "border-emerald-800/60 bg-slate-950 text-slate-100" : "border-slate-800/30 bg-slate-950/10 text-slate-500 opacity-50";
                     allowUserInteraction = true;
                 }
 
@@ -203,21 +209,16 @@
                 if (item.type === 'RIGHTS') icon = "⚖️";
                 if (item.type === 'SHIELD') icon = "🧱";
 
-                card.className = `p-2 sm:p-2.5 rounded border transition flex flex-col justify-between ${cardStyle}`;
+                // Ultra-tight card height layout structure specifications
+                card.className = `p-1.5 rounded border transition flex flex-col justify-between h-[52px] ${cardStyle}`;
                 card.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-start gap-2">
-                            <h3 class="font-bold font-mono tracking-tight text-xs truncate max-w-[170px] sm:max-w-none">${icon} ${key}</h3>
-                            ${statusBadge}
-                        </div>
-                        <p class="text-slate-400 text-[10px] sm:text-[11px] mt-1 leading-tight italic line-clamp-1 select-none">
-                            ${item.comment ? `"${item.comment}"` : dynamicRule ? `Monitors hexadecimal circuit protection variables: ${dynamicRule[1]}` : 'Operational framework node.'}
-                        </p>
-                        ${permissionBadgesHtml}
+                    <div class="flex justify-between items-start gap-1">
+                        <h3 class="font-bold font-mono tracking-tight text-[10px] truncate max-w-[110px] sm:max-w-none" title="${key}">${icon} ${key.replace('CANARY_','C_')}</h3>
+                        ${statusBadge}
                     </div>
-                    <div class="mt-2 pt-1 border-t border-slate-900/60 flex justify-between items-center text-[9px] font-mono text-slate-500">
+                    <div class="flex justify-between items-center text-[8px] font-mono text-slate-500 mt-1 pt-0.5 border-t border-slate-900/40">
                         <span>${item.expr ? item.expr.trim() : 'Bit ' + dynamicRule?.[0]}</span>
-                        <span class="text-[8px] opacity-40 uppercase tracking-wider font-sans font-bold">${item.type || 'CANARY'}</span>
+                        ${permissionBadgesHtml || `<span class="opacity-30 text-[7px] uppercase font-bold">${item.type || 'CANARY'}</span>`}
                     </div>
                 `;
 
