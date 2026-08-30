@@ -31,13 +31,15 @@ if REPO_ROOT not in sys.path:
 int_ver = "v0.76.13"
 
 try:
+    import existenzStruct.master.existentialCoreSignatures as sig_module
+    from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
     # Safely load the local signatures file without namespace prefix drift failures
-    import existenzStruct.master.existentialCoreSignatures
-    from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic, exostentialCores
+#    import existenzStruct.master.existentialCoreSignatures
+#    from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic, exostentialCores
     
 except ImportError:
     print("    sign_master.py: ")
-    print("[!] CRITICAL ERROR: Foundational compiled lockbook structure missing inside dist/master/.")
+    print("[!] [CRITICAL ERROR] Foundational compiled lockbook structure missing.")
     print("    Please execute 'core_build.py -step sign' first to generate base parameters.")
     #sys.exit(1)
 
