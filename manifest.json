@@ -1,6 +1,6 @@
 {
   "files": {
-    "dist/bash/existentialCoreCheck.sh": "91a96cf185f4ffd4ed3a8718fc314d5eee8bbfe2f69497761917cae333f75c39",
+    "dist/bash/existentialCoreCheck.sh": "91a96cf185f4ffd4ed3a8718fc314d5eee8bbfe2f69497761917cae333f75c39", 
     "dist/bash/existentialCores.sh": "871568173f4f3e0fd442e1d76c3b88bfda4ce4e4ab2cc79f34c5bd0323d1ccb1",
     "dist/bash/single/existentialCore.sh": "76321432c93989a6233c7584249b99b0aec90ee4aea15adb3cec08e133573a44",
     "dist/bash/single/existentialCoreSignatures.sh": "9d46e08a14ca7be7e485be803b284bcb2d0b5b04408a331fa476e38b64f6508d",
