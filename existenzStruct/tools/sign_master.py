@@ -214,7 +214,10 @@ def main():
         elif args.stage == "verify":
             is_signed = len(sign_var) > 40 and not sign_var.startswith("existential")
             if is_signed:
-                live_short = sign_var[:8]
+                # 🚀 RESOLVED MULTI-SIGNATURE INDEXING: Split colon entries and isolate the final signature segment
+                signature_segments = sign_var.split(":")
+                live_short = signature_segments[-1][:8]
+                
                 status_lbl = "VERIFIED" if live_short == short_var[:8] else "DRIFTING"
                 display_sig = sign_var
             else:
