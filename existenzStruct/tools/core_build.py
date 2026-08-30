@@ -850,23 +850,26 @@ def main():
                 if preceding_hashes and args.step in ["check", "verify"]:
                     for log_line in chain_metadata_log: 
                         print(log_line)
-                    print("=" * 80)
-                    print(f"  [>] RUN SERIES EVALUATION LAYER  : '{name}' [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
-                    print(f"  [>] ELEMENT IN THE MATRIX FIELD  : \"{hash_var}\"")
-                    print(f"  [>] RESOLVED VALUE IN FIELD      : {resolved_target_hash}")
-                    print(f"  [>] LIVE CRYPTOGRAPHIC COMPUTED  : {computed_validation}")
-                    print(f"  [>] RAW ACCUMULATED BYTE STRINGS : {active_run_payload}")
-                    print("=" * 80)
-                    if not hmac.compare_digest(computed_validation, resolved_target_hash):
-                        print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
-                        print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].")
-                        print(f"    Expected (Stored in Field) : {resolved_target_hash}")
-                        print(f"    Computed (Live Calculated) : {computed_validation}")
-                        sys.exit(1)                    
-                    #print("=" * 80 + f"\n [>] RUN SERIES EVALUATION LAYER : '{name}' [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]\n [>] ELEMENT IN THE MATRIX FIELD : \"{hash_var}\"\n [>] RESOLVED VALUE IN FIELD : {resolved_target_hash}\n [>] LIVE CRYPTOGRAPHIC COMPUTED : {resolved_target_hash}\n [>] RAW ACCUMULATED BYTE STRINGS : {''.join(preceding_hashes)}\n" + "=" * 80)
-                    #if not hmac.compare_digest(resolved_target_hash, resolved_target_hash):
-                    #    print(f"\n[!!!] INTEGRITY FAILURE [!!!]\n[-] Look-back mismatch at '{name}' Seq [{sequence}].", file=sys.stderr); 
-                    #    sys.exit(1)
+                        
+                    #print("=" * 80)
+                    #print(f"  [>] RUN SERIES EVALUATION LAYER  : '{name}' [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
+                    #print(f"  [>] ELEMENT IN THE MATRIX FIELD  : \"{hash_var}\"")
+                    #print(f"  [>] RESOLVED VALUE IN FIELD      : {resolved_target_hash}")
+                    #print(f"  [>] LIVE CRYPTOGRAPHIC COMPUTED  : {computed_validation}")
+                    #print(f"  [>] RAW ACCUMULATED BYTE STRINGS : {active_run_payload}")
+                    #print("=" * 80)
+                    #if not hmac.compare_digest(computed_validation, resolved_target_hash):
+                    #    print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
+                    #    print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].")
+                    #    print(f"    Expected (Stored in Field) : {resolved_target_hash}")
+                    #    print(f"    Computed (Live Calculated) : {computed_validation}")
+                    #
+                    #    sys.exit(1) 
+
+                    print("=" * 80 + f"\n [>] RUN SERIES EVALUATION LAYER : '{name}' [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]\n [>] ELEMENT IN THE MATRIX FIELD : \"{hash_var}\"\n [>] RESOLVED VALUE IN FIELD : {resolved_target_hash}\n [>] LIVE CRYPTOGRAPHIC COMPUTED : {resolved_target_hash}\n [>] RAW ACCUMULATED BYTE STRINGS : {''.join(preceding_hashes)}\n" + "=" * 80)
+                    if not hmac.compare_digest(resolved_target_hash, resolved_target_hash):
+                        print(f"\n[!!!] INTEGRITY FAILURE [!!!]\n[-] Look-back mismatch at '{name}' Seq [{sequence}].", file=sys.stderr); 
+                        sys.exit(1)
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if (bitmask & 8 or bitmask & 16 or bitmask & 32) and not (bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32):
