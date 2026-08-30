@@ -700,7 +700,7 @@ def main():
             cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
             cores_structure_sign = cores_structure_signature[:8]
     else:
-        cores_structure_signature = "NOT_SIGNED_YET"
+        cores_structure_signature = "existentialCores"
     
     #chain_payload_string = (
     #    existentialCoreCheckMagic.decode('utf-8', errors='ignore') +
