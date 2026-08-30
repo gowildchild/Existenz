@@ -32,6 +32,6 @@ class existentialCoreSignatures:
         ("CoreThreatLegal", "cf73b021", "existentialCoreThreatLegalHash", "cf73b021381f426ad53910a83a1a5ce15ab6c3ea200e6e6818a805ca22328b13c7aacfc8a9cb5083abd633687e7693cc2c38310d026a36e59dfbd75cf592eb0b", 31, 3),
         ("CoreThreatShadowVacuum", "4f42af6a", "existentialCoreThreatShadowVacuumHash", "4f42af6a6be5078c95f186936058f8872553d523879b287e575f77e4180e4fc9a215e6bb30a6fd744ed85880945c133509ecf318ce4ca79caad6b7e1a50c1d01", 31, 4),
         ("CoreThreat", "79b1e69e", "existentialCoreThreatHash", "79b1e69ed3a999fc6ed1d92c92f90f920d1052c4b5d93d17bed0ec90ed0bac6833aaa16301c843f70ac7a959e462a1efccbdb7958b610501d9f7c4c4bb07200b", 127, 5),
-        ("Cores", "existentialCoresSign", "existentialCoresHash", "existentialCoresSignature", 54, 7),
+        ("Cores", "existentialCoresSign", "existentialCoresHash", "existentialCoresSignature", 126, 6),
         ("CoreChain", "11c39300", "existentialCoreChainHash", "11c393009d3f0dca9fc83c0c76c02a89737cfffbbcbb974cf2632d8d797e4dd42616ec3b8b625718314bbc146792259884300beae923af01cc26ab6713472308", 255, 9)
     )
