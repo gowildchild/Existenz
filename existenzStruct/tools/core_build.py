@@ -735,15 +735,20 @@ def main():
     else:
         pub_ver = int_ver
 
+
+    if args.step in ["check","verify","compile","merge"]:
+        print("") 
+        
+    existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
+
     if args.step in ["check","verify"]:
         print("[*] Verifying integrity of existentz cryptographic structures... ")
         existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
-    
-    print("┌─────────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
-    print(f"│ EXISTENZ CORE BUILDER {pub_ver}                   by Gunther Voet │")
-    print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ────────────────────────────────────┘")
-    print(f"Execution Step : --step {args.step.ljust(8)}    |     Strategy Mode  : -run {args.run.ljust(4)}")
-
+        print("┌─────────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
+        print(f"│ EXISTENZ CORE BUILDER {pub_ver}               by Gunther Voet │")
+        print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ────────────────────────────────────┘")
+        print(f"Execution Step : --step {args.step.ljust(8)} | Strategy Mode  : -run {args.run.ljust(4)}")
+        
     # Establish backward-compatible path hooks for your distribution checking layer
     target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
@@ -795,9 +800,8 @@ def main():
                 c_json = json.load(f)
             with open(threat_p, "r", encoding="utf-8") as f:
                 t_json = json.load(f)
-
             master_catalog = {**c_json, **t_json}
-
+            
             # Instantiate file inside master folder workspace first
             with open(master_out_p, "w", encoding="utf-8") as f:
                 json.dump(master_catalog, f, indent=2)
@@ -810,7 +814,7 @@ def main():
             print("[+] SUCCESS: Master catalog synchronized down into dist/existentialCores.json")
         except Exception as ex:
             print(f"[-] Pre-flight Catalog Combination Failed: {ex}", file=sys.stderr)
-
+            
     # Read the live signature variable natively from our confirmed tracking file
     cores_master_path = dist_out_p if os.path.exists(dist_out_p) else master_out_p
     cores_structure_signature = ""
@@ -818,8 +822,8 @@ def main():
     if os.path.exists(cores_master_path):
         with open(cores_master_path, "rb") as f:
             cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
-            cores_structure_sign = cores_structure_signature[:8]
-    
+        cores_structure_sign = cores_structure_signature[:8]
+        
     chain_payload_string = (
         existentialCoreCheckMagic.decode('utf-8', errors='ignore') +
         core_structure_signature +
@@ -827,21 +831,22 @@ def main():
         check_structures_signature +
         cores_structure_signature
     )
-    
     chain_structures_payload = chain_payload_string.encode('utf-8')
     chain_structures_signature = hmac.new(existentialCoreCheckMagic, chain_structures_payload, hashlib.sha256).hexdigest()
     chain_structures_sign = chain_structures_signature[:8]
-        
-    existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
+
+    # Force dynamic namespace refresh to bypass Python's static class caching issues entirely
+    import importlib
+    importlib.reload(sys.modules['existenzStruct.master.existentialCoreSignatures'])
+    from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion
 
     if args.step in ["check","verify","compile","merge"]:
-        print("")        
+        print("") 
         matrix_rules_lookup = {}
         for row in existentialCoreSignatures.existentialCoreSigned:
             if row[0] != "Magic":
-                matrix_rules_lookup[row[0]] = row  # Store entire row data mapped to Name
-
-        # Helper function to dynamically check live signature states and compile compact tags
+                matrix_rules_lookup[row[0]] = row 
+                
         def get_layer_tags(layer_name, is_last_in_group=False):
             chain_arrow = None
             if layer_name not in matrix_rules_lookup:
