@@ -124,7 +124,7 @@ def main():
 
     loaded_keys = {}
     computed_asymmetric_signatures = []
-
+    session_ledger = {}
     # 🚀 STATIC IMMUTABLE CLASS MAPPING PASS: Direct attribute tracking isolates variable lookups
     hash_payloads_map = {
         "Magic": existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic),
@@ -227,16 +227,16 @@ def main():
 
         output_signatures_file = os.path.join(TARGET_DIST_DIR, "existentialCoreSignatures.py")
         print(f"\n[*] Committing complete asymmetric signature array to: {output_signatures_file}")
-        
         clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic)
-        target_vacuum_sig = getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET")
-        core_sig = getattr(sig_module, "existentialCore", "")
-        threat_struct_sig= getattr(sig_module, "existentialCoreThreatStruct", getattr(sig_module, "existentialCoreThreatRoot", ""))
-        legal_sig = getattr(sig_module, "existentialCoreThreatLegal", "")
-        threat_sig = getattr(sig_module, "existentialCoreThreat", "")
-        cores_sig = getattr(sig_module, "existentialCores", "")
-        check_sig = getattr(sig_module, "existentialCoreCheck", "")
-        chain_sig = getattr(sig_module, "existentialCoreChain", "")
+        
+        core_sig = session_ledger.get("Core", "")
+        threat_struct_sig = session_ledger.get("CoreThreatStruct", "")
+        legal_sig = session_ledger.get("CoreThreatLegal", "")
+        target_vacuum_sig = session_ledger.get("CoreThreatShadowVacuum", "")
+        threat_sig = session_ledger.get("CoreThreat", "")
+        cores_sig = session_ledger.get("Cores", "")
+        check_sig = session_ledger.get("CoreCheck", "")
+        chain_sig = session_ledger.get("CoreChain", "")
 
         signatures_content = (
             make_header("#") +
