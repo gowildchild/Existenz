@@ -678,8 +678,8 @@ def main():
         print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ────────────────────────────────────┘")
         print(f"Execution Step : --step {args.step.ljust(8)}    |     Strategy Mode  : -run {args.run.ljust(4)}")
         # Establish backward-compatible path hooks for your distribution checking layer
-        target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
-        target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
+    target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "existenzStruct", "master"))
+    target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
     
     core_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCore.__members__.items()))
     core_structure_payload = core_structure.encode('utf-8')
@@ -765,7 +765,8 @@ def main():
             return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line, chain_arrow
 
         #print("─" * 134)
-    if args.step in ["check","verify","compile"]:    
+#    if args.step in ["check","verify","compile"]: 
+    if args.step in ["check","verify"]: 
         print(f"  [MAGIC] existentialCoreCheckMagic        : {existentialCoreCheckMagic}")
         print(f"  [CHECK] existentialCoreCheckSignature    : {existentialCoreCheckSignature}")
         print("")        
@@ -849,10 +850,23 @@ def main():
                 if preceding_hashes and args.step in ["check", "verify"]:
                     for log_line in chain_metadata_log: 
                         print(log_line)
-                    print("=" * 80 + f"\n [>] RUN SERIES EVALUATION LAYER : '{name}' [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]\n [>] ELEMENT IN THE MATRIX FIELD : \"{hash_var}\"\n [>] RESOLVED VALUE IN FIELD : {resolved_target_hash}\n [>] LIVE CRYPTOGRAPHIC COMPUTED : {resolved_target_hash}\n [>] RAW ACCUMULATED BYTE STRINGS : {''.join(preceding_hashes)}\n" + "=" * 80)
-                    if not hmac.compare_digest(resolved_target_hash, resolved_target_hash):
-                        print(f"\n[!!!] INTEGRITY FAILURE [!!!]\n[-] Look-back mismatch at '{name}' Seq [{sequence}].", file=sys.stderr); 
-                        sys.exit(1)
+                    print("=" * 80)
+                    print(f"  [>] RUN SERIES EVALUATION LAYER  : '{name}' [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]")
+                    print(f"  [>] ELEMENT IN THE MATRIX FIELD  : \"{hash_var}\"")
+                    print(f"  [>] RESOLVED VALUE IN FIELD      : {resolved_target_hash}")
+                    print(f"  [>] LIVE CRYPTOGRAPHIC COMPUTED  : {computed_validation}")
+                    print(f"  [>] RAW ACCUMULATED BYTE STRINGS : {active_run_payload}")
+                    print("=" * 80)
+                    if not hmac.compare_digest(computed_validation, resolved_target_hash):
+                        print(f"\n[!!!] INTEGRITY FAILURE [!!!]", file=sys.stderr)
+                        print(f"[-] Cumulative look-back chain mismatch at effect Anchor node '{name}' Sequence [{sequence}].")
+                        print(f"    Expected (Stored in Field) : {resolved_target_hash}")
+                        print(f"    Computed (Live Calculated) : {computed_validation}")
+                        sys.exit(1)                    
+                    #print("=" * 80 + f"\n [>] RUN SERIES EVALUATION LAYER : '{name}' [Sequence: {sequence}] [Bitmask: {hex(bitmask)}]\n [>] ELEMENT IN THE MATRIX FIELD : \"{hash_var}\"\n [>] RESOLVED VALUE IN FIELD : {resolved_target_hash}\n [>] LIVE CRYPTOGRAPHIC COMPUTED : {resolved_target_hash}\n [>] RAW ACCUMULATED BYTE STRINGS : {''.join(preceding_hashes)}\n" + "=" * 80)
+                    #if not hmac.compare_digest(resolved_target_hash, resolved_target_hash):
+                    #    print(f"\n[!!!] INTEGRITY FAILURE [!!!]\n[-] Look-back mismatch at '{name}' Seq [{sequence}].", file=sys.stderr); 
+                    #    sys.exit(1)
         for layer_meta in sorted_rules:
             name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
             if (bitmask & 8 or bitmask & 16 or bitmask & 32) and not (bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32):
@@ -861,7 +875,7 @@ def main():
         if args.step in ["check","verify"]:
             print("[+] SUCCESS: Core cryptographic structural validations verified clean."); sys.exit(0)
 
-    elif args.step == "sign":
+    if args.step == "sign":
         print("[*] Running Stage: [SIGN] Generating platform tracking matrix...")
         pub_keys_dict = {name: key_str for name, key_str in existentialCoreSignatures.existentialPublicKeys}
         active_required_identities = set()
@@ -920,6 +934,7 @@ def main():
                 except Exception as e: print(f" [!] Verification Halt: Asymmetric security envelope check bypassed or failed: {e}"); sys.exit(1)
             else: print(" [*] Notice: OFF-LINE config absent.")
             sys.exit(0)
+            
     elif args.step in ["compile","merge","verify-master"]:
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
         live_computed_hashes = {
