@@ -251,12 +251,11 @@ def main():
         cores_sig = getattr(existentialCoreSignatures, "existentialCores", "NOT_SIGNED_YET")
         check_sig = existentialCoreSignatures.existentialCoreCheck
 
-        # Extract terminal multi-signature pass indicators safely
         final_core_chain_sig = "NOT_SIGNED_YET"
         if computed_asymmetric_signatures:
             for sig_line in computed_asymmetric_signatures:
                 if '"CoreChain"' in sig_line:
-                    # Pull the raw signature field segment from the freshly computed tuple line
+                    # 🚀 FIXED STRING INDEX: Extracts the pure signature string component (index 7) instead of the list array!
                     parts = sig_line.split('"')
                     if len(parts) >= 8:
                         final_core_chain_sig = parts[7]
