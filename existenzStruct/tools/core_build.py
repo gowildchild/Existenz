@@ -699,8 +699,8 @@ def main():
         with open(cores_master_path, "rb") as f:
             cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
             cores_structure_sign = cores_structure_signature[:8]
-        else:
-            cores_structure_signature = "existentialCoreSignaturesCores"
+    else:
+        cores_structure_signature = "NOT_SIGNED_YET"
     
     #chain_payload_string = (
     #    existentialCoreCheckMagic.decode('utf-8', errors='ignore') +
