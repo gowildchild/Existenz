@@ -11,11 +11,11 @@
     <!-- Responsive Layout Header Bar -->
     <header class="max-w-6xl mx-auto border-b border-slate-800 bg-slate-950 p-3 sm:p-4 rounded-t-lg shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
         <div>
-            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-emerald-400">existentialCore & existentialCoreThreat</h1>
-            <p id="meta-info" class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5">Streaming 32-bit architectural schema...</p>
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-emerald-400">existentialCore & existentialThreat</h1>
+            <p id="meta-info" class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5">Streaming Existenz 32-bit/128-bit</p>
         </div>
         <div id="crypto-sig" class="bg-slate-900 border border-slate-800 px-2.5 py-1 rounded font-mono text-slate-400 text-[10px] sm:text-xs w-full md:w-auto text-left md:text-right">
-            Reading dynamic digital matrix signatures...
+            Reading dynamic digital signatures...
         </div>
     </header>
 
@@ -49,6 +49,7 @@
                 </div>
             </div>
         </section>
+        <!-- Adaptive Split Column View layout (Stacks vertically on small screens) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
             <!-- Left Axis Column: Structural System Core Pillars & Rights Shields -->
@@ -73,12 +74,13 @@
         </div>
 
     </main>
-    <!-- 100% Dynamic 32-Bit Decoupled Metric Validation Script Engine -->
+    <!-- 100% Dynamic Array-Compliant 32-Bit Script Engine -->
     <script>
-        const JSON_URL = './existentialCores.json';
+        const JSON_URL = './../existenzStruct/master/existentialCores.json';
         
         let schemaData = null;
-        let globalSystemRegister = 0;
+        // Boot with your precise architectural hardware baseline sequence value
+        let globalSystemRegister = 0x1727FFF; 
 
         async function initDashboard() {
             try {
@@ -88,16 +90,6 @@
                     rawText = rawText.replace('" existentialMeta" {', '"existentialMeta": {');
                 }
                 schemaData = JSON.parse(rawText);
-
-                // Initialize: Auto-power all operational, shield, and canary flag bits to ON (1) by default on boot
-                Object.entries(schemaData.existentialCore).forEach(([key, item]) => {
-                    if (item.type !== 'SIGNATURE') {
-                        const bitVal = parseInt(item.value);
-                        if (bitVal && (bitVal & (bitVal - 1)) === 0) {
-                            globalSystemRegister |= bitVal; 
-                        }
-                    }
-                });
 
                 renderMetaHeader();
                 evaluateDynamicCircuitsAndRender();
@@ -109,7 +101,7 @@
 
         function renderMetaHeader() {
             const meta = schemaData.existentialMeta || {};
-            document.getElementById('meta-info').innerText = `v${meta.CoreVersion || '0'} | ${meta.CoreAuthor || 'Admin'} | Sync: JSON Schema Active`;
+            document.getElementById('meta-info').innerText = `v${meta.CoreVersion || '0'} | ${meta.CoreAuthor || 'Admin'} | Baseline: 0x1727FFF`;
             document.getElementById('crypto-sig').innerText = `SHA-256 Signature: ${schemaData.existentialSignatures?.Core || 'Unsigned'}`;
         }
 
@@ -121,21 +113,19 @@
         function evaluateDynamicCircuitsAndRender() {
             const jsonBitmasks = schemaData.existentialCoreBitmask || {};
 
-            // Step 1: Run Bitmask Logic Gates out of JSON structural rules dynamically
+            // Step 1: Compute dynamic canary states based on literal array values
             Object.entries(jsonBitmasks).forEach(([canaryKey, ruleArray]) => {
-                const bitPos = parseInt(ruleArray[0]);
+                const bitPos = ruleArray[0];
                 const maskWeight = parseInt(ruleArray[1], 16); 
                 const canaryBitWeight = 1 << bitPos;
 
-                // INVERSE SYSTEM FAULT CHECK: A watchdog circuit trips if ANY bit monitored by its mask turns OFF (0)
-                // We check if (system register & maskWeight) matches the complete mask value. 
-                // If it matches, everything is ON (Fine) -> Canary bit stays active (1). If it falls short, it trips -> Canary bit drops to (0).
+                // Watchdog rule validation: Is the target interlocking circuit mask fully intact?
                 const isCircuitSecure = (globalSystemRegister & maskWeight) === maskWeight;
 
                 if (isCircuitSecure) {
-                    globalSystemRegister |= canaryBitWeight; // Keep Canary active (Secure)
+                    globalSystemRegister |= canaryBitWeight; // Circuit uncompromised -> Keep active (1)
                 } else {
-                    globalSystemRegister &= ~canaryBitWeight; // Drop Canary bit (Tripped)
+                    globalSystemRegister &= ~canaryBitWeight; // Circuit broken -> Drop bit status (0)
                 }
             });
 
@@ -152,8 +142,8 @@
                 const bitWeight = parseInt(item.value);
                 const isBitOn = (globalSystemRegister & bitWeight) !== 0;
 
-                // Dynamically pull properties out of config array matching by object keys or bit pos
-                const dynamicRule = jsonBitmasks[key] || Object.values(jsonBitmasks).find(r => parseInt(r[0]) === Math.log2(bitWeight));
+                // Match framework configurations straight out of your parsed JSON dictionary arrays
+                const dynamicRule = jsonBitmasks[key] || Object.values(jsonBitmasks).find(r => (1 << r[0]) === bitWeight);
                 const isCanary = item.type === 'CANARY' || !!dynamicRule;
 
                 const card = document.createElement('div');
@@ -163,32 +153,30 @@
                 let permissionBadgesHtml = "";
 
                 if (isCanary) {
-                    // Canary status displays SECURE when its tracking bit is high (1), and TRIPPED when it falls to low (0)
                     const isTripped = !isBitOn;
                     statusBadge = isTripped
                         ? `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded font-bold animate-pulse">🚨 TRIPPED</span>`
                         : `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded font-bold">🛡️ SECURE</span>`;
                     
-                    cardStyle = isTripped ? "border-rose-900/60 bg-rose-950/10 text-rose-300 animate-pulse" : "border-slate-800 bg-slate-950/40 opacity-70";
+                    cardStyle = isTripped ? "border-rose-900/60 bg-rose-950/10 text-rose-300" : "border-slate-800 bg-slate-950/40 opacity-70";
                     
-                    // Parse custom metadata properties from your bitmask array elements
-                    if (dynamicRule) {
-                        const immVal = parseInt(dynamicRule[2]); // Index 2: Immutability
-                        const reqVal = parseInt(dynamicRule[3]); // Index 3: Required status
-                        const modVal = parseInt(dynamicRule[4]); // Index 4: User Control Tier
+                    // Safely extract custom metadata flags from your array index offsets
+                    if (dynamicRule && Array.isArray(dynamicRule)) {
+                        const immVal = dynamicRule[2]; 
+                        const reqVal = dynamicRule[3]; 
+                        const modVal = dynamicRule[4]; 
                         
                         const immBadge = immVal === 1 
                             ? `<span class="bg-slate-900 border border-slate-800 text-slate-400 px-1 py-0.2 rounded text-[7px] uppercase font-bold tracking-tight">🔒 Immutable</span>`
                             : `<span class="bg-indigo-950/50 border border-indigo-900/40 text-indigo-400 px-1 py-0.2 rounded text-[7px] uppercase font-bold tracking-tight">🔓 Mutable</span>`;
                         
                         const reqBadge = reqVal === 1 
-                            ? `<span class="bg-amber-500/5 border border-amber-500/20 text-amber-400 px-1 py-0.2 rounded text-[7px] uppercase font-bold tracking-tight">⚠️ Required</span>`
+                            ? `<span class="bg-amber-500/10 border border-amber-500/20 text-amber-400 px-1 py-0.2 rounded text-[7px] uppercase font-bold tracking-tight">⚠️ Required</span>`
                             : ``;
                         
-                        let controlLabel = "";
-                        if (modVal === 0) { controlLabel = "👁️ Read-Only"; }
-                        else if (modVal === 1) { controlLabel = "🔧 Control: Toggle"; allowUserInteraction = true; }
-                        else if (modVal === 2) { controlLabel = "🛠️ Control: Adaptive"; allowUserInteraction = true; }
+                        let controlLabel = "👁️ Read-Only";
+                        if (modVal === 1) { controlLabel = "🔧 Toggle Allowed"; allowUserInteraction = true; }
+                        else if (modVal === 2) { controlLabel = "🛠️ Adaptive Config"; allowUserInteraction = true; }
                         
                         const ctrlBadge = `<span class="px-1 py-0.2 rounded text-[7px] uppercase font-bold tracking-tight ${
                             allowUserInteraction ? 'bg-emerald-950/50 border border-emerald-800/40 text-emerald-400' : 'bg-slate-900 border border-slate-800 text-slate-500'
@@ -223,7 +211,7 @@
                             ${statusBadge}
                         </div>
                         <p class="text-slate-400 text-[10px] sm:text-[11px] mt-1 leading-tight italic line-clamp-1 select-none">
-                            ${item.comment ? `` + item.comment + `` : dynamicRule ? `Circuit Watchdog Mask Monitored: ${dynamicRule[1]}` : 'Operational framework node.'}
+                            ${item.comment ? `"${item.comment}"` : dynamicRule ? `Monitors hexadecimal circuit protection variables: ${dynamicRule[1]}` : 'Operational framework node.'}
                         </p>
                         ${permissionBadgesHtml}
                     </div>
