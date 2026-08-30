@@ -112,6 +112,7 @@ class existentialCoreCheck:
         sign_structure       = "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
         #sign_canary          = "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
         sign_corechain       = "c83f2a0d6fadeeb69346e33fcabf4433c91c40f70bdaf79b9f5fb6b6096d0a4c"
+        sign_cores           = "18d3aeb347a36d7033dd2555b7ddfdde67b289e662ff2c6a8fb03d9562063ab6"
 
         if (active_register_state & existentialCore.CANARY_S_COLLIDE) != 0:
             return False
