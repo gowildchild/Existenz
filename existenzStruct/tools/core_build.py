@@ -892,7 +892,7 @@ def main():
                     if bitmask & 16:  tags.append("-DEV")
                     if bitmask & 32:  tags.append("-PSN")
                     temp_tags = " ".join(tags)
-                    return f"{hex(bitmask)}", str(seq), f"\033[91m[ ! NOT SIGNED ! ]\033[0m {temp_tags}", "├──", "│  ", "─ ──►" if is_last_in_group else "├──"
+                    return f"{hex(bitmask)}", str(seq), f"{temp_tags} \033[91m[ ! NOT SIGNED ! ]\033[0m", "├──", "│  ", " ► " if is_last_in_group else "├──"
                     
             return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line, chain_arrow
 
