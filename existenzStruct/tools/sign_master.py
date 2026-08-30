@@ -35,13 +35,19 @@ int_ver = "v0.76.15"
 try:
     # Safely load the local signatures file without namespace prefix drift failures
     import existenzStruct.master.existentialCoreSignatures
-    from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic, existentialCores
+    from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
+#    from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
+#    from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic, existentialCores
 
 except ImportError:
     print("    [sign_master.py] ")
     print("[-] CRITICAL ERROR: Foundational compiled lockbook structure missing inside master.")
-    print("    Please execute 'core_build.py -step sign' first to generate base parameters.")
-    sys.exit(1)
+    if args.override == "yes":
+        print("[-] OVERRIDE ACTIVE [-]")
+        print("    Please execute 'core_build.py -step sign' first to generate base parameters.")
+    else:
+        print("    Please execute 'core_build.py -step sign' first to generate base parameters.")
+        sys.exit(1)
 
 def show_version_info():
     """Prints the strict system metadata, author ownership, and licensing terms."""
@@ -91,6 +97,7 @@ def load_ssh_private_key(identity, path):
 
 def main():
     parser = argparse.ArgumentParser(description="The Existenz Platform: Master Asymmetric Private Signer")
+    parser.add_argument("-override", "--override", choices=["yes", "no"], default="no", required=True, help="Override lock")
     parser.add_argument("-stage", "--stage", choices=["verify", "sign"], required=True, help="Operational state selection.")
     parser.add_argument("-dist", "--dist", choices=["existenzStruct", "dist"], default="existenzStruct", required=True, help="Sign which distro.")
     parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to local private key location config file.")
@@ -108,7 +115,7 @@ def main():
     print(f"[*] Execution Stage: -stage {args.stage}      -dist {args.dist}")
     print(f"[*] Configuration   : {args.config}")
 
-    target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, args.dist, "master"))
+    target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, f"{args.dist}", "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
 
     if not os.path.exists(args.config):
@@ -127,7 +134,7 @@ def main():
     hash_payloads_map = {
         "Magic": existentialCoreSignatures.existentialCoreCheck,
         "Core": existentialCoreSignatures.existentialCore,
-        "Cores": existentialCoreSignatures.existentialCores,
+        "Cores": getattr(existentialCoreSignatures, "existentialCores", "NOT_SIGNED_YET"),
         "CoreThreat": existentialCoreSignatures.existentialCoreThreat,
         "CoreThreatStruct": existentialCoreSignatures.existentialCoreThreatRoot,
         "CoreThreatLegal": existentialCoreSignatures.existentialCoreThreatLegal,
