@@ -1022,7 +1022,7 @@ def main():
 
         sys.exit(0)
 
-    elif args.step == "compile":
+    elif args.step in ["compile","merge","verify-master"]:
         print("[*] Running Stage: [COMPILE] Launching cross-language exporter...")
 
         live_computed_hashes = {
@@ -1117,7 +1117,7 @@ def main():
             "existentialCoreThreatShadowVacuum": threat_shadow_structure_signature,
             "existentialCoreThreat": threat_structures_signature,
             "existentialCoreCheck": check_structures_signature,
-            "existentialCoreCheckSignatures": getattr(existentialCoreSignatures, "existentialCoreCheckSignatures", "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484")
+            "existentialCoreCheckSignatures": getattr(existentialCoreSignatures, "existentialCoreCheckSignatures", "NOT_SIGNED_YET")
         }
         
         print("──┬ [ verified signatures blueprint ] ────────────────────────────")
