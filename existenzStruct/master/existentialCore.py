@@ -3,7 +3,7 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
 # Released under strict Non-Commercial Open-Source License terms.
 # Commercial use requires immediate written license and explicit payment.
-# ==========================================================================
+# ==========================================================================c
 # VERSION: v0.76.14
 ##
 import hmac
