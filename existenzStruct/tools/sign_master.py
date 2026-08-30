@@ -18,24 +18,28 @@ from cryptography.hazmat.primitives import serialization
 #import existentialCoreSignatures
 #from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
 
+get_distro = "master"
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
 TARGET_DIST_DIR = os.path.join(REPO_ROOT, "dist", "master")
+CORES_DIST_DIR = os.path.join(REPO_ROOT, "existenzStruct", "master")
+
 
 CURRENT_TOOL_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_TOOL_DIR not in sys.path:
     sys.path.insert(0, CURRENT_TOOL_DIR)
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
-int_ver = "v0.76.14"
+int_ver = "v0.76.15"
 
 try:
     # Safely load the local signatures file without namespace prefix drift failures
     import existenzStruct.master.existentialCoreSignatures
-    from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic
-    
+    from existentialCoreSignatures import existentialCoreSignatures, existentialCoreVersion, existentialCoreCheckMagic, existentialCores
+
 except ImportError:
-    print("[-] CRITICAL ERROR: Foundational compiled lockbook structure missing inside dist/master/.")
+    print("    [sign_master.py] ")
+    print("[-] CRITICAL ERROR: Foundational compiled lockbook structure missing inside master.")
     print("    Please execute 'core_build.py -step sign' first to generate base parameters.")
     sys.exit(1)
 
@@ -74,7 +78,6 @@ def load_ssh_private_key(identity, path):
         # Attempt to load the private key unencrypted first
         return serialization.load_ssh_private_key(key_data, password=None)
     except Exception as e:
-        # FIXED: Catch all algorithm/encryption parsing traps to reliably trigger password prompts
         err_str = str(e).lower()
         if "password" in err_str or "unsupported" in err_str or "encrypted" in err_str or "passphrase" in err_str:
             print(f"🔒 [SECURITY ENVELOPE] Private key access token for '{identity}' is password-protected.")
@@ -89,6 +92,7 @@ def load_ssh_private_key(identity, path):
 def main():
     parser = argparse.ArgumentParser(description="The Existenz Platform: Master Asymmetric Private Signer")
     parser.add_argument("-stage", "--stage", choices=["verify", "sign"], required=True, help="Operational state selection.")
+    parser.add_argument("-dist", "--dist", choices=["existenzStruct", "dist"], default="existenzStruct", required=True, help="Sign which distro.")
     parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to local private key location config file.")
     parser.add_argument("-run", choices=["wet", "dry"], default="wet", help="Execution mutation layer gate. Default is 'wet'.")
     parser.add_argument("-v", "--version", action="store_true", help="Display platform version metadata.")
@@ -101,11 +105,10 @@ def main():
     print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
     print("│ EXISTENZ OFFLINE PRIVATE KEY SIGNER            by Gunther Voet │")
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ─── ───── ────────────────────────┘")
-    print(f"[*] Execution Stage: -stage {args.stage}")
-
+    print(f"[*] Execution Stage: -stage {args.stage}      -dist {args.dist}")
     print(f"[*] Configuration   : {args.config}")
 
-    target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, "dist", "master"))
+    target_master_dir = os.path.abspath(os.path.join(REPO_ROOT, args.dist, "master"))
     target_sig_file = os.path.join(target_master_dir, "existentialCoreSignatures.py")
 
     if not os.path.exists(args.config):
@@ -124,12 +127,12 @@ def main():
     hash_payloads_map = {
         "Magic": existentialCoreSignatures.existentialCoreCheck,
         "Core": existentialCoreSignatures.existentialCore,
+        "Cores": existentialCoreSignatures.existentialCores,
         "CoreThreat": existentialCoreSignatures.existentialCoreThreat,
         "CoreThreatStruct": existentialCoreSignatures.existentialCoreThreatRoot,
         "CoreThreatLegal": existentialCoreSignatures.existentialCoreThreatLegal,
         "CoreThreatShadowVacuum": getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET"),
         "CoreCheck": existentialCoreSignatures.existentialCoreCheck,
-        "Cores": existentialCoreSignatures.existentialCores,
         "CoreItem": existentialCoreSignatures.existentialCoreCheck
     }
 
@@ -233,7 +236,8 @@ def main():
             print("\n[Simulation Pass: DRY] Asymmetric signatures generated cleanly in memory. Filesystem unchanged.")
             sys.exit(0)
 
-        output_signatures_file = os.path.join(TARGET_DIST_DIR, "existentialCoreSignatures.py")
+        #output_signatures_file = os.path.join(TARGET_DIST_DIR, "existentialCoreSignatures.py")
+        output_signatures_file = os.path.join(CORES_DIST_DIR, "existentialCoreSignatures.py")
         print(f"\n[*] Committing complete asymmetric signature array to: {output_signatures_file}")
 
         clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic)
@@ -246,11 +250,11 @@ def main():
                     f"existentialCoreCheckSignature                = \"{existentialCoreSignatures.existentialCoreCheck}\"\n\n"
                     f"class existentialCoreSignatures:\n"
                     f"    existentialCore                              = \"{existentialCoreSignatures.existentialCore}\"\n"
+                    f"    existentialCores                             = \"{existentialCoreSignatures.existentialCores}\"\n"                         
                     f"    existentialCoreThreatRoot                    = \"{existentialCoreSignatures.existentialCoreThreatRoot}\"\n"
                     f"    existentialCoreThreatLegal                   = \"{existentialCoreSignatures.existentialCoreThreatLegal}\"\n"
                     f"    existentialCoreThreatShadowVacuum            = \"{target_vacuum_sig}\"\n"
-                    f"    existentialCoreThreat                        = \"{existentialCoreSignatures.existentialCoreThreat}\"\n"
-                    f"    existentialCores                             = \"{existentialCoreSignatures.existentialCores}\"\n"                    
+                    f"    existentialCoreThreat                        = \"{existentialCoreSignatures.existentialCoreThreat}\"\n"               
                     f"    existentialCoreCheck                         = \"{existentialCoreSignatures.existentialCoreCheck}\"\n\n"
                     f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys) + "\n    )\n\n"
                     f"    existentialCoreSigned = (\n" + ",\n".join(computed_asymmetric_signatures) + "\n    )\n")
