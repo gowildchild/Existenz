@@ -685,6 +685,7 @@ def main():
     core_structure_payload = core_structure.encode('utf-8')
     core_structure_signature = hmac.new(existentialCoreCheckMagic, core_structure_payload, hashlib.sha256).hexdigest()
     core_structure_sign = core_structure_signature[:8]
+    existentialCoreCheckSignature = existentialCoreSignatures.existentialCoreCheck
 
     threat_structure = "".join(f"{k}:{v.value}" for k, v in sorted(existentialCoreThreat.__members__.items()))
     threat_structure_payload = threat_structure.encode('utf-8')
