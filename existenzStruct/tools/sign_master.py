@@ -127,12 +127,12 @@ def main():
     loaded_keys = {}
     computed_asymmetric_signatures = []
 
-    # 🚀 ATTRIBUTE NAME ALIGNMENT CORRECTIONS: Unified to synchronize flawlessly with reflection lookups
+    # 🚀 FIX RESOLVED: Combined getattr with fallback matching to prevent zero-hash signature calculation corruption
     hash_payloads_map = {
         "Magic": existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic),
         "Core": getattr(sig_module, "existentialCore", ""),
         "CoreCheck": getattr(sig_module, "existentialCoreCheck", ""),
-        "CoreThreatStruct": getattr(sig_module, "existentialCoreThreatStruct", ""),
+        "CoreThreatStruct": getattr(sig_module, "existentialCoreThreatStruct", getattr(sig_module, "existentialCoreThreatRoot", "")),
         "CoreThreatLegal": getattr(sig_module, "existentialCoreThreatLegal", ""),
         "CoreThreatShadowVacuum": getattr(sig_module, "existentialCoreThreatShadowVacuum", ""),
         "CoreThreat": getattr(sig_module, "existentialCoreThreat", ""),
@@ -140,10 +140,9 @@ def main():
         "CoreChain": getattr(sig_module, "existentialCoreChain", "")
     }
 
-    # Order everything cleanly by sequence hierarchy (Sequence 0 -> 1 -> 2 -> 3 -> 9)
     sorted_signing_rules = sorted(
         existentialCoreSignatures.existentialCoreSigned, 
-        key=lambda element: element[5]
+        key=lambda element: element
     )
 
     if args.stage == "verify":
@@ -165,7 +164,6 @@ def main():
             elif sequence == running_chain_sum:
                 sequence_chain_accumulator = sequence
 
-        # Pull key assignments from bitmask settings natively
         required_keys = []
 
         if bitmask & 8:   required_keys.append("Platform")
@@ -214,7 +212,6 @@ def main():
         elif args.stage == "verify":
             is_signed = len(sign_var) > 40 and not sign_var.startswith("existential")
             if is_signed:
-                # 🚀 RESOLVED MULTI-SIGNATURE INDEXING: Split colon entries and isolate the final signature segment
                 signature_segments = sign_var.split(":")
                 live_short = signature_segments[-1][:8]
                 
@@ -245,21 +242,13 @@ def main():
         clean_magic_str = existentialCoreCheckMagic.decode('utf-8', errors='ignore') if isinstance(existentialCoreCheckMagic, bytes) else str(existentialCoreCheckMagic)
         target_vacuum_sig = getattr(existentialCoreSignatures, "existentialCoreThreatShadowVacuum", "NOT_SIGNED_YET")
 
-        core_sig = existentialCoreSignatures.existentialCore
-        threat_struct_sig = getattr(existentialCoreSignatures, "existentialCoreThreatStruct", getattr(existentialCoreSignatures, "existentialCoreThreatRoot", ""))
-        legal_sig = existentialCoreSignatures.existentialCoreThreatLegal
-        threat_sig = existentialCoreSignatures.existentialCoreThreat
-        cores_sig = getattr(existentialCoreSignatures, "existentialCores", "NOT_SIGNED_YET")
-        check_sig = existentialCoreSignatures.existentialCoreCheck
-        core_chain_pure_hash = chain_structures_signature if 'chain_structures_signature' in locals() else check_sig
-
-        final_core_chain_sig = "NOT_SIGNED_YET"
-        if computed_asymmetric_signatures:
-            for sig_line in computed_asymmetric_signatures:
-                if '"CoreChain"' in sig_line:
-                    parts = sig_line.split('"')
-                    if len(parts) >= 8:
-                        final_core_chain_sig = parts[7]
+        core_sig         = getattr(sig_module, "existentialCore", "")
+        threat_struct_sig= getattr(sig_module, "existentialCoreThreatStruct", getattr(sig_module, "existentialCoreThreatRoot", ""))
+        legal_sig        = getattr(sig_module, "existentialCoreThreatLegal", "")
+        threat_sig       = getattr(sig_module, "existentialCoreThreat", "")
+        cores_sig        = getattr(sig_module, "existentialCores", "")
+        check_sig        = getattr(sig_module, "existentialCoreCheck", "")
+        chain_sig        = getattr(sig_module, "existentialCoreChain", "")
 
         signatures_content = (
             make_header("#") +
@@ -274,7 +263,7 @@ def main():
             f"    existentialCoreThreat                        = \"{threat_sig}\"\n"
             f"    existentialCores                             = \"{cores_sig}\"\n"                    
             f"    existentialCoreCheck                         = \"{check_sig}\"\n"
-            f"    existentialCoreChain                         = \"{core_chain_pure_hash}\"\n\n"
+            f"    existentialCoreChain                         = \"{chain_sig}\"\n\n"
             f"    existentialPublicKeys = (\n" + ",\n".join(f"        (\"{k}\", \"{v}\")" for k, v in existentialCoreSignatures.existentialPublicKeys) + "\n    )\n\n"
             f"    existentialCoreSigned = (\n" + ",\n".join(computed_asymmetric_signatures) + "\n    )\n"
         )
@@ -300,6 +289,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 #        # --- EXECUTION TRACK B: THE SINGLE ONE-LINE DESCRIPTIVE AUDIT VERIFY ROUTINE ---
