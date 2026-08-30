@@ -18,12 +18,12 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-int_ver = "v0.76.14"
+int_ver = "v0.76.15"
 
 try:
     from existenzStruct.master.existentialCore import existentialCore
     from existenzStruct.master.existentialCoreThreat import existentialCoreThreat, existentialCoreThreatLegal, existentialCoreThreatShadowVacuum
-    from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreCheckMagic, existentialCoreVersion
+    from existenzStruct.master.existentialCoreSignatures import existentialCoreSignatures, existentialCoreCheckMagic, existentialCoreVersion, existentialCores
 
 except ImportError as e:
     print(f"[-] Structural layout components unresolved for signing tool: {e}")
@@ -121,8 +121,9 @@ def _write_agnostic_blueprints(dist_dir: str, core_ord: dict, threat_ord: dict, 
     """Outputs agnostic formats (JSON, XML, YAML, CSV, Markdown) straight to the root of dist/."""
     with open(os.path.join(dist_dir, "existentialCore.json"), "w", encoding="utf-8") as f:
         f.write("{\n" + "\n".join(build_aligned_json_block("existentialCore", core_ord, cmnts)) + "\n}\n")
-    
-    master_catalog_path = os.path.abspath(os.path.join(dist_dir, "..", "existenzStruct", "existentialCores.json"))
+
+    master_catalog_path = os.path.abspath(os.path.join(dist_dir, "existenzStruct", "master", "existentialCores.json"))            
+    #master_catalog_path = os.path.abspath(os.path.join(dist_dir, "..", "existenzStruct", "existentialCores.json"))
     os.makedirs(os.path.dirname(master_catalog_path), exist_ok=True) 
     
     json_t = ["{", "\n".join(build_aligned_json_block("existentialCoreThreat", threat_ord, cmnts)) + ",", "  \"existentialCoreThreatLegal\": {"]
@@ -257,6 +258,7 @@ def _export_python_framework(dist_dir: str, core_ord: dict, threat_ord: dict, le
                 f"class existentialCoreSignatures:\n"
                 f"    \"\"\"Master repository vault consolidating all 256-bit immutable platform layer signatures.\"\"\"\n\n"
                 f"    existentialCore                              = \"{sigs['existentialCore']}\"\n"
+                f"    existentialCores                             = \"{sigs['existentialCores']}\"\n"                
                 f"    existentialCoreThreatRoot                    = \"{sigs['existentialCoreThreatRoot']}\"\n"
                 f"    existentialCoreThreatLegal                   = \"{sigs['existentialCoreThreatLegal']}\"\n"
                 f"    existentialCoreThreatShadowVacuum            = \"{sigs['existentialCoreThreatShadowVacuum']}\"\n"                
@@ -391,7 +393,7 @@ def _execute_existenz_platform_autocheck():
         sys.exit(1)
 
 _execute_existenz_platform_autocheck()
-__all__ = ['existentialCore', 'existentialCoreThreat', 'existentialCoreThreatLegal', 'existentialCoreThreatShadowVacuum', 'existentialCoreCheck', 'existentialCoreCheckVersion']
+__all__ = ['existentialCore', 'existentialCores', 'existentialCoreThreat', 'existentialCoreThreatLegal', 'existentialCoreThreatShadowVacuum', 'existentialCoreCheck', 'existentialCoreCheckVersion']
 ''')
 
 def _export_cpp_framework(dist_dir: str, core_ord: dict, threat_ord: dict, legal_ord: dict, vacuum_ord: dict, sigs: dict, cmnts: dict, header: str, widths: dict, full_pkeys: list, full_psigned: list):
@@ -664,6 +666,12 @@ def main():
         help="Specify the pipeline stage to run. 'check'=audit, 'sign'=matrix mapping, 'compile'=cross-compile."
     )
     parser.add_argument(
+        "-dist", "--dist",
+        choices=["existenzStruct","dist"],
+        default="existenzStruct",
+        help="Distro to sign"
+    )
+    parser.add_argument(
         "-r", "--run", 
         choices=["WET", "dry"], 
         default="WET",
@@ -692,15 +700,16 @@ def main():
     core_structure_signature = hmac.new(existentialCoreCheckMagic, core_structure_payload, hashlib.sha256).hexdigest()
     core_structure_sign = core_structure_signature[:8]
 
-    cores_master_path = os.path.abspath(os.path.join(target_master_dir, "dist", "existentialCores.json"))
-    cores_structure_signature = ""
-    cores_structure_sign = ""
+    #cores_master_path = os.path.abspath(os.path.join(target_master_dir, "dist", "existentialCores.json"))
+    cores_master_path = os.path.join(target_master_dir, "existentialCores.json")
+    cores_structure_signature = None
+    cores_structure_sign = None
     if os.path.exists(cores_master_path):
         with open(cores_master_path, "rb") as f:
             cores_structure_signature = hashlib.sha256(f.read()).hexdigest()
             cores_structure_sign = cores_structure_signature[:8]
-    else:
-        cores_structure_signature = "existentialCores"
+    #else:
+    #    cores_structure_signature = "existentialCores"
     
     #chain_payload_string = (
     #    existentialCoreCheckMagic.decode('utf-8', errors='ignore') +
