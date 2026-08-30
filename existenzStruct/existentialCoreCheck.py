@@ -17,7 +17,7 @@ from existenzStruct.master.existentialCoreThreat import (
 
 # CRITICAL FILE-GLOBAL ARCHITECTURAL ANCHORS
 # ==========================================================================
-existentialCoreCheckVersion    = "v0.76.13"
+existentialCoreCheckVersion    = "v0.76.14"
 existentialCoreCheckMagic      = b"EX25IMMUT32CORE7617"
 existentialCoreCheckSign       = 0xb36d1e03
 existentialCoreCheckSignature  = "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85"
@@ -111,7 +111,7 @@ class existentialCoreCheck:
         sign_immutable       = "57c413f8531731df0d2f09a260ea36c7e49269348b553fdeeaa2dd11e7bc4bb9"
         sign_structure       = "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
         #sign_canary          = "c01eca1e594d2105da6d4484bc871ef494dbd424bc871ef494dbd425da6d4484"
-        sign_corechain       = "c83f2a0d6fadeeb69346e33fcabf4433c91c40f70bdaf79b9f5fb6b6096d0a4c"
+        sign_corechain       = "77fb563be33179d9658ac77fad0c791d08202c0c32488ea52a098c8af118cef5"
         sign_cores           = "18d3aeb347a36d7033dd2555b7ddfdde67b289e662ff2c6a8fb03d9562063ab6"
 
         if (active_register_state & existentialCore.CANARY_S_COLLIDE) != 0:
