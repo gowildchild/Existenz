@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Existenz | dist Schema Viewer</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen text-xs select-none">
+
+    <!-- Header Frame (Tightened Padding and Content Restraints) -->
+    <header class="border-b border-slate-800 bg-slate-950 p-4 shadow-md">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight text-emerald-400">Existenz Masters</h1>
+                <p id="meta-info" class="text-[11px] text-slate-400 mt-0.5">Loading local schema data arrays...</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleLogs()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1 rounded font-medium cursor-pointer transition">
+                    📋 Toggle Build Log
+                </button>
+                <div id="crypto-sig" class="bg-slate-900 border border-slate-800 px-2.5 py-1 rounded font-mono text-slate-400">
+                    Signature: Loading...
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Main Compact Content Layout Grid -->
+    <main class="max-w-4xl mx-auto p-4 space-y-6">
+        
+        <!-- Collapsible Pipeline Log Window -->
+        <div id="log-box" class="transition-all duration-200 overflow-hidden">
+            <div class="bg-slate-950 border border-slate-800 rounded-lg p-3 font-mono shadow-inner">
+                <div class="flex justify-between items-center text-slate-500 pb-1.5 border-b border-slate-900 mb-2 text-[10px] uppercase font-bold tracking-wider">
+                    <span>⚙️ Routine Validation / Compile Pipeline Stream</span>
+                    <span class="text-emerald-500 animate-pulse">● Connected</span>
+                </div>
+                <pre id="log-content" class="text-emerald-400 overflow-x-auto max-h-24 text-[11px] leading-relaxed whitespace-pre-wrap">Reading validation pipeline tracking outputs...</pre>
+            </div>
+        </div>
+
+        <!-- Pillars & Canaries Panel Grouping -->
+        <section>
+            <div class="border-b border-slate-800 pb-1 mb-3">
+                <h2 class="text-sm font-bold text-slate-200 flex items-center gap-1">🛡️ Existential Core Pillars <span class="text-[10px] font-normal text-slate-500">(Click to compute bitmasks)</span></h2>
+            </div>
+            <div id="grid-core" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
+        </section>
+
+        <!-- Threat Matrix Classifications Grouping -->
+        <section>
+            <div class="border-b border-slate-800 pb-1 mb-3">
+                <h2 class="text-sm font-bold text-rose-400 flex items-center gap-1">🚨 Threat Matrix & Legal Hooks</h2>
+            </div>
+            <div id="grid-threats" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        </section>
+
+    </main>
+
+    <!-- Bitmask Evaluation Modal Overlay featuring Multi-Base Matrix Array Displays -->
+    <div id="bitmask-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-md rounded-lg shadow-xl p-4 relative">
+            <button onclick="closeModal()" class="absolute top-3 right-3 text-slate-400 hover:text-slate-100 text-sm font-bold cursor-pointer">✕</button>
+            
+            <div class="mb-3">
+                <span id="modal-badge" class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded">TYPE</span>
+                <h3 id="modal-title" class="text-sm font-bold text-slate-100 font-mono mt-1 break-all">FIELD_KEY</h3>
+                <p id="modal-desc" class="text-slate-400 italic text-[11px] mt-1"></p>
+            </div>
+
+            <!-- Multi-Base Math Readouts Engine -->
+            <div class="bg-slate-950 border border-slate-800 rounded p-2.5 font-mono mb-4 space-y-1 text-[11px]">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-slate-400">
+                    <div class="flex justify-between border-b border-slate-900 pb-0.5"><span class="text-slate-500">DEC:</span> <span id="base-dec" class="text-emerald-400 font-bold">0</span></div>
+                    <div class="flex justify-between border-b border-slate-900 pb-0.5"><span class="text-slate-500">HEX:</span> <span id="base-hex" class="text-amber-400 font-bold">0x00</span></div>
+                    <div class="flex justify-between pt-0.5"><span class="text-slate-500">OCT:</span> <span id="base-oct" class="text-indigo-400">0</span></div>
+                    <div class="flex justify-between pt-0.5"><span class="text-slate-500">BIN:</span> <span id="base-bin" class="text-purple-400">00000000</span></div>
+                </div>
+                <div class="text-[10px] text-slate-600 text-right pt-1.5 border-t border-slate-900 mt-1">
+                    Original Core Val: <span id="modal-orig-val" class="font-bold">0</span>
+                </div>
+            </div>
+
+            <!-- Bit Grid Toggle Layout -->
+            <h4 class="font-bold text-slate-300 mb-2 border-b border-slate-800 pb-1 uppercase text-[10px] tracking-wider">Configure Bit Switches (Bits 0-7)</h4>
+            <div id="bit-switches-grid" class="grid grid-cols-4 gap-2 font-mono"></div>
+        </div>
+    </div>
+    <!-- Active Processing Application Logic -->
+    <script>
+        const JSON_URL = './existentialCores.json';
+        const LOG_URL = './build-log.txt';
+        
+        let activeBitmaskValue = 0;
+
+        function toggleLogs() {
+            document.getElementById('log-box').classList.toggle('hidden');
+        }
+
+        async function initDashboard() {
+            // Stream core structural configurations
+            try {
+                const response = await fetch(JSON_URL);
+                let rawText = await response.text();
+                if (rawText.includes('" existentialMeta" {')) {
+                    rawText = rawText.replace('" existentialMeta" {', '"existentialMeta": {');
+                }
+                const data = JSON.parse(rawText);
+                renderDashboard(data);
+            } catch (error) {
+                document.getElementById('meta-info').innerText = "Schema data pipeline link offline.";
+            }
+
+            // Stream companion build log file summary status indicators
+            try {
+                const logRes = await fetch(LOG_URL);
+                if (logRes.ok) {
+                    document.getElementById('log-content').innerText = await logRes.text();
+                } else {
+                    document.getElementById('log-content').innerText = "No log verification artifacts present.";
+                }
+            } catch (err) {
+                document.getElementById('log-content').innerText = "Pipeline verification logging offline.";
+            }
+        }
+
+        function renderDashboard(data) {
+            const meta = data.existentialMeta || {};
+            document.getElementById('meta-info').innerText = `Version: ${meta.CoreVersion || 'N/A'} | Author: ${meta.CoreAuthor || 'N/A'} | Date: ${meta.CoreDate || 'N/A'}`;
+            document.getElementById('crypto-sig').innerText = `SHA-256 Sig: ${(data.existentialSignatures?.Core || 'None').slice(0,8)}...`;
+
+            const coreContainer = document.getElementById('grid-core');
+            const threatContainer = document.getElementById('grid-threats');
+
+            // 1. Render Half-Height/Half-Width Core Variable Matrix Elements
+            Object.entries(data.existentialCore).forEach(([key, item]) => {
+                const isCanary = item.type === 'CANARY';
+                const icon = isCanary ? '🚨' : '🛡️';
+                
+                const card = document.createElement('div');
+                card.className = `p-2.5 rounded border bg-slate-950/80 cursor-pointer transition hover:border-slate-400 flex flex-col justify-between ${isCanary ? 'border-amber-900/60' : 'border-slate-800'}`;
+                card.onclick = () => openBitmaskModal(key, item);
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center mb-1 text-[10px]">
+                            <span class="font-bold font-mono tracking-wide ${isCanary ? 'text-amber-400' : 'text-emerald-400'}">${icon} ${item.type}</span>
+                            <span class="text-slate-500 font-mono">Val: ${item.value}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-200 font-mono tracking-tight truncate">${key}</h3>
+                        <p class="text-slate-400 text-[11px] mt-1 leading-tight line-clamp-2 italic">"${item.comment || 'No parameters defined.'}"</p>
+                    </div>
+                    <div class="mt-2 pt-1 border-t border-slate-900 text-[10px] font-mono text-slate-500 text-right truncate">
+                        ${item.expr.trim()}
+                    </div>
+                `;
+                coreContainer.appendChild(card);
+            });
+
+            // 2. Render Half-Height Threat Profile Matrix Items
+            Object.entries(data.existentialCoreThreat).forEach(([key, item]) => {
+                if (key === "THREAT_NONE") return;
+                const legalCode = data.existentialCoreThreatLegal[item.value] || "No Legal Code Mapping";
+                const vacuumCode = data.existentialCoreThreatShadowVacuum?.[item.value] || "N/A";
+
+                const card = document.createElement('div');
+                card.className = "p-2.5 rounded border border-slate-800 bg-slate-950/40 hover:border-rose-900/80 flex flex-col justify-between";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-1.5">
+                        <h3 class="font-bold text-rose-300 font-mono truncate">${key}</h3>
+                        <span class="text-[10px] font-mono text-slate-600">ID: ${item.value}</span>
+                    </div>
+                    <div class="grid grid-cols-1 gap-1">
+                        <div class="bg-rose-950/20 border border-rose-900/20 rounded px-2 py-0.5 flex items-center justify-between gap-1">
+                            <span class="text-slate-500 uppercase tracking-tight text-[9px] font-bold">⚖️ Legal</span>
+                            <span class="font-mono text-slate-300 truncate max-w-[170px]">${legalCode.trim()}</span>
+                        </div>
+                        <div class="bg-indigo-950/20 border border-indigo-900/20 rounded px-2 py-0.5 flex items-center justify-between gap-1">
+                            <span class="text-slate-500 uppercase tracking-tight text-[9px] font-bold">🌌 Shadow</span>
+                            <span class="font-mono text-slate-400 truncate max-w-[180px]">${vacuumCode.trim()}</span>
+                        </div>
+                    </div>
+                `;
+                threatContainer.appendChild(card);
+            });
+        }
+
+        // Open Multi-Base Bitmask Interface Operations Engine
+        function openBitmaskModal(key, item) {
+            const modal = document.getElementById('bitmask-modal');
+            const isCanary = item.type === 'CANARY';
+            
+            document.getElementById('modal-title').innerText = key;
+            document.getElementById('modal-desc').innerText = item.comment ? `"${item.comment}"` : "No system comments provided.";
+            document.getElementById('modal-orig-val').innerText = item.value;
+            
+            const badge = document.getElementById('modal-badge');
+            badge.innerText = item.type;
+            badge.className = `text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded ${isCanary ? 'bg-amber-500/10 text-amber-400' : 'bg-emerald-500/10 text-emerald-400'}`;
+
+            activeBitmaskValue = parseInt(item.value) || 0;
+            updateMultiBaseOutputs();
+            
+            // Build the 8-bit Interactive Switch Grid UI
+            const switchGrid = document.getElementById('bit-switches-grid');
+            switchGrid.innerHTML = '';
+            
+            for(let i = 0; i < 8; i++) {
+                const bitWeight = 1 << i;
+                const isBitOn = (activeBitmaskValue & bitWeight) !== 0;
+                
+                const button = document.createElement('button');
+                button.id = `bit-btn-${i}`;
+                button.className = `p-1.5 rounded border font-mono text-center transition cursor-pointer flex flex-col items-center justify-center ${isBitOn ? 'bg-emerald-950/40 border-emerald-500 text-emerald-400' : 'bg-slate-950 border-slate-800 text-slate-600'}`;
+                button.onclick = () => toggleBit(i, bitWeight);
+                
+                button.innerHTML = `
+                    <span class="text-[9px] text-slate-500 block">Bit ${i}</span>
+                    <span id="bit-state-${i}" class="text-xs font-bold mt-0.5">${isBitOn ? '1' : '0'}</span>
+                `;
+                switchGrid.appendChild(button);
+            }
+            modal.style.display = 'flex';
+        }
+
+        function toggleBit(index, weight) {
+            const button = document.getElementById(`bit-btn-${index}`);
+            const stateText = document.getElementById(`bit-state-${index}`);
+            
+            activeBitmaskValue ^= weight; // Bitwise toggle operation
+            const isNowOn = (activeBitmaskValue & weight) !== 0;
+            
+            if (isNowOn) {
+                button.className = "p-1.5 rounded border font-mono text-center transition cursor-pointer flex flex-col items-center justify-center bg-emerald-950/40 border-emerald-500 text-emerald-400";
+                stateText.innerText = "1";
+            } else {
+                button.className = "p-1.5 rounded border font-mono text-center transition cursor-pointer flex flex-col items-center justify-center bg-slate-950 border-slate-800 text-slate-600";
+                stateText.innerText = "0";
+            }
+            updateMultiBaseOutputs();
+        }
+
+        // Mathematical Multi-Base String Conversion Matrix Engine
+        function updateMultiBaseOutputs() {
+            const val = activeBitmaskValue >>> 0; // Force unsigned integer mapping
+            
+            document.getElementById('base-dec').innerText = val;
+            document.getElementById('base-hex').innerText = '0x' + val.toString(16).toUpperCase();
+            document.getElementById('base-oct').innerText = '0o' + val.toString(8);
+            document.getElementById('base-bin').innerText = val.toString(2).padStart(8, '0').slice(-8);
+        }
+
+        function closeModal() {
+            document.getElementById('bitmask-modal').style.display = 'none';
+        }
+
+        window.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
