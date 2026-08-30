@@ -18,7 +18,7 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-int_ver = "v0.76k"
+int_ver = "v0.76.14"
 
 try:
     from existenzStruct.master.existentialCore import existentialCore
