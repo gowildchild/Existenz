@@ -918,8 +918,8 @@ def main():
         print(f"  ├── [SQ {sq_cc} | {bm_cc.ljust(4)}] existentialCoreCheck.py     ─┬─► Sign: 0x{check_structures_sign} | {tg_cc}")
         print(f"  │                                              └─► Signature: \"{check_structures_signature}\"")
 
-        if not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
-            print("  [*] Structural Validation Issue for CORE!", file=sys.stderr)
+        if existentialCoreSignatures.existentialCore and not hmac.compare_digest(core_structure_signature, existentialCoreSignatures.existentialCore):
+            print(" [*] Structural Validation Issue for CORE!", file=sys.stderr)
             sys.exit(1)
         print(f"  │  ")            
         print(f"  ├──► class existentialCoreThreatSignatures ────────────  ── ─ ── ─────  ─  ─ ─   ─ ─ ─  ─►")
