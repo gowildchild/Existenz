@@ -1,0 +1,35 @@
+{
+  "files": {
+    "dist/existentialCore.py": "9ec7aab0846bdc9feb8e0cc314b33945256d18f881ced7b0867254c9b5e41fd3",
+    "dist/existentialCoreSignatures.py": "d4e2a25065c75e52a1c670cda236ef83d37183a884b71885a0e2bb3e6fc19094",
+    "dist/existentialCoreThreat.py": "03b089c5fcf5358433ecddf913c5e7fe29938ab14451dc11f9f76842ba05f0ab",
+    "dist/existentialCores.json": "ccd8bc3409b9d3f2a0c4fc068b21c9fa5e3ebb2cfce865dbb0e176d81888aeb9",
+    "dist/master/existentialCoreSignatures.py": "161c13b1bf3eaebd4eda3bb4f06b6fbcf003aca51809d295552f12368577e48e",
+    "existenzStruct/master/README.md": "61d5031b505593421783730470f308b761afcb7f88006a6f19bd4c7e79bbcc56",
+    "existenzStruct/master/existentialCore.py": "9ec7aab0846bdc9feb8e0cc314b33945256d18f881ced7b0867254c9b5e41fd3",
+    "existenzStruct/master/existentialCoreSignatures.py": "504f8ef0b9012909d92855b2a7a8d57f23cdeaa1aece71702d80640814f73471",
+    "existenzStruct/master/existentialCoreThreat.py": "fe1552051abf218ee9986dc2dc703934920eede7b243c2530e25b58f0db3ce6f",
+    "existenzStruct/master/existentialCores.json": "18d3aeb347a36d7033dd2555b7ddfdde67b289e662ff2c6a8fb03d9562063ab6",
+    "existenzStruct/master/existentialHumanCore.py": "2decc0bb05b4d4810320443604373bce2c242dfaf2bb7da7cbc3dc19ac61f7f4",
+    "existenzStruct/tools/boot_guard.py": "7e9f3d546a6da7c4696c379fce80d9b012c20f8707be0ebd2efe118c9095addc",
+    "existenzStruct/tools/check_integrity.py": "26bb01e972b866f8c89e0a97c84f2892a8d5bf69019a1d1ca97585d4dac3ec63",
+    "existenzStruct/tools/core_build.py": "c6b11bd7d5c77007c029dec37ea26dfff4450fd2f3ac0ead0323e0fe4ba8e746",
+    "existenzStruct/tools/core_debug.py": "957531a87f16fcba6445e4d022abd179c732c94e588c5374915f60824dc7f8d6",
+    "existenzStruct/tools/core_manifest.py": "3c46966499694ae40131e4d9f504aa5cfe4a2bb52f2d252b9ec479f9c409e1a8",
+    "existenzStruct/tools/core_telemetry.py": "f68be7b3e8d2336f1bbea65f69da13d6bef422d381b2a2f2657fc43fbf6c24cc",
+    "existenzStruct/tools/sign_master.py": "437662a11e8ce2ab6b6f3188ff30b484790602fd7d47ad2b995efcc55330603b",
+    "existenzStruct/tools/test_integrity.py": "04b56dd5b1cf8698819dd196fa8117fdeb7bb91ab106729c31082594435dbd41",
+    "existenzStruct/tools/test_sign.py": "3dd1c7ea5a1d3c069074cb0f53a07b9060b5b026d06365ead9df40ffdb73d404"
+  },
+  "public_keys": {
+    "Developer": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGHTQAOnKU4zaM03kASAKmrsps4ROCx8xMQZ4m12Yo8U existenz-dev-gwc@xsrv.net",
+    "Personal": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKn1/r+k9+T5OJyoIjcrkj0DBmLq//x0/sffNMJNWofK existenz-dev-gv@xsrv.net",
+    "Platform": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"
+  },
+  "signatures": {
+    "Developer": "34bfd4c1dc40fc78f08f06fc3b149376d60123fa969fb5b92fb36310b52f02267783236f12264a82d14dbb13011e847937551ddc6eec8b9fac7fc3b5d8e0ed06",
+    "Personal": "799ef28eb292c7f94394b58e1cec693bd1536a7b0df6b34a235511f61199da17b3e1a17345e69785db0f2c2dbbe2d2f5c5d8b981ab7b624b3c17df1620b8ed00",
+    "Platform": "0b3ca5cb6a69b8c855b0ddea45725a1d2828dccc1fd33381eb382c19a284c03ce8256c98b9719abd457046624348e2034a07fcc4c1cfd1aa75c69766af3c020a"
+  },
+  "version": "v0.76.15"
+}
