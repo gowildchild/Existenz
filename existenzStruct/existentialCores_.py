@@ -1,4 +1,4 @@
-# ========================================================================== 
+# ==========================================================================
 # THE EXISTENZ PLATFORM v0.76f
 # (existentialCore + existentialCoreThreat + existentialCoreCheck)
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
