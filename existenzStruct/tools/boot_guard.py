@@ -1,7 +1,7 @@
 # ==========================================================================
 # THE EXISTENZ PLATFORM (TEMPORARY ARCHITECTURAL INITIALIZATION BOOT GUARD)
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
-# ==========================================================================d
+# ==========================================================================
 # FILE: existenzStruct/tools/boot_guard.py
 #
 import os
