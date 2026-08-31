@@ -443,8 +443,11 @@ def main():
         else:
             if requires_platform or requires_developer or requires_personal:
                 error_handler.notice(level="info", message="Executing asymmetric cryptographic signature verification...")
+                
+                # FIXED: Pull directly from your clean, consolidated stored_files map 
+                # This guarantees the dictionary sequence matches your file loop state perfectly
                 payload_to_verify = {
-                    "files": {k: v for b in ["files", "files.master", "files.build", "files.tools", "files.dist"] for k, v in stored_manifest.get(b, {}).items()},
+                    "files": stored_files,
                     "public_keys": public_keys_dict
                 }
                 
