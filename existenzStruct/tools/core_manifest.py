@@ -8,7 +8,7 @@ from enum import IntFlag
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
 
-INT_VERSION = "v0.76.15-RELEASE"
+INT_VERSION = "v0.76.15"
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
 MANIFEST_OUTPUT = os.path.join(REPO_ROOT, "manifest.json")
@@ -359,3 +359,26 @@ def main():
                 message=f"All files inside {args.stage.upper()} are secure and mathematically verified!"
             )
             sys.exit(0)
+
+if __name__ == "__main__":
+    try:
+        main()
+    except FileNotFoundError as e:
+        error_handler.notice(
+            level="error",
+            message=str(e),
+            exit_code=visualmixErrorHandler.ERR_MISSING_FILE
+        )
+    except KeyError as e:
+        error_handler.notice(
+            level="error",
+            message=f"Key Error: {str(e)}",
+            exit_code=visualmixErrorHandler.ERR_KEY
+        )
+    except Exception as e:
+        error_handler.notice(
+            level="error",
+            message=f"Exception Error: {str(e)}",
+            exit_code=visualmixErrorHandler.ERR_UNKNOWN
+        )
+        
