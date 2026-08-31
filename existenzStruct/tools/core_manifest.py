@@ -442,7 +442,12 @@ def main():
                     "public_keys": stored_manifest.get("public_keys", {})
                 }
                 serialized_body = json.dumps(payload_to_verify, sort_keys=True).encode('utf-8')
-
+                payload_sha = hashlib.sha256(serialized_body).hexdigest()
+                error_handler.notice(
+                    level="info", 
+                    message=f"CRITICAL MATRIX STATE: Payload contains {len(payload_to_verify['files'])} registered file rows. Global Body SHA256: {payload_sha}"
+                )
+                
                 for identity, is_required in [("Platform", requires_platform), ("Developer", requires_developer), ("Personal", requires_personal)]:
                     if is_required:
                         sig_hex = stored_signatures.get(identity)
