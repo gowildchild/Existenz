@@ -280,7 +280,12 @@ def main():
                     "public_keys": manifest_data["public_keys"]
                 }
                 
-                serialized_manifest_body = json.dumps(payload_to_sign, sort_keys=True).encode('utf-8')
+                serialized_manifest_body = json.dumps(
+                    payload_to_sign, 
+                    sort_keys=True, 
+                    ensure_ascii=True, 
+                    separators=(',', ':')
+                ).encode('utf-8')
 
                 current_ring_weight = visualmixGovernRing.RING_DIST
                 if args.stage == "sign-master": current_ring_weight = visualmixGovernRing.RING_MASTER
@@ -441,7 +446,12 @@ def main():
                     "files": {k: v for b in ["files", "files.master", "files.build", "files.tools", "files.dist"] for k, v in stored_manifest.get(b, {}).items()},
                     "public_keys": stored_manifest.get("public_keys", {})
                 }
-                serialized_body = json.dumps(payload_to_verify, sort_keys=True).encode('utf-8')
+                serialized_body = json.dumps(
+                    payload_to_verify, 
+                    sort_keys=True, 
+                    ensure_ascii=True, 
+                    separators=(',', ':')
+                ).encode('utf-8')
                 payload_sha = hashlib.sha256(serialized_body).hexdigest()
                 error_handler.notice(
                     level="info", 
