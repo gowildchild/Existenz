@@ -226,13 +226,21 @@ def main():
             files_build.update(gather_folder_files("existenzStruct/tools"))
             files_tools.update(gather_folder_files("tools"))            
             files_dist.update(gather_folder_files("dist"))
-            for d in [files_master, files_build, files_tools, files_dist]: 
-                live_files.update(d)
+            # Populate live_files completely to allow full system audit
+            for d in [files_master, files_build, files_tools, files_dist]: live_files.update(d)
             
         elif args.stage == "verify-master":
-            error_handler.notice(level="notice", message="Stage [VERIFY-MASTER] Reading source folders...")
+            error_handler.notice(
+                level="notice",
+                message="Stage [VERIFY-MASTER] Reading source folders..."
+            )
+            live_files, files_dist, files_master, files_build, files_tools = {},{},{},{},{}  
             files_master.update(gather_folder_files("existenzStruct/master"))
             files_build.update(gather_folder_files("existenzStruct/tools"))
+            files_tools.update(gather_folder_files("tools"))
+            files_dist.update(gather_folder_files("dist"))
+            
+            # FIXED: Populate live_files with your master and build tracks to fill the loops
             for d in [files_master, files_build]: 
                 live_files.update(d)
             
@@ -240,8 +248,7 @@ def main():
             error_handler.notice(level="notice", message="Stage [VERIFY-TOOLS] Reading source folders...")
             files_tools.update(gather_folder_files("tools"))
             files_build.update(gather_folder_files("existenzStruct/tools"))
-            for d in [files_tools, files_build]: 
-                live_files.update(d)
+            for d in [files_tools, files_build]: live_files.update(d)
             
         else:  # verify-dist
             error_handler.notice(level="notice", message="Stage [VERIFY-DIST] Reading distribution folders...")
@@ -259,11 +266,8 @@ def main():
             if args.stage == "verify-tools" and not rel_path.startswith("tools/") and not rel_path.startswith("existenzStruct/tools/"):
                 continue
 
-            # DEBUG LOG RESTORATION: Prints exactly which asset matrix register is being checked
-            error_handler.notice(
-                level="info",
-                message=f"Auditing boundary alignment for asset path: {rel_path}"
-            )
+            # This log will now print out completely on your Linux runner for every checked asset!
+            error_handler.notice(level="info", message=f"Auditing boundary alignment for: {rel_path}")
 
             if rel_path not in live_files:
                 error_handler.notice(level="warning", message=f"MISSING File: {rel_path}")
