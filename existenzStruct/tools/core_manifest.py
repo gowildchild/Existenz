@@ -303,7 +303,7 @@ def main():
         
         requires_platform  = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_PLATFORM)
         requires_developer = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_DEVELOPER)
-        requires_personal  = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_PRIVATE)
+        requires_personal  = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_PERSONAL)
 
         missing_signatures = []
         if requires_platform and "Platform" not in stored_signatures: missing_signatures.append("Platform")
