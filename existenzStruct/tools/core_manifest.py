@@ -126,7 +126,6 @@ def gather_folder_files(folder_relative_path: str) -> dict:
                 continue
             full_path = os.path.join(root, file)
             rel_path = os.path.relpath(full_path, REPO_ROOT)
-            # Ensure unified Unix-style forward slashes across platforms
             rel_path = rel_path.replace("\\", "/")
             file_matrix[rel_path] = compute_sha256(full_path)
     return file_matrix
@@ -175,7 +174,6 @@ def load_private_key(identity: str, path: str) -> ed25519.Ed25519PrivateKey:
                 message=f"Corrupt key format: {e}",
                 exit_code=visualmixErrorHandler.ERR_KEY_FORMAT
             )
-
 def main():
     parser = argparse.ArgumentParser(description="Existenz SHA256 Manifest")
     parser.add_argument("-stage", choices=["sign", "sign-master", "sign-dist", "verify-master", "verify-dist","sign-tools","verify-tools","verify-all"], required=True, help="Manifest operation state selection.")
@@ -199,23 +197,23 @@ def main():
 
     public_keys_dict = {name: key_str for name, key_str in existentialCoreSignatures.existentialPublicKeys}
 
+    # ==========================================================================
+    # CORE SIGNING BLOCKS (INCREMENTAL RE-SIGN WITH PARTIAL PRESERVATION)
+    # ==========================================================================
     if args.stage in ["sign", "sign-master", "sign-dist", "sign-tools"]:
         error_handler.notice(
             level="info",
             message=f"Stage: [{args.stage.upper()}] Scanning targeted directories..."
         )
 
-        # OMNI-COMPATIBLE RECOVERY PASS: Consolidate historical flat arrays on load
-        stored_manifest_map = {}
+        stored_files = {}
         existing_signatures = {}
         if os.path.exists(MANIFEST_OUTPUT):
             try:
                 with open(MANIFEST_OUTPUT, "r", encoding="utf-8") as mf:
                     old_data = json.load(mf)
+                    stored_files = old_data.get("files", {})
                     existing_signatures = old_data.get("signatures", {})
-                    # Pull down legacy 'files' fields OR new separated buckets
-                    for bucket in ["files", "files.master", "files.build", "files.tools", "files.dist"]:
-                        stored_manifest_map.update(old_data.get(bucket, {}))
             except Exception:
                 pass
 
@@ -224,33 +222,22 @@ def main():
         files_tools = {}
         files_dist = {}
         live_files = {}
-
+        
         if args.stage == "sign-master":
-            error_handler.notice(level="info", message="Scoping Ring [MASTER] - Target: existenzStruct/master")
             files_master.update(gather_folder_files("existenzStruct/master"))
             files_build.update(gather_folder_files("existenzStruct/tools"))
-            # Preserve existing distribution and utilities records untouched from historical maps
-            for k, v in stored_manifest_map.items():
+            for k, v in stored_files.items():
                 if k.startswith("dist/"): files_dist[k] = v
-                if k.startswith("tools/"): files_tools[k] = v
         elif args.stage == "sign-tools":
-            error_handler.notice(level="info", message="Scoping Ring [TOOLS] - Target: tools/")
             files_tools.update(gather_folder_files("tools"))
-            files_build.update(gather_folder_files("existenzStruct/tools"))
-            # Preserve frozen master and distribution tracks safely untouched
-            for k, v in stored_manifest_map.items():
-                if k.startswith("existenzStruct/master/"): files_master[k] = v
-                if k.startswith("dist/"): files_dist[k] = v
+            for k, v in stored_files.items():
+                if not k.startswith("tools/"):
+                    if k.startswith("existenzStruct/tools"): files_build[k] = v
         elif args.stage == "sign-dist":
-            error_handler.notice(level="info", message="Scoping Ring [DIST] - Target: dist/")
             files_dist.update(gather_folder_files("dist"))
-            # Preserve existing system source footprints safely untouched
-            for k, v in stored_manifest_map.items():
-                if k.startswith("existenzStruct/master/"): files_master[k] = v
-                if k.startswith("existenzStruct/tools/"): files_build[k] = v
-                if k.startswith("tools/"): files_tools[k] = v
+            for k, v in stored_files.items():
+                if k.startswith("existenzStruct/"): files_master[k] = v
         else:  # Full global baseline overwrite ("sign")
-            error_handler.notice(level="info", message="Scoping Full Workspace - Baseline Overwrite.")
             files_master.update(gather_folder_files("existenzStruct/master"))
             files_build.update(gather_folder_files("existenzStruct/tools"))
             files_tools.update(gather_folder_files("tools"))
@@ -267,7 +254,6 @@ def main():
             "signatures": existing_signatures
         }
 
-        # Omni-Compatible Check: Tracks master presence across old flat structures OR new bucket maps
         has_master_records = any(
             k.startswith("existenzStruct/")
             for bucket in ("files", "files.master", "files.build", "files.tools", "files.dist")
@@ -288,19 +274,6 @@ def main():
                     cfg = json.load(cf)
 
                 key_routes = cfg.get("private_key_paths", {})
-                
-                # 1. Determine the active microcode ring weight mask dynamically
-                current_ring_weight = visualmixGovernRing.RING_DIST
-                if args.stage == "sign-master": current_ring_weight = visualmixGovernRing.RING_MASTER
-                elif args.stage in ["sign-tools", "sign-build"]: current_ring_weight = visualmixGovernRing.RING_BUILD
-
-                # 2. Extract the bit flags to see exactly which keys are mandated by the bitmask weight
-                # 16 = Platform, 32 = Developer, 64 = Personal (Private)
-                requires_platform  = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_PLATFORM)
-                requires_developer = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_DEVELOPER)
-                requires_personal  = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_PERSONAL)
-
-                # Compress all active multi-ring file layers seamlessly into the signed canonical body
                 flat_files = {k: v for b in ["files", "files.master", "files.build", "files.tools", "files.dist"] for k, v in manifest_data.get(b, {}).items()}
                 payload_to_sign = {
                     "files": flat_files,
@@ -309,8 +282,14 @@ def main():
                 
                 serialized_manifest_body = json.dumps(payload_to_sign, sort_keys=True).encode('utf-8')
 
-                # 3. Match keys actively mandated by the privilege ring mask flags
-                # The names here explicitly mirror your config fields: "Platform", "Developer", "Personal"
+                current_ring_weight = visualmixGovernRing.RING_DIST
+                if args.stage == "sign-master": current_ring_weight = visualmixGovernRing.RING_MASTER
+                elif args.stage in ["sign-tools", "sign-build"]: current_ring_weight = visualmixGovernRing.RING_BUILD
+
+                requires_platform  = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_PLATFORM)
+                requires_developer = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_DEVELOPER)
+                requires_personal  = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_PERSONAL)
+
                 for identity, is_required in [("Platform", requires_platform), ("Developer", requires_developer), ("Personal", requires_personal)]:
                     if is_required:
                         key_path = key_routes.get(identity)
@@ -321,13 +300,8 @@ def main():
                                 sig_bytes = priv_key.sign(serialized_manifest_body)
                                 manifest_data["signatures"][identity] = sig_bytes.hex()
                                 error_handler.notice(
-                                    level="notice",
+                                    level="local",
                                     message=f"Cryptographically signed manifest with key role: [{identity}]"
-                                )
-                            else:
-                                error_handler.notice(
-                                    level="warning",
-                                    message=f"Skipping signature block: Private key route not found or inaccessible for [{identity}] at {expanded_path}"
                                 )
 
             except Exception as e:
@@ -339,43 +313,165 @@ def main():
         else:
             error_handler.notice(level="error", message="Private signing is not allowed on a public server!")
 
-        # 4. Filter missing signature alerts based strictly on active bitmask requirements
-        mandated_signatures = []
-        if requires_platform: mandated_signatures.append("Platform")
-        if requires_developer: mandated_signatures.append("Developer")
-        if requires_personal: mandated_signatures.append("Personal")
-
-        missing_signatures = [k for k in mandated_signatures if k not in manifest_data["signatures"]]
+        missing_signatures = [k for k in ["Platform", "Developer", "Personal"] if k not in manifest_data["signatures"]]
         if missing_signatures:
-            error_handler.notice(level="warning", message=f"Private signatures mandated by the ring mask are PENDING/MISSING for: {missing_signatures}")
+            error_handler.notice(level="warning", message=f"Private signatures are PENDING/MISSING for: {missing_signatures}")
         else:
-            error_handler.notice(level="notice", message=f"All private signatures required by Ring Weight {current_ring_weight} are committed successfully!")
+            error_handler.notice(level="notice", message="Private signatures are committed with success!")
 
         with open(MANIFEST_OUTPUT, "w", encoding="utf-8") as mf:
             json.dump(manifest_data, mf, indent=2, sort_keys=True)
         error_handler.notice(level="notice", message="Manifest update is saved to disk.")
         sys.exit(0)
+    # ==========================================================================
+    # CORE VERIFICATION BLOCKS (ISOLATED SPACE TESTING)
+    # ==========================================================================
+    elif args.stage in ["verify-master", "verify-dist", "verify-tools", "verify-all", "verify"]:
+        if not os.path.exists(MANIFEST_OUTPUT):
+            error_handler.notice(
+                level="error",
+                message=f"Manifest file is missing, execute -stage sign first.",
+                exit_code=visualmixErrorHandler.ERR_MISSING_MANIFEST
+            )
 
+        with open(MANIFEST_OUTPUT, "r", encoding="utf-8") as mf:
+            stored_manifest = json.load(mf)
+
+        stored_signatures = stored_manifest.get("signatures", {})
+        
+        stored_files = {}
+        for bucket in ["files", "files.master", "files.build", "files.tools", "files.dist"]:
+            stored_files.update(stored_manifest.get(bucket, {}))
+
+        live_files = {}      
+        files_dist, files_master, files_build, files_tools = {}, {}, {}, {}
+
+        if args.stage in ["verify-all", "verify"]:
+            error_handler.notice(level="notice", message="Stage [VERIFY-ALL] Reading source folders...")
+            files_master.update(gather_folder_files("existenzStruct/master"))
+            files_build.update(gather_folder_files("existenzStruct/tools"))
+            files_tools.update(gather_folder_files("tools"))            
+            files_dist.update(gather_folder_files("dist"))
+            for d in [files_master, files_build, files_tools, files_dist]: live_files.update(d)
+            
+        elif args.stage == "verify-master":
+            error_handler.notice(level="notice", message="Stage [VERIFY-MASTER] Reading source folders...")
+            files_master.update(gather_folder_files("existenzStruct/master"))
+            files_build.update(gather_folder_files("existenzStruct/tools"))
+            files_tools.update(gather_folder_files("tools"))
+            files_dist.update(gather_folder_files("dist"))
+            for d in [files_master, files_build]: live_files.update(d)
+            
+        elif args.stage == "verify-tools":
+            error_handler.notice(level="notice", message="Stage [VERIFY-TOOLS] Reading source folders...")
+            files_tools.update(gather_folder_files("tools"))
+            files_build.update(gather_folder_files("existenzStruct/tools"))
+            for d in [files_tools, files_build]: live_files.update(d)
+            
+        else:  # verify-dist
+            error_handler.notice(level="notice", message="Stage [VERIFY-DIST] Reading distribution folders...")
+            files_dist.update(gather_folder_files("dist"))
+            live_files.update(files_dist)
+
+        has_drift = False
+
+        for rel_path, expected_hash in stored_files.items():
+            if args.stage == "verify-master" and not rel_path.startswith("existenzStruct/"):
+                continue
+            if args.stage == "verify-dist" and not rel_path.startswith("dist/"):
+                continue
+            if args.stage == "verify-tools" and not rel_path.startswith("tools/") and not rel_path.startswith("existenzStruct/tools/"):
+                continue
+
+            error_handler.notice(level="info", message=f"Auditing boundary alignment for: {rel_path}")
+
+            if rel_path not in live_files:
+                error_handler.notice(level="warning", message=f"MISSING File: {rel_path}")
+                has_drift = True
+            elif live_files[rel_path] != expected_hash:
+                error_handler.notice(
+                    level="warning",
+                    message=f"TAMPER DETECTION in file: {rel_path}",
+                    details=[f"Current SHA-256:   {live_files[rel_path]}", f"Expected SHA-256:  {expected_hash}"]
+                )
+                has_drift = True
+
+        for rel_path in live_files:
+            if rel_path not in stored_files:
+                if args.stage == "verify-master" and not rel_path.startswith("existenzStruct/"):
+                    continue
+                if args.stage == "verify-tools" and not rel_path.startswith("tools/") and not rel_path.startswith("existenzStruct/tools/"):
+                    continue
+                if args.stage == "verify-dist" and not rel_path.startswith("dist/"):
+                    continue
+                    
+                error_handler.notice(level="warning", message=f"UNTRACKED INJECT: Unauthorized asset exposed: {rel_path}!")
+                has_drift = True
+
+        has_signature_failure = False
+        current_ring_weight = visualmixGovernRing.RING_DIST
+        if args.stage == "verify-master": current_ring_weight = visualmixGovernRing.RING_MASTER
+        elif args.stage in ["verify-tools", "verify-build"]: current_ring_weight = visualmixGovernRing.RING_BUILD
+        
+        requires_platform  = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_PLATFORM)
+        requires_developer = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_DEVELOPER)
+        requires_personal  = bool(current_ring_weight & visualmixGovernHandler.SIGN_PVT_PERSONAL)
+
+        missing_signatures = []
+        if requires_platform and "Platform" not in stored_signatures: missing_signatures.append("Platform")
+        if requires_developer and "Developer" not in stored_signatures: missing_signatures.append("Developer")
+        if requires_personal and "Personal" not in stored_signatures: missing_signatures.append("Personal")
+
+        if missing_signatures:
+            error_handler.notice(level="error", message=f"manifest contains UNRESOLVED private key signatures for active ring requirements: {missing_signatures}")
+            has_signature_failure = True
+
+        if has_drift:
+            error_handler.notice(
+                level="warning",
+                message=f"manifest contains DRIFTING data: {args.stage.upper()}",
+                exit_code=visualmixErrorHandler.ERR_KEY_DRIFTING
+            )
+        elif has_signature_failure:
+            sys.exit(visualmixErrorHandler.ERR_MISSING_SIGN)
+        else:
+            if requires_platform or requires_developer or requires_personal:
+                error_handler.notice(level="info", message="Executing asymmetric cryptographic signature verification...")
+                payload_to_verify = {
+                    "files": {k: v for b in ["files", "files.master", "files.build", "files.tools", "files.dist"] for k, v in stored_manifest.get(b, {}).items()},
+                    "public_keys": stored_manifest.get("public_keys", {})
+                }
+                serialized_body = json.dumps(payload_to_verify, sort_keys=True).encode('utf-8')
+
+                for identity, is_required in [("Platform", requires_platform), ("Developer", requires_developer), ("Personal", requires_personal)]:
+                    if is_required:
+                        sig_hex = stored_signatures.get(identity)
+                        pub_key_ssh = stored_manifest.get("public_keys", {}).get(identity)
+                        
+                        try:
+                            pub_bytes = pub_key_ssh.encode('utf-8')
+                            public_key = serialization.load_ssh_public_key(pub_bytes)
+                            public_key.verify(bytes.fromhex(sig_hex), serialized_body)
+                            error_handler.notice(level="local", message=f"Cryptographic Signature Footprint verified: [{identity}] -> VALID")
+                        except Exception as crypto_fault:
+                            error_handler.notice(
+                                level="error",
+                                message=f"CRYPTOGRAPHIC CORRUPTION: Signature match failure for key [{identity}]: {crypto_fault}",
+                                exit_code=visualmixErrorHandler.ERR_KEY
+                            )
+
+            error_handler.notice(
+                level="info",
+                message=f"All files inside {args.stage.upper()} are secure and mathematically verified!"
+            )
+            sys.exit(0)
 
 if __name__ == "__main__":
     try:
         main()
     except FileNotFoundError as e:
-        error_handler.notice(
-            level="error",
-            message=str(e),
-            exit_code=visualmixErrorHandler.ERR_MISSING_FILE
-        )
+        error_handler.notice(level="error", message=str(e), exit_code=visualmixErrorHandler.ERR_MISSING_FILE)
     except KeyError as e:
-        error_handler.notice(
-            level="error",
-            message=f"Key Error: {str(e)}",
-            exit_code=visualmixErrorHandler.ERR_KEY
-        )
+        error_handler.notice(level="error", message=f"Key Error: {str(e)}", exit_code=visualmixErrorHandler.ERR_KEY)
     except Exception as e:
-        error_handler.notice(
-            level="error",
-            message=f"Exception Error: {str(e)}",
-            exit_code=visualmixErrorHandler.ERR_UNKNOWN
-        )
-        
+        error_handler.notice(level="error", message=f"Exception Error: {str(e)}", exit_code=visualmixErrorHandler.ERR_UNKNOWN)
