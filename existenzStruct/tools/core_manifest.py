@@ -388,7 +388,7 @@ def main():
             if args.stage == "verify-tools" and not rel_path.startswith("tools/") and not rel_path.startswith("existenzStruct/tools/"):
                 continue
 
-            error_handler.notice(level="info", message=f"Auditing boundary alignment for: {rel_path}")
+            error_handler.notice(level="info", message=f"Auditing: {rel_path}")
 
             if rel_path not in live_files:
                 error_handler.notice(level="warning", message=f"MISSING File: {rel_path}")
@@ -445,8 +445,9 @@ def main():
                 error_handler.notice(level="info", message="Executing asymmetric cryptographic signature verification...")
                 payload_to_verify = {
                     "files": {k: v for b in ["files", "files.master", "files.build", "files.tools", "files.dist"] for k, v in stored_manifest.get(b, {}).items()},
-                    "public_keys": stored_manifest.get("public_keys", {})
+                    "public_keys": public_keys_dict
                 }
+                
                 serialized_body = json.dumps(
                     payload_to_verify, 
                     sort_keys=True, 
