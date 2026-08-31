@@ -443,12 +443,12 @@ def main():
         else:
             if requires_platform or requires_developer or requires_personal:
                 error_handler.notice(level="info", message="Executing asymmetric cryptographic signature verification...")
-                
-                # FIXED: Pull directly from your clean, consolidated stored_files map 
-                # This guarantees the dictionary sequence matches your file loop state perfectly
                 payload_to_verify = {
                     "files": stored_files,
-                    "public_keys": public_keys_dict
+                    
+                    # FIXED: Extract the public keys definition array directly out of your 
+                    # stored manifest object to ensure perfect string character parity
+                    "public_keys": stored_manifest.get("public_keys", {})
                 }
                 
                 serialized_body = json.dumps(
