@@ -184,10 +184,10 @@ def main():
     args = parser.parse_args()
 
     print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
-    print(f"│ EXISTENZ SHA256 MANIFEST {INT_VERSION}         by Gunther Voet │")
+    print(f"│ EXISTENZ SHA256 MANIFEST {INT_VERSION}     by Gunther Voet │")
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘")
     print(f"  [*] Operational: -stage {args.stage} -o {MANIFEST_OUTPUT}")
-    
+
     if os.path.exists(args.config) and not REPO_GITHUB:
         error_handler.notice(level="local", message=f"Configuration file found: {args.config}")
     elif os.path.exists(args.config) and REPO_GITHUB:
@@ -211,8 +211,6 @@ def main():
             stored_manifest = json.load(mf)
 
         stored_signatures = stored_manifest.get("signatures", {})
-
-        # OMNI-CONSOLIDATOR PASS: Accumulate records across all historical and nested layers
         stored_files = {}
         for bucket in ["files", "files.master", "files.build", "files.tools", "files.dist"]:
             stored_files.update(stored_manifest.get(bucket, {}))
@@ -220,13 +218,13 @@ def main():
         live_files = {}      
         files_dist, files_master, files_build, files_tools = {}, {}, {}, {}
 
+
         if args.stage in ["verify-all", "verify"]:
             error_handler.notice(level="notice", message="Stage [VERIFY-ALL] Reading source folders...")
             files_master.update(gather_folder_files("existenzStruct/master"))
             files_build.update(gather_folder_files("existenzStruct/tools"))
             files_tools.update(gather_folder_files("tools"))            
             files_dist.update(gather_folder_files("dist"))
-            # Populate live_files completely to allow full system audit
             for d in [files_master, files_build, files_tools, files_dist]: live_files.update(d)
             
         elif args.stage == "verify-master":
@@ -234,13 +232,12 @@ def main():
                 level="notice",
                 message="Stage [VERIFY-MASTER] Reading source folders..."
             )
-            live_files, files_dist, files_master, files_build, files_tools = {},{},{},{},{}  
+            live_files, files_dist, files_master, files_build, files_tools = {}, {}, {}, {}, {}  
             files_master.update(gather_folder_files("existenzStruct/master"))
             files_build.update(gather_folder_files("existenzStruct/tools"))
             files_tools.update(gather_folder_files("tools"))
             files_dist.update(gather_folder_files("dist"))
-            
-            # FIXED: Populate live_files with your master and build tracks to fill the loops
+
             for d in [files_master, files_build]: 
                 live_files.update(d)
             
@@ -266,7 +263,6 @@ def main():
             if args.stage == "verify-tools" and not rel_path.startswith("tools/") and not rel_path.startswith("existenzStruct/tools/"):
                 continue
 
-            # This log will now print out completely on your Linux runner for every checked asset!
             error_handler.notice(level="info", message=f"Auditing boundary alignment for: {rel_path}")
 
             if rel_path not in live_files:
@@ -280,7 +276,6 @@ def main():
                 )
                 has_drift = True
 
-        # 2. Hardened Injection Gate: Catch untracked insertions inside the targeted folder scope
         for rel_path in live_files:
             if rel_path not in stored_files:
                 if args.stage == "verify-master" and not rel_path.startswith("existenzStruct/"):
@@ -293,10 +288,8 @@ def main():
                 error_handler.notice(level="warning", message=f"UNTRACKED INJECT: Unauthorized asset exposed: {rel_path}!")
                 has_drift = True
 
-        # 3. Post-Audit Flag Verification Step: Process signature requirements via IntFlags
+
         has_signature_failure = False
-        
-        # Determine the mandatory ring layer weight mask requirements based on your bit flags
         current_ring_weight = visualmixGovernRing.RING_DIST
         if args.stage == "verify-master": current_ring_weight = visualmixGovernRing.RING_MASTER
         elif args.stage in ["verify-tools", "verify-build"]: current_ring_weight = visualmixGovernRing.RING_BUILD
@@ -323,20 +316,14 @@ def main():
         elif has_signature_failure:
             sys.exit(visualmixErrorHandler.ERR_MISSING_SIGN)
         else:
-            # ==========================================================================
-            # CRYPTOGRAPHIC ENGINE COPROCESSOR: Execute True Asymmetric Key Auditing
-            # ==========================================================================
             if requires_platform or requires_developer or requires_personal:
                 error_handler.notice(level="info", message="Executing asymmetric cryptographic signature verification...")
-                
-                # Reconstruct the precise payload canonical binary body
                 payload_to_verify = {
                     "files": {k: v for b in ["files", "files.master", "files.build", "files.tools", "files.dist"] for k, v in stored_manifest.get(b, {}).items()},
                     "public_keys": stored_manifest.get("public_keys", {})
                 }
                 serialized_body = json.dumps(payload_to_verify, sort_keys=True).encode('utf-8')
 
-                # Match signatures explicitly to their public keys array fields
                 for identity, is_required in [("Platform", requires_platform), ("Developer", requires_developer), ("Personal", requires_personal)]:
                     if is_required:
                         sig_hex = stored_signatures.get(identity)
@@ -359,6 +346,7 @@ def main():
                 message=f"All files inside {args.stage.upper()} are secure and mathematically verified!"
             )
             sys.exit(0)
+
 
 if __name__ == "__main__":
     try:
