@@ -259,6 +259,12 @@ def main():
             if args.stage == "verify-tools" and not rel_path.startswith("tools/") and not rel_path.startswith("existenzStruct/tools/"):
                 continue
 
+            # DEBUG LOG RESTORATION: Prints exactly which asset matrix register is being checked
+            error_handler.notice(
+                level="info",
+                message=f"Auditing boundary alignment for asset path: {rel_path}"
+            )
+
             if rel_path not in live_files:
                 error_handler.notice(level="warning", message=f"MISSING File: {rel_path}")
                 has_drift = True
