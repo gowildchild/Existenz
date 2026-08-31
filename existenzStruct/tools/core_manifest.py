@@ -472,9 +472,14 @@ def main():
                     
                     targeted_files_payload[rel_path] = file_hash
 
-                # 2. Reconstruct the clean, compact canonical body
+                # ==========================================================================
+                # CANONICAL VERIFICATION BODY: Match the exact characters saved on disk
+                # ==========================================================================
                 payload_to_verify = {
                     "files": targeted_files_payload,
+                    
+                    # FIXED: Unpack the keys map straight out of your stored manifest object
+                    # to ensure perfect string configuration parity down to the individual character
                     "public_keys": stored_manifest.get("public_keys", {})
                 }
                 
@@ -484,6 +489,7 @@ def main():
                     ensure_ascii=True, 
                     separators=(',', ':')
                 ).encode('utf-8')
+
                 payload_sha = hashlib.sha256(serialized_body).hexdigest()
                 error_handler.notice(
                     level="info", 
