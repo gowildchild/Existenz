@@ -403,7 +403,8 @@ def main():
 
         for rel_path in live_files:
             if rel_path not in stored_files:
-                if args.stage == "verify-master" and not rel_path.startswith("existenzStruct/"):
+                # Target Verification Boundaries accurately
+                if args.stage == "verify-master" and not rel_path.startswith("existenzStruct/master/") and not rel_path.startswith("existenzStruct/tools/"):
                     continue
                 if args.stage == "verify-tools" and not rel_path.startswith("tools/") and not rel_path.startswith("existenzStruct/tools/"):
                     continue
