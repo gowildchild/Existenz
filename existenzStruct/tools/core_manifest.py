@@ -459,11 +459,22 @@ def main():
         else:
             if requires_platform or requires_developer or requires_personal:
                 error_handler.notice(level="info", message="Executing asymmetric cryptographic signature verification...")
-                payload_to_verify = {
-                    "files": stored_files,
+                
+                # 1. Dynamically target only the files matching the active verification ring scope
+                targeted_files_payload = {}
+                for rel_path, file_hash in stored_files.items():
+                    if args.stage == "verify-master" and not rel_path.startswith("existenzStruct/"):
+                        continue
+                    if args.stage == "verify-dist" and not rel_path.startswith("dist/"):
+                        continue
+                    if args.stage == "verify-tools" and not rel_path.startswith("tools/") and not rel_path.startswith("existenzStruct/tools/"):
+                        continue
                     
-                    # FIXED: Extract the public keys definition array directly out of your 
-                    # stored manifest object to ensure perfect string character parity
+                    targeted_files_payload[rel_path] = file_hash
+
+                # 2. Reconstruct the clean, compact canonical body
+                payload_to_verify = {
+                    "files": targeted_files_payload,
                     "public_keys": stored_manifest.get("public_keys", {})
                 }
                 
