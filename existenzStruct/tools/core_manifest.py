@@ -223,21 +223,37 @@ def main():
         files_dist = {}
         live_files = {}
         
+        old_master_bucket = old_data.get("files.master", {}) if os.path.exists(MANIFEST_OUTPUT) else {}
+        old_build_bucket  = old_data.get("files.build", {}) if os.path.exists(MANIFEST_OUTPUT) else {}
+        old_tools_bucket  = old_data.get("files.tools", {}) if os.path.exists(MANIFEST_OUTPUT) else {}
+        old_dist_bucket   = old_data.get("files.dist", {}) if os.path.exists(MANIFEST_OUTPUT) else {}
+
         if args.stage == "sign-master":
+            error_handler.notice(level="info", message="Re-signing Ring [MASTER & BUILD]. Preserving Tools and Dist tracks.")
             files_master.update(gather_folder_files("existenzStruct/master"))
             files_build.update(gather_folder_files("existenzStruct/tools"))
-            for k, v in stored_files.items():
-                if k.startswith("dist/"): files_dist[k] = v
+            # FIXED: Carry forward old tools and dist entries exactly as they are configured on disk
+            files_tools.update(old_tools_bucket)
+            files_dist.update(old_dist_bucket)
+            
         elif args.stage == "sign-tools":
+            error_handler.notice(level="info", message="Re-signing Ring [TOOLS]. Preserving Master, Build, and Dist tracks.")
             files_tools.update(gather_folder_files("tools"))
-            for k, v in stored_files.items():
-                if not k.startswith("tools/"):
-                    if k.startswith("existenzStruct/tools"): files_build[k] = v
+            files_build.update(gather_folder_files("existenzStruct/tools"))
+            # FIXED: Carry forward frozen master and dist tracks safely untouched
+            files_master.update(old_master_bucket)
+            files_dist.update(old_dist_bucket)
+            
         elif args.stage == "sign-dist":
+            error_handler.notice(level="info", message="Re-signing Ring [DIST]. Preserving Master, Build, and Tools tracks.")
             files_dist.update(gather_folder_files("dist"))
-            for k, v in stored_files.items():
-                if k.startswith("existenzStruct/"): files_master[k] = v
+            # FIXED: Carry forward system source footprints safely untouched
+            files_master.update(old_master_bucket)
+            files_build.update(old_build_bucket)
+            files_tools.update(old_tools_bucket)
+            
         else:  # Full global baseline overwrite ("sign")
+            error_handler.notice(level="info", message="Scoping Full Workspace - Baseline Overwrite.")
             files_master.update(gather_folder_files("existenzStruct/master"))
             files_build.update(gather_folder_files("existenzStruct/tools"))
             files_tools.update(gather_folder_files("tools"))
