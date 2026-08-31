@@ -199,13 +199,7 @@ def main():
 
     public_keys_dict = {name: key_str for name, key_str in existentialCoreSignatures.existentialPublicKeys}
 
-    # ==========================================================================
-    # CORE SIGNING BLOCKS (INCREMENTAL RE-SIGN WITH PARTIAL PRESERVATION)
-    # ==========================================================================
-    # ==========================================================================
-    # CORE VERIFICATION BLOCKS (ISOLATED SPACE TESTING)
-    # ==========================================================================
-    elif args.stage in ["verify-master", "verify-dist", "verify-tools", "verify-all", "verify"]:
+    if args.stage in ["verify-master", "verify-dist", "verify-tools", "verify-all", "verify"]:
         if not os.path.exists(MANIFEST_OUTPUT):
             error_handler.notice(
                 level="error",
