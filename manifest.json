@@ -5,7 +5,7 @@
     "existenzStruct/tools/check_integrity.py": "26bb01e972b866f8c89e0a97c84f2892a8d5bf69019a1d1ca97585d4dac3ec63",
     "existenzStruct/tools/core_build.py": "bb6f05b61b1523866e38e3c36200205c1efa7b49a7ab7212d457cc20cf7ab8ca",
     "existenzStruct/tools/core_debug.py": "957531a87f16fcba6445e4d022abd179c732c94e588c5374915f60824dc7f8d6",
-    "existenzStruct/tools/core_manifest.py": "add0ca198520ec05a7529ff5d85ef1fecd456211f01d76f7f688aea6a2f414d6",
+    "existenzStruct/tools/core_manifest.py": "73d36a7dc0df07d8960498a46dcd6be0db86f04a68ffc4bf3c8d99c37d6255e0",
     "existenzStruct/tools/core_telemetry.py": "f68be7b3e8d2336f1bbea65f69da13d6bef422d381b2a2f2657fc43fbf6c24cc",
     "existenzStruct/tools/sign_master.py": "93c48ed994fc49a1b7fe4e25b964bbfce958ccd5db52a67a506dea823be51fcc",
     "existenzStruct/tools/test_integrity.py": "04b56dd5b1cf8698819dd196fa8117fdeb7bb91ab106729c31082594435dbd41",
@@ -72,7 +72,7 @@
   "files.master": {
     "existenzStruct/master/README.md": "61d5031b505593421783730470f308b761afcb7f88006a6f19bd4c7e79bbcc56",
     "existenzStruct/master/existentialCore.py": "4aac3fef94a1dfda89d3901264b98aed9d6e8fdcf6b469ce690349db711efc99",
-    "existenzStruct/master/existentialCoreSignatures.py": "1c08b81ce3c97c1b973c79cae7d27fc48d8b9a29e65a2c826ae482c2ce18cdfe",
+    "existenzStruct/master/existentialCoreSignatures.py": "d09b50a493eb2fece71edfa097494792f78e3aa11c38b82db609295382da43ac",
     "existenzStruct/master/existentialCoreThreat.py": "fe1552051abf218ee9986dc2dc703934920eede7b243c2530e25b58f0db3ce6f",
     "existenzStruct/master/existentialCores.json": "a8bd7636e904df1404f6cba262e3e79b8c49b62e0e2e73fe5852944f0d2c7443",
     "existenzStruct/master/existentialHumanCore.py": "2decc0bb05b4d4810320443604373bce2c242dfaf2bb7da7cbc3dc19ac61f7f4"
