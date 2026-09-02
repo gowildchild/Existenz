@@ -284,25 +284,10 @@ class visualMixEngineEnvironment:
 if __name__ == "__main__":
     # Test stub trigger when run directly in your workflow file
     if REPO_GITHUB:
-        env_prefix = "SIGN_EXISTENZ_AUDIT_"
-        if "dist" in args.stage:
-            env_prefix = "SIGN_EXISTENZ_DIST_"
-        elif "tools" in args.stage or "build" in args.stage:
-            env_prefix = "SIGN_EXISTENZ_BUILD_"
-
         error_handler.notice(
             level="info", 
-            message=f"Initializing environmental profile validation using prefix matching: [{env_prefix}]"
+            message=f"engineSigningLibrary.py: [{REPO_GITHUB}]"
         )
-        
-        env_agent = visualMixEngineEnvironment(
-            post=env_prefix,
-            conf=None, 
-            namespace=f"EXISTENZ-{args.stage.upper()}"
-        )
-
-        env_token_matrix = env_agent.load_secret_key()
-        live_signing_key = env_token_matrix.get("_OBJECT")
-        
+                
     else:
         print("[!] Local execution skipped. This test routine targets GitHub Actions environment contexts.")
