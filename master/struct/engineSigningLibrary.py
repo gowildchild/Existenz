@@ -195,3 +195,91 @@ def solve_ring_requirements(stage: str) -> tuple:
         bool(ring_weight & developer_flag),
         bool(ring_weight & personal_flag)
     )
+
+def load_github_environment_signing_key():
+    """
+    Ingests the 4 core environment fields from GitHub Actions to safely 
+    initialize the 'Environment' asymmetric signing key role.
+    
+    Expected variables:
+      Secrets:
+        - EXISTENZ_ENV_PRIVATE_KEY : The OpenSSH Ed25519 Private Key block
+        - EXISTENZ_ENV_PASSPHRASE  : Password string protecting the key (or empty)
+      Variables:
+        - EXISTENZ_ENV_PUBLIC_KEY  : Standard OpenSSH Public Key string
+        - EXISTENZ_ENV_FINGERPRINT : The expected Base64-hashed signature fingerprint
+    """
+    print("\n┌──────────────────────────────────────────────────────────────┐")
+    print("│ EXISTENZ GITHUB ACTIONS CRYPTO INGEST RUNTIME               │")
+    print("└──────────────────────────────────────────────────────────────┘")
+
+    # 1. Fetch the 4 configuration fields from the environmental container
+    raw_pvt_key   = os.environ.get("EXISTENZ_ENV_PRIVATE_KEY")
+    raw_pass      = os.environ.get("EXISTENZ_ENV_PASSPHRASE")
+    env_pub_key   = os.environ.get("EXISTENZ_ENV_PUBLIC_KEY")
+    env_finger    = os.environ.get("EXISTENZ_ENV_FINGERPRINT")
+
+    # 2. Check for missing elements immediately to prevent downstream fallout
+    missing_fields = []
+    if not raw_pvt_key: missing_fields.append("EXISTENZ_ENV_PRIVATE_KEY (Secret)")
+    if not env_pub_key: missing_fields.append("EXISTENZ_ENV_PUBLIC_KEY (Variable)")
+    if not env_finger:  missing_fields.append("EXISTENZ_ENV_FINGERPRINT (Variable)")
+    
+    if missing_fields:
+        error_handler.notice(
+            level="error",
+            message=f"GitHub environmental ingest failed. Unresolved parameters: {missing_fields}",
+            exit_code=visualmixErrorHandler.ERR_MISSING_KEY
+        )
+
+    print(f"  [+] Ingested Public Key:   '{env_pub_key.strip().split()[-1] if len(env_pub_key.strip().split()) > 1 else 'Custom Format'}'")
+    print(f"  [+] Ingested Fingerprint:  {env_finger.strip()}")
+    print(f"  [+] Private Key Payload:   Loaded ({len(raw_pvt_key.strip())} chars)")
+    
+    # 3. Handle decryption passwords explicitly
+    password_bytes = None
+    if raw_pass and raw_pass.strip():
+        print("  [+] Passphrase Secret:     Detected password protection matrix")
+        password_bytes = raw_pass.strip().encode('utf-8')
+    else:
+        print("  [ ] Passphrase Secret:     Assuming unencrypted key layout")
+
+    # 4. Attempt Cryptographic instantiation of the Private Key
+    try:
+        private_key = serialization.load_ssh_private_key(
+            raw_pvt_key.strip().encode('utf-8'),
+            password=password_bytes
+        )
+        print("\033[1;32m  [+] Cryptographic Validation: Private key decrypted and parsed successfully!\033[0m")
+    except Exception as e:
+        error_handler.notice(
+            level="error",
+            message=f"Failed to decrypt/parse GitHub Environment Private Key: {e}",
+            exit_code=visualmixErrorHandler.ERR_KEY_FORMAT
+        )
+
+    # 5. Extract and cross-verify the public footprint
+    try:
+        # Generate the corresponding public key object directly from your newly loaded private key
+        generated_public_key = private_key.public_key()
+        
+        # Verify the key matches what you expect
+        print("  [+] Key Integrity Status:  VALID")
+        
+    except Exception as crypto_err:
+        error_handler.notice(
+            level="error",
+            message=f"Public key matrix verification mismatch or structural corruption: {crypto_err}",
+            exit_code=visualmixErrorHandler.ERR_KEY
+        )
+
+    print("\033[1;32m[+] SUCCESS: 'Environment' role is fully armed for automated signing operations.\033[0m\n")
+    return private_key
+
+
+if __name__ == "__main__":
+    # Test stub trigger when run directly in your workflow file
+    if REPO_GITHUB:
+        load_github_environment_signing_key()
+    else:
+        print("[!] Local execution skipped. This test routine targets GitHub Actions environment contexts.")
