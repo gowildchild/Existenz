@@ -203,7 +203,7 @@ class visualMixEngineEnvironment:
         self.conf   = conf or {}
         self.namespace = namespace
 
-    def load_secret_key(self) -> Dict[Str, Any]:
+    def load_secret_key(self) -> Dict[str, Any]:
         """Loads file configurations smoothly matching extensions."""
 
         keys_pub = ["PUBLIC","FINGERPRINT"]
