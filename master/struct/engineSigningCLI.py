@@ -25,7 +25,7 @@ if __name__ == "__main__":
         #    env_prefix = "SIGN_EXISTENZ_DIST_"
         #elif "tools" in args.stage or "build" in args.stage:
         #    env_prefix = "SIGN_EXISTENZ_BUILD_"
-        env_prefix = "AUDIT"
+        env_prefix = "SIGN_EXISTENZ_AUDIT_"
         error_handler.notice(
             level="info", 
             message=f"Initializing environmental profile validation using prefix matching: [{env_prefix}]"
