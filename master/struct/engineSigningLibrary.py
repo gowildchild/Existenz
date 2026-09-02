@@ -296,7 +296,6 @@ if __name__ == "__main__":
         env_agent = visualMixEngineEnvironment(
             post=env_prefix,
             conf=None, 
-            post="SIGN_EXISTENZ_AUDIT_",
             namespace=f"EXISTENZ-{args.stage.upper()}"
         )
 
