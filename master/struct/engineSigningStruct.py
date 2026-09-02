@@ -21,7 +21,7 @@ existenzIntegrityGlue = {
                                                                                existentialToken["master"]["Cores"]),
     "CoreThreat":             ( "existentialCoreThreat",     3575, 1599, 0x02, existenzLocations["core"]["Threat"],
                                                                                existentialToken["master"]["Threat"]),
-    "CoreThreatLegal":        ( "existentialCoreThreatLegal",3575, 1599, 0x03, existenzLocationsp["core"]["Threat"],
+    "CoreThreatLegal":        ( "existentialCoreThreatLegal",3575, 1599, 0x03, existenzLocations["core"]["Threat"],
                                                                                existentialToken["master"]["ThreatLegal"]),
     "CoreThreatShadowVacuum": ( "existentialCoreThreatShadowVacuum", 3575, 1599, 0x04, existenzLocations["core"]["Threat"],
                                                                                existentialToken["master"]["ThreatShadowVacuum"]),
