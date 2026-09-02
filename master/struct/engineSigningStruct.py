@@ -5,7 +5,7 @@
 # ==========================================================================
 from enum import IntFlag
 
-from existentialCoreSigning import existenzLocations, existenzSigned
+from engineSigningMeta import existenzLocations, existenzSigned
 
 existenzIntegrityGlue = {
     "Magic":                  ( "existentialMagicSignature", 3583, 118,  0x00, existenzLocations["core"]["Signatures"],  
