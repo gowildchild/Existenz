@@ -16,6 +16,7 @@ from cryptography.hazmat.primitives import serialization
 
 from engineSigningMeta import existenzLocations, existenzMeta
 from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler
+from engineCoreSignatures import existentialToken
 
 INT_VERSION = "v0.76.16"
 
