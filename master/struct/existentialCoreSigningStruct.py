@@ -5,33 +5,6 @@
 # ==========================================================================
 from enum import IntFlag
 
-existenzLocations = {
-    "core": {
-        "Core":       "master/struct/existentialCore.py",
-        "Threat":     "master/struct/existentialCoreThreat.py",
-        "Signatures": "master/struct/existentialCoreSignatures.py",
-        "Check":      "master/existentialCoreCheck.py",
-        "Cores":      "master/existentialCores.json"
-    },
-    "manifest": {
-        "dist":   "dist",
-        "tools":  "dist/tools",
-        "build":  "master/build-tools",
-        "master": "master/struct"
-    },
-    "sign": {
-        "engineStruct":   "master/build-tools/engineStructure.py",
-        "engineLibrary":  "master/build-tools/engineLibrary.py",
-        "engineData":     "master/build-tools/engineData.py",
-        "structures":     "master/build-tools/engineStruct.py",
-        "jsonConfig":     "master/existentialSigningConfig.json",
-        "jsonSignatures": "master/existentialSignatures.json",
-        "jsonData":       "master/existentialSigningData.json",
-        "jsonManifest":   "manifest.json",
-        "jsonLocalConf":  "sign_integrity_config.json"
-    }
-}
-
 class existenzIntegrityKeyStatus(IntFlag):
     """Bitmask operated registration flags for public/private key verification states."""
     KEY_NONE               = 0
