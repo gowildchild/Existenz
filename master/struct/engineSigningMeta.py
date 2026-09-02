@@ -3,21 +3,24 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
+_HEADER = {
+    "REALM":   b"Existenz",
+    "VERSION": b"v0.76.16",
+    "SECRET":  b"EX25IMMUT32CORE7617"
+}
 
 class existenzMeta:
-    HEADER = {
-        "REALM":   b"Existenz",
-        "VERSION": b"v0.76.16",
-        "SECRET":  b"EX25IMMUT32CORE7617"
-    }
+    HEADER = _HEADER
     MAGIC = {
-        "RAW":       f"{existenzMeta.HEADER['REALM'].decode()}:{existenzMeta.HEADER['VERSION'].decode()}:{existenzMeta.HEADER['SECRET'].decode()}",
+        "RAW":       f"{_HEADER['REALM'].decode()}:{_HEADER['VERSION'].decode()}:{_HEADER['SECRET'].decode()}",
         "TOKEN":     "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85",
         "SIGNATURE": "db33c3915f073fa8ff11e8557ee0f01ba329b3ae3f06e788bc4803afdf2674e1"        
     }
     META = {
         "AUTHOR":    "Gunther Voet"
     }
+
+del _HEADER
 
 class existenzConfig:
     FINGERPRINT = {
