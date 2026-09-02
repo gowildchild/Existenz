@@ -46,14 +46,14 @@ jobs:
     - name: Existenz - Signing Pipeline
       env:
           GITHUB_ACTIONS: 'true'
-          SIGN_EXISTENZ_DIST_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
-          SIGN_EXISTENZ_DIST_PHRASE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PHRASE }}
-          SIGN_EXISTENZ_DIST_PUBLIC: ${{ vars.SIGN_EXISTENZ_AUDIT_PUBLIC }}
-          SIGN_EXISTENZ_DIST_FINGERPRINT: ${{ vars.SIGN_EXISTENZ_AUDIT_FINGERPRINT }}
+          SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
+          SIGN_EXISTENZ_AUDIT_PHRASE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PHRASE }}
+          SIGN_EXISTENZ_AUDIT_PUBLIC: ${{ vars.SIGN_EXISTENZ_AUDIT_PUBLIC }}
+          SIGN_EXISTENZ_AUDIT_FINGERPRINT: ${{ vars.SIGN_EXISTENZ_AUDIT_FINGERPRINT }}
           SIGN_EXISTENZ_DIST_RAD_A: 7
           SIGN_EXISTENZ_DIST_RAD_B: 31
       run: |
-          python master/struct/engineSigningLibrary.py -stage sign-dist
+          python master/struct/engineSigningCLI.py -stage sign-dist
 
     # Step 9: Conditional Repository Sync Phase (ONLY fires in compile mode)
     - name: Existenz - git commit and push to repo
