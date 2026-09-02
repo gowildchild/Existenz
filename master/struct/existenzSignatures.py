@@ -7,13 +7,13 @@
 from engineSigningMeta import existenzLocations, existenzMeta
 
 existentialToken = {
-    "magic": {
-        "tag":                existenzMeta.MAGIC{RAW},
-        "token":              existenzMeta.MAGIC{TOKEN},
-        "signature":          existenzMeta.MAGIC{SIGNATURE},
-        "realm":              existenzMeta.HEADER{REALM},
-        "version":            existenzMeta.HEADER{VERSION},
-        "author":             existenzMeta.META{Author}
+    "MAGIC": {
+        "TAG":                existenzMeta.MAGIC{"RAW"},
+        "TOKEN":              existenzMeta.MAGIC{"TOKEN"},
+        "SIGNATURE":          existenzMeta.MAGIC{"SIGNATURE"},
+        "REALM":              existenzMeta.HEADER{"REALM"},
+        "VERSION":            existenzMeta.HEADER{"VERSION"},
+        "Author":             existenzMeta.META{"Author"}
     },
     "master": {
         "Core":               "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e",
