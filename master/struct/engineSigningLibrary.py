@@ -228,12 +228,12 @@ class visualMixEngineEnvironment:
         raw_phrase  = skeleton.get(f"{self.post}PHRASE")
 
         missing_fields = []
-    	if not raw_pvt_key: 
-			missing_fields.append(f"{self.post}PRIVATE")
+        if not raw_pvt_key: 
+            missing_fields.append(f"{self.post}PRIVATE")
         if not env_pub_key: 
-			missing_fields.append(f"{self.post}PUBLIC")
+            missing_fields.append(f"{self.post}PUBLIC")
         if not env_finger:  
-			missing_fields.append(f"{self.post}FINGERPRINT")
+            missing_fields.append(f"{self.post}FINGERPRINT")
         
         if missing_fields:
             error_handler.notice(
