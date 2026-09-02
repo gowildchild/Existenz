@@ -9,35 +9,50 @@ from existentialCoreSigning import existenzLocations, existenzSigned
 
 existenzIntegrityStructure = {
     "Magic":                  (
-        "existentialMagicSignature", 3583, 118,  0x00, existenzLocations["core"]["Signatures"],  existenzSigned.MAGIC["SIGNATURE"]),
+        "existentialMagicSignature", 3583, 118,  0x00, existenzLocations["core"]["Signatures"],  existenzSigned.MAGIC["SIGNATURE"]
+    ),
     "MagicCheck":             (
-        "existentialMagicToken",     3575, 110,  0x00, existenzLocations["core"]["Signatures"],  existenzSigned.MAGIC["TOKEN"]),
+        "existentialMagicToken",     3575, 110,  0x00, existenzLocations["core"]["Signatures"],  existenzSigned.MAGIC["TOKEN"]
+    ),
     "Core":                   (
-        "existentialCore",           3575, 1790, 0x00, existenzLocations["core"]["Core"],  existenzSigned.CORE["existentialCore"]),
+        "existentialCore",           3575, 1790, 0x00, existenzLocations["core"]["Core"],  existenzSigned.CORE["existentialCore"]
+    ),
     "CoreCheck":              (
-        "existentialCoreCheck",      3575, 4222, 0x00, existenzLocations["core"]["Check"],  existenzSigned.CORE["existentialCoreCheck"]),
+        "existentialCoreCheck",      3575, 4222, 0x00, existenzLocations["core"]["Check"],  existenzSigned.CORE["existentialCoreCheck"]
+    ),
     "Cores":                  (
-        "existentialCores",          3575, 1558, 0x01, existenzLocations["core"]["Cores"],  existenzSigned.CORE["existentialCores"]),
+        "existentialCores",          3575, 1558, 0x01, existenzLocations["core"]["Cores"],  existenzSigned.CORE["existentialCores"]
+    ),
     "CoreThreat":             (
-        "existentialCoreThreat",     3575, 1599, 0x02, existenzLocations["core"]["Threat"],  existenzSigned.CORE["existentialCoreThreat"]),
+        "existentialCoreThreat",     3575, 1599, 0x02, existenzLocations["core"]["Threat"],  existenzSigned.CORE["existentialCoreThreat"]
+    ),
     "CoreThreatLegal":        (
-        "existentialCoreThreatLegal",3575, 1599, 0x03, existenzLocationsp["core"]["Threat"],  existenzSigned.CORE["existentialCoreThreatLegal"]),
+        "existentialCoreThreatLegal",3575, 1599, 0x03, existenzLocationsp["core"]["Threat"],  existenzSigned.CORE["existentialCoreThreatLegal"]
+    ),
     "CoreThreatShadowVacuum": (
-        "existentialCoreThreatShadowVacuum", 3575, 1599, 0x04, existenzLocations["core"]["Threat"],  existenzSigned.CORE["existentialCoreThreatShadowVacuum"]),
+        "existentialCoreThreatShadowVacuum", 3575, 1599, 0x04, existenzLocations["core"]["Threat"],  existenzSigned.CORE["existentialCoreThreatShadowVacuum"]
+    ),
     "CoreThreatChain":        (
-        "existentialCoreThreatChain",3583, 382,  0x05, existenzLocations["core"]["Threat"], existenzSigned.CORE["existentialCoreThreatChain"]),
+        "existentialCoreThreatChain",3583, 382,  0x05, existenzLocations["core"]["Threat"], existenzSigned.CORE["existentialCoreThreatChain"]
+    ),
     "CoreSigned":             (
-        "existentialCoreSigned",     3583, 511,  0x09, existenzLocations["core"]["Signatures"],  existenzSigned.CORE["existentialCore"]),
+        "existentialCoreSigned",     3583, 511,  0x09, existenzLocations["core"]["Signatures"],  existenzSigned.CORE["existentialCore"]
+    ),
     "CircleDist":             (
-        "existentialCircleDist",     2615, 23,   0x2F, existenzLocations["manifest"]["dist"],  existenzSigned.CIRCLE["CircleDist"]),
+        "existentialCircleDist",     2615, 23,   0x2F, existenzLocations["manifest"]["dist"],  existenzSigned.CIRCLE["CircleDist"]
+    ),
     "CircleTools":            (
-        "existentialCircleTools",    2814, 22,   0x3F, existenzLocations["manifest"]["tools"],  existenzSigned.CIRCLE["CircleTools"]),
+        "existentialCircleTools",    2814, 22,   0x3F, existenzLocations["manifest"]["tools"],  existenzSigned.CIRCLE["CircleTools"]
+    ),
     "CircleBuild":            (
-        "existentialCircleBuild",    2815, 126,  0x4F, existenzLocations["manifest"]["build"],  existenzSigned.CIRCLE["CircleBuild"]),
+        "existentialCircleBuild",    2815, 126,  0x4F, existenzLocations["manifest"]["build"],  existenzSigned.CIRCLE["CircleBuild"]
+    ),
     "CircleMaster":           (
-        "existentialCircleMaster",   2815, 255,  0x5F, existenzLocations["manifest"]["master"],  existenzSigned.CIRCLE["CircleMaster"]),
+        "existentialCircleMaster",   2815, 255,  0x5F, existenzLocations["manifest"]["master"],  existenzSigned.CIRCLE["CircleMaster"]
+    ),
     "CircleChain":            (
-        "existentialCircleSigned",   3839, 511,  0x9F, existenzLocations["manifest"]["manifest"],  existenzSigned.CHAIN["CORE"])
+        "existentialCircleSigned",   3839, 511,  0x9F, existenzLocations["manifest"]["manifest"],  existenzSigned.CHAIN["CORE"]
+    )
 }
 
 class existenzSignatures:
