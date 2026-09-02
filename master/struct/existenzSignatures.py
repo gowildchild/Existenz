@@ -24,6 +24,11 @@ existentialToken = {
         "ThreatChain":        "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3",
         "Check":              "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85"
     },
+    "chain": {
+        "manifest":           "",
+        "core":               "",
+        "Threat":             "",
+    },
     "manifest": {
         "dist":               "dist",
         "tools":              "dist/tools",
