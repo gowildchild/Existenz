@@ -4,8 +4,6 @@
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
 
-from emgomeSigning import existenzLocations
-
 class existenzMeta:
     HEADER = {
         "REALM":   b"Existenz",
@@ -46,16 +44,17 @@ existenzLocations = {
         "build":  "master/build-tools",
         "master": "master/struct"
     },
-    "sign": {
-        "engineStruct":   "master/build-tools/engineStructure.py",
-        "engineLibrary":  "master/build-tools/engineLibrary.py",
-        "engineData":     "master/build-tools/engineData.py",
-        "structures":     "master/build-tools/engineStruct.py",
-        "jsonConfig":     "master/existentialSigningConfig.json",
-        "jsonSignatures": "master/existentialSignatures.json",
-        "jsonData":       "master/existentialSigningData.json",
-        "jsonManifest":   "manifest.json",
-        "jsonLocalConf":  "sign_integrity_config.json"
+    "engine": {
+        "signingMeta":     "master/struct/engineSigningMeta.py",
+        "signingStruct":   "master/struct/engineSigningStruct.py",
+        "signingLibrary":  "master/struct/engineSigningLibrary.py",
+        "signingRoutine":  "master/struct/engineSigningRoutine.py",
+        "signingFlow":     "master/struct/engineSigningFlow.py",
+        "jsonConfig":      "master/existentialSigningConfig.json",
+        "jsonSignatures":  "master/existentialSignatures.json",
+        "jsonData":        "master/existentialSigningData.json",
+        "jsonManifest":    "manifest.json",
+        "jsonLocalConf":   "sign_integrity_config.json"
     }
 }
 
