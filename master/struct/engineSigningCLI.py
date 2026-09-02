@@ -32,7 +32,7 @@ if REPO_ROOT not in sys.path:
 
 def main():
     parser = argparse.ArgumentParser(description="Existenz SHA256 Manifest")
-    parser.add_argument("-stage", "--stage", "-step", "--step", choices=["sign", "verify", "manifest"], required=True, help="Manifest operation state selection.")
+    parser.add_argument("-stage", "--stage", choices=["sign", "check", "verify", "manifest"], required=True, help="Manifest operation state selection.")
     parser.add_argument("-override", "--override", choices=["update", "recreate", "retry"], required=True, help="Manifest operation override.")
     parser.add_argument("-circle", "--circle", choices=["dist","tools","build","master","all"], default="all", help="Select circle")
     parser.add_argument("-bitmask","--bitmask", help="Select BitMask")
@@ -71,3 +71,14 @@ if __name__ == "__main__":
         
     else:
         print("[!] Local execution skipped. This test routine targets GitHub Actions environment contexts.")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except FileNotFoundError as e:
+        error_handler.notice(level="error", message=str(e), exit_code=visualmixErrorHandler.ERR_MISSING_FILE)
+    except KeyError as e:
+        error_handler.notice(level="error", message=f"Key Error: {str(e)}", exit_code=visualmixErrorHandler.ERR_KEY)
+    except Exception as e:
+        error_handler.notice(level="error", message=f"Exception Error: {str(e)}", exit_code=visualmixErrorHandler.ERR_UNKNOWN)
