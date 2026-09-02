@@ -42,10 +42,11 @@ existenzLocations = {
         "Cores":      "master/existentialCores.json"
     },
     "manifest": {
-        "dist":   "dist",
-        "tools":  "dist/tools",
-        "build":  "master/build-tools",
-        "master": "master/struct"
+        "dist":     "dist",
+        "tools":    "dist/tools",
+        "build":    "master/build-tools",
+        "master":   "master/struct",
+        "manifest": "manifest.json"
     },
     "engine": {
         "signingMeta":     "master/struct/engineSigningMeta.py",
