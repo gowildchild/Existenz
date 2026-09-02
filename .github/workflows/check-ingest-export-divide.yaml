@@ -53,7 +53,7 @@ jobs:
           SIGN_EXISTENZ_DIST_RAD_A: 7
           SIGN_EXISTENZ_DIST_RAD_B: 31
       run: |
-          python master/struct/engineSigningRoutine.py -stage sign-dist
+          python master/struct/engineSigningLibrary.py -stage sign-dist
 
     # Step 9: Conditional Repository Sync Phase (ONLY fires in compile mode)
     - name: Existenz - git commit and push to repo
