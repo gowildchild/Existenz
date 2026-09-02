@@ -45,6 +45,7 @@ def main():
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘")
     print(f"  [*] Operational: -stage {args.stage} -c {args.circle} -o {MANIFEST_OUTPUT}")
 
+
 if __name__ == "__main__":
     # Test stub trigger when run directly in your workflow file
     if REPO_GITHUB:
@@ -71,9 +72,7 @@ if __name__ == "__main__":
         
     else:
         print("[!] Local execution skipped. This test routine targets GitHub Actions environment contexts.")
-
-
-if __name__ == "__main__":
+        
     try:
         main()
     except FileNotFoundError as e:
