@@ -1,5 +1,5 @@
 # ==========================================================================
-# EXISTENZ Existential build-tools & libraries (engineStructure.py v0.76.16)
+# EXISTENZ master/struct/engineSigningStruct.py
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
