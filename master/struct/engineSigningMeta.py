@@ -1,10 +1,10 @@
 # ==========================================================================
-# EXISTENZ Existential structures (engine.py v0.76.16)
+# EXISTENZ  master/struct/engineSigningMeta.py
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
 
-from existentialCoreStruct import existenzLocations
+from emgomeSigning import existenzLocations
 
 class existenzMeta:
     HEADER = {
@@ -27,7 +27,7 @@ class existenzConfig:
         "Platform":    "H2EyS1X5iw/eD88YSysuZbQZ4HH43hZBFWzF2ka4SXQ",
         "Developer":   "3cNVRAjalOpDV243r6xa+GRLV6KETZWc4Y47JfBPWmE",
         "Personal":    "IupL7H3fQINdH4aNFTAwfYvc2RD4LuXO+qsAjCfW1Ig"
-    },
+    }
     DATA = {
         "SEPARATOR" = [",", ":"]
     }
