@@ -27,7 +27,7 @@ class existenzConfig:
         "Personal":    "IupL7H3fQINdH4aNFTAwfYvc2RD4LuXO+qsAjCfW1Ig"
     }
     DATA = {
-        "SEPARATOR" = [",", ":"]
+        "SEPARATOR":   [",", ":"]
     }
 
 existenzLocations = {
