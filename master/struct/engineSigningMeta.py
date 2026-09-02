@@ -16,7 +16,7 @@ class existenzMeta:
         "SIGNATURE": "db33c3915f073fa8ff11e8557ee0f01ba329b3ae3f06e788bc4803afdf2674e1"        
     }
     META = {
-        "Author":    "Gunther Voet"
+        "AUTHOR":    "Gunther Voet"
     }
 
 class existenzConfig:
