@@ -17,17 +17,21 @@ existenzIntegrityGlue = {
                                                                                existentialToken["master"]["Core"]),
     "CoreCheck":              ( "existentialCoreCheck",      3575, 4222, 0x00, existenzLocations["core"]["Check"],  
                                                                                existentialToken["master"]["Check"]),
-    "Cores":                  ( "existentialCores",          3575, 1558, 0x01, existenzLocations["core"]["Cores"],
+    "Cores":                  ( "existentialCores",          3575, 1558, 0x02, existenzLocations["core"]["Cores"],
                                                                                existentialToken["master"]["Cores"]),
-    "CoreThreat":             ( "existentialCoreThreat",     3575, 1599, 0x02, existenzLocations["core"]["Threat"],
+    "Schema":                 ( "existentialCoreSchema",      246, 1558, 0x03, existenzLocations["core"]["Schema"],
+                                                                               existentialToken["master"]["Schema"]),
+    "CoresChain":             ( "existentialCoresChain",     3583, 382,  0x04, existenzLocations["core"]["CoresChain"],
+                                                                               existentialToken["chain"]["Cores"]),    
+    "CoreThreat":             ( "existentialCoreThreat",     3575, 1599, 0x06, existenzLocations["core"]["Threat"],
                                                                                existentialToken["master"]["Threat"]),
-    "CoreThreatLegal":        ( "existentialCoreThreatLegal",3575, 1599, 0x03, existenzLocations["core"]["Threat"],
+    "CoreThreatLegal":        ( "existentialCoreThreatLegal",3575, 1599, 0x07, existenzLocations["core"]["Threat"],
                                                                                existentialToken["master"]["ThreatLegal"]),
-    "CoreThreatShadowVacuum": ( "existentialCoreThreatShadowVacuum", 3575, 1599, 0x04, existenzLocations["core"]["Threat"],
+    "CoreThreatShadowVacuum": ( "existentialCoreThreatShadowVacuum", 3575, 1599, 0x08, existenzLocations["core"]["Threat"],
                                                                                existentialToken["master"]["ThreatShadowVacuum"]),
-    "CoreThreatChain":        ( "existentialCoreThreatChain",3583, 382,  0x05, existenzLocations["core"]["Threat"],
+    "CoreThreatChain":        ( "existentialCoreThreatChain",3583, 382,  0x09, existenzLocations["core"]["Threat"],
                                                                                existentialToken["chain"]["Threat"]),
-    "CoreSigned":             ( "existentialCoreSigned",     3583, 511,  0x09, existenzLocations["core"]["Signatures"],
+    "CoreSigned":             ( "existentialCoreSigned",     3583, 511,  0x0F, existenzLocations["core"]["Signatures"],
                                                                                existentialToken["master"]["ThreatChain"]),
     "CircleDist":             ( "existentialCircleDist",     2615, 23,   0x2F, existenzLocations["manifest"]["dist"],
                                                                                existentialToken["manifest"]["dist"]),
@@ -45,13 +49,15 @@ class existenzSignatures:
     existentialImmutable = ()
     existentialCore = (
         ("Magic",                  existenzIntegrityGlue["Magic"],                  0),
-        ("Core",                   existenzIntegrityGlue["Core"],                   1),
-        ("CoreCheck",              existenzIntegrityGlue["CoreCheck"],              2),
-        ("Cores",                  existenzIntegrityGlue["Cores"],                  4),
+        ("Core",                   existenzIntegrityGlue["Core"],                   0),
+        ("CoreCheck",              existenzIntegrityGlue["CoreCheck"],              0),
+        ("Cores",                  existenzIntegrityGlue["Cores"],                  2),
+        ("Schema",                 existenzIntegrityGlue["Schema"],                 3),
+        ("CoresChain",             existenzIntegrityGlue["CoresChain"],             4),
         ("CoreThreat",             existenzIntegrityGlue["CoreThreat"],             6),
         ("CoreThreatLegal",        existenzIntegrityGlue["CoreThreatLegal"],        7),
         ("CoreThreatShadowVacuum", existenzIntegrityGlue["CoreThreatShadowVacuum"], 8),
-        ("CoreThreatChain",        existenzIntegrityGlue["CoreThreatChain"],        10)
+        ("CoreThreatChain",        existenzIntegrityGlue["CoreThreatChain"],        9)
     )
 
     existentialManifest = (
@@ -97,24 +103,24 @@ class existenzIntegrityKeyStatus(IntFlag):
     KEY_OK_HASHED          = 256
     KEY_IS_CHAINED         = 512
     KEY_STATE_WAIT         = 1024
-    KEY_STATE_SUCCES       = 2048
+    KEY_STATE_SUCCESS      = 2048
     KEY_STATE_FAIL         = 4096
     
     KEY_IN_ENVIRONMENT     = KEY_IS_PUBLIC      | KEY_PVT_ENVIRONMENT
     KEY_OK_ENVIRONMENT     = KEY_IN_ENVIRONMENT | KEY_IS_COMMITTED
-    KEY_DONE_ENVIRONMENT   = KEY_OK_ENVIRONMENT | KEY_STATE_SUCCES
+    KEY_DONE_ENVIRONMENT   = KEY_OK_ENVIRONMENT | KEY_STATE_SUCCESS
 
     KEY_IS_PLATFORM        = KEY_IS_PRIVATE     | KEY_PVT_PLATFORM
     KEY_OK_PLATFORM        = KEY_IS_PLATFORM    | KEY_IS_COMMITTED
-    KEY_DONE_PLATFORM      = KEY_OK_PLATFORM    | KEY_STATE_SUCCES
+    KEY_DONE_PLATFORM      = KEY_OK_PLATFORM    | KEY_STATE_SUCCESS
     
     KEY_IS_DEVELOPER       = KEY_IS_PRIVATE     | KEY_PVT_DEVELOPER
     KEY_OK_DEVELOPER       = KEY_IS_DEVELOPER   | KEY_IS_COMMITTED
-    KEY_DONE_DEVELOPER     = KEY_OK_DEVELOPER   | KEY_STATE_SUCCES
+    KEY_DONE_DEVELOPER     = KEY_OK_DEVELOPER   | KEY_STATE_SUCCESS
     
     KEY_IS_PERSONAL        = KEY_IS_PRIVATE     | KEY_PVT_PERSONAL
     KEY_OK_PERSONAL        = KEY_IS_PERSONAL    | KEY_IS_COMMITTED
-    KEY_DONE_PERSONAL      = KEY_OK_PERSONAL    | KEY_STATE_SUCCES
+    KEY_DONE_PERSONAL      = KEY_OK_PERSONAL    | KEY_STATE_SUCCESS
 
 class existenzIntegrityKeysHandler(IntFlag):
     """Opcode execution instructions governing the cryptographic pipeline."""
@@ -128,7 +134,7 @@ class existenzIntegrityKeysHandler(IntFlag):
     SIGN_PVT_PERSONAL    = 128
     SIGN_CHAIN_END       = 256
     SIGN_TYPE_FILE       = 512
-    SIGN_TYPE_KEYS       = 1025
+    SIGN_TYPE_KEYS       = 1024
     SIGN_TYPE_VALUES     = 2048
     SIGN_TYPE_STRING     = 4096
 
