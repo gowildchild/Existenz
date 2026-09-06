@@ -17,7 +17,9 @@ class visualmixErrorHandler:
     ERR_GENERAL          = 1
     ERR_ARGPARSE         = 2
     ERR_MISSING_CORE     = 4
+    ERR_MISSING_CORES    = 5
     ERR_MISSING_LOCAL    = 8
+    ERR_MISSING_INIT     = 15
     ERR_MISSING_CONFIG   = 16
     ERR_MISSING_FILE     = 32
     ERR_MISSING_MANIFEST = 33
