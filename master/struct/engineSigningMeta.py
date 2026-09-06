@@ -35,12 +35,13 @@ class existenzConfig:
 
 existenzLocations = {
     "core": {
-        "Core":       "master/struct/existentialCore.py",
-        "Threat":     "master/struct/existentialCoreThreat.py",
-        "Signatures": "master/struct/existentialCoreSignatures.py",
+        "Core":       "master/existentialCore.py",
         "Check":      "master/existentialCoreCheck.py",
         "Schema":     "master/struct/existentialCoreSchema.json",
-        "Cores":      "master/existentialCores.json"
+        "Cores":      "master/existentialCores.json",
+        "CoresChain": "master/existentialCoresChain.json",
+        "Threat":     "master/existentialCoreThreat.py",
+        "Signatures": "master/existentialCoreSignatures.py"
     },
     "manifest": {
         "dist":     "dist",
