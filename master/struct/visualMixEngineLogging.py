@@ -118,38 +118,3 @@ class visualmixErrorHandler:
 
         if exit_code is not None:
             sys.exit(exit_code)
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Existenz cross-compile builder and private signing suite"
-    )
-    parser.add_argument(
-        "-step", "--step",
-        choices=["verify","check", "sign", "compile"],
-        required=True,
-        help="Specify the pipeline stage to run. 'check'=audit, 'sign'=matrix mapping, 'compile'=cross-compile."
-    )
-    parser.add_argument(
-        "-dist", "--dist",
-        choices=["existenzStruct","dist"],
-        default="existenzStruct",
-        help="Distro to sign"
-    )
-    parser.add_argument(
-        "-r", "--run", 
-        choices=["WET", "dry"], 
-        default="WET",
-        help="Execution strategy state constraint. 'dry' bypasses filesystem modifications."
-    )
-    args = parser.parse_args()
-    pub_ver = existentialCoreVersion or None
-    if pub_ver != int_ver:
-        pub_ver = existentialCoreVersion + "/" + int_ver
-    else:
-        pub_ver = int_ver
-
-
-if __name__ == "__main__":
-    main()
-
-# error_handler = visualmixErrorHandler(log_file_path=os.path.join(REPO_ROOT, "visualMixEngineLogger.log"))
