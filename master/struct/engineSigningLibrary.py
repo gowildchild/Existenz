@@ -3,21 +3,25 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
-
+import visualMixEngineCrypto
 import os
 import sys
 import json
 import argparse
 import hashlib
 import getpass
+import time
 from enum import IntFlag
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
 from typing import Dict, Any
 
 from engineSigningMeta import existenzLocations, existenzMeta
-from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler
+# Added missing existenzIntegrityKeyStatus registration dependency entry
+from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler, existenzIntegrityKeyStatus
 from existenzSignatures import existentialToken
+
+from visualMixEngineLogging import visualmixErrorHandler
 
 INT_VERSION = "v0.76.16"
 
@@ -32,13 +36,12 @@ REPO_WINDOWS = sys.platform == "win32"
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
+# Initialize global diagnostic loop interceptor
+error_handler = visualmixErrorHandler(custom_post="_ERR")
+
 def compute_sha256(file_path: str) -> str:
-    """Computes a strict binary SHA-256 hash of a target file asset."""
-    hasher = hashlib.sha256()
-    with open(file_path, "rb") as f:
-        while chunk := f.read(8192):
-            hasher.update(chunk)
-    return hasher.hexdigest()
+    """Redirects file streaming straight through your uniform crypto engine helper."""
+    return visualMixEngineCrypto.calculate_file_sha256(file_path)
 
 
 def gather_folder_files(folder_relative_path: str) -> dict:
@@ -64,49 +67,8 @@ def gather_folder_files(folder_relative_path: str) -> dict:
 
 
 def load_private_key(identity: str, path: str) -> ed25519.Ed25519PrivateKey:
-    """Natively reads an asymmetric OpenSSH private key, capturing password requirements explicitly."""
-    if REPO_GITHUB:
-        error_handler.notice(
-            level="error",
-            message="GitHub CI is not supposed to sign with a private key!",
-            exit_code=visualmixErrorHandler.ERR_MISSING_LOCAL
-        )
-
-    expanded_path = os.path.expanduser(path)
-    if not os.path.exists(expanded_path):
-        error_handler.notice(
-            level="error",
-            message=f"Key file missing at: {expanded_path}",
-            exit_code=visualmixErrorHandler.ERR_MISSING_KEY
-        )
-
-    with open(expanded_path, "rb") as k_file:
-        key_data = k_file.read()
-
-    try:
-        return serialization.load_ssh_private_key(key_data, password=None)
-    except Exception as e:
-        err_str = str(e).lower()
-        if any(w in err_str for w in ["password", "unsupported", "encrypted", "passphrase"]):
-            error_handler.notice(
-                level="local",
-                message=f"[SECURITY] Private key for manifest identity '{identity}' is password-protected."
-            )
-            pwd = getpass.getpass(f"   Enter interactive pass-phrase for [{identity}]: ").encode('utf-8')
-            try:
-                return serialization.load_ssh_private_key(key_data, password=pwd)
-            except Exception as e:
-                error_handler.notice(
-                    level="error",
-                    message=f"Invalid password entry or corrupt key format: {e}",
-                    exit_code=visualmixErrorHandler.ERR_KEY_VALUE
-                )
-        else:
-            error_handler.notice(
-                level="error",
-                message=f"Corrupt key format: {e}",
-                exit_code=visualmixErrorHandler.ERR_KEY_FORMAT
-            )
+    """Invokes the consolidated global cryptography library handler."""
+    return visualMixEngineCrypto.load_private_key(identity, path, error_handler, REPO_GITHUB)
 
 
 def solve_ring_requirements(stage: str) -> tuple:
@@ -139,6 +101,7 @@ class visualMixEngineEnvironment:
 
     def load_secret_key(self) -> Dict[str, Any]:
         """Loads file configurations smoothly matching extensions."""
+        skeleton = {}  # Fixed critical missing dictionary variable instantiation
 
         keys_pub = ["PUBLIC","FINGERPRINT"]
         keys_pvt = ["PRIVATE","PHRASE"]
@@ -148,7 +111,7 @@ class visualMixEngineEnvironment:
             env_key  = f"{self.post}{key}"
 
             if key == "FINGERPRINT":
-	            env_fallback_value = os.environ.get(env_key, os.environ.get(f"{self.post}FINGERPRINT"))
+                env_fallback_value = os.environ.get(env_key, os.environ.get(f"{self.post}FINGERPRINT"))
             else:
                 env_fallback_value = os.environ.get(env_key)
         
@@ -192,16 +155,14 @@ class visualMixEngineEnvironment:
         else:
             print(f"  [ ] Key Protection State:  Assuming plaintext unencrypted asset format")
 
-        # 4. Attempt Cryptographic instantiation checks
+        # 4. Attempt Cryptographic instantiation checks via decoupled engine library
         try:
             pvt_bytes = raw_pvt_key.strip().encode('utf-8')
-            parsed_private_key = serialization.load_ssh_private_key(
+            parsed_private_key = visualMixEngineCrypto.deserialize_ssh_private_key(
                 pvt_bytes,
-                password=password_bytes
+                password_bytes=password_bytes
             )
             print("\033[1;32m  [+] Cryptographic Validation: Key parsing loop verified successfully!\033[0m")
-            
-            # Pass the running key pointer directly out of the tracking block safely
             skeleton["_OBJECT"] = parsed_private_key
             
         except Exception as crypto_fault:
