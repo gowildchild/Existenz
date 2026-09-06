@@ -109,8 +109,8 @@
    "comment": "SHIELD-B (Institutional)"
   },
   "SHIELD_RIGHTS_ASYLUM": {
-   "value": 67108864,
-   "expr": "1 << 26",
+   "value": 33554432,
+   "expr": "1 << 25",
    "type": "RIGHTS",
    "comment": "SHIELD-A3 (Institutional)"
   },
