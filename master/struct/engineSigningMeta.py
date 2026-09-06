@@ -39,6 +39,7 @@ existenzLocations = {
         "Threat":     "master/struct/existentialCoreThreat.py",
         "Signatures": "master/struct/existentialCoreSignatures.py",
         "Check":      "master/existentialCoreCheck.py",
+        "Schema":     "master/struct/existentialCoreSchema.json",
         "Cores":      "master/existentialCores.json"
     },
     "manifest": {
@@ -49,6 +50,8 @@ existenzLocations = {
         "manifest": "manifest.json"
     },
     "engine": {
+        "engineLogging":   "master/struct/visualMixEngineLogging.py",
+        "engineCrypto":    "master/struct/visualMixEngineCrypto.py",
         "signingMeta":     "master/struct/engineSigningMeta.py",
         "signingStruct":   "master/struct/engineSigningStruct.py",
         "signingLibrary":  "master/struct/engineSigningLibrary.py",
