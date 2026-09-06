@@ -1,28 +1,26 @@
-import os
-import sys
-import json
-import argparse
+# ==========================================================================
+# EXISTENZ master/struct/visualMixEngineCrypto.py
+# Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
+# ==========================================================================
 import hashlib
-import getpass
-from enum import IntFlag
-from cryptography.hazmat.primitives.asymmetric import ed25519
-from cryptography.hazmat.primitives import serialization
-from typing import Dict, Any
 
-from engineSigningMeta import existenzLocations, existenzMeta
-from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler
-from existenzSignatures import existentialToken
+def calculate_sha256(data: bytes) -> str:
+    """Calculates the absolute SHA256 checksum string for raw binary blocks."""
+    return hashlib.sha256(data).hexdigest()
 
-
-def calculate_sha256(file_path: str) -> str:
-    """Computes a strict binary SHA-256 hash of a target file asset."""
-    hasher = hashlib.sha256()
+def calculate_file_sha256(file_path: str) -> str:
+    """Safely streams a file from disk to generate a uniform SHA256 signature."""
+    sha256 = hashlib.sha256()
     with open(file_path, "rb") as f:
-        while chunk := f.read(8192):
-            hasher.update(chunk)
-    return hasher.hexdigest()
+        for chunk in iter(lambda: f.read(4096), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
 
-def calculate_md5(file_path: str) -> str:
+def calculate_md5(data: bytes) -> str:
+    """Calculates the absolute MD5 checksum string for raw binary blocks."""
+    return hashlib.md5(data).hexdigest()
+
+def calculate_file_md5(file_path: str) -> str:
     """Calculates a deterministic 7-character MD5 hash of any target disk asset."""
     try:
         hasher = hashlib.md5()
