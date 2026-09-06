@@ -63,6 +63,26 @@ class existenzSignatures:
         ("CircleChain",            existenzIntegrityGlue["CircleChain"],            9)
     )
 
+class existenzCorePolicy(IntFlag):
+    CORE_NONE               = 0
+    CORE_PILLAR             = 1      # is CORE Pillar (immutable)
+    CORE_RIGHTS             = 2      # is CORE Rights (immutable)
+    CORE_INTEGRITY          = 8      # Is a hash or signature
+    CORE_CANARY             = 16     # Is a Canary Bird
+    CORE_WATCHDOG           = 32     # Will always be reported by CORE
+    USER_CANARY             = 64     # User can enable/disable canary
+    USER_CUSTOMIZE          = 256    # Can be customized by user
+    USER_READ               = 512    # Can be read/subscribed to by user
+    USER_UPDATE             = 1024   # Can be updated/changed by user
+    USER_DISABLE            = 2048   # Can be removed/disabled by user
+    BIT_MASK                = 4096   # Field has bitmask (for canaries)
+    BIT_SHIFT               = 8192   # Standard Left Shift (1 << x)
+    BIT_SHIFT_RIGHT         = 16384  # Arithmetic Right Shift (x >> y)
+    BIT_ZERO_FILL_RIGHT     = 32768  # Logical Right Shift (x >>> y)
+    BIT_ROTATE_LEFT         = 65536  # Circular Left Rotation
+    BIT_ROTATE_RIGHT        = 131072 # Circular Right Rotation
+    CORE_IMMUTABLE          = 262144 # Pushed high to clear space
+
 class existenzIntegrityKeyStatus(IntFlag):
     """Bitmask operated registration flags for public/private key verification states."""
     KEY_NONE               = 0
