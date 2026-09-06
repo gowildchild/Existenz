@@ -1,9 +1,4 @@
 # ==========================================================================
-# EXISTENZ  master/struct/module/engineSigningInit.py
-# Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
-# Released under strict Non-Commercial Open-Source License terms.
-# ==========================================================================
-# ==========================================================================
 # EXISTENZ  master/struct/module/cliStateInit.py
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
