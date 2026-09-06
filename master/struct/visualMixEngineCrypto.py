@@ -2,7 +2,10 @@
 # EXISTENZ master/struct/visualMixEngineCrypto.py
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # ==========================================================================
+import os
 import hashlib
+from cryptography.hazmat.primitives.asymmetric import ed25519
+from cryptography.hazmat.primitives import serialization
 
 def calculate_sha256(data: bytes) -> str:
     """Calculates the absolute SHA256 checksum string for raw binary blocks."""
@@ -30,3 +33,7 @@ def calculate_file_md5(file_path: str) -> str:
         return hasher.hexdigest()[:7]
     except Exception:
         return "ERROR"
+
+def deserialize_ssh_private_key(key_bytes: bytes, password_bytes: bytes = None) -> ed25519.Ed25519PrivateKey:
+    """Natively deserializes an OpenSSH private key asset using explicit password strings."""
+    return serialization.load_ssh_private_key(key_bytes, password=password_bytes)
