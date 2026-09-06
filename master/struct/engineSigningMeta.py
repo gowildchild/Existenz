@@ -50,16 +50,21 @@ existenzLocations = {
         "manifest": "manifest.json"
     },
     "engine": {
-        "engineLogging":   "master/struct/visualMixEngineLogging.py",
-        "engineCrypto":    "master/struct/visualMixEngineCrypto.py",
-        "signingMeta":     "master/struct/engineSigningMeta.py",
-        "signingStruct":   "master/struct/engineSigningStruct.py",
-        "signingLibrary":  "master/struct/engineSigningLibrary.py",
-        "jsonConfig":      "master/existentialSigningConfig.json",
-        "jsonSignatures":  "master/existentialSignatures.json",
-        "jsonData":        "master/existentialSigningData.json",
-        "jsonManifest":    "manifest.json",
-        "jsonLocalConf":   "sign_integrity_config.json"
+        "engineLogging":     "master/struct/visualMixEngineLogging.py",
+        "engineCrypto":      "master/struct/visualMixEngineCrypto.py",
+        "signingMeta":       "master/struct/engineSigningMeta.py",
+        "signingStruct":     "master/struct/engineSigningStruct.py",
+        "signingLibrary":    "master/struct/engineSigningLibrary.py",
+        "cliStateInit" :     "master/struct/module/cliStateInit.py",
+        "cliStateManifest":  "master/struct/module/cliStateManifest.py",
+        "cliStateSign":      "master/struct/module/cliStateSign.py",
+        "cliStateVerify":    "master/struct/module/cliStateVerify.py",
+        "cliStateBuild":     "master/struct/module/cliStateBuild.py",
+        "jsonConfig":        "master/existentialSigningConfig.json",
+        "jsonSignatures":    "master/existentialSignatures.json",
+        "jsonData":          "master/existentialSigningData.json",
+        "jsonManifest":      "manifest.json",
+        "jsonLocalConf":     "sign_integrity_config.json"
     }
 }
 
