@@ -2,17 +2,16 @@ import os
 import sys
 import json
 import argparse
-import hashlib
-import getpass
 from enum import IntFlag
-from cryptography.hazmat.primitives.asymmetric import ed25519
-from cryptography.hazmat.primitives import serialization
 from typing import Dict, Any
 
 from engineSigningMeta import existenzLocations, existenzMeta
 from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler
 from existenzSignatures import existentialToken
 import engineSigningLibrary
+
+from visualMixEngineLogging import visualmixErrorHandler
+import visualMixEngineCrypto
 
 INT_VERSION = "v0.76.16"
 
@@ -27,7 +26,8 @@ REPO_WINDOWS = sys.platform == "win32"
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-
+# Initialize the global diagnostic crash monitor interface
+error_handler = visualmixErrorHandler(custom_post="_ERR")
 
 
 def main():
@@ -44,8 +44,7 @@ def main():
     print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
     print(f"│ VisualMIX Signing CLI {INT_VERSION}     by Gunther Voet │")
     print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘")
-    print(f"  [*] Operational: -stage {args.stage} -c {args.circle} -o {MANIFEST_OUTPUT}")
-
+    print(f"  [*] Operational: -stage {args.stage} -circle {args.circle} -config {args.config} -o {args.manifest}")
 
 if __name__ == "__main__":
     try:
