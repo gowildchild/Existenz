@@ -120,3 +120,7 @@ class visualmixErrorHandler:
 
         if exit_code is not None:
             sys.exit(exit_code)
+
+    def print(self, message: str, level: str = "info", exit_code: int = None, details: list = None):
+        """Standardized print wrapper routing strings straight through your environment-aware logging matrix."""
+        self.notice(level=level, message=message, exit_code=exit_code, details=details)
