@@ -27,21 +27,23 @@ jobs:
     # Step 3: Determine Operational Mode from the Lockfile
     - name: Existenz - Installing Dependencies
       run: pip install pyyaml cryptography    
-    - name: Existenz - Checking Myself 
+    - name: Existenz - Checking Myself (Staging Initialization Pass)
       id: mode_check
       run: |
+        # 1. Execute your compiled pre-flight dependency audit gate
+        python master/struct/engineSigningCLI.py -stage init -override update -run wet -circle master
+        # 2. Extract runtime execution state from repository lock tracking assets
         if [ -f "master/.existentialLock" ]; then
-          # Read the first line, strip whitespace, and convert to lowercase
+          # Read the first line, strip whitespace, and convert strictly to lowercase
           MODE=$(head -n 1 master/.existentialLock | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
-          echo "Found lockfile. Selected Mode: $MODE"
+          echo " [*] Status Phase: Active lockfile detected. Selected Core Mode: $MODE"
         else
           MODE="compile"
-          echo "No lockfile detected. Defaulting to Mode: $MODE"
+          echo " [!] Status Phase: No lockfile detected. Defaulting Pipeline to Core Mode: $MODE"
         fi
-        # Save the mode variable to the GitHub Actions environment map
+        
+        # 3. Securely export the verified mode variable out to the GitHub Actions environment map
         echo "RUN_MODE=$MODE" >> $GITHUB_ENV
-
-    # Step 4: Standalone Cryptographic Hash Audit (Absolute Root Context)
 
     - name: Existenz - Signing Pipeline
       env:
