@@ -76,16 +76,17 @@ def solve_ring_requirements(stage: str) -> tuple:
     BITWISE ROUTINE ROUTER: Uses IntFlag bitmask matching to verify which keys are needed.
     Returns: (requires_platform, requires_developer, requires_personal)
     """
-    # 1. Determine base existenzIntegrityKeysHandler ring weight
+    # 1. Determine base existenzIntegrityKeyStatus ring weight
     ring_weight = existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT
     if "master" in stage:
         ring_weight = existenzIntegrityKeyStatus.KEY_PVT_PERSONAL
     elif "tools" in stage or "build" in stage:
         ring_weight = existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER
 
-    platform_flag  = existenzIntegrityKeyStatus.SIGN_PVT_PLATFORM
-    developer_flag = existenzIntegrityKeyStatus.SIGN_PVT_DEVELOPER
-    personal_flag  = existenzIntegrityKeyStatus.SIGN_PVT_PERSONAL
+    # Standardized to read completely from within matching KeyStatus properties
+    platform_flag  = existenzIntegrityKeyStatus.KEY_PVT_PLATFORM
+    developer_flag = existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER
+    personal_flag  = existenzIntegrityKeyStatus.KEY_PVT_PERSONAL
 
     return (
         bool(ring_weight & platform_flag),
