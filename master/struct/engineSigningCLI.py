@@ -34,10 +34,11 @@ def main():
     parser = argparse.ArgumentParser(description="Existenz SHA256 Manifest")
     parser.add_argument("-stage", "--stage", choices=["sign", "check", "verify", "manifest"], required=True, help="Manifest operation state selection.")
     parser.add_argument("-override", "--override", choices=["update", "recreate", "retry"], required=True, help="Manifest operation override.")
+    parser.add_argument("-run","--run", choices=["wet","dry"], default="wet", required=True, help="DRY shows only what it does, WET writes files")
     parser.add_argument("-circle", "--circle", choices=["dist","tools","build","master","all"], default="all", help="Select circle")
     parser.add_argument("-bitmask","--bitmask", help="Select BitMask")
-    parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to your private key routes.")
-    parser.add_argument("-o", "--output", default=MANIFEST_OUTPUT, help="Path to your manifest file.")
+    parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to your private key routes (offline signing)")
+    parser.add_argument("-o", "--manifest", default=MANIFEST_OUTPUT, help="Path to your manifest file.")
     args = parser.parse_args()
 
     print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐")
