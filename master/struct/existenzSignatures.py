@@ -17,17 +17,18 @@ existentialToken = {
     },
     "master": {
         "Core":               "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e",
+        "Check":              "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85",        
+        "Schema":             "",
         "Cores":              "bb11656cb916db4245e1ac23cf9b04f03fddcc492faf420e9d0ecf54e4384af8",
+        "CoresChain":         "",
         "Threat":             "1f95497bb174e069c2b727d8b72a7d556a03c0db451dcf2bac6b00bf191291ca",
         "ThreatLegal":        "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1",
         "ThreatShadowVacuum": "9b1d1bcf4903c7c26a6b75dd2e0c341ddab3594c2514c99e5d8e6b4651bfcc69",
-        "ThreatChain":        "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3",
-        "Schema":             "sha-256:",
-        "Check":              "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85"
+        "ThreatChain":        "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3"
     },
     "chain": {
-        "manifest":           "",
-        "core":               "",
+        "Core":               "",
+        "Cores":              "",
         "Threat":             "",
     },
     "manifest": {
@@ -44,7 +45,7 @@ existentialToken = {
     },
     "engine": {
         "engineLogging":   "sha-256:master/struct/visualMixEngineLogging.py",
-        "engineCrypto":    "sha-256:master/struct/visualMixEngineCrypto.py",        
+        "engineCrypto":    "sha-256:master/struct/visualMixEngineCrypto.py",  
         "signingMeta":     "sha-256:master/struct/engineSigningMeta.py",
         "signingStruct":   "sha-256:master/struct/engineSigningStruct.py",
         "signingLibrary":  "sha-256:master/struct/engineSigningLibrary.py",
