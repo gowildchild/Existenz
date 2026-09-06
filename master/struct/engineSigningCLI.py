@@ -29,6 +29,40 @@ if REPO_ROOT not in sys.path:
 # Initialize the global diagnostic crash monitor interface
 error_handler = visualmixErrorHandler(custom_post="_ERR")
 
+def run_initialization_audit(args):
+    """
+    Validation routine checking for the presence of absolute filenames
+    cataloged within core and engine location metadata frameworks.
+    """
+    print("  [*] Step Phase: Initiating structural integrity baseline pre-flight check...")
+    
+    # 1. Audit Realm: Core Layout Configuration Primitives
+    for token, relative_path in existenzLocations["core"].items():
+        full_target_path = os.path.join(REPO_ROOT, relative_path)
+        if not os.path.exists(full_target_path):
+            error_handler.notice(
+                level="error",
+                message=f"Initialization fault: Core structural file '{token}' missing at {relative_path}",
+                exit_code=16  # Reused ERR_MISSING_CONFIG dynamically
+            )
+        print(f"      [+] Core Asset Verified:   {relative_path:<40} [FOUND]")
+
+    # 2. Audit Realm: Operational Library Infrastructure Engine Components
+    for token, relative_path in existenzLocations["engine"].items():
+        # Clean the template prefix parameters (like 'sha256:') out of verification loops
+        clean_rel_path = relative_path.split(":")[-1] if ":" in relative_path else relative_path
+        full_target_path = os.path.join(REPO_ROOT, clean_rel_path)
+        
+        if not os.path.exists(full_target_path):
+            error_handler.notice(
+                level="error",
+                message=f"Initialization fault: Essential engine script '{token}' missing at {clean_rel_path}",
+                exit_code=15  # Leveraged ERR_MISSING_INIT dynamically
+            )
+        print(f"      [+] Engine Asset Verified: {clean_rel_path:<40} [FOUND]")
+
+    print("\033[1;32m  [+] Initialization Complete: All repository structure dependencies verified successfully.\033[0m")
+    sys.exit(0)
 
 def main():
     parser = argparse.ArgumentParser(description="Existenz SHA256 Manifest")
