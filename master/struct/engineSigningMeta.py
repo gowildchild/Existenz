@@ -20,7 +20,7 @@ class existenzMeta:
         "AUTHOR":    "Gunther Voet"
     }
 
-del _HEADER
+# del _HEADER
 
 class existenzConfig:
     FINGERPRINT = {
@@ -55,8 +55,6 @@ existenzLocations = {
         "signingMeta":     "master/struct/engineSigningMeta.py",
         "signingStruct":   "master/struct/engineSigningStruct.py",
         "signingLibrary":  "master/struct/engineSigningLibrary.py",
-        "signingRoutine":  "master/struct/engineSigningRoutine.py",
-        "signingFlow":     "master/struct/engineSigningFlow.py",
         "jsonConfig":      "master/existentialSigningConfig.json",
         "jsonSignatures":  "master/existentialSignatures.json",
         "jsonData":        "master/existentialSigningData.json",
