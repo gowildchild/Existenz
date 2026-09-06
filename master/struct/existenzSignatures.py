@@ -22,6 +22,7 @@ existentialToken = {
         "ThreatLegal":        "931547edaba6ec457f2b6a22ef1961d56c08a765983036cb95642aa75fbd0ab1",
         "ThreatShadowVacuum": "9b1d1bcf4903c7c26a6b75dd2e0c341ddab3594c2514c99e5d8e6b4651bfcc69",
         "ThreatChain":        "23e9fbb89c801de638ddd73798b42f7c57af2bfde3e09a999f9527d9f27e39f3",
+        "Schema":             "sha-256:",
         "Check":              "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85"
     },
     "chain": {
@@ -42,43 +43,16 @@ existentialToken = {
         "Locations":          "ad0e774f35ff2000eaeb3f6063be74c3e86c043ed6a04bfd45b7ff2f6460bfa4"
     },
     "engine": {
-        "signingMeta":     "master/struct/engineSigningMeta.py",
-        "signingStruct":   "master/struct/engineSigningStruct.py",
-        "signingLibrary":  "master/struct/engineSigningLibrary.py",
-        "signingRoutine":  "master/struct/engineSigningRoutine.py",
-        "signingFlow":     "master/struct/engineSigningFlow.py",
-        "jsonConfig":      "master/existentialSigningConfig.json",
-        "jsonSignatures":  "master/existentialSignatures.json",
-        "jsonData":        "master/existentialSigningData.json",
-        "jsonManifest":    "manifest.json",
-        "jsonLocalConf":   "sign_integrity_config.json"
-    }
-}
-
-existentialSignature = {
-    "core": {
-        "Core":       "master/struct/existentialCore.py",
-        "Threat":     "master/struct/existentialCoreThreat.py",
-        "Signatures": "master/struct/existentialCoreSignatures.py",
-        "Check":      "master/existentialCoreCheck.py",
-        "Cores":      "master/existentialCores.json"
-    },
-    "manifest": {
-        "dist":   "dist",
-        "tools":  "dist/tools",
-        "build":  "master/build-tools",
-        "master": "master/struct"
-    },
-    "engine": {
-        "signingMeta":     "master/struct/engineSigningMeta.py",
-        "signingStruct":   "master/struct/engineSigningStruct.py",
-        "signingLibrary":  "master/struct/engineSigningLibrary.py",
-        "signingRoutine":  "master/struct/engineSigningRoutine.py",
-        "signingFlow":     "master/struct/engineSigningFlow.py",
-        "jsonConfig":      "master/existentialSigningConfig.json",
-        "jsonSignatures":  "master/existentialSignatures.json",
-        "jsonData":        "master/existentialSigningData.json",
-        "jsonManifest":    "manifest.json",
-        "jsonLocalConf":   "sign_integrity_config.json"
+        "engineLogging":   "sha-256:master/struct/visualMixEngineLogging.py",
+        "engineCrypto":    "sha-256:master/struct/visualMixEngineCrypto.py",        
+        "signingMeta":     "sha-256:master/struct/engineSigningMeta.py",
+        "signingStruct":   "sha-256:master/struct/engineSigningStruct.py",
+        "signingLibrary":  "sha-256:master/struct/engineSigningLibrary.py",
+        "signingRoutine":  "sha-256:master/struct/engineSigningRoutine.py",
+        "signingFlow":     "sha-256:master/struct/engineSigningFlow.py",
+        "jsonConfig":      "sha-256:master/existentialSigningConfig.json",
+        "jsonSignatures":  "sha-256:master/existentialSignatures.json",
+        "jsonManifest":    "sha-256:manifest.json",
+        "jsonLocalConf":   "sha-256:sign_integrity_config.json"
     }
 }
