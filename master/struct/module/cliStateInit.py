@@ -142,6 +142,7 @@ def execute(args, error_handler, repo_root: str):
                             else:
                                 pol = int(raw_pol)
                             
+                            print(f"SCREW THIS {v} {raw_pol} : {pol}")
                             # Determine the clean bit-expression pattern based on the policy bitmask
                             if bool(pol & existenzCorePolicy.BIT_MASK):
                                 calculated_expr = f"1 << {v.bit_length() - 1}"
@@ -172,7 +173,7 @@ def execute(args, error_handler, repo_root: str):
 
                         # 3. Pull the rest of the metadata fields out of your master schema
                         ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
-                        #magic_val = schema_data.get("existentialCoreCheckMagic", "")
+                        magic_val = schema_data.get("existentialCoreCheckMagic", "")
                         
                         legal_entries = [f'    "{lk}": "{lv}"' for lk, lv in schema_data.get("existentialCoreThreatLegal", {}).items()]
                         vacuum_entries = [f'    "{vk}": "{vv}"' for vk, vv in schema_data.get("existentialCoreThreatShadowVacuum", {}).items()]
