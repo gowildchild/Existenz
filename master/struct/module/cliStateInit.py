@@ -115,6 +115,7 @@ def execute(args, error_handler, repo_root: str):
         # A. Self-Heal Core Runtime Files (Compiling directly to final destination)
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.abspath(os.path.join(repo_root, asset_data["runtime_path"]))
+            calculated_basic = []
             filename = asset_data["filename"]
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
             
@@ -159,6 +160,11 @@ def execute(args, error_handler, repo_root: str):
                                 pol_hex = hex(pol)
 
                             # Determine the clean bit-expression pattern based on the policy bitmask
+                            calculated_basic = []
+                            if bool(pol & existenzCorePolicy.CORE_IS_IMMUTABLE):
+                                calculated_basic.append(k)
+
+                                
                             if bool(pol & existenzCorePolicy.BIT_MASK):
                                 calculated_expr = f"1 << {v.bit_length() - 1}"
                             else:
@@ -229,7 +235,8 @@ def execute(args, error_handler, repo_root: str):
                         json_str_payload += f'  "existentialCoreVersion": "{ver_val}",\n'
                         json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
                         json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
-                        json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"                   
+                        json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"  
+                        json_str_payload += '  "existentialCoreBasic": [\n' + ",\n".join(calculated_basic) + "\n  ],\n" 
                         json_str_payload += '  "existentialCoreThreat": {\n' + ",\n".join(threat_lines) + "\n  },\n"
                         json_str_payload += '  "existentialCoreThreatLegal": {\n' + ",\n".join(legal_entries) + "\n  },\n"
                         json_str_payload += '  "existentialCoreThreatShadowVacuum": {\n' + ",\n".join(vacuum_entries) + "\n  },\n"
