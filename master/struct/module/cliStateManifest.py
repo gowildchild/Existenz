@@ -102,6 +102,38 @@ def execute(args, error_handler, repo_root: str):
         "sign.master": old_circle_block.get("sign.master", "")
     }
 
+    # FIXED: Run bitmask-driven verification check to warn on signature drifts
+    from engineSigningMeta import existenzIntegrityGlue
+    from engineSigningStruct import existenzIntegrityKeyStatus
+
+    circle_to_glue_map = {
+        "dist":   "CircleDist",
+        "tools":  "CircleTools",
+        "build":  "CircleBuild",
+        "master": "CircleMaster"
+    }
+
+    for target_c, glue_key in circle_to_glue_map.items():
+        current_hash = signatures_circle_registry.get(f"hash.{target_c}")
+        old_hash = old_circle_block.get(f"hash.{target_c}", "")
+        has_signature = bool(signatures_circle_registry.get(f"sign.{target_c}", ""))
+
+        if current_hash != old_hash or not has_signature:
+            bitmask_weight = existenzIntegrityGlue.get(glue_key, [0, 0])[1] if isinstance(existenzIntegrityGlue.get(glue_key), tuple) else 0
+            
+            needed_keys = []
+            if bool(bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM):  needed_keys.append("Platform")
+            if bool(bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER): needed_keys.append("Developer")
+            if bool(bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL):  needed_keys.append("Personal")
+
+            if needed_keys:
+                error_handler.print("=" * 90, level="local")
+                error_handler.print(f" [!] UN-SIGNED payload track changes detected in Circle Ring: [{target_c.upper()}]", level="local")
+                error_handler.print(f"     Structural Hash updated: {old_hash[:16]}... -> {current_hash[:16]}...", level="local")
+                error_handler.print(f"     MANDATORY LOCAL ACTION: Requires signing with private keys: {needed_keys}", level="local")
+                error_handler.print(f"     Downstream deployment builds will remain locked until keys are committed.", level="local")
+                error_handler.print("=" * 90, level="local")
+
     # Assemble Consolidated Manifest Ledger Database File Structure
     manifest_data = {
         "existentialCoreVersion": existenzMeta.HEADER["VERSION"].decode(),
