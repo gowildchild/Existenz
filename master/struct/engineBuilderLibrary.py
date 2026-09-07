@@ -1,5 +1,5 @@
 # ==========================================================================
-# EXISTENZ  master/struct/engineBuilderLibrary.py
+# EXISTENZ  master/struct/engineBuilderLibrary.py 
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
