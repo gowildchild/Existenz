@@ -81,7 +81,7 @@ def main():
         from module import cliStateBuild
         cliStateBuild.execute(args, error_handler, REPO_ROOT)        
 
-    engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
+    #engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
     
 if __name__ == "__main__":
     try:
