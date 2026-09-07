@@ -75,7 +75,22 @@ def execute(args, error_handler, repo_root: str):
             error_handler.print(f"Failed to parse master schema JSON database layers: {e}", level="error", exit_code=16)
 
         version_name = "module/cliStateInit.py"
-        version_str = "v0.76.16"
+        
+        # DYNAMIC EXTRACTION: Read version directly from the blueprint payload, falling back safely if missing
+        version_str = schema_data.get("existentialCoreVersion", schema_data.get("version", "v0.76.15"))
+
+        # EXPORT TO GITHUB ACTIONS ENVIRONMENT SPACE NATIVELY
+        github_env_file = os.environ.get('GITHUB_ENV')
+        if github_env_file:
+            try:
+                with open(github_env_file, "a", encoding="utf-8") as gef:
+                    gef.write(f"BLUEPRINT_VERSION={version_str}\n")
+                error_handler.print(f"  [+] Dynamic Context Export: Loaded BLUEPRINT_VERSION={version_str} into environment map.", level="info")
+            except Exception as env_err:
+                error_handler.print(f"Non-fatal error mapping version variable to shell runner: {env_err}", level="debug")
+
+        # The rest of your core asset loop follows right below...
+        for token, asset_data in core_assets_to_sync.items():
 
         # A. Self-Heal Core Runtime Files (Compiling directly to final destination)
         for token, asset_data in core_assets_to_sync.items():
