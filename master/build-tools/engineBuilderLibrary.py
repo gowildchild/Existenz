@@ -50,6 +50,84 @@ class existentialBuildLanguage(IntFlag):
     BUILD_POWERSHELL        = 32768
     BUILD_TYPESCRIPT        = 65536
 
+def execute_universal_builder_matrix(repo_root: str, error_handler, active_langs_mask: int, blueprint_path: str):
+    """
+    Ingests the master blueprint JSON data matrix and processes active languages 
+    sequentially by dynamically invoking isolated code-generation plugins.
+    """
+    dist_dir = os.path.abspath(os.path.join(repo_root, "dist"))
+    
+    if not os.path.exists(blueprint_path):
+        error_handler.print(f"Build aborted: Blueprint source file tracking asset missing: {blueprint_path}", level="error", exit_code=35)
+
+    # 1. Ingest your data map straight out of your master blueprint JSON file
+    with open(blueprint_path, "r", encoding="utf-8") as bf:
+        blueprint_data = json.load(bf)
+
+    # Extract dynamic environment variables and version meta data to pass down to modules
+    version_str = blueprint_data.get("existentialMeta", {}).get("CoreVersion", "v0.76.16")
+
+    # 2. Define the complete decoupling route map matching your language bitmasks
+    language_routing_blueprint = [
+        (1,     "json",       "json",      "#"),
+        (2,     "xml",        "xml",       "<!--"),
+        (4,     "csv",        "csv",       "#"),
+        (8,     "md",         "markdown",  "<!--"),
+        (16,    "txt",        "txt",       "#"),
+        (32,    "yaml",       "yaml",      "#"),
+        (64,    "html_js",    "html_js",   "//"),
+        (256,   "bash",       "bash",      "#"),
+        (512,   "python",     "python",    "#"),
+        (1024,  "perl",       "perl",      "#"),
+        (2048,  "cpp",        "cpp",       "//"),
+        (4096,  "esphome",    "esphome",   "#"),
+        (8192,  "php",        "php",       "//"),
+        (16384, "rust",       "rust",      "//"),
+        (65536, "typescript", "typescript","//")
+    ]
+
+    # 3. RUN PROGRAMMATIC TRANSFORMS OVER ENABLED BITMASK ENTRIES
+    for lang_bit, plugin_name, folder_name, comment_char in language_routing_blueprint:
+        if not (active_langs_mask & lang_bit):
+            continue
+
+        error_handler.print(f" [*] Spinning Build Target Phase for Language Track: [{plugin_name.upper()}]", level="info")
+        
+        # Look up plugin module file inside your builder modules folder path location
+        plugin_file_path = os.path.abspath(os.path.join(repo_root, f"master/build-tools/module/builder/{plugin_name}.py"))
+        
+        if not os.path.exists(plugin_file_path):
+            error_handler.print(f"  [ ] Skipping compiler track [{plugin_name.upper()}]: Plugin script missing on disk.", level="warning")
+            continue
+
+        try:
+            # Dynamically look up and load the plugin module directly into memory context
+            spec = importlib.util.spec_from_file_location(f"builder_{plugin_name}", plugin_file_path)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            
+            # Setup dedicated target loose folder destination under /dist/
+            target_output_dir = os.path.join(dist_dir, folder_name)
+            os.makedirs(target_output_dir, exist_ok=True)
+
+            # Construct your standardized type-safe layout header file block string
+            generated_header = f"{comment_char} " + "=" * 74 + f"\n{comment_char} EXISTENZ Auto-Generated Release Asset [{version_str}]\n{comment_char} " + "=" * 74 + "\n\n"
+
+            # Trigger Phase 1: Output compilation data structures cleanly into loose form folders
+            if hasattr(mod, "compile_structures"):
+                mod.compile_structures(target_output_dir, blueprint_data, generated_header, error_handler)
+                
+            # Trigger Phase 2: Output code snippets to cleanly fetch existentialCores.json
+            if hasattr(mod, "inject_fetch_logic"):
+                mod.inject_fetch_logic(target_output_dir, generated_header, error_handler)
+
+            error_handler.print(f"  [+] Finished compiling target folder: dist/{folder_name}/", level="notice")
+
+        except Exception as plugin_fault:
+            error_handler.print(f"Critical execution error inside language plugin compiler [{plugin_name}]: {plugin_fault}", level="error")
+            continue
+
+
 def resolve_target_structures() -> dict:
     """Reflects over your active system structures dynamically to extract clean token pairs."""
     from engineSigningStruct import existenzSteps, existenzIntegrityKeyStatus, existenzIntegrityKeysHandler
