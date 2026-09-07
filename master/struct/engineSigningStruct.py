@@ -21,6 +21,8 @@ existenzIntegrityGlue = {
                                                                                existentialToken.get("master", {}).get("Cores", "PENDING_SIGN")),
     "Schema":                 ( "existentialCoreSchema",      246, 1558, 0x03, existenzLocations["core"]["Schema"],
                                                                                existentialToken.get("master", {}).get("Schema", "PENDING_SIGN")), 
+    "CoresChain":             ( "existentialCoresChain",     3583, 382,  0x04, existenzLocations["chain"]["CoresChain"],
+                                                                               existentialToken.get("chain", {}).get("CoresChain", "PENDING_SIGN")),  
     "CoreThreat":             ( "existentialCoreThreat",     3575, 1599, 0x06, existenzLocations["core"]["Threat"],
                                                                                existentialToken.get("master", {}).get("Threat", "PENDING_SIGN")),
     "CoreThreatLegal":        ( "existentialCoreThreatLegal",3575, 1599, 0x07, existenzLocations["core"]["Threat"],
