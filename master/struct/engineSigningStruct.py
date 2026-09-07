@@ -27,7 +27,7 @@ existenzIntegrityGlue = {
                                                                                existentialToken["master"]["ThreatLegal"]),
     "CoreThreatShadowVacuum": ( "existentialCoreThreatShadowVacuum", 3575, 1599, 0x08, existenzLocations["core"]["Threat"],
                                                                                existentialToken["master"]["ThreatShadowVacuum"]),
-    "CoreThreatChain":        ( "existentialCoreThreatChain",3583, 382,  0x09, existenzLocations["core"]["Threat"],
+    "CoreThreatSigned":       ( "existentialCoreThreatSigned",3583, 382,  0x09, existenzLocations["core"]["Threat"],
                                                                                existentialToken["chain"]["Threat"]),
     "CoreSigned":             ( "existentialCoreSigned",     3583, 511,  0x0F, existenzLocations["core"]["Signatures"],
                                                                                existentialToken["master"]["ThreatChain"]),
@@ -55,9 +55,12 @@ class existenzSignatures:
         ("CoreThreat",             existenzIntegrityGlue["CoreThreat"],             6),
         ("CoreThreatLegal",        existenzIntegrityGlue["CoreThreatLegal"],        7),
         ("CoreThreatShadowVacuum", existenzIntegrityGlue["CoreThreatShadowVacuum"], 8),
-        ("CoreThreatChain",        existenzIntegrityGlue["CoreThreatChain"],        9)
+        ("CoreThreatSigned",       existenzIntegrityGlue["CoreThreatSigned"],        9)
     )
 
+    existentialChains   = (
+    )
+    
     existentialManifest = (
         ("Magic",                  existenzIntegrityGlue["Magic"],                  0),
         ("CircleDist",             existenzIntegrityGlue["CircleDist"],             1),
