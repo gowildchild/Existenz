@@ -7,8 +7,8 @@ import os
 import json
 import getpass
 import engineSigningLibrary
-from engineSigningMeta import existenzLocations, existenzConfig, existenzIntegrityGlue, existenzIntegrityKeyStatus
-
+from engineSigningMeta import existenzLocations, existenzConfig
+from engineSigningStruct import existenzIntegrityGlue, existenzIntegrityKeyStatus
 def execute(args, error_handler, repo_root: str):
     """
     Executes bitmask-driven asymmetric signature updates against tracking circles.
