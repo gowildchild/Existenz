@@ -1,5 +1,5 @@
 {
-  "commit": "d617d384f49fca9975df6077c5c1c79010a81ce9",
+  "commit": "cd716f54f7b227ca86760a4b77da43e69adb318f",
   "existentialCoreVersion": "v0.76.17",
   "files.build": {
     "master/build-tools/core_telemetry.py": "f72cd3acc76881fb228fc33666cf335cd6469063f402511c032fdf5b1043f075",
