@@ -19,33 +19,49 @@ import engineBuilderLibrary
 def execute(args, error_handler, repo_root: str):
     """
     Modular execution block for -stage init.
-    Scans runtime targets and dynamically self-heals the repository workspace
-    by writing engine stubs, copying configurations, and compiling python classes.
+    Dynamically self-heals files while natively bypassing virtual chain 
+    boundaries using bitmask flag analysis.
     """
     error_handler.print("Initiating structural integrity baseline pre-flight check...", level="notice")
-    error_handler.print(f"  [TARGET ROOT] {os.path.abspath(repo_root)}", level="info")
     
+    # 1. Build a local mapping directory to filter assets based on their dynamic bitmask flags
+    chain_flag = existenzIntegrityKeyStatus.KEY_IS_CHAINED
+    
+    # Filter core locations dynamically based on the active glue bitwise flags
+    # If an asset token has KEY_IS_CHAINED (512) set inside its bitmask, it is virtual and has no physical file to init
+    virtual_tokens = []
+    for glue_key, glue_tuple in existenzIntegrityGlue.items():
+        glue_bitmask = glue_tuple[1]
+        if bool(glue_bitmask & chain_flag):
+            virtual_tokens.append(glue_key)
+
     failed_initialization = False
     core_assets_to_sync = {}
     engine_assets_to_sync = {}
 
-    # 1. Audit Realm: Core Layout Configuration Primitives & Output Targets
+    # 2. Audit Realm: Core Layout Configuration Primitives & Output Targets
     for token, relative_path in existenzLocations["core"].items():
-        full_target_path = os.path.abspath(os.path.join(repo_root, relative_path))
+        
+        # DYNAMIC BYPASS: Skip evaluation natively if the glue register flags it as chained
+        if token in virtual_tokens or token == "Signatures":
+            error_handler.print(f"  [+] Virtual Key Bypassed:   {token:<24} -> Regulated by signature chain.", level="debug")
+            continue
+            
+        full_target_path = os.path.join(repo_root, relative_path)
         
         if not os.path.exists(full_target_path):
             if token == "Schema":
-                error_handler.print(f"Fatal Initialization fault: Master blueprint '{token}' missing at: {full_target_path}", level="warning")
+                error_handler.print(f"Fatal Initialization fault: Master blueprint '{token}' missing at: {relative_path}", level="warning")
                 failed_initialization = "config"
             else:
                 filename = os.path.basename(relative_path)
-                error_handler.print(f"Runtime target '{token}' missing -> Scheduled for write at: {full_target_path}", level="warning")
+                error_handler.print(f"Runtime target '{token}' ({filename}) missing from workspace. Scheduled for adaptation.", level="warning")
                 core_assets_to_sync[token] = {
                     "runtime_path": relative_path,
                     "filename": filename
                 }
         else:
-            error_handler.print(f"Verified [FOUND]: {full_target_path}", level="info")
+            error_handler.print(f"Core Asset Verified:   {relative_path:<40} [FOUND]")
 
     if failed_initialization == "config":
         error_handler.print("Pre-flight execution blocked: Missing core layout master schema structure.", level="error", exit_code=16)
