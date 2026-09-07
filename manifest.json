@@ -1,5 +1,5 @@
 {
-  "commit": "c0c638b91481ecd75873ff9a8bbd69fcfa2d6484",
+  "commit": "b7a13229dc7d5e711f1141e47f59f2ac2d77958e",
   "existentialCoreVersion": "v0.76.17",
   "files.build": {
     "master/build-tools/core_telemetry.py": "f72cd3acc76881fb228fc33666cf335cd6469063f402511c032fdf5b1043f075",
@@ -78,7 +78,7 @@
     "master/struct/module/cliStateSign.py": "49dcd3c5bd92d291a22dd79e538e1b87a59a1eee555b2189f4a91ffc5c87dea0",
     "master/struct/module/cliStateTest.py": "e8a6c64754e74904994a5e7f73250d1e10c0bc8a6f7bf53e6be0a24505456417",
     "master/struct/module/cliStateVerify.py": "782c64b8d9a46da4151c6848eb128264fa26ff0a7667a496209c328053f1a237",
-    "master/struct/module/cliStateVeritas.py": "1207c7c7e658c6466eadf164be410ec377efed9a27a70abc985a273be782e413",
+    "master/struct/module/cliStateVeritas.py": "794f694a704c1f55f53d161a4a5d6735e3d3d3d832113e05c7983a663f0cde80",
     "master/struct/old/existentialCore.py": "4aac3fef94a1dfda89d3901264b98aed9d6e8fdcf6b469ce690349db711efc99",
     "master/struct/old/existentialCoreThreat.py": "56c047ced089cd1cffe314f808c15db3574b8764dfb37718f5be544f51b784dd",
     "master/struct/old/existentialHumanCore.py": "18821417eee6406aaa27f8331f32fdf91c1a0b530ecbd04f5d50cc74246c1e4a",
@@ -99,7 +99,7 @@
   "signatures.circle": {
     "hash.build": "bea3a7c7f7f975fd6ab002ebcad17664059203a0a2dd7cdc20e6168bbf93803b",
     "hash.dist": "54af6e594b5da3f52b252df5105f335f41956b99b9a2a5286793537eaea4b3dd",
-    "hash.master": "80e27fecdf8430380122b0647604dcd2d0c182c8b4b73bbe7a0a48770117c5b5",
+    "hash.master": "35499a9d7ccda0291e8efb3237460e258d9a8b43041dc49de7b28f718f53d6e0",
     "hash.tools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "sign.build": "",
     "sign.dist": "c113aed29370685edd2d60e13405632c25cd754d748af0e7839e78ace062111e6117775e1cdce9e6546c8d4d2a930a2ef1975a98a5c39915e0748f031ec9b403",
