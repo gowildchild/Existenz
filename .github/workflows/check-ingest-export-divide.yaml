@@ -33,7 +33,6 @@ jobs:
     - name: Existenz - Init Self-Healing Check
       id: pipeline_init
       run: |
-        python -c "import json; data=json.load(open('master/struct/existentialCoreSchema.json')); k=list(data['existentialCore'].keys())[0]; print('Node name:', k); print('Node content:', data['existentialCore'][k])"
         # 1. Execute your compiled pre-flight dependency audit and self-healing loop
         python master/struct/engineSigningCLI.py -stage init -override update -run wet -circle master
 
