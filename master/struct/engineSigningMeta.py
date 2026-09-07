@@ -65,11 +65,8 @@ existenzLocations = {
         "cliStateSign":      "master/struct/module/cliStateSign.py",
         "cliStateVerify":    "master/struct/module/cliStateVerify.py",
         "cliStateBuild":     "master/struct/module/cliStateBuild.py",
-        "jsonConfig":        "master/existentialSigningConfig.json",
-        "jsonSignatures":    "master/existentialSignatures.json",
-        "jsonData":          "master/existentialSigningData.json",
-        "jsonManifest":      "manifest.json",
-        "jsonLocalConf":     "sign_integrity_config.json"
+        "Signatures":        "master/existentialSignatures.json",
+        "Manifest":          "manifest.json"
     }
 }
 
