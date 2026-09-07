@@ -38,7 +38,6 @@ def execute(args, error_handler, repo_root: str):
     failed_initialization = False
     core_assets_to_sync = {}
     engine_assets_to_sync = {}
-
     # 1. Audit Realm: Core Layout Configuration Primitives & Output Targets
     for token, relative_path in existenzLocations["core"].items():
         # DYNAMIC BYPASS GATE: Skip signature chain properties natively without hardcoded tracking sets
@@ -47,6 +46,11 @@ def execute(args, error_handler, repo_root: str):
             continue
             
         full_target_path = os.path.abspath(os.path.join(repo_root, relative_path))
+        
+        # Diagnostic File Presence Verification Pass
+        error_handler.print(f"  DEBUG SCAN: Checking token '{token}' target path: {full_target_path}", level="info")
+        if os.path.exists(full_target_path):
+            error_handler.print(f"  DEBUG SCAN: Physical file present on disk space with size: {os.path.getsize(full_target_path)} bytes.", level="info")
         
         if not os.path.exists(full_target_path):
             if token == "Schema":
