@@ -129,16 +129,16 @@ def execute(args, error_handler, repo_root: str):
                             if "threat" in d:
                                 v = d["val"]
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
-                                threat_lines.append(f'    "{d["threat"]}": {{"val": {v}, "expr": "{expr}"}}')
+                                threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
 
                         # 2. Extract separate registries for Bitmask and Policy structures
                         bitmask_lines = []
                         policy_lines = []                        
                         for k, d in schema_data.get("existentialCore", {}).items():
                             if "msk" in d:
-                                bitmask_lines.append(f'    "existentialCore.{k}": "{d["msk"]}"') 
+                                bitmask_lines.append(f'    "existentialCore.{k}":'.ljust(50) + f'"{d["msk"]}"') 
                             if "pol" in d:
-                                policy_lines.append(f'    "existentialCore.{k}": "{d["pol"]}"') 
+                                policy_lines.append(f'    "existentialCore.{k}":'.ljust(50) + f'"{d["pol"]}"') 
 
                         # 3. Compile existentialCore entries with pristine, vertically aligned fields
                         core_lines = []
@@ -191,8 +191,17 @@ def execute(args, error_handler, repo_root: str):
                         ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
                         magic_val = schema_data.get("existentialCoreCheckMagic", "")
                         
-                        legal_entries = [f'    "{lk}": "{lv}"' for lk, lv in schema_data.get("existentialCoreThreatLegal", {}).items()]
-                        vacuum_entries = [f'    "{vk}": "{vv}"' for vk, vv in schema_data.get("existentialCoreThreatShadowVacuum", {}).items()]
+                        #legal_entries = [f'    "{lk}": "{lv}"' for lk, lv in schema_data.get("existentialCoreThreatLegal", {}).items()]
+                        #vacuum_entries = [f'    "{vk}": "{vv}"' for vk, vv in schema_data.get("existentialCoreThreatShadowVacuum", {}).items()]
+                        legal_entries = []
+                        for raw_key, val in schema_data.get("existentialCoreThreatLegal", {}).items():
+                            enum_token = val_to_enum_map.get(str(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}")
+                            legal_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
+
+                        vacuum_entries = []
+                        for raw_key, val in schema_data.get("existentialCoreThreatShadowVacuum", {}).items():
+                            enum_token = val_to_enum_map.get(str(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}")
+                            vacuum_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
 
                         # 5. Construct the physical JSON string file payload in the exact target layout order
                         json_str_payload = "{\n"
