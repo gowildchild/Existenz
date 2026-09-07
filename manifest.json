@@ -1,5 +1,5 @@
 {
-  "commit": "d02d08083539bc87c1d0cbc403ceede7e2a645ec",
+  "commit": "01c89e56a75d2a329ba42c581bb162250e3dd0c5",
   "existentialCoreVersion": "v0.76.17",
   "files.build": {
     "master/build-tools/core_telemetry.py": "f72cd3acc76881fb228fc33666cf335cd6469063f402511c032fdf5b1043f075",
@@ -74,7 +74,7 @@
     "master/struct/module/cliStateBuild.py": "e7d241a91a0e160ae1e0963b16b00dcf408f6e7e84c41cb0a63067a60d89184e",
     "master/struct/module/cliStateInit.py": "bd891fc70885d7b84d5cc4c0ea791398308b7a25279061c933e9eb561ea52991",
     "master/struct/module/cliStateManifest.py": "708258c1f1a1e0d238a687a72657914eade18217739784825d51a49a1218b675",
-    "master/struct/module/cliStateSign.py": "ae284b65adb1b343c425b84896fd7a266bdeaf497eba8eb493cb782f2656d648",
+    "master/struct/module/cliStateSign.py": "e9985181f233e244be5e37aa3f9a2bc78ed73c689f29438a8e134e56f54ee4fb",
     "master/struct/module/cliStateTest.py": "e8a6c64754e74904994a5e7f73250d1e10c0bc8a6f7bf53e6be0a24505456417",
     "master/struct/module/cliStateVerify.py": "782c64b8d9a46da4151c6848eb128264fa26ff0a7667a496209c328053f1a237",
     "master/struct/old/existentialCore.py": "4aac3fef94a1dfda89d3901264b98aed9d6e8fdcf6b469ce690349db711efc99",
