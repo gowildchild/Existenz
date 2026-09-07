@@ -100,18 +100,32 @@ def execute(args, error_handler, repo_root: str):
             if filename.endswith(".json"):
                 try:
                     if token == "Cores":
-                        # Isolate ONLY the primary human core layout parameters to protect data boundaries
-                        isolated_cores_block = {
-                            "existentialCore": schema_data.get("existentialCore", {})
-                        }
+                        # 1. Start with an exact copy of the full blueprint schema
+                        merged_cores_block = dict(schema_data)
+                        
+                        # 2. Extract the threat entries from existentialCore to map them into existentialCoreThreat
+                        threat_enum_data = {}
+                        for k, d in schema_data.get("existentialCore", {}).items():
+                            if "threat" in d:
+                                v = d["val"]
+                                expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
+                                threat_enum_data[d["threat"]] = {
+                                    "value": v,
+                                    "expr": expr
+                                }
+                        
+                        # 3. Inject the compiled existentialCoreThreat structure directly into the payload
+                        merged_cores_block["existentialCoreThreat"] = threat_enum_data
+                        
                         with open(target_path, "w", encoding="utf-8") as json_out:
-                            json.dump(isolated_cores_block, json_out, indent=2)
-                        error_handler.print(f"    [WRITE FILE] Created isolated cores database mirror at: {target_path}", level="info")
+                            json.dump(merged_cores_block, json_out, indent=2)
+                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint with existentialCoreThreat compiled to root.", level="info")
                     else:
                         shutil.copy2(schema_path, target_path)
-                        error_handler.print(f"    [WRITE FILE] Created raw json blueprint mirror at: {target_path}", level="info")
+                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
+
             
             elif filename.endswith(".py"):
                 if token == "Core":
