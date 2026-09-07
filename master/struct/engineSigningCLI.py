@@ -18,6 +18,7 @@ import engineSigningLibrary
 from visualMixEngineLogging import visualmixErrorHandler
 import visualMixEngineCrypto
 
+INT_NAME    = "engineSigningCLI.py"
 INT_VERSION = "v0.76.16"
 
 # Dynamic workspace root tracking relative to master/struct
