@@ -29,7 +29,7 @@ for directory in [REPO_ROOT, STRUCT_DIR, MODULE_DIR]:
     if directory not in sys.path:
         sys.path.insert(0, directory)
         
-DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
+DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json") 
 MANIFEST_OUTPUT = os.path.join(REPO_ROOT, "manifest.json")
 REPO_GITHUB = os.environ.get('GITHUB_ACTIONS') == 'true'
 REPO_WINDOWS = sys.platform == "win32"
