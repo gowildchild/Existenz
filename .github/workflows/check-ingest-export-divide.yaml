@@ -30,9 +30,10 @@ jobs:
     - name: Existenz - Checking Myself (Staging Initialization Pass)
       id: mode_check
       run: |
-        # 1. Execute your compiled pre-flight dependency audit gate
+        python master/struct/engineSigningCLI.py -stage test -override update -run wet -circle master
+        # 2. Execute your compiled pre-flight dependency audit gate
         python master/struct/engineSigningCLI.py -stage init -override update -run wet -circle master
-        # 2. Extract runtime execution state from repository lock tracking assets
+        # 3. Extract runtime execution state from repository lock tracking assets
         if [ -f "master/.existentialLock" ]; then
           # Read the first line, strip whitespace, and convert strictly to lowercase
           MODE=$(head -n 1 master/.existentialLock | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
@@ -42,7 +43,7 @@ jobs:
           echo " [!] Status Phase: No lockfile detected. Defaulting Pipeline to Core Mode: $MODE"
         fi
         
-        # 3. Securely export the verified mode variable out to the GitHub Actions environment map
+        # 4. Securely export the verified mode variable out to the GitHub Actions environment map
         echo "RUN_MODE=$MODE" >> $GITHUB_ENV
 
     - name: Existenz - Signing Pipeline
