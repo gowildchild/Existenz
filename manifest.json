@@ -1,10 +1,26 @@
 {
-  "commit": "45b120316a9faf2eb9f32374dab481542aa034fd",
+  "commit": "7482cade5920166d8326d96fbc687a019f664d57",
   "existentialCoreVersion": "v0.76.17",
   "files.build": {
-    "master/build-tools/core_telemetry.py": "f72cd3acc76881fb228fc33666cf335cd6469063f402511c032fdf5b1043f075",
-    "master/build-tools/engineSigningData.py": "8ea3c5b17c7eb39278f0e46c108f11bc7680db147a4ff29d5b1d594d1fc9952a",
-    "master/build-tools/visualmix-integrity.py": "351f755bf6cb75bdda7c2e887f6ed9699b5ce12e47be5664d27f4d2f87a33687"
+    "master/build-tools/deprecated/cliStateBuild.py": "0d053d0cb8e705f9f1797f51745bcd55459a22300b14680f28b497eb1201398c",
+    "master/build-tools/deprecated/engineSigningData.py": "8ea3c5b17c7eb39278f0e46c108f11bc7680db147a4ff29d5b1d594d1fc9952a",
+    "master/build-tools/deprecated/visualmix-integrity.py": "351f755bf6cb75bdda7c2e887f6ed9699b5ce12e47be5664d27f4d2f87a33687",
+    "master/build-tools/engineBuilderLibrary.py": "477e593bfeb7a6156805986f4b1dfe5bf8a8a711ca15340aca69a5e51dc30c5e",
+    "master/build-tools/legacy/boot_guard.py": "7e9f3d546a6da7c4696c379fce80d9b012c20f8707be0ebd2efe118c9095addc",
+    "master/build-tools/legacy/check_integrity.py": "26bb01e972b866f8c89e0a97c84f2892a8d5bf69019a1d1ca97585d4dac3ec63",
+    "master/build-tools/legacy/core_build.py": "bb6f05b61b1523866e38e3c36200205c1efa7b49a7ab7212d457cc20cf7ab8ca",
+    "master/build-tools/legacy/core_debug.py": "957531a87f16fcba6445e4d022abd179c732c94e588c5374915f60824dc7f8d6",
+    "master/build-tools/legacy/core_manifest.py": "73d36a7dc0df07d8960498a46dcd6be0db86f04a68ffc4bf3c8d99c37d6255e0",
+    "master/build-tools/legacy/core_telemetry.py": "f68be7b3e8d2336f1bbea65f69da13d6bef422d381b2a2f2657fc43fbf6c24cc",
+    "master/build-tools/legacy/sign_master.py": "93c48ed994fc49a1b7fe4e25b964bbfce958ccd5db52a67a506dea823be51fcc",
+    "master/build-tools/legacy/test_integrity.py": "04b56dd5b1cf8698819dd196fa8117fdeb7bb91ab106729c31082594435dbd41",
+    "master/build-tools/legacy/test_sign.py": "3dd1c7ea5a1d3c069074cb0f53a07b9060b5b026d06365ead9df40ffdb73d404",
+    "master/build-tools/module/builder/cpp.py": "2c69fd959c9452dd653e86635076dbbfb9ac64ab5f5e3ea2b61b9a55349d4e9b",
+    "master/build-tools/module/builder/python.py": "dac7cb2a6a57f3667db6806700c345e8bfd60b6da0f441f15e6ddec28c4767b4",
+    "master/build-tools/module/builder/python_v1.py": "88b4c8967c52b5ab5a4bf75d0dd6d2006ef7bec0f1dda5b41558c499c3741441",
+    "master/build-tools/module/builder/rust.py": "60e81ae891bf7403e0d327cf2b9a5626747432e0ad6e51a9aab01ea5d989864d",
+    "master/build-tools/module/builder/typescript.py": "1347863474deb59c08fe37e39b4d44fa59703259cc163dc3ce3d75ffff860c7a",
+    "master/build-tools/module/core_telemetry.py": "f72cd3acc76881fb228fc33666cf335cd6469063f402511c032fdf5b1043f075"
   },
   "files.dist": {
     "dist/bash/existentialCoreCheck.sh": "91a96cf185f4ffd4ed3a8718fc314d5eee8bbfe2f69497761917cae333f75c39",
@@ -42,6 +58,7 @@
     "dist/existentialCores.json": "369ee5774aa2d19a203edadd011f239a0ad36df8bbf33e4040002cf05d783f10",
     "dist/existenzStruct/master/existentialCores.json": "1cc760044d12c2f4d3d72caf890c2e9839b52d8c2e6247a2f267e58ed4cb459a",
     "dist/index.html": "22afd01175a7ea7f7ec95a7be3a1c1e15e3001262308f80c7fcb57364505ed0f",
+    "dist/master/existentialCoreSignatures.py": "990b054c375f163544f921dc1cd55cf8ecc0e0c6ebdb3242fc0aed351f0ee0a2",
     "dist/perl/existentialCoreCheck.pm": "49b1f697c189d0202b164daba323ba3d7cd3b0496b719a09e121f950d9efae11",
     "dist/perl/existentialCores.pm": "ed3d7bca5afbcf710c71aa586eada8366747d296050e4e2f64f9e01956d05009",
     "dist/perl/single/existentialCore.pm": "69366046cea69167421048181717c7a8a9e59f5ea0c2c51988ebece62ce0d4e6",
@@ -64,17 +81,17 @@
     "dist/rust/single/existentialCoreThreat.rs": "bdbd0a7d377b835b2f6bf40416a79ab63f97c3a222286ad345a2d0339700fef4"
   },
   "files.master": {
-    "master/struct/engineBuilderLibrary.py": "a85cbe702d134526e24497b3ffe0018f9f6853edfdcdf167ff70da04f70eb2b6",
+    "master/struct/engineBuilderLibrary.py": "9211c574180c36699e74d2542dfacd3b9cf75e6696b3d8e590446bdbdd144430",
     "master/struct/engineSigningCLI.py": "594fac19a579cf6cb14f7956551223882c5f1a58265eb6484a2417a37afefc16",
     "master/struct/engineSigningLibrary.py": "7f2880ffe04b0e41e2f220eb2bb380518b42ce6234c1ae884e1ba10a9384a8f4",
     "master/struct/engineSigningMeta.py": "8b5dc17309dbf9f3cd77a5e0ab6a7b4fde0e7dde21a2cf0fecf61d7d9bb2c7c7",
-    "master/struct/engineSigningStruct.py": "f875cae41dca4a7d35c6f6a6733f7631f1fff44aaa9023ef53e2cb0c00a5c77c",
+    "master/struct/engineSigningStruct.py": "a91809578a7e3e5157187282926b84dd40e9b8aa9d7c4a998ff23b1b8b96fc35",
     "master/struct/existentialCoreSchema.json": "8b0aee53f962ac9d20975226cf4ea36276dc16df08c04587f9168c4d0924ac95",
     "master/struct/existentialSignatures.py": "49cb7c9576ef8a351e18cc6ff889352d3879222799491158b59d99ee6e4a5a72",
-    "master/struct/module/cliStateBuild.py": "2046355b0c563520e94d73d8761aee3e55b844c7dbca79c6730a23d0dedc3fd0",
+    "master/struct/module/cliStateBuild.py": "612f1c5128c06e02da8649777e5e40827ee76ee377e815a90be938578636cf12",
     "master/struct/module/cliStateInit.py": "bd891fc70885d7b84d5cc4c0ea791398308b7a25279061c933e9eb561ea52991",
-    "master/struct/module/cliStateIntegrity.py": "92ac083d4ab1f02c345ec169841a7cc011bae52bff5145d0fdf29e9c08a21b57",
-    "master/struct/module/cliStateManifest.py": "d978f288488f3d8855cc174689a6fc074429e1c631914dd6cccf2ef5d4c62166",
+    "master/struct/module/cliStateIntegrity.py": "f1e460c13ac718c4830d12f04970a6e0d385fb5569bfeb564d1b51027670818d",
+    "master/struct/module/cliStateManifest.py": "130b1567ad5346a420a98de604f83c4232a5099fa607a5e2552de6f684c3301c",
     "master/struct/module/cliStateSign.py": "c23d384c7b567124bfdac030910ed2289a88e731813d89d669516bca4adb25ee",
     "master/struct/module/cliStateTest.py": "e8a6c64754e74904994a5e7f73250d1e10c0bc8a6f7bf53e6be0a24505456417",
     "master/struct/module/cliStateVerify.py": "782c64b8d9a46da4151c6848eb128264fa26ff0a7667a496209c328053f1a237",
@@ -94,19 +111,19 @@
     "Platform": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"
   },
   "signatures": {
-    "Developer": "82be969f48e1850e9121daf652cbf3334de344743b25acb1ed64f2ad72ddfbb87c6b8a44e7ae5f8c6d46c20a6e08cc62fc43aaaad4666876c1528b0464411a07",
+    "Developer": "c9b3dbf22e6e0a9be678772239c5173a01daaf16c3f2728773a43aea09e0d92fee7cd383ac0983d0f6bd9d654ad40b37e3b11afe61d9340a1e94c8a0de902c0e",
     "Environment": "6eb5a86426318be8c737acce795f7e1baef2177115cbce11353c296b0bea2d560ced3f1745c3cc0579de370047bb7b06e5506b51ff9331ff036c5c72bf70ff03",
-    "Personal": "6a0d099e5430d2a8d1c3c3367fcc57a07422f0759c64ede8287754c8e02904ad3e94ed8f3288cac988a70da3d9581284a23f84fcb5f5561fbdf62d39dbc69604",
-    "Platform": "4be7315800642d3e78e5565050561f2226fd69f0d46aa5a1712f7067011636b7b61a9ba310c8429abce847d003fe27cfcf5197e939c443360b255aa1f088ef02"
+    "Personal": "12b141fe215c0aed01113d98331ddfdc643ef2341ce8be47782e46851e33e4ac38bdd1f54d4c4f896f63af0aa3f66006645a097240ffe36b42440e58e7d0e304",
+    "Platform": "ac99e9e5fb247d41ade09b2a4dbef97a74ff983ff73ea94656b6d315aac3e77819854ba27a2e7f63507b9df3cd878e6f063734d3728b1ab45e26d348c5c91e07"
   },
   "signatures.circle": {
-    "hash.build": "bea3a7c7f7f975fd6ab002ebcad17664059203a0a2dd7cdc20e6168bbf93803b",
-    "hash.dist": "54af6e594b5da3f52b252df5105f335f41956b99b9a2a5286793537eaea4b3dd",
-    "hash.master": "a8e69f9736181d358395b3f47dec82ca313cda81ca8360c66fe27d90b3c8d5c3",
+    "hash.build": "da8b3d844fe2a94b00c533ba41f9ceeae89132479765a205d6c81a3e4b75d358",
+    "hash.dist": "722e283ad8bc2efa41a7e2de051ca970075228bf3b0f01bc1ebe4e3f252402f5",
+    "hash.master": "ef285cb1b3482ca2cdbf86317817f58dda2146a5944c5703c8dd86f098a1cdc0",
     "hash.tools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "sign.build": "74c0f51fe442ff4a9a9e085b73d207d05c4b90de2b29b4d6b2398ea5b0de67755f98ad2e95a59584f046e34ad5dd49faef16d24aab66d5da30fe8319c50b2a02",
-    "sign.dist": "3ee260e4420bc3ba3e6b322cd55a8b8acfc1a032c93cf5346beffb89b4e553ad740d0f9ab54e5ce32bae00efb57296e2e3106203d467fb8825bfc5555fe2b60b",
-    "sign.master": "a285bcbcf6ea105736df10740e9f23f44c16731ba812e7c0ea2c38cc4d7a224d5aa160f0b64623513a931fc1caf53155a73dd42a5151253bdb351309df5d980d",
+    "sign.build": "f66510ad6b571c5ed54ba091c9dabacad17620887f269ba00f1328e444e299048812aa8c7be0fb5cd5f982b7e32ba1d339a51e305cf0bfc31d2b1052b5846b03",
+    "sign.dist": "2bd9ff016258d0ba36dd2f38d4408e1e1d1d2d10f5838ecc63b84d71499989f4db24070bc427bf04328f731153f6f5b93ed38d8da50ad523389a72d4822e050e",
+    "sign.master": "0a456339243ac42f06565cc53a7039e25dd0781e2e3972099289214bc19f1adbb84d53fed29b6b6bd80f9544159892f296715074049e6786c21e736c4dd03009",
     "sign.tools": "cea8fee59da032471bb18c5b0a90ec437e64acc1d468085aa9a233fbe633f4df1f3c50ba8cba743e05b9593c66a436821d7f6cf4a3b2fbe9e0ecdad2ea92ad05"
   }
 }
