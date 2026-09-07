@@ -6,7 +6,7 @@
 from enum import IntFlag
 
 from engineSigningMeta import existenzLocations, existenzMeta
-from existenzSignatures import existentialToken
+from existentialSignatures import existentialToken
 
 existenzIntegrityGlue = {
     "Magic":                  ( "existentialMagicSignature", 3583, 118,  0x00, existenzLocations["core"]["Signatures"],  
