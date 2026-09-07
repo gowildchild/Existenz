@@ -9,26 +9,30 @@ import json
 import hashlib
 import hmac
 import engineSigningLibrary
+# FIXED: Unified namespaces matching your exact structural blueprint
 from engineSigningMeta import existenzLocations, existenzMeta
 from engineSigningStruct import existenzIntegrityKeysHandler, existenzIntegrityGlue, existenzSignatures
-import sys
-
 
 def execute(args, error_handler, repo_root: str):
     """
     Executes a project-agnostic structural integrity scanning pass.
-    Surgically handles 6-element config dictionaries and 3-element sequence lists.
+    Surgically slices 6-element data configurations and 3-element sequence rules.
     """
     error_handler.print("Initiating universal structural signature engine [MODE: INTEGRITY]...", level="notice")
     
     session_hashes = {}
     magic_salt_bytes = existenzMeta.MAGIC["RAW"].encode('utf-8')
 
-    # 1. PHASE ONE: Process individual 6-element data-dense configuration layers cleanly
-    for key, glue_tuple in existenzIntegrityGlue.items():
-        # Unpacks exactly 6 items 1:1 straight out of your dictionary records
-        name, status_mask, op_flags, hex_id, relative_path, old_sig = glue_tuple
-        
+    # 1. PHASE ONE: Dynamic Component Hashing via Clean Registry Tuple Extraction
+    for key, raw_tuple in existenzIntegrityGlue.items():
+        # Safely extracts indices directly from your 6-element dictionary tracking structures
+        name          = str(raw_tuple[0])
+        status_mask   = int(raw_tuple[1]) if isinstance(raw_tuple[1], int) else 0
+        op_flags      = int(raw_tuple[2]) if isinstance(raw_tuple[2], int) else 0
+        hex_id        = str(raw_tuple[3])
+        relative_path = str(raw_tuple[4])
+        old_sig       = str(raw_tuple[5])
+
         absolute_path = os.path.abspath(os.path.join(repo_root, relative_path))
         computed_hash = ""
 
@@ -43,26 +47,25 @@ def execute(args, error_handler, repo_root: str):
 
         # Check Opcode: SIGN_TYPE_STRING
         elif bool(op_flags & existenzIntegrityKeysHandler.SIGN_TYPE_STRING):
-            computed_hash = engineSigningLibrary.calculate_op_driven_hash({"payload": str(old_sig)}, op_flags)
+            computed_hash = engineSigningLibrary.calculate_op_driven_hash({"payload": old_sig}, op_flags)
 
         # Agnostic Fallback: Resolve via standard path verification if flags are empty
         if not computed_hash:
             computed_hash = engineSigningLibrary.calculate_file_sha256(absolute_path) if os.path.exists(absolute_path) else "0000000000000000000000000000000000000000"
 
         session_hashes[f"{key}_hash"] = computed_hash
-        session_hashes[f"{key}_sign"] = f"0x{hex_id:02X}" if isinstance(hex_id, int) else str(hex_id)
+        session_hashes[f"{key}_sign"] = hex_id
 
-    # 2. PHASE TWO: Process 3-element sequential blockchain look-back tracking loops
-    # Accesses your sequence records (label, inner_glue_tuple, priority_order) precisely
+    # 2. PHASE TWO: Agnostic Blockchain Link Sequencer
     active_tree_rules = existenzSignatures.existentialCore
-    sorted_rules = sorted(active_tree_rules, key=lambda x: x[2]) # Sorts strictly by priority order field
+    sorted_rules = sorted(active_tree_rules, key=lambda x: x[2]) # Sorted strictly by priority index 2
     
     chain_active = False
     accumulated_chain_hashes = []
 
     for label, inner_glue_tuple, chronological_order in sorted_rules:
-        # Unpacks the matching 6 elements directly from the inner glue reference variable
-        name, status_mask, op_flags, hex_id, relative_path, old_sig = inner_glue_tuple
+        # Reads the exact inner 6 elements directly from index 1 of the list tuples
+        op_flags = int(inner_glue_tuple[2]) if isinstance(inner_glue_tuple[2], int) else 0
         current_node_hash = session_hashes.get(f"{label}_hash", "")
 
         # Open Chain Frame (SIGN_CHAIN_START)
@@ -83,11 +86,10 @@ def execute(args, error_handler, repo_root: str):
             consolidated_trail_string = "".join(accumulated_chain_hashes)
             final_chain_signature = hmac.new(magic_salt_bytes, consolidated_trail_string.encode('utf-8'), hashlib.sha256).hexdigest()
             
-            # Map compiled blockchain token back to this ending layer location
             session_hashes[f"{label}_hash"] = final_chain_signature
             chain_active = False
 
-    # 3. PHASE THREE: Prepare session tokens dynamically to drive your custom tree visualizer
+    # 3. PHASE THREE: Dynamic Tree Rendering Pass
     tree_session_hashes = {
         "existentialCoreMagicHash": session_hashes.get("MagicCheck_hash", "UNKNOWN"),
         "existentialCoreCheckHash": session_hashes.get("CoreCheck_hash", "UNSIGNED"),
@@ -142,4 +144,3 @@ existentialToken = {{
             error_handler.print(f"Failed writing structural registers to file: {io_err}", level="error", exit_code=32)
 
     engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
-
