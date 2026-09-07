@@ -65,6 +65,36 @@ import hmac
 import hashlib
 from engineSigningMeta import existenzMeta
 
+import re
+
+def render_better_box(error_handler, raw_lines_list: list, title_str: str = "SYSTEM STATUS"):
+    """
+    Renders a pristine, fully dynamic visual box enclosure layout around text elements.
+    Calculates lengths accurately by stripping ANSI escape color sequences to keep borders straight.
+    """
+    # 1. Strip ANSI escape color tracks purely to calculate accurate terminal layout spaces
+    def get_visible_length(text_line: str) -> int:
+        return len(re.sub(r'\033\[[0-9;]*m', '', str(text_line)))
+
+    # 2. Determine target width scaling limits based on content payload attributes
+    max_visible_len = max((get_visible_length(line) for line in raw_lines_list), default=len(title_str))
+    box_width = max(60, max_visible_len + 4)
+
+    # 3. Compile structural perimeter headers
+    header_left = f"──┤ [ {title_str} ] ├"
+    header_dash_fill = max(4, box_width - get_visible_length(header_left))
+    
+    # 4. Stream out the unified visual grid lines through error_handler.print
+    error_handler.print(f"┌{header_left}{'─' * header_dash_fill}┐", level="local")
+    
+    for line in raw_lines_list:
+        clean_line = str(line).rstrip()
+        visible_len = get_visible_length(clean_line)
+        padding_spaces = " " * (box_width - visible_len)
+        error_handler.print(f"│ {clean_line}{padding_spaces} │", level="local")
+        
+    error_handler.print("└" + "─" * (box_width + 2) + "┘", level="local")
+
 def compute_integrity_chain(error_handler, rule_group_list: list, live_hashes: dict) -> dict:
     """
     Natively parses structural sequences, aggregates look-back history blocks, 
