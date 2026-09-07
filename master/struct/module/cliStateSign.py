@@ -9,8 +9,8 @@ import getpass
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
 import engineSigningLibrary
-from engineSigningMeta import existenzLocations, existenzConfig, existenzIntegrityGlue
-from engineSigningStruct import existenzIntegrityKeyStatus
+from engineSigningMeta import existenzLocations, existenzConfig
+from engineSigningStruct import existenzIntegrityKeyStatus,  existenzIntegrityGlue
 
 def execute(args, error_handler, repo_root: str):
     """
