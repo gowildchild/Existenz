@@ -71,9 +71,12 @@ def main():
     args = parser.parse_args()
 
     # Consolidated console blocks straight through uniform logging routing
-    error_handler.print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐", level="local")
-    error_handler.print(f"│ VisualMIX Signing CLI {INT_VERSION}     by Gunther Voet │", level="local")
-    error_handler.print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘", level="local")
+    banner_payload = [
+        f"  VisualMIX Veritas CLI {INT_VERSION}   by Gunther Voet"]
+    engineSigningLibrary.render_better_box(error_handler, banner_payload, title_str="Existenz")
+    #error_handler.print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐", level="local")
+    #error_handler.print(f"│ VisualMIX Signing CLI {INT_VERSION}     by Gunther Voet │", level="local")
+    #error_handler.print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘", level="local")
     error_handler.print(f"Operational: -stage {args.stage} -circle {args.circle} -config {args.config} -m {args.manifest}", level="info")
 
     
