@@ -61,7 +61,50 @@ PIPELINE_SEQUENCE = [
 ]
 
 
-def calculate_aggregate_circle_hash(circle_files_dict: dict) -> str:
+def calculate_op_driven_hash(target_dict: dict, op_flags: int) -> str:
+    """
+    Executes an opcode-driven cryptographic hash pass based on your 
+    existenzIntegrityKeysHandler execution instructions.
+    """
+    from engineSigningStruct import existenzIntegrityKeysHandler
+    
+    if not target_dict:
+        return hashlib.sha256(b"").hexdigest()
+
+    # Sort keys alphabetically to keep serialization perfectly predictable
+    sorted_keys = sorted(target_dict.keys())
+    hasher = hashlib.sha256()
+
+    # Determine execution behavior based on bitmask flags
+    include_keys = bool(op_flags & existenzIntegrityKeysHandler.SIGN_TYPE_KEYS)
+    include_values = bool(op_flags & existenzIntegrityKeysHandler.SIGN_TYPE_VALUES)
+
+    # Fallback to signing both if neither bit is explicitly set but dictionary tracking is active
+    if not include_keys and not include_values:
+        include_keys = True
+        include_values = True
+
+    for k in sorted_keys:
+        v = target_dict[k]
+        
+        # 1. Execute SIGN_TYPE_KEYS path if enabled
+        if include_keys:
+            hasher.update(str(k).encode('utf-8'))
+            
+        # 2. Execute SIGN_TYPE_VALUES path if enabled
+        if include_values:
+            # Flatten inner dictionary structures to safe string data-dense tracks if nested
+            if isinstance(v, dict):
+                v_str = json.dumps(v, sort_keys=True, ensure_ascii=True, separators=(',', ':'))
+            else:
+                v_str = str(v)
+            hasher.update(v_str.encode('utf-8'))
+
+    return hasher.hexdigest()
+
+
+
+def calculate_aggregate_circle_hash_v1(circle_files_dict: dict) -> str:
     """
     Computes a canonical SHA-256 hash across all sorted filename-hash pairs 
     in a tracking circle to capture an absolute state snapshot.
@@ -78,6 +121,29 @@ def calculate_aggregate_circle_hash(circle_files_dict: dict) -> str:
     ).encode('utf-8')
     
     return hashlib.sha256(canonical_body).hexdigest()
+
+def calculate_aggregate_circle_hash(circle_files_dict: dict, op_flags: int = 0) -> str:
+    """
+    Computes an absolute state snapshot hash across all filename-hash pairs 
+    in a tracking circle using the active integrity opcode parameters.
+    """
+    # If explicit dictionary tracking opcodes are passed, route directly through the opcode evaluator
+    if op_flags > 0:
+        return calculate_op_driven_hash(circle_files_dict, op_flags)
+        
+    # Standard fallback tracking if called raw
+    if not circle_files_dict:
+        return hashlib.sha256(b"").hexdigest()
+        
+    canonical_body = json.dumps(
+        circle_files_dict, 
+        sort_keys=True, 
+        ensure_ascii=True, 
+        separators=(',', ':')
+    ).encode('utf-8')
+    
+    return hashlib.sha256(canonical_body).hexdigest()
+
 
 def resolve_live_git_commit(repo_root: str) -> str:
     """Dynamically extracts the raw local 64-character SHA-256 Git commit head tracking signature hash."""
