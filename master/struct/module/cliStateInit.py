@@ -142,13 +142,14 @@ def execute(args, error_handler, repo_root: str):
                                 calculated_expr = f"1 << {v.bit_length() - 1}"
                             else:
                                 calculated_expr = f"0x{v:08x}"
-                                
+
+                            struct_type = None
                             if bool(bm & existenzCorePolicy.CORE_INTEGRITY):
                                 struct_type = "SIGNATURE"
-                            elif bool(bm & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY)):
-                                struct_type = "CANARY"
                             elif bool(bm & existenzCorePolicy.CORE_WATCHDOG):
                                 struct_type = "SHIELD"
+                            elif bool(bm & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY)):
+                                struct_type = "CANARY"
                             elif bool(bm & existenzCorePolicy.CORE_RIGHTS):
                                 struct_type = "RIGHTS"
                             elif bool(bm & existenzCorePolicy.CORE_PILLAR):
