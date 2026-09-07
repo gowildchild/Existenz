@@ -299,14 +299,13 @@ class visualMixEngineEnvironment:
         self.namespace = namespace
 
     def load_secret_key(self) -> dict:
-        """Loads environment configurations smoothly by handling strict uppercase mappings."""
+        """Loads environment configurations smoothly, bypassing missing offline keys on remote public runners."""
         skeleton = {}
 
         keys_pub = ["PUBLIC", "FINGERPRINT"]
         keys_pvt = ["PRIVATE", "PHRASE"]
 
         for key in (keys_pvt + keys_pub):
-            # FIXED: Force upper-case token matching across all config blocks to prevent mask drops
             conf_key = f"{self.post}{key.upper()}"
             env_key  = f"{self.post}{key.upper()}"
 
@@ -327,6 +326,12 @@ class visualMixEngineEnvironment:
         if not env_finger:   missing_fields.append(f"{self.post}FINGERPRINT")
         
         if missing_fields:
+            # FIXED: If running on a public server, missing offline keys are totally normal. Skip instead of crashing.
+            if self.repo_github_flag and self.post != "SIGN_EXISTENZ_AUDIT_":
+                print(f"  [ ] Ingest Namespace:      '{self.namespace}' -> Skipping offline signing track (running on public server).")
+                return skeleton
+            
+            # Crash only if the mandatory cloud environment key itself is missing
             self.error_handler.print(f"Loop-driven environment validation failed. Unresolved tracks: {missing_fields}", level="error", exit_code=63)
 
         clean_pub_display = env_pub_key.strip().split()[-1] if len(env_pub_key.strip().split()) > 1 else 'Custom Format'
