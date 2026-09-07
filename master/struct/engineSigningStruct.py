@@ -73,34 +73,35 @@ class existenzSteps(IntFlag):
     STEP_TEST               = 1
     STEP_INIT               = 2
     STEP_COMMIT             = 4
-    STEP_VERIFY             = 16
-    STEP_MANIFEST           = 32
-    STEP_SUCCESS            = 64
-    STEP_SIGN_PUBLIC        = 128
-    STEP_SIGN_ENVIRONMENT   = 256
-    STEP_SIGN_PRIVATE       = 512
-    STEP_SIGN_WAITING       = 1024
-    STEP_SIGN_SUCCESS       = 2048
-    STEP_INTEGRITY          = 4096
+    STEP_MANIFEST           = 8
+    STEP_INTEGRITY          = 16
+    STEP_VERIFY             = 32
+    STEP_SIGN_PUBLIC        = 64
+    STEP_SIGN_ENVIRONMENT   = 128
+    STEP_SIGN_PRIVATE       = 256
+    STEP_SIGN_WAITING       = 512
+    STEP_SIGN_SUCCESS       = 1024
     STEP_VERITAS            = 8192
     STEP_BUILD_DIST         = 16384
     STEP_BUILD_TOOLS        = 32768
     STEP_BUILD_BUILD        = 65536
     STEP_BUILD_MASTER       = 131072
     STEP_BUILD_SUCCESS      = 262144
+    STEP_SUCCESS            = 524288  # FIXED: Added definition matching power-of-two bits
 
 existenzStepsSeq = [
     existenzSteps.STEP_TEST,
     existenzSteps.STEP_INIT,
     existenzSteps.STEP_COMMIT,
     existenzSteps.STEP_MANIFEST,
+    existenzSteps.STEP_INTEGRITY,
     existenzSteps.STEP_VERIFY,
     existenzSteps.STEP_SIGN_PUBLIC,
     existenzSteps.STEP_SIGN_ENVIRONMENT,
     existenzSteps.STEP_SIGN_PRIVATE,
+    existenzSteps.STEP_SIGN_WAITING,  # FIXED: Restored to step timeline track
     existenzSteps.STEP_SIGN_SUCCESS,
-    existenzSteps.STEP_INTEGRITY,
-    existenzSteps.STEP_VERITAS,
+    existenzSteps.STEP_VERITAS,    
     existenzSteps.STEP_BUILD_DIST,
     existenzSteps.STEP_BUILD_TOOLS,
     existenzSteps.STEP_BUILD_BUILD,
