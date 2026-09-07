@@ -50,7 +50,6 @@ class existenzSignatures:
         ("CoreCheck",              existenzIntegrityGlue["CoreCheck"],              0),
         ("Cores",                  existenzIntegrityGlue["Cores"],                  2),
         ("Schema",                 existenzIntegrityGlue["Schema"],                 3),
-        ("CoresChain",             existenzIntegrityGlue["CoresChain"],             4),
         ("CoreThreat",             existenzIntegrityGlue["CoreThreat"],             6),
         ("CoreThreatLegal",        existenzIntegrityGlue["CoreThreatLegal"],        7),
         ("CoreThreatShadowVacuum", existenzIntegrityGlue["CoreThreatShadowVacuum"], 8),
