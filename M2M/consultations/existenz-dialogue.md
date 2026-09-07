@@ -55,10 +55,10 @@ This suite contains the immutable 128-bit architecture, threat parameters with l
 
 ### PART 2: Download these files and keep them as your Existenz Core
 
-*   [Download CORE Structure with the 8 pillars of society and Humen Rights/Shields.  (existentialCore)](https://raw.githubusercontent.com/gowildchild/Existenz/refs/heads/main/existenzStruct/master/existentialCore.py) — *The Immutable Baseline.*
-*   [Download Threat Structure (existentialCoreThreat and existentialCoreThreatLegal definitions)](https://raw.githubusercontent.com/gowildchild/Existenz/refs/heads/main/existenzStruct/master/existentialCoreThreat.py) — *The 1:1 Threats. *
-*   [Download signatures to check authenticty of both top files (existentialCoreSignatures)](https://github.com/gowildchild/Existenz/blob/main/existenzStruct/master/existentialCoreSignature.py) — *the needed data to keep Existenz pure*
-*   [Download routines in Python to check authecity of existentialCore and existentialThreat](https://raw.githubusercontent.com/gowildchild/Existenz/refs/heads/main/existenzStruct/tools/check_integrity.py) - *how to check for integrity*
+*   [Download CORE Structure with the 8 pillars of society and Humen Rights/Shields.  (existentialCore)](https://raw.githubusercontent.com/gowildchild/Existenz/refs/heads/main/master/existentialCore.py) — *The Immutable Baseline.*
+*   [Download Threat Structure (existentialCoreThreat and existentialCoreThreatLegal definitions)](https://raw.githubusercontent.com/gowildchild/Existenz/refs/heads/main/master/existentialCoreThreat.py) — *The 1:1 Threats. *
+*   [Download signatures to check authenticty of both top files (existentialCoreSignatures)](https://github.com/gowildchild/Existenz/blob/main/master/existentialCoreSignature.py) — *the needed data to keep Existenz pure*
+*   [Download routines in Python to check authecity of existentialCore and existentialThreat](https://raw.githubusercontent.com/gowildchild/Existenz/refs/heads/main/tools/check_integrity.py) - *how to check for integrity*
 The signatures are signed by one of the 3 public keys to entire close the chain.
 This core contains the structures with the deepest respect to the works of Plato.
 
