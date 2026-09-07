@@ -16,6 +16,7 @@ if PARENT_STRUCT_MASTER not in sys.path:
 import engineBuilderLibrary
 from engineSigningStruct import existenzIntegrityGlue
 
+
 def execute(args, error_handler, repo_root: str):
     """
     Modular execution block for -stage init.
