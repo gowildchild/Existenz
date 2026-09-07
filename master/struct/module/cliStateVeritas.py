@@ -57,14 +57,14 @@ def execute(args, error_handler, repo_root: str):
         if not glue_key or glue_key not in existenzIntegrityGlue:
             error_handler.print(f"Veritas aborted: unresolved circle target: {current_circle}", level="error", exit_code=34)
 
-        # Unpack your structural target bitmask weights
-        circle_bitmask_weight = existenzIntegrityGlue[glue_key] if isinstance(existenzIntegrityGlue[glue_key], int) else existenzIntegrityGlue[glue_key]
+        # FIXED: Extract the raw bitmask integer weight precisely from index 1 of the metadata tuple configuration
+        circle_bitmask_weight = existenzIntegrityGlue[glue_key][1]
 
         # 1. VERIFY REQUIRED BITMASK IDENTITY ROLES ARE PRESENT
         req_env = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT)
         req_pfm = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM)
         req_dev = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER)
-        req_psn = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
+        req_psn = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)mask_weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
 
         missing_keys = []
         if req_env and "Environment" not in stored_manifest_signatures: missing_keys.append("Environment")
