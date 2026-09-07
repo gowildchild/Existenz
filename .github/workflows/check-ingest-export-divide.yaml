@@ -3,7 +3,7 @@ name: Check Ingest Export Divide | Existenz
 # do on the Guthub of Existenz. This gives 
 # confidence that the structure is not 
 # tampered with, while kept at the standard of
-# the science that it is built upon.  Hashing!s
+# the science that it is built upon.  
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
     # Step 3: Determine Operational Mode from the Lockfile
     - name: Existenz - Installing Dependencies
       run: pip install pyyaml cryptography    
-    - name: Existenz - Initializing & Self-Healing Check
+    - name: Existenz - Initializing Self-Healing Check
       id: mode_check
       run: |
         # 1. Execute your compiled pre-flight dependency audit and self-healing loop
