@@ -27,13 +27,54 @@ jobs:
     # Step 3: Determine Operational Mode from the Lockfile
     - name: Existenz - Installing Dependencies
       run: pip install pyyaml cryptography    
-    - name: Existenz - Checking Myself (Staging Initialization Pass)
+    - name: Existenz - Initializing & Self-Healing Check
       id: mode_check
       run: |
-        python master/struct/engineSigningCLI.py -stage test -override update -run wet -circle master
-        # 2. Execute your compiled pre-flight dependency audit gate
+        # 1. Execute your compiled pre-flight dependency audit and self-healing loop
         python master/struct/engineSigningCLI.py -stage init -override update -run wet -circle master
-        # 3. Extract runtime execution state from repository lock tracking assets
+
+        # 2. Extract runtime execution state from repository lock tracking assets
+        if [ -f "master/.existentialLock" ]; then
+          # Read the first line, strip whitespace, and convert strictly to lowercase
+          MODE=$(head -n 1 master/.existentialLock | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
+          echo " [*] Status Phase: Active lockfile detected. Selected Core Mode: $MODE"
+        else
+          MODE="compile"
+          echo " [!] Status Phase: No lockfile detected. Defaulting Pipeline to Core Mode: $MODE"
+        fi
+        
+        # 3. Securely export the verified mode variable out to the GitHub Actions environment map
+        echo "RUN_MODE=$MODE" >> $GITHUB_ENV
+
+        # 4. CONDITIONAL COMMIT: Check if the initialization phase generated or adapted any missing assets
+        git config --global user.name "Existenz Build Bot"
+        git config --global user.email "bot@existenz.xsrv.net"
+        
+        # Stage all potentially self-healed paths dynamically
+        git add master/existentialCore.py \
+                master/existentialCoreThreat.py \
+                master/existentialCores.json \
+                master/existentialCoresChain.json \
+                master/existentialSigningConfig.json \
+                master/existentialSignatures.json \
+                master/existentialSigningData.json \
+                sign_integrity_config.json \
+                master/struct/module/cliStateManifest.py \
+                master/struct/module/cliStateSign.py \
+                master/struct/module/cliStateVerify.py \
+                master/struct/module/cliStateBuild.py 2>/dev/null || true
+
+        # Only perform a push sequence if 'git diff-index' detects files changed against HEAD
+        if ! git diff-index --quiet HEAD; then
+          echo " [*] Pipeline Engine: Missing initialization assets detected and self-healed. Committing modifications..."
+          git commit -m "sys(core): automatic initialization and workspace bootstrapping [v0.76.16]"
+          git push origin main
+        else
+          echo " [*] Pipeline Engine: Workspace is fully initialized and aligned. No commit sequence required."
+        fi   
+    - name: Existenz - Checking Myself
+      id: mode_check
+      run: |
         if [ -f "master/.existentialLock" ]; then
           # Read the first line, strip whitespace, and convert strictly to lowercase
           MODE=$(head -n 1 master/.existentialLock | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
