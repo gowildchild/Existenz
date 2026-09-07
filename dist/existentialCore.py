@@ -1,58 +1,52 @@
 # ==========================================================================
-# THE EXISTENZ PLATFORM (PROTOTYPE ARCHITECTURE CORE, 128-BIT MATRIX)
-# Copyright (c) 2026 by Gunther Voet. All Rights Reserved. 
+# EXISTENZ CORE BUILDER (Signing Suite & Cross-Compiler)
+# Version: v0.76.16 | Github Deployment
+# Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
-# Commercial use requires immediate written license and explicit payment.
 # ==========================================================================
-# VERSION: v0.76.14
-##
-import hmac
-import hashlib
+
 from enum import IntFlag
 
 class existentialCore(IntFlag):
+    NONE                           = 0  # No Record
+    EXISTENCE                      = 1 << 0  # You, alive, with a body
+    AUTONOMY                       = 1 << 1  # The Sovereign Right to Choose
+    INTEGRITY                      = 1 << 2  # The Moral Axis of Personal Choice
+    CANARY_1_SOVEREIGN             = 1 << 3  # WATCHDOG_SOVEREIGN
+    PSYCHOLOGY                     = 1 << 4  # Cognitive Mental State and Peace
+    PHYSICAL                       = 1 << 5  # Physical Body Vessel and bio-state
+    DISABILITY                     = 1 << 6  # Nature's way of checks and balances
+    DEVELOPMENT                    = 1 << 7  # Evolutionary, Intellectual, Growth
+    PROPERTY                       = 1 << 8  # Material Assets and Income Protection
+    CANARY_2_SOMATIC               = 1 << 9  # WATCHDOG_SOMATIC
+    PRESENCE                       = 1 << 10  # Real-Time Spacetime Footprint
+    CANARY_P_SAFE                  = 1 << 11  # WATCHDOG_PRESENCE_SAFE
+    CANARY_P_DURESS                = 1 << 12  # WATCHDOG_PRESENCE_NO_DURESS
+    CANARY_3_ABLEISM               = 1 << 13  # WATCHDOG_ABLEISM
+    CANARY_USER_A                  = 1 << 14  # WATCHDOG_USER_DEFINABLE_A
+    CANARY_USER_B                  = 1 << 15  # WATCHDOG_USER_DEFINABLE_B
+    CANARY_USER_C                  = 1 << 16  # WATCHDOG_USER_DEFINABLE_C
+    CANARY_4_FOOTPRINT             = 1 << 17  # WATCHDOG_FOOTPRINT
+    CANARY_IV_PRESENCE             = 1 << 18  # WATCHDOG_PRESENCE_OK
+    SHIELD_RIGHTS_HUMAN            = 1 << 20  # SHIELD-A (Institutional)
+    CANARY_P_SAFETY                = 1 << 21  # WATCHDOG_PRESENCE_SAFETY
+    SHIELD_RIGHTS_INCLUSIVE        = 1 << 22  # SHIELD-A2 (Systemic)
+    SHIELD_RIGHTS_ASYLUM           = 1 << 23  # SHIELD-A3 (Asylum Seekers)
+    SHIELD_RIGHTS_BASIC            = 1 << 24  # SHIELD-B (Institutional)
+    CANARY_5_METRICS               = 1 << 25  # WATCHDOG_METRICS
+    CANARY_V_RIGHTS                = 1 << 26  # WATCHDOG_RIGHTS
+    CANARY_VI_SYSTEMIC             = 1 << 29  # WATCHDOG_SYSTEMIC
+    CANARY_6_IMMUTABLE             = 1 << 31  # WATCHDOG_IMMUTABLE
 
-    # THE LOWER 16-BITS:  IMMUTABLE   7 Human Pillars of existence!
-
-    EXISTENCE               = 1 << 0    # 1     PILLAR  You, alive, with a body
-    AUTONOMY                = 1 << 1    # 2     PILLAR  The Sovereign Right to Choose
-    INTEGRITY               = 1 << 2    # 4     PILLAR  The Moral Axis of Personal Choice
-    CANARY_1_SOVEREIGN      = 1 << 3    # 8     CANARY  WATCHDOG_SOVEREIGN
-    PSYCHOLOGY              = 1 << 4    # 16    PILLAR  Cognitive Internal State and Mental Peace
-    PHYSICAL                = 1 << 5    # 32    PILLAR  Physical Body Vessel and bio-state
-    DISABILITY              = 1 << 6    # 64    PILLAR  Nature's way of checks and balances
-    DEVELOPMENT             = 1 << 7    # 128   PILLAR  Evolutionary, Intellectual and Creative Growth
-    PROPERTY                = 1 << 8    # 256   PILLAR  Material Assets and Income Protection
-    CANARY_2_SOMATIC        = 1 << 9    # 512   CANARY  WATCHDOG_SOMATIC
-    PRESENCE                = 1 << 10   # 1024  PILLAR  Real-Time Spacetime Footprint
-    CANARY_3_SYSTEMIC       = 1 << 13   # 8128  CANARY  WATCHDOG_EVOLUTION
-    CANARY_XV_STRUCT        = 1 << 15   # 32768 CANARY WATCHDOG_PILLARS
-
-    # THE HIGHER 8-BITS:  IMMUTABLE   Legal SHIELDS by external defense factors
-
-    CANARY_IV_PERSONAL      = 1 << 17   # 131072     CANARY   WATCHDOG_PERSONAL
-    SHIELD_RIGHTS_HUMAN     = 1 << 20   # 1048576    SHIELD-A  (Institutional)
-    SHIELD_RIGHTS_INCLUSIVE = 1 << 22   # 4194304    SHIELD-A2 (Systemic)
-    CANARY_V_RIGHTS         = 1 << 23   # 8388608    CANARY   WATCHDOG_RIGHTS
-    SHIELD_RIGHTS_BASIC     = 1 << 24   # 16777216   SHIELD-B  (Institutional) 
-    SHIELD_RIGHTS_ASYLUM    = 1 << 26   # 67108864   SHIELD-A3 (Institutional)
-    CANARY_VI_CIVIC         = 1 << 27   # 134217728  CANARY   WATCHDOG_CIVILIAN
-    SHIELD_IMMUTABLE_END    = 1 << 31   # 2147483648 END OF IMMUTABLE STRUCTURE
-
-    # CANARIES FOR STRUCTURAL MANIPULATION
-
-    CANARY_S_IMMUTABLE      = 0x80000401
-    CANARY_S_STATE          = 0x055005f7
-    CANARY_S_COLLIDE        = 0x8882a208
-
-    # SIGNATURES FOR IMMUTABLE STRUCTURE, CORE STRUCTURE AND CHAINED SIGNATURE
-
-    SIGN_CORE_EXISTENZ      = 0x5beba3df
-    SIGN_CORE_IMMUTABLE     = 0x6d44968d
-    SIGN_CORE_EXISTENTIAL   = 0x18641470
-    SIGN_CORE_CANARY        = 0xc01eca1e
-
-
-# This one is lonely because of a circular math paradox!
-existentialCoreSign      = 0x22023c14
-existentialCoreSignature = "22023c142c21687803a3cdedb82684973d7ab5bb601b2b35d0bd8b448e26f99e"
+existentialCoreBitmask = {
+    existentialCore.CANARY_1_SOVEREIGN: "0x7",
+    existentialCore.CANARY_2_SOMATIC: "0x3f",
+    existentialCore.CANARY_3_ABLEISM: "0x27f",
+    existentialCore.CANARY_4_FOOTPRINT: "0x33f",
+    existentialCore.CANARY_IV_PRESENCE: "0x7ff",
+    existentialCore.CANARY_P_SAFETY: "0x63fff",
+    existentialCore.CANARY_5_METRICS: "0x263fff",
+    existentialCore.CANARY_V_RIGHTS: "0x3f63fff",
+    existentialCore.CANARY_VI_SYSTEMIC: "0xc000",
+    existentialCore.CANARY_6_IMMUTABLE: "0x26262208",
+}
