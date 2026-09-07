@@ -5,16 +5,17 @@
 # ==========================================================================
 import os
 import sys
+
+# 1. FORCE THE PATH: Extract the absolute path of the parent master/struct/ folder
+PARENT_STRUCT_MASTER = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+# 2. Append it directly to the top of the active search list
+if PARENT_STRUCT_MASTER not in sys.path:
+    sys.path.insert(0, PARENT_STRUCT_MASTER)
+
 import json
 import shutil
 from engineSigningMeta import existenzLocations
-
-# Force Python to look inside the true parent vault directory (master/struct/)
-PARENT_STRUCT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if PARENT_STRUCT_DIR not in sys.path:
-    sys.path.insert(0, PARENT_STRUCT_DIR)
-
-# Now it flitlessly links straight to master/struct/engineBuilderLibrary.py!
 import engineBuilderLibrary
 
 def execute(args, error_handler, repo_root: str):
@@ -78,7 +79,7 @@ def execute(args, error_handler, repo_root: str):
 
         version_str = "v0.76.16"
 
-        # A. Self-Heal Core Runtime Files
+        # A. Self-Heal Core Runtime Files (JSON Mirrors & Compiled Python Packages)
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.join(repo_root, asset_data["runtime_path"])
             filename = asset_data["filename"]
@@ -128,7 +129,7 @@ def execute(args, error_handler, repo_root: str):
                         shutil.copy2(struct_source, target_path)
                         error_handler.print(f"    [->] Synced Script Asset: {token:<12} -> Restored from vault.", level="info")
 
-        # B. Self-Heal Missing Engine Opcodes & Stubs
+        # B. Self-Heal Missing Engine Opcodes, State Controllers, and Operational Configurations
         for token, asset_data in engine_assets_to_sync.items():
             target_path = os.path.join(repo_root, asset_data["runtime_path"])
             filename = asset_data["filename"]
