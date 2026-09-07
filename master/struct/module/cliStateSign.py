@@ -123,11 +123,10 @@ def execute(args, error_handler, repo_root: str):
                     except Exception as file_err:
                         error_handler.print(f"  [!] Failed loading local key profile from path: {file_err}", level="warning")
 
-            # B. CLOUD PIPELINE TRACK: Fall back natively to your loop-driven environment loader if running on runner
             if not private_key_object:
-                # FIXED: If running locally offline and this is an hardware tracking key, skip gracefully instead of dropping exit codes
-                if not is_github_runner and identity != "Environment":
-                    error_handler.print(f"  [ ] Skipping local offline key role [{identity}]: path unconfigured or file missing.", level="warning")
+                # FIXED: Skip cloud environment checks completely if running locally offline
+                if not is_github_runner:
+                    error_handler.print(f"  [ ] Environment cloud variables unavailable locally. Skipping track: [{identity}].", level="warning")
                     continue
 
                 env_loader = engineSigningLibrary.visualMixEngineEnvironment(
@@ -140,9 +139,6 @@ def execute(args, error_handler, repo_root: str):
                     secret_env_map = env_loader.load_secret_key()
                     private_key_object = secret_env_map.get("_OBJECT")
                 except Exception:
-                    if not is_github_runner:
-                        error_handler.print(f"  [ ] Environment cloud variables unavailable locally. Skipping track.", level="warning")
-                        continue
                     raise
 
             # C. EXECUTE CRYPTOGRAPHIC STAMP IF KEY IS LOADED
