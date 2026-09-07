@@ -156,16 +156,14 @@ def execute(args, error_handler, repo_root: str):
                                     calculated_expr = f"0x{v:08x}"
 
                             # Evaluate structural types dynamically straight from your IntFlag definitions
-                            if bool(pol & existenzCorePolicy.CORE_INTEGRITY):
-                                struct_type = "SIGNATURE"
-                            elif bool(pol & existenzCorePolicy.CORE_WATCHDOG):
-                                struct_type = "SHIELD"
-                            elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY)):
-                                struct_type = "CANARY"
+                            if bool(pol & existenzCorePolicy.CORE_PILLAR):
+                                struct_type = "PILLAR"
                             elif bool(pol & existenzCorePolicy.CORE_RIGHTS):
                                 struct_type = "RIGHTS"
-                            elif bool(pol & existenzCorePolicy.CORE_PILLAR):
-                                struct_type = "PILLAR"
+                            elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY | existenzCorePolicy.CORE_WATCHDOG)):
+                                struct_type = "CANARY"
+                            elif bool(pol & existenzCorePolicy.CORE_INTEGRITY):
+                                struct_type = "SIGNATURE"
                             else:
                                 struct_type = "PILLAR"
                                 
