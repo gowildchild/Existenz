@@ -1,5 +1,5 @@
 {
-  "commit": "37e4bcb6f8b935efae9af5f42832db03d4683e9f",
+  "commit": "e53ac27cb65cd53d86ed02ce9eab7f77b3be6f9e",
   "existentialCoreVersion": "v0.76.17",
   "files.build": {
     "master/build-tools/core_telemetry.py": "f72cd3acc76881fb228fc33666cf335cd6469063f402511c032fdf5b1043f075",
@@ -66,7 +66,7 @@
   "files.master": {
     "master/struct/engineBuilderLibrary.py": "a85cbe702d134526e24497b3ffe0018f9f6853edfdcdf167ff70da04f70eb2b6",
     "master/struct/engineSigningCLI.py": "ba0a6beb31a54ff414621feae744847da59411132ae6f8359aed28111a1b4a10",
-    "master/struct/engineSigningLibrary.py": "450fda9e61fd5adc5f066143dce941dd294a58d49c923b4743a40a87b3ab6f8b",
+    "master/struct/engineSigningLibrary.py": "a7e4680b83338e1a8c12753f6a43c5be8fced01217b1a465ebb6814bac3a7f6f",
     "master/struct/engineSigningMeta.py": "8b5dc17309dbf9f3cd77a5e0ab6a7b4fde0e7dde21a2cf0fecf61d7d9bb2c7c7",
     "master/struct/engineSigningStruct.py": "f875cae41dca4a7d35c6f6a6733f7631f1fff44aaa9023ef53e2cb0c00a5c77c",
     "master/struct/existentialCoreSchema.json": "8b0aee53f962ac9d20975226cf4ea36276dc16df08c04587f9168c4d0924ac95",
