@@ -59,10 +59,8 @@ jobs:
         git add master/existentialCore.py \
                 master/existentialCoreThreat.py \
                 master/existentialCores.json \
-                master/existentialCoresChain.json \
-                master/existentialSigningConfig.json \
+                master/existenzSignatures.py \
                 master/existentialSignatures.json \
-                master/existentialSigningData.json \
                 master/struct/module/cliStateManifest.py \
                 master/struct/module/cliStateSign.py \
                 master/struct/module/cliStateVerify.py \
@@ -76,7 +74,7 @@ jobs:
           git push origin main
         else
           echo " [*] Pipeline Engine: Workspace is fully initialized and aligned. No commit sequence required."
-        fi   
+        fi
 
     - name: Existenz - Signing Pipeline
       env:
