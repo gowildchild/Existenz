@@ -252,24 +252,29 @@ def load_private_key(identity: str, path: str) -> ed25519.Ed25519PrivateKey:
 def solve_ring_requirements(stage: str) -> tuple:
     """
     BITWISE ROUTINE ROUTER: Uses IntFlag bitmask matching to verify which keys are needed.
-    Returns: (requires_platform, requires_developer, requires_personal)
+    Returns: (requires_environment, requires_platform, requires_developer, requires_personal)
     """
-    # 1. Determine base existenzIntegrityKeyStatus ring weight
-    ring_weight = existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT
-    if "master" in stage:
-        ring_weight = existenzIntegrityKeyStatus.KEY_PVT_PERSONAL
-    elif "tools" in stage or "build" in stage:
-        ring_weight = existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER
-
-    # Standardized to read completely from within matching KeyStatus properties
-    platform_flag  = existenzIntegrityKeyStatus.KEY_PVT_PLATFORM
-    developer_flag = existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER
-    personal_flag  = existenzIntegrityKeyStatus.KEY_PVT_PERSONAL
+    # Normalize input string constraints smoothly
+    stage_lower = str(stage).lower()
+    
+    if "master" in stage_lower:
+        # Master ring requires every structural key active to sign the core base paths
+        ring_weight = (existenzIntegrityKeyStatus.KEY_PVT_PLATFORM | 
+                       existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER | 
+                       existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
+    elif "tools" in stage_lower or "build" in stage_lower:
+        # Tools and build options scale up by enforcing Developer and Platform checks
+        ring_weight = (existenzIntegrityKeyStatus.KEY_PVT_PLATFORM | 
+                       existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER)
+    else:
+        # Default fallback ring for deployment distribution channels (dist)
+        ring_weight = existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT
 
     return (
-        bool(ring_weight & platform_flag),
-        bool(ring_weight & developer_flag),
-        bool(ring_weight & personal_flag)
+        bool(ring_weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT),
+        bool(ring_weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM),
+        bool(ring_weight & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER),
+        bool(ring_weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
     )
 
 class visualMixEngineEnvironment:
