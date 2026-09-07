@@ -44,16 +44,22 @@ existentialToken = {
         "Locations":          "ad0e774f35ff2000eaeb3f6063be74c3e86c043ed6a04bfd45b7ff2f6460bfa4"
     },
     "engine": {
-        "engineLogging":   "sha-256:master/struct/visualMixEngineLogging.py",
-        "engineCrypto":    "sha-256:master/struct/visualMixEngineCrypto.py",  
-        "signingMeta":     "sha-256:master/struct/engineSigningMeta.py",
-        "signingStruct":   "sha-256:master/struct/engineSigningStruct.py",
-        "signingLibrary":  "sha-256:master/struct/engineSigningLibrary.py",
-        "signingRoutine":  "sha-256:master/struct/engineSigningRoutine.py",
-        "signingFlow":     "sha-256:master/struct/engineSigningFlow.py",
-        "jsonConfig":      "sha-256:master/existentialSigningConfig.json",
-        "jsonSignatures":  "sha-256:master/existentialSignatures.json",
-        "jsonManifest":    "sha-256:manifest.json",
-        "jsonLocalConf":   "sha-256:sign_integrity_config.json"
+        "engineLogging":     "sha256 of master/struct/visualMixEngineLogging.py",
+        "engineCrypto":      "sha256 of master/struct/visualMixEngineCrypto.py",
+        "signingMeta":       "sha256 of master/struct/engineSigningMeta.py",
+        "signingStruct":     "sha256 of master/struct/engineSigningStruct.py",
+        "signingLibrary":    "sha256 of master/struct/engineSigningLibrary.py",
+        "builderLibrary":    "sha256 of master/struct/engineBuilderLibrary.py",
+        "cliStateTest" :     "sha256 of master/struct/module/cliStateTest.py",
+        "cliStateInit" :     "sha256 of master/struct/module/cliStateInit.py",
+        "cliStateManifest":  "sha256 of master/struct/module/cliStateManifest.py",
+        "cliStateSign":      "sha256 of master/struct/module/cliStateSign.py",
+        "cliStateVerify":    "sha256 of master/struct/module/cliStateVerify.py",
+        "cliStateBuild":     "sha256 of master/struct/module/cliStateBuild.py",
+        "jsonConfig":        "sha256 of master/existentialSigningConfig.json",
+        "jsonSignatures":    "sha256 of master/existentialSignatures.json",
+        "jsonData":          "sha256 of master/existentialSigningData.json",
+        "jsonManifest":      "sha256 of manifest.json",
+        "jsonLocalConf":     "sign_integrity_config.json"
     }
 }
