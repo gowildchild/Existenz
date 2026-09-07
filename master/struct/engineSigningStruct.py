@@ -74,13 +74,15 @@ class existenzSteps(IntFlag):
     STEP_INIT               = 2
     STEP_COMMIT             = 4
     STEP_VERIFY             = 16
-    STEP_MANIFEST           = 64
-    STEP_SUCCESS            = 128
-    STEP_SIGN_PUBLIC        = 256
-    STEP_SIGN_ENVIRONMENT   = 512
-    STEP_SIGN_PRIVATE       = 1024
-    STEP_SIGN_WAITING       = 2048
-    STEP_SIGN_SUCCESS       = 4096
+    STEP_MANIFEST           = 32
+    STEP_SUCCESS            = 64
+    STEP_SIGN_PUBLIC        = 128
+    STEP_SIGN_ENVIRONMENT   = 256
+    STEP_SIGN_PRIVATE       = 512
+    STEP_SIGN_WAITING       = 1024
+    STEP_SIGN_SUCCESS       = 2048
+    STEP_INTEGRITY          = 4096
+    STEP_VERITAS            = 8192
     STEP_BUILD_DIST         = 16384
     STEP_BUILD_TOOLS        = 32768
     STEP_BUILD_BUILD        = 65536
@@ -97,6 +99,8 @@ existenzStepsSeq = [
     existenzSteps.STEP_SIGN_ENVIRONMENT,
     existenzSteps.STEP_SIGN_PRIVATE,
     existenzSteps.STEP_SIGN_SUCCESS,
+    existenzSteps.STEP_INTEGRITY,
+    existenzSteps.STEP_VERITAS,
     existenzSteps.STEP_BUILD_DIST,
     existenzSteps.STEP_BUILD_TOOLS,
     existenzSteps.STEP_BUILD_BUILD,
