@@ -128,8 +128,17 @@ def execute(args, error_handler, repo_root: str):
                                 v = d["val"]
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                 threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
+
+                        bitmask_lines = []
+                        for k, d in schema_data.get("existentialCore", {}).items():
+                            if "msk" in d:
+                                bitmask_lines.append(f'    "existentialCore.{k}": "{d["msk"]}"') 
+
+                        policy_lines = []
+                        for k, d in schema_data.get("existentialCore", {}).items():
+                            if "pol" in d:
+                                bitmask_lines.append(f'    "existentialCore.{k}": "{d["pol"]}"') 
                         
-                        # 2. FIXED: Custom line generation to match your aligned column layout perfectly
                         from engineSigningStruct import existenzCorePolicy
 
                         core_lines = []
@@ -180,6 +189,8 @@ def execute(args, error_handler, repo_root: str):
                         json_str_payload += f'  "existentialCoreVersion": "{ver_val}",\n'
                         json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
                         json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
+                        json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"
+                        json_str_payload += '  "existentialCorePolicy": {\n' + ",\n".join(policy_lines) + "\n  },\n"                        
                         json_str_payload += '  "existentialCoreThreat": {\n' + ",\n".join(threat_lines) + "\n  },\n"
                         json_str_payload += '  "existentialCoreThreatLegal": {\n' + ",\n".join(legal_entries) + "\n  },\n"
                         json_str_payload += '  "existentialCoreThreatShadowVacuum": {\n' + ",\n".join(vacuum_entries) + "\n  }\n"
