@@ -144,9 +144,11 @@ def execute(args, error_handler, repo_root: str):
                                 bitmask_lines.append(f'    "existentialCore.{k}":'.ljust(50) + f'"{d["msk"]}"') 
                             if "pol" in d:
                                 policy_lines.append(f'    "existentialCore.{k}":'.ljust(50) + f'"{d["pol"]}"') 
+                                
 
                         # 3. Compile existentialCore entries with pristine, vertically aligned fields
                         core_lines = []
+                        calculated_basic = []
                         for k, d in schema_data.get("existentialCore", {}).items():
                             v = d["val"]
                             raw_pol = d.get("pol", 0)
@@ -158,12 +160,6 @@ def execute(args, error_handler, repo_root: str):
                             else:
                                 pol = int(raw_pol)
                                 pol_hex = hex(pol)
-
-                            # Determine the clean bit-expression pattern based on the policy bitmask
-                            calculated_basic = []
-                            if bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
-                                calculated_basic.append(k)
-
                                 
                             if bool(pol & existenzCorePolicy.BIT_MASK):
                                 calculated_expr = f"1 << {v.bit_length() - 1}"
@@ -186,6 +182,9 @@ def execute(args, error_handler, repo_root: str):
                                 struct_type = "SIGNATURE"
                             else:
                                 struct_type = "PILLAR"
+                                
+                            if bool(pol & existenzCorePolicy.CORE_IMMUTABLE) and bool(pol & (existenzCorePolicy.CORE_PILLAR | existenzCorePolicy.CORE_CANARY)):
+                                calculated_basic.append(f'    "{k}"')                          
 
                             # Build entry strings with column formatting matching your target layout rules
                             line_entry = f'    "{k}":'.ljust(33)
@@ -199,7 +198,7 @@ def execute(args, error_handler, repo_root: str):
 
                         # 4. Pull the rest of the metadata fields out of your master schema
                         ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
-                        magic_val = schema_data.get("existentialCoreCheckMagic", "")
+                        #magic_val = schema_data.get("existentialCoreCheckMagic", "")
                         
                         # Build unified enum token resolver map once
                         val_to_enum_map = {}
