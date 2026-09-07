@@ -8,6 +8,88 @@ import sys
 import json
 import shutil
 
+import os
+import json
+import inspect
+from enum import IntFlag
+
+class existentialBuildStep(IntFlag):
+    BUILD_NONE              = 0
+    BUILD_DATA_STUCTURES    = 1
+    BUILD_DATA_MERGED       = 2
+    BUILD_DATA_SEPARATED    = 4
+    BUILD_DATA_VARIABLES    = 8
+    BUILD_CODE_FETCH        = 16
+    BUILD_CODE_VERIFY       = 32
+    BUILD_CODE_TEST         = 64
+    BUILD_CODE_SYMBOL_LIST  = 128
+    BUILD_TEST_CODE         = 256
+    BUILD_CHANGE_VARIABLES  = 512
+    BUILD_ERROR             = 1024
+    BUILD_BUSY              = 2048
+    BUILD_WORKING           = 4096
+    BUILD_SUCCESS           = 8192
+
+class existentialBuildLanguage(IntFlag):
+    BUILD_NONE              = 0
+    BUILD_JSON              = 1
+    BUILD_XML               = 2
+    BUILD_CSV               = 4
+    BUILD_MD                = 8
+    BUILD_TXT               = 16
+    BUILD_YAML              = 32
+    BUILD_HTML_JS           = 64
+    BUILD_PDF               = 128
+    BUILD_BASH              = 256
+    BUILD_PYTHON            = 512
+    BUILD_PERL              = 1024
+    BUILD_CPP               = 2048
+    BUILD_ESPHOME           = 4096
+    BUILD_PHP               = 8192
+    BUILD_RUST              = 16384
+    BUILD_POWERSHELL        = 32768
+    BUILD_TYPESCRIPT        = 65536
+
+def resolve_target_structures() -> dict:
+    """Reflects over your active system structures dynamically to extract clean token pairs."""
+    from engineSigningStruct import existenzSteps, existenzIntegrityKeyStatus, existenzIntegrityKeysHandler
+    import existentialCoreCheck
+    import existentialCoreThreat
+    
+    extracted_registry = {}
+    structures_to_scan = [
+        ("existenzSteps", existenzSteps),
+        ("existenzIntegrityKeyStatus", existenzIntegrityKeyStatus),
+        ("existenzIntegrityKeysHandler", existenzIntegrityKeysHandler)
+    ]
+    
+    # Safely scan dynamic code variables inside your file modules
+    for name, obj in inspect.getmembers(existentialCoreThreat, inspect.isclass):
+        if issubclass(obj, IntFlag) or isinstance(obj, dict):
+            structures_to_scan.append((name, obj))
+
+    for struct_name, struct_obj in structures_to_scan:
+        if isinstance(struct_obj, dict):
+            extracted_registry[struct_name] = sorted(struct_obj.items(), key=lambda x: str(x[0]))
+        elif issubclass(struct_obj, IntFlag):
+            extracted_registry[struct_name] = sorted(
+                [(n, int(v)) for n, value in struct_obj.__members__.items()],
+                key=lambda x: x[1]
+            )
+    return extracted_registry
+
+def flush_build_artifact(repo_root: str, language_folder: str, file_name: str, content: str, error_handler):
+    """Surgically deposits a type-safe generated compilation file directly into your dist matrix."""
+    target_destination_dir = os.path.abspath(os.path.join(repo_root, "dist", language_folder.lower()))
+    os.makedirs(target_destination_dir, exist_ok=True)
+    
+    absolute_filepath = os.path.join(target_destination_dir, file_name)
+    try:
+        with open(absolute_filepath, "w", encoding="utf-8") as out_f:
+            out_cpp.write(content) if hasattr(out_f, 'write') else out_f.write(content)
+    except Exception as io_err:
+        error_handler.print(f"Failed to deposit artifact payload block [{file_name}]: {io_err}", level="error")
+
 def make_header(existentialCoreVersion: str, sym: str) -> str:
     """Generates the standardized platform header signature with clean comment notations."""
     padding = f"{sym} " if sym else ""
