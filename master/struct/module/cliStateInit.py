@@ -150,9 +150,9 @@ def execute(args, error_handler, repo_root: str):
                             custom_out.write(json_str_payload)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Compiled 1-line ordered JSON written to root.", level="info")
                     
-                    elif token == "CoresChain":
-                        shutil.copy2(schema_path, target_path)
-                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Raw blueprint schema copied to root.", level="info")
+                    #elif token == "CoresChain":
+                    #    shutil.copy2(schema_path, target_path)
+                    #    error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Raw blueprint schema copied to root.", level="info")
                     else:
                         shutil.copy2(schema_path, target_path)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
