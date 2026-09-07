@@ -6,13 +6,16 @@
 import os
 import json
 import getpass
+from cryptography.hazmat.primitives.asymmetric import ed25519
+from cryptography.hazmat.primitives import serialization
 import engineSigningLibrary
-from engineSigningMeta import existenzLocations, existenzConfig
-from engineSigningStruct import existenzIntegrityGlue, existenzIntegrityKeyStatus
+from engineSigningMeta import existenzLocations, existenzConfig, existenzIntegrityGlue
+from engineSigningStruct import existenzIntegrityKeyStatus
+
 def execute(args, error_handler, repo_root: str):
     """
     Executes bitmask-driven asymmetric signature updates against tracking circles.
-    Prompts for key protection passphrases securely upfront to prevent input loops.
+    Prompts for passphrases exactly once per key profile, caching un-locked objects in memory.
     """
     error_handler.print("Initiating bitmask-driven asymmetric multi-signature execution...", level="notice")
     
@@ -23,7 +26,7 @@ def execute(args, error_handler, repo_root: str):
     if not os.path.exists(manifest_target_path):
         error_handler.print("Manifest database tracking ledger missing. Run manifest stage first.", level="error", exit_code=33)
 
-    # Ingest consolidated tracking payload structures from file destination
+    # 1. Ingest consolidated tracking payload structures from file destination
     with open(manifest_target_path, "r", encoding="utf-8") as mf:
         manifest_data = json.load(mf)
 
@@ -54,21 +57,11 @@ def execute(args, error_handler, repo_root: str):
         manifest_data["signatures"] = {}
 
     # ==========================================================================
-    # SECURE UPFRONT PASSPHRASE ENTRY PASS (RUNS ONCE LOCALLY)
-    # ==========================================================================
-    passphrase_bytes = None
-    if not is_github_runner:
-        # Uses standard terminal hidden-mask input handlers to keep entries secure
-        user_input = getpass.getpass("  [🔒] Enter Master Cryptographic Passphrase: ")
-        if user_input.strip():
-            passphrase_bytes = user_input.strip().encode('utf-8')
-
-    # ==========================================================================
-    # SESSION KEY CACHE - RETEINS UNLOCKED KEYS IN MEMORY
+    # AIR-TIGHT GLOBAL MEMORY CACHE LOOP: PROMPTS EXACTLY ONCE PER UNIQUE KEY PROFILE
     # ==========================================================================
     private_keys_memory_cache = {}
     
-    identities_blueprint = [
+    identities_preload_blueprint = [
         ("Environment", "SIGN_EXISTENZ_AUDIT_",     None),
         ("Platform",    "SIGN_EXISTENZ_PLATFORM_",  config_paths.get("Platform")),
         ("Developer",   "SIGN_EXISTENZ_DEVELOPER_", config_paths.get("Developer")),
@@ -76,30 +69,38 @@ def execute(args, error_handler, repo_root: str):
     ]
 
     error_handler.print(" [*] Pre-authenticating multi-signature identity layers...", level="info")
-    for identity, env_prefix, local_key_path in identities_blueprint:
+    
+    for identity, env_prefix, local_key_path in identities_preload_blueprint:
         private_key_object = None
 
-        # Track A: Load local configuration paths offline from disk
+        # Track A: Load local configuration paths offline from disk (PROMPTS ONCE HERE ONLY)
         if local_key_path:
-            expanded_path = os.expanduser(local_key_path) if hasattr(os, 'expanduser') else os.path.abspath(local_key_path)
+            expanded_path = os.path.expanduser(local_key_path)
             if os.path.exists(expanded_path):
                 try:
-                    # Ingests your private key bytes, matching it against your upfront passphrase natively
-                    with open(expanded_path, "rb") as key_file:
-                        key_bytes = key_file.read()
+                    # Securely prompt for the distinct passphrase of the current active role
+                    user_input = getpass.getpass(f"  [🔒] Enter Passphrase for Identity Key [{identity}]: ")
                     
-                    from cryptography.hazmat.primitives import serialization
+                    passphrase_bytes = None
+                    if user_input.strip():
+                        passphrase_bytes = user_input.strip().encode('utf-8')
+
+                    # Read raw file bytes natively into memory
+                    with open(expanded_path, "rb") as key_file:
+                        key_payload_bytes = key_file.read()
+                    
+                    # Deserialize directly using pure cryptography to bypass library re-prompt bugs
                     private_key_object = serialization.load_ssh_private_key(
-                        key_bytes,
+                        key_payload_bytes,
                         password=passphrase_bytes
                     )
                 except Exception as file_err:
                     error_handler.print(f"  [!] Failed loading local key profile [{identity}]: {file_err}", level="warning")
 
-        # Track B: Fall back to cloud pipeline environment loader if on runner
+        # Track B: Fall back to cloud pipeline environment loader if running on runner
         if not private_key_object:
             if not is_github_runner:
-                continue # Skip environment lookup silently if testing offline locally
+                continue # Skip environment lookup silently if testing locally offline
                 
             env_loader = engineSigningLibrary.visualMixEngineEnvironment(
                 error_handler=error_handler,
@@ -114,21 +115,21 @@ def execute(args, error_handler, repo_root: str):
                 raise
 
         if private_key_object:
-            # Commit instantiated key reference safely to our session cache registry
+            # Pin unlocked object securely to our runtime session cache registry
             private_keys_memory_cache[identity] = private_key_object
 
     # ==========================================================================
-    # 2. RUN WORKSPACE SIGNING LOOPS USING CACHED PRIVATE KEYS
+    # 2. RUN ITERATIVE WORKSPACE RINGS PROCESSING SIGNING LOOPS
     # ==========================================================================
     for current_circle in circles_to_process:
         glue_key = circle_to_glue_map.get(current_circle)
         if not glue_key or glue_key not in existenzIntegrityGlue:
             continue
 
-        # FIXED: Extract the raw bitmask integer weight precisely from index 1 of the metadata tuple configuration
-        circle_bitmask_weight = existenzIntegrityGlue[glue_key][1]
+        # Extract the bitmask weight integer from your configuration layout tuples
+        circle_bitmask_weight = existenzIntegrityGlue[glue_key] if isinstance(existenzIntegrityGlue[glue_key], int) else existenzIntegrityGlue[glue_key]
 
-        # Compute dynamic bitmask permissions for this target validation ring track loop
+        # Compute dynamic bitmask permissions for this loop circle track
         req_env = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT)
         req_pfm = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM)
         req_dev = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER)
@@ -163,7 +164,7 @@ def execute(args, error_handler, repo_root: str):
             if not is_required:
                 continue
                 
-            # Read pre-loaded keys straight out of memory context with ZERO extra prompts
+            # FIXED: Read pre-loaded keys straight out of memory context with ZERO extra prompts
             private_key_object = private_keys_memory_cache.get(identity)
 
             if private_key_object:
@@ -195,4 +196,3 @@ def execute(args, error_handler, repo_root: str):
 
     # Progress Control Safely Down to Next Pipeline Phase
     engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
-   
