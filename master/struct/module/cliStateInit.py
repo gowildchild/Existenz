@@ -137,12 +137,13 @@ def execute(args, error_handler, repo_root: str):
                             raw_pol = d.get("pol", 0)
                             #raw_msk = d.get("msk", None)
                             
-                            if isinstance(raw_pol, str):
+                            if isinstance(raw_pol, str) and raw_pol.startswith("0x"):
+                                pol = int(raw_pol, 16)
+                            elif isinstance(raw_pol, str):
                                 pol = int(getattr(existenzCorePolicy, raw_pol.strip(), 0))
                             else:
                                 pol = int(raw_pol)
                             
-                            print(f"SCREW THIS {v} {raw_pol} : {pol}")
                             # Determine the clean bit-expression pattern based on the policy bitmask
                             if bool(pol & existenzCorePolicy.BIT_MASK):
                                 calculated_expr = f"1 << {v.bit_length() - 1}"
