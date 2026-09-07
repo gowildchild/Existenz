@@ -129,12 +129,11 @@ def execute(args, error_handler, repo_root: str):
                             if "threat" in d:
                                 v = d["val"]
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
-                             # Format keys with precise left padding alignment matching your core layouts
+                                # Format keys with precise left padding alignment matching your core layouts
                                 threat_entry = f'    "{d["threat"]}":'.ljust(38)
                                 threat_entry += f'{{ "val": {v},'.ljust(15)
                                 threat_entry += f'"expr": "{expr}" }}'
                                 threat_lines.append(threat_entry)
-                                #threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
 
                         # 2. Extract separate registries for Bitmask and Policy structures
                         bitmask_lines = []
@@ -196,18 +195,33 @@ def execute(args, error_handler, repo_root: str):
                         ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
                         magic_val = schema_data.get("existentialCoreCheckMagic", "")
                         
-                        #legal_entries = [f'    "{lk}": "{lv}"' for lk, lv in schema_data.get("existentialCoreThreatLegal", {}).items()]
-                        #vacuum_entries = [f'    "{vk}": "{vv}"' for vk, vv in schema_data.get("existentialCoreThreatShadowVacuum", {}).items()]
-                        legal_entries = []
+                        # Build unified enum token resolver map once
                         val_to_enum_map = {}
+                        for k, d in schema_data.get("existentialCore", {}).items():
+                            if "threat" in d:
+                                node_label = d["threat"]
+                            else:
+                                node_label = k if k.startswith("CANARY_") or k.startswith("SHIELD_") else f"THREAT_{k}"
+                            val_to_enum_map[int(d["val"])] = f"existentialCoreThreat.{node_label}"
+
+                        # Synchronize composite bitwise keys exactly matching your blueprint
+                        composite_fallbacks = {
+                            89130487:   "existentialCoreThreat.CANARY_7_EXPLOITATION",
+                            2290263560: "existentialCoreThreat.CANARY_8_PREDATORY"
+                        }
+
+                        # Process Legal registries using the mapped tokens
+                        legal_entries = []
                         for raw_key, val in schema_data.get("existentialCoreThreatLegal", {}).items():
-                            enum_token = val_to_enum_map.get(str(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}")
+                            int_key = int(raw_key)
+                            enum_token = val_to_enum_map.get(int_key, composite_fallbacks.get(int_key, f"existentialCoreThreat.UNKNOWN_{int_key}"))
                             legal_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
 
+                        # Process Shadow Vacuum registries using the mapped tokens
                         vacuum_entries = []
-                        val_to_enum_map = {}
                         for raw_key, val in schema_data.get("existentialCoreThreatShadowVacuum", {}).items():
-                            enum_token = val_to_enum_map.get(str(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}")
+                            int_key = int(raw_key)
+                            enum_token = val_to_enum_map.get(int_key, composite_fallbacks.get(int_key, f"existentialCoreThreat.UNKNOWN_{int_key}"))
                             vacuum_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
 
                         # 5. Construct the physical JSON string file payload in the exact target layout order
@@ -218,8 +232,8 @@ def execute(args, error_handler, repo_root: str):
                         json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"                   
                         json_str_payload += '  "existentialCoreThreat": {\n' + ",\n".join(threat_lines) + "\n  },\n"
                         json_str_payload += '  "existentialCoreThreatLegal": {\n' + ",\n".join(legal_entries) + "\n  },\n"
-                        json_str_payload += '  "existentialCoreThreatShadowVacuum": {\n' + ",\n".join(vacuum_entries) + "\n  }\n"
-                        json_str_payload += '  "existentialCorePolicy": {\n' + ",\n".join(policy_lines) + "\n  },\n"     
+                        json_str_payload += '  "existentialCoreThreatShadowVacuum": {\n' + ",\n".join(vacuum_entries) + "\n  },\n"
+                        json_str_payload += '  "existentialCorePolicy": {\n' + ",\n".join(policy_lines) + "\n  }\n"     
                         json_str_payload += "}\n"
 
                         with open(target_path, "w", encoding="utf-8") as custom_out:
