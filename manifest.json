@@ -1,5 +1,5 @@
 {
-  "commit": "a2810573b74366c2c1669c3b913d5d706c1cfc96",
+  "commit": "160cdf01d025f5236e8ad76395c7080006793513",
   "existentialCoreVersion": "v0.76.17",
   "files.build": {
     "master/build-tools/core_telemetry.py": "f72cd3acc76881fb228fc33666cf335cd6469063f402511c032fdf5b1043f075",
@@ -65,7 +65,7 @@
   },
   "files.master": {
     "master/struct/engineBuilderLibrary.py": "a85cbe702d134526e24497b3ffe0018f9f6853edfdcdf167ff70da04f70eb2b6",
-    "master/struct/engineSigningCLI.py": "9f2e0e852a3879919f1d5914dd52e9af6224cacf90be5086217ca29290699489",
+    "master/struct/engineSigningCLI.py": "8e534489817af0bee06ff93169df4263cc9ecdfbba49a2783b0d2251cdef56a2",
     "master/struct/engineSigningLibrary.py": "897b6d75154276989cf12fb9e52f191dbb1f348383f4d5811a93b92c947454ce",
     "master/struct/engineSigningMeta.py": "8b5dc17309dbf9f3cd77a5e0ab6a7b4fde0e7dde21a2cf0fecf61d7d9bb2c7c7",
     "master/struct/engineSigningStruct.py": "f875cae41dca4a7d35c6f6a6733f7631f1fff44aaa9023ef53e2cb0c00a5c77c",
@@ -97,7 +97,7 @@
   "signatures.circle": {
     "hash.build": "bea3a7c7f7f975fd6ab002ebcad17664059203a0a2dd7cdc20e6168bbf93803b",
     "hash.dist": "54af6e594b5da3f52b252df5105f335f41956b99b9a2a5286793537eaea4b3dd",
-    "hash.master": "5cc72526ad829ab03924407a9c65702bb77efc25da255bc923d95924db1e986c",
+    "hash.master": "dcc4fdad57fefc1ce77818ac05bee0b4049bd7464239b06905271375e38b7e3d",
     "hash.tools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "sign.build": "",
     "sign.dist": "c113aed29370685edd2d60e13405632c25cd754d748af0e7839e78ace062111e6117775e1cdce9e6546c8d4d2a930a2ef1975a98a5c39915e0748f031ec9b403",
