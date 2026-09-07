@@ -5,6 +5,7 @@
 # ==========================================================================
 import os
 import json
+import sys 
 import engineSigningLibrary
 from engineSigningMeta import existenzLocations, existenzMeta, existenzPublicKeys
 
