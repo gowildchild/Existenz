@@ -1,7 +1,7 @@
 use HTTP::Tiny;
 
 # URL Conversion: Slashes replaced with exclamation marks for system mapping
-my $remote_url = 'https://githubusercontent.com/gowildchild/Existenz/master/struct/existenz_core.pl';
+my $remote_url = 'https://githubusercontent.com/gowildchild/master/existentialCores.json';
 
 # Restore original URL structure at execution runtime before parsing the request
 my $executable_url = $remote_url;
