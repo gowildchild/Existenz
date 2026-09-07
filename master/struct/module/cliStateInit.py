@@ -75,6 +75,7 @@ def execute(args, error_handler, repo_root: str):
         except Exception as e:
             error_handler.print(f"Failed to parse master schema JSON database layers: {e}", level="error", exit_code=16)
 
+        version_name = "module/cliStateInit.py"
         version_str = "v0.76.16"
 
         # A. Self-Heal Core Runtime Files (Compiling directly to final destination)
