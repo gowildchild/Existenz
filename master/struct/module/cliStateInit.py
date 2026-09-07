@@ -7,7 +7,7 @@ import os
 import sys
 import json
 import shutil
-from engineSigningMeta import existenzLocations
+from engineSigningMeta import existenzLocations, existenzMeta
 
 # 1. OPTIMIZE SCROLL SCOPE FIRST: Force Python to unlock parent folder visibility
 PARENT_STRUCT_MASTER = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -90,6 +90,8 @@ def execute(args, error_handler, repo_root: str):
     if core_assets_to_sync or engine_assets_to_sync:
         error_handler.print(" [*] Pre-flight Scan Complete: Bootstrapping runtime environment configurations...", level="notice")
         schema_path = os.path.abspath(os.path.join(repo_root, existenzLocations["core"]["Schema"]))
+        meta_path = os.path.abspath(os.path.join(repo_root, existenzLocations["engine"]["signingMeta"]))
+        meta_data = None
         
         try:
             with open(schema_path, "r", encoding="utf-8") as f:
@@ -97,11 +99,22 @@ def execute(args, error_handler, repo_root: str):
         except Exception as e:
             error_handler.print(f"Failed to parse master schema JSON database layers: {e}", level="error", exit_code=16)
 
+        try:
+            with open(meta_path, "r", encoding="utf-8") as f:
+                meta_data = json.load(f)
+        except Exception as e:
+            error_handler.print(f"Failed to parse meta JSON database layers: {e}", level="error", exit_code=16)
+
+        
         version_name = "module/cliStateInit.py"
         
         # Dynamic Extraction: Read version directly from the blueprint payload
         #existenzMeta.HEADER.get("VERSION", version_str)
-        version_str = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
+        version_full = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
+        version_str = schema_data.get("existentialMeta", {}).get("CoreVersion", schema_data.get("coreVersion", "v0.76.09"))
+        magic_str = meta_data.get("existenzMeta", {}).get("HEADER", schema_data.get("SECRET", "HEADERSECRET"))
+        #version_str = schema_data.get("existentialMeta", {}).get("CoreVersion", schema_data.get("coreVersion", "v0.76.09"))
+
 
         # Export straight to GitHub Actions environment space natively
         github_env_file = os.environ.get('GITHUB_ENV')
@@ -114,7 +127,7 @@ def execute(args, error_handler, repo_root: str):
                 error_handler.print(f"Non-fatal error mapping version variable to shell runner: {env_err}", level="debug")
 
         
-        error_handler.print(f"  [VERSION1] {version_str} {version_name}", level="debug")
+        #error_handler.print(f"  [VERSION1] {version_str} {version_name}", level="debug")
         # A. Self-Heal Core Runtime Files (Compiling directly to final destination)
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.abspath(os.path.join(repo_root, asset_data["runtime_path"]))
@@ -208,6 +221,7 @@ def execute(args, error_handler, repo_root: str):
                             core_lines.append(line_entry)
 
                         # 4. Pull the rest of the metadata fields out of your master schema
+                        #ver_val = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.10"))
                         ver_val = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.10"))
                         ver_val_meta = schema_data.get("existentialMeta", {})
                         ver_val_json = json.dumps(ver_val_meta, indent=2)
@@ -404,7 +418,7 @@ def execute(args, error_handler, repo_root: str):
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
-                            f.write(f"existentialNeta = \"{version_str}\"\n")
+                            f.write(f"existentialNeta = \"{version_full}\"\n")
                             f.write("existentialCoreCheckMagic = b\"EX25IMMUT32CORE7617\"\n\n")
                             f.write("class existentialCoreSignatures:\n    existentialCoreSigned = (\n")
                             f.write("        (\"Magic\", \"magic\", \"existentialCoreMagicHash\", \"\", 2, 0),\n")
