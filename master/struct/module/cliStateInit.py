@@ -50,9 +50,9 @@ def execute(args, error_handler, repo_root: str):
         full_target_path = os.path.abspath(os.path.join(repo_root, relative_path))
         
         # Diagnostic File Presence Verification Pass
-        error_handler.print(f"  DEBUG SCAN: Checking token '{token}' target path: {full_target_path}", level="info")
-        if os.path.exists(full_target_path):
-            error_handler.print(f"  DEBUG SCAN: Physical file present on disk space with size: {os.path.getsize(full_target_path)} bytes.", level="info")
+        #error_handler.print(f"  DEBUG SCAN: Checking token '{token}' target path: {full_target_path}", level="info")
+        #if os.path.exists(full_target_path):
+        #    error_handler.print(f"  DEBUG SCAN: Physical file present on disk space with size: {os.path.getsize(full_target_path)} bytes.", level="info")
         
         if not os.path.exists(full_target_path):
             if token == "Schema":
@@ -102,7 +102,7 @@ def execute(args, error_handler, repo_root: str):
         # Dynamic Extraction: Read version directly from the blueprint payload
         #existenzMeta.HEADER.get("VERSION", version_str)
         version_str = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
-        error_handler.print(f"  [VERSION1] {version_str}", level="info")
+        error_handler.print(f"  [VERSION1] {version_str} {version_name}", level="info")
 
         # Export straight to GitHub Actions environment space natively
         github_env_file = os.environ.get('GITHUB_ENV')
@@ -110,7 +110,7 @@ def execute(args, error_handler, repo_root: str):
             try:
                 with open(github_env_file, "a", encoding="utf-8") as gef:
                     gef.write(f"BLUEPRINT_VERSION={version_str}\n")
-                error_handler.print(f"  [+] Dynamic Context Export: Loaded BLUEPRINT_VERSION={version_str} into environment map.", level="info")
+                error_handler.print(f"  [+] Loaded BLUEPRINT_VERSION={version_str} into environment.", level="info")
             except Exception as env_err:
                 error_handler.print(f"Non-fatal error mapping version variable to shell runner: {env_err}", level="debug")
 
