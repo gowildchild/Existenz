@@ -175,6 +175,33 @@ jobs:
         # FIXED: Clean, uniform command block invoking the simple unified 'verify' stage
         python master/struct/engineSigningCLI.py -stage verify -circle "$ACTIVE_CIRCLE" -override update -run wet
 
+    - name: Existenz - Master Integrity Phase
+      run: |
+        if [ "$RUN_MODE" = "locked" ]; then
+          echo " [!]  Repository builder is currently locked. Skipping verification."
+          exit 0
+        fi
+
+        ACTIVE_CIRCLE="${CIRCLE_TARGET:-all}"
+        echo " [*] Running Cryptographic Multi-Signature Verification for Circle: $ACTIVE_CIRCLE"
+        
+        # FIXED: Clean, uniform command block invoking the simple unified 'verify' stage
+        python master/struct/engineSigningCLI.py -stage integrity -circle "$ACTIVE_CIRCLE" -override update -run wet
+
+    - name: Existenz - Master Veritas Phase
+      run: |
+        if [ "$RUN_MODE" = "locked" ]; then
+          echo " [!]  Repository builder is currently locked. Skipping verification."
+          exit 0
+        fi
+
+        ACTIVE_CIRCLE="${CIRCLE_TARGET:-all}"
+        echo " [*] Running Cryptographic Multi-Signature Verification for Circle: $ACTIVE_CIRCLE"
+        
+        # FIXED: Clean, uniform command block invoking the simple unified 'verify' stage
+        python master/struct/engineSigningCLI.py -stage veritas -circle "$ACTIVE_CIRCLE" -override update -run wet
+
+
 
 #    - name: Existenz - Terminate Integrity Check 
 #      if: env.RUN_MODE == 'integritycheck'
