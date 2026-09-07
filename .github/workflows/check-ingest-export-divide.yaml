@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    environment: KEY_PVT_ENVIRONMENT
+    environment: production
     
     steps:
     - name: Existenz - CHECKOUT Code Blueprint
@@ -31,7 +31,7 @@ jobs:
     - name: Existenz - INSTALL Dependencies
       run: pip install pyyaml cryptography
 
-    - name: Existenz - START Bootstrap Initialization
+    - name: Existenz - Bootstrap INITialization
       id: pipeline_init
       run: |
         # 1. Execute your compiled pre-flight dependency audit and self-healing loop
@@ -49,7 +49,7 @@ jobs:
         # 3. Securely export the verified mode variable out to the GitHub Actions environment map
         echo "RUN_MODE=$MODE" >> $GITHUB_ENV
 
-    - name: Existenz - RECOVER Bootstrap Information
+    - name: Existenz - Bootstrap RECOVERY Routine
       id: conditional_push
       run: |
         # Configure local bot configurations
