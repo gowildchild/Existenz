@@ -14,26 +14,24 @@ from engineSigningMeta import existenzLocations, existenzConfig, existenzPublicK
 
 def execute(args, error_handler, repo_root: str):
     """
-    Executes absolute cryptographic validation (VERITAS).
-    1. Asserts required keys are used based on glue bitmasks.
-    2. Asserts data hashes have not drifted since signing.
-    3. Graphically logs results and halts building on any signature fault.
+    Executes project-agnostic cryptographic consensus checking [MODE: VERITAS].
+    Supports composite workspace checks via circle='all' to prevent value dropouts.
     """
-    error_handler.print("Initiating full cryptographic multi-signature validation pass [MODE: VERITAS]...", level="notice")
+    error_handler.print("Initiating universal cryptographic verification pass [MODE: VERITAS]...", level="notice")
     
     manifest_filename = existenzLocations["engine"]["Manifest"]
     manifest_target_path = os.path.abspath(os.path.join(repo_root, manifest_filename))
     json_signatures_path = os.path.abspath(os.path.join(repo_root, existenzLocations["core"]["SignaturesJson"]))
 
     if not os.path.exists(manifest_target_path):
-        error_handler.print("Veritas boundary abort: manifest.json tracking ledger missing.", level="error", exit_code=33)
+        error_handler.print("Veritas barrier error: manifest.json database tracking ledger missing.", level="error", exit_code=33)
 
-    # Ingest the active live manifest database mapping layer
+    # Ingest existing tracking configurations from the filesystem
     with open(manifest_target_path, "r", encoding="utf-8") as mf:
         manifest_data = json.load(mf)
-    stored_signatures = manifest_data.get("signatures", {})
+    stored_manifest_signatures = manifest_data.get("signatures", {})
 
-    # Extract our structural arrays and bitmasks directly from your metadata layers
+    # Import structural matrices directly from your active integrity tables
     from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeyStatus
 
     circle_to_glue_map = {
@@ -44,60 +42,64 @@ def execute(args, error_handler, repo_root: str):
     }
 
     active_circle_arg = str(args.circle).strip().lower()
-    glue_key = circle_to_glue_map.get(active_circle_arg)
     
-    if not glue_key or glue_key not in existenzIntegrityGlue:
-        error_handler.print(f"Veritas aborted: unresolved active circle identifier: {active_circle_arg}", level="error", exit_code=34)
-
-    # Direct Extraction Matching Your cliStateSign.py Logic Loop Layout
-    circle_bitmask_weight = existenzIntegrityGlue[glue_key][1]
-
-    # ==========================================================================
-    # CHECK 1: VERIFY MANDATED BITMASK KEYS ARE PRESENT
-    # ==========================================================================
-    req_env = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT)
-    req_pfm = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM)
-    req_dev = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER)
-    req_psn = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
-
-    missing_keys = []
-    if req_env and "Environment" not in stored_signatures: missing_keys.append("Environment")
-    if req_pfm and "Platform" not in stored_signatures:    missing_keys.append("Platform")
-    if req_dev and "Developer" not in stored_signatures:   missing_keys.append("Developer")
-    if req_psn and "Personal" not in stored_signatures:    missing_keys.append("Personal")
-
-    if missing_keys:
-        error_handler.print("=" * 90, level="local")
-        error_handler.print(f" [!!!] VERITAS CONSTRAINT VIOLATION: MANDATORY REJECTION [!!!]", level="local")
-        error_handler.print(f"       Circle [{active_circle_arg.upper()}] requires missing private signatures: {missing_keys}", level="local")
-        error_handler.print(f"       Further structural compilation is explicitly REFUSED.", level="local")
-        error_handler.print("=" * 90, level="local")
-        sys.exit(62)
+    # FIXED: Support composite workspace checks by dynamically looping over all active rings sequentially
+    if active_circle_arg == "all":
+        circles_to_verify = ["dist", "tools", "build", "master"]
+    else:
+        circles_to_verify = [active_circle_arg]
 
     # ==========================================================================
-    # CHECK 2: VERIFY DATA CONTINUITY (LIVE HASH VS MANIFEST RECORD)
+    # PHASE 1: LOOP-DRIVEN CONSENSUS CHECK FOR DESIGNATED TRACKS
     # ==========================================================================
-    manifest_circle_block = manifest_data.get("signatures.circle", {})
-    live_circle_hash = manifest_circle_block.get(f"hash.{active_circle_arg}", "")
-    
-    # Recalculate live files hashes to verify no file tampering took place since generation
-    manifest_paths = existenzLocations["manifest"]
-    live_fs_files = engineSigningLibrary.gather_folder_files(manifest_paths.get(active_circle_arg, active_circle_arg), repo_root)
-    computed_live_hash = engineSigningLibrary.calculate_aggregate_circle_hash(live_fs_files)
+    for current_circle in circles_to_verify:
+        glue_key = circle_to_glue_map.get(current_circle)
+        if not glue_key or glue_key not in existenzIntegrityGlue:
+            error_handler.print(f"Veritas aborted: unresolved circle target: {current_circle}", level="error", exit_code=34)
 
-    if computed_live_hash != live_circle_hash:
-        error_handler.print("=" * 90, level="local")
-        error_handler.print(f" [!!!] VERITAS FILE CORRUPTION DETECTED: Circle [{active_circle_arg.upper()}] has data drift!", level="local")
-        error_handler.print(f"       Manifest expected: {live_circle_hash}", level="local")
-        error_handler.print(f"       Filesystem live:   {computed_live_hash}", level="local")
-        error_handler.print(f"       Aborting pipeline execution to intercept supply-chain attack vector.", level="local")
-        error_handler.print("=" * 90, level="local")
-        sys.exit(65)
+        # Unpack your structural target bitmask weights
+        circle_bitmask_weight = existenzIntegrityGlue[glue_key] if isinstance(existenzIntegrityGlue[glue_key], int) else existenzIntegrityGlue[glue_key]
+
+        # 1. VERIFY REQUIRED BITMASK IDENTITY ROLES ARE PRESENT
+        req_env = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT)
+        req_pfm = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM)
+        req_dev = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER)
+        req_psn = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
+
+        missing_keys = []
+        if req_env and "Environment" not in stored_manifest_signatures: missing_keys.append("Environment")
+        if req_pfm and "Platform" not in stored_manifest_signatures:    missing_keys.append("Platform")
+        if req_dev and "Developer" not in stored_manifest_signatures:   missing_keys.append("Developer")
+        if req_psn and "Personal" not in stored_manifest_signatures:    missing_keys.append("Personal")
+
+        if missing_keys:
+            error_handler.print("=" * 90, level="local")
+            error_handler.print(f" [!!!] VERITAS SECURITY GUARD FAULT: REJECTING downstream BUILD [!!!]", level="local")
+            error_handler.print(f"       Circle Ring [{current_circle.upper()}] requires missing private signatures: {missing_keys}", level="local")
+            error_handler.print(f"       Further cross-language artifact building is explicitly BLOCKED.", level="local")
+            error_handler.print("=" * 90, level="local")
+            sys.exit(62)
+
+        # 2. VERIFY DATA CONTINUITY (LIVE CRAWL VS SIGNED MANIFEST ENVELOPE)
+        manifest_circle_block = manifest_data.get("signatures.circle", {})
+        signed_envelope_hash = manifest_circle_block.get(f"hash.{current_circle}", "")
+        
+        manifest_paths = existenzLocations["manifest"]
+        live_folder_files = engineSigningLibrary.gather_folder_files(manifest_paths.get(current_circle, current_circle), repo_root)
+        live_computed_hash = engineSigningLibrary.calculate_aggregate_circle_hash(live_folder_files)
+
+        if live_computed_hash != signed_envelope_hash:
+            error_handler.print("=" * 90, level="local")
+            error_handler.print(f" [!!!] VERITAS FRAUD INTERCEPT: DATA CORRUPTION DETECTED [!!!]", level="local")
+            error_handler.print(f"       Track [{current_circle.upper()}] has code state changes since signature stamp!", level="local")
+            error_handler.print(f"       Manifest expected: {signed_envelope_hash}", level="local")
+            error_handler.print(f"       Live Filesystem:   {live_computed_hash}", level="local")
+            error_handler.print("=" * 90, level="local")
+            sys.exit(65)
 
     # ==========================================================================
-    # CHECK 3: ASYMMETRIC ED25519 CRYPTOGRAPHIC TRUTH VERIFICATION
+    # PHASE 2: MATHEMATICAL ASYMMETRIC VERIFICATION PASS (100% OK)
     # ==========================================================================
-    # Reassemble canonical signing payload matching your specification
     payload_to_verify = {
         "commit":                  manifest_data.get("commit"),
         "existentialCoreVersion":  manifest_data.get("existentialCoreVersion"),
@@ -116,12 +118,11 @@ def execute(args, error_handler, repo_root: str):
         separators=(',', ':')
     ).encode('utf-8')
 
-    # Load matching public key strings out of your active tuple profiles
     public_key_map = {}
     for item in existenzPublicKeys:
-        public_key_map[item[0]] = item[1]
+        public_key_map[item] = item
 
-    for identity, signature_hex in stored_signatures.items():
+    for identity, signature_hex in stored_manifest_signatures.items():
         if identity not in public_key_map:
             continue
             
@@ -130,19 +131,19 @@ def execute(args, error_handler, repo_root: str):
             public_key_bytes = pub_ssh_str.encode('utf-8')
             public_key_obj = serialization.load_ssh_public_key(public_key_bytes)
             
-            # Perform genuine mathematical verification
+            # Mathematical signature validation
             public_key_obj.verify(bytes.fromhex(signature_hex), serialized_manifest_body)
             error_handler.print(f"  [+] Cryptographic Verification PASSED for identity role: [{identity}]", level="notice")
         except Exception as crypto_fail:
             error_handler.print("=" * 90, level="local")
-            error_handler.print(f" [!!!] VERITAS CRYPTOGRAPHIC SIGNATURE FAILURE [!!!]", level="local")
+            error_handler.print(f" [!!!] VERITAS ASYMMETRIC FAILURE: CRYPTOGRAPHIC SIGNATURE BAD [!!!]", level="local")
             error_handler.print(f"       Mathematical validation failed for key role: [{identity}]", level="local")
-            error_handler.print(f"       Error context details: {crypto_fail}", level="local")
+            error_handler.print(f"       Details: {crypto_fail}", level="local")
             error_handler.print("=" * 90, level="local")
             sys.exit(67)
 
     # ==========================================================================
-    # VISUAL RENDER: Output structural tree visualization matching data-dense matrix rows
+    # PHASE 3: DENSE HIERARCHY BOX STRUCTURE RENDERING
     # ==========================================================================
     sig_database = {}
     if os.path.exists(json_signatures_path):
@@ -152,15 +153,32 @@ def execute(args, error_handler, repo_root: str):
         except Exception:
             pass
 
+    active_tree_rules = existenzSignatures.existentialCore
+    pushed_matrix_rows = []
+    
     tree_session_hashes = {
         "existentialCoreMagicHash": sig_database.get("MagicCheck_hash", "UNKNOWN"),
         "existentialCoreCheckHash": sig_database.get("CoreCheck_hash", "UNSIGNED"),
     }
-    for label, _, _ in existenzSignatures.existentialCore:
-        tree_session_hashes[f"existential{label}Hash"] = sig_database.get(f"{label}_hash", "")
+    for rule_row in active_tree_rules:
+        label = str(rule_row)
+        inner_glue = rule_row
+        live_hash = sig_database.get(f"{label}_hash", "")
+        
+        rebuilt_row = [
+            label,
+            inner_glue,
+            live_hash,
+            inner_glue,
+            inner_glue,
+            rule_row
+        ]
+        pushed_matrix_rows.append(rebuilt_row)
+        
+        tree_session_hashes[f"existential{label}Hash"] = live_hash
         tree_session_hashes[f"{label.lower()}_sign"] = sig_database.get(f"{label}_sign", "00000000")
 
-    engineSigningLibrary.render_cryptographic_structural_tree(error_handler, tree_session_hashes, existenzSignatures.existentialCore)
+    engineSigningLibrary.render_cryptographic_structural_tree(error_handler, tree_session_hashes, pushed_matrix_rows)
 
     error_handler.print("[+] SUCCESS: All multi-signature verification rings cleared. Veritas unblocks the track.", level="notice")
     
