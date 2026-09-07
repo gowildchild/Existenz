@@ -386,8 +386,39 @@ def load_private_key(identity: str, path: str) -> ed25519.Ed25519PrivateKey:
     """Invokes the consolidated global cryptography library handler."""
     return visualMixEngineCrypto.load_private_key(identity, path, error_handler, REPO_GITHUB)
 
+def solve_ring_requirements(stage: str, circle: str = "dist") -> tuple:
+    """
+    BITWISE ROUTINE ROUTER: Intersects stage tokens AND active circle targets 
+    against IntFlag bitweights to enforce air-tight signing constraints.
+    """
+    from engineSigningStruct import existenzIntegrityKeyStatus
+    
+    stage_lower = str(stage).lower()
+    circle_lower = str(circle).lower()
+    
+    # 1. Elevate bit weights natively based on the absolute highest privilege targeted
+    if "master" in stage_lower or circle_lower == "master":
+        # Master tracks act as the final gatekeeper, requiring ALL private key states
+        ring_weight = (existenzIntegrityKeyStatus.KEY_PVT_PLATFORM | 
+                       existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER | 
+                       existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
+    elif "tools" in stage_lower or "build" in stage_lower or circle_lower in ["tools", "build"]:
+        # Tools and build options scale up by enforcing Developer and Platform checks
+        ring_weight = (existenzIntegrityKeyStatus.KEY_PVT_PLATFORM | 
+                       existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER)
+    else:
+        # Default baseline environment fallback layer state configuration for distribution
+        ring_weight = existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT
 
-def solve_ring_requirements(stage: str) -> tuple:
+    return (
+        bool(ring_weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT),
+        bool(ring_weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM),
+        bool(ring_weight & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER),
+        bool(ring_weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
+    )
+
+
+def solve_ring_requirements_v1(stage: str) -> tuple:
     """
     BITWISE ROUTINE ROUTER: Uses IntFlag bitmask matching to verify which keys are needed.
     Returns: (requires_environment, requires_platform, requires_developer, requires_personal)
