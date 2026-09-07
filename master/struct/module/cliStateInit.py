@@ -133,29 +133,39 @@ def execute(args, error_handler, repo_root: str):
                         core_lines = []
                         for k, d in schema_data.get("existentialCore", {}).items():
                             v = d["val"]
-                            pol = d.get("pol", 0) # Extract the primitive bitmask integer field from schema
                             
-                            # Calculate the clean bit-expression or hexadecimal representation
-                            if bool(pol & existenzCorePolicy.BIT_MASK):
+                            # Extract the raw policy element (string, number, or array) from the node
+                            pol_data = d.get("pol", 0)
+                            
+                            # 1. Compute the active numeric mask value natively out of your pol entry
+                            bm = 0
+                            if isinstance(pol_data, int):
+                                bm = pol_data
+                            elif isinstance(pol_data, str):
+                                # Try to look it up directly from the enum attributes
+                                bm = int(getattr(existenzCorePolicy, pol_data.strip(), 0))
+                            elif isinstance(pol_data, list):
+                                for attribute_name in pol_data:
+                                    bm |= int(getattr(existenzCorePolicy, str(attribute_name).strip(), 0))
+
+                            # 2. Calculate the clean bit-expression or hexadecimal representation
+                            if v <= 0:
+                                calculated_expr = "0"
+                            elif (v & (v - 1)) == 0:
                                 calculated_expr = f"1 << {v.bit_length() - 1}"
                             else:
-                                if v <= 0:
-                                    calculated_expr = "0"
-                                elif (v & (v - 1)) == 0:
-                                    calculated_expr = f"1 << {v.bit_length() - 1}"
-                                else:
-                                    calculated_expr = f"0x{v:08x}"
-
-                            struct_type = None
-                            if bool(pol & existenzCorePolicy.CORE_INTEGRITY):
+                                calculated_expr = f"0x{v:08x}"
+                                
+                            # 3. PURE STRUCT EVALUATION: Evaluate policy attributes natively via bitwise flags from most specific to baseline
+                            if bool(bm & existenzCorePolicy.CORE_INTEGRITY):
                                 struct_type = "SIGNATURE"
-                            elif bool(pol & existenzCorePolicy.CORE_WATCHDOG):
+                            elif bool(bm & existenzCorePolicy.CORE_WATCHDOG):
                                 struct_type = "SHIELD"
-                            elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY)):
+                            elif bool(bm & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY)):
                                 struct_type = "CANARY"
-                            elif bool(pol & existenzCorePolicy.CORE_RIGHTS):
+                            elif bool(bm & existenzCorePolicy.CORE_RIGHTS):
                                 struct_type = "RIGHTS"
-                            elif bool(pol & existenzCorePolicy.CORE_PILLAR):
+                            elif bool(bm & existenzCorePolicy.CORE_PILLAR):
                                 struct_type = "PILLAR"
                             else:
                                 struct_type = "PILLAR"
