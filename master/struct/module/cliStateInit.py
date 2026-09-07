@@ -9,12 +9,14 @@ import json
 import shutil
 from engineSigningMeta import existenzLocations
 
+# 1. OPTIMIZE SCROLL SCOPE FIRST: Force Python to unlock parent folder visibility
 PARENT_STRUCT_MASTER = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PARENT_STRUCT_MASTER not in sys.path:
     sys.path.insert(0, PARENT_STRUCT_MASTER)
 
+# 2. SAFE NATIVE IMPORTS: Now resolves flawlessly from the active parent search path
 import engineBuilderLibrary
-from engineSigningStruct import existenzIntegrityGlue
+from engineSigningStruct import existenzIntegrityGlue, existenzCorePolicy
 
 
 def execute(args, error_handler, repo_root: str):
@@ -134,7 +136,7 @@ def execute(args, error_handler, repo_root: str):
                             v = d["val"]
                             raw_pol = d.get("pol", 0)
                             
-                            # FIXED: Dynamically convert string policy names to true integer bitweights
+                            # Dynamically convert string policy names to true integer bitweights
                             if isinstance(raw_pol, str):
                                 pol = int(getattr(existenzCorePolicy, raw_pol.strip(), 0))
                             else:
