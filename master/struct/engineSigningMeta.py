@@ -42,6 +42,10 @@ existenzLocations = {
         "Threat":     "master/existentialCoreThreat.py",
         "Signatures": "master/existentialSignatures.py"
     },
+    "chain": {
+        "Cores":     "",
+        "Threat":    ""
+    },
     "manifest": {
         "dist":     "dist",
         "tools":    "dist/tools",
