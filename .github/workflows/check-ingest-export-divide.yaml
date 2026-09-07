@@ -70,7 +70,7 @@ jobs:
         # FIXED: Utilizing standard Linux terminal environment mapping string variables ($BLUEPRINT_VERSION)
         if ! git diff-index --quiet HEAD; then
           echo " [*] Fixing missing assets. "
-          git commit -m "sys(core): Bootstrap export from Existenz Blueprint [$BLUEPRINT_VERSION]"
+          git commit -m "sys(core): Bootstrap export Existenz Blueprints [$BLUEPRINT_VERSION]"
           git pull --rebase origin main || true
           git push origin main
         else
@@ -94,13 +94,28 @@ jobs:
         fi
 
         # 2. Resolve fallback tracking values natively through pure shell assignments
-        ACTIVE_CIRCLE="${CIRCLE_TARGET:-dist}"
+        ACTIVE_CIRCLE="${CIRCLE_TARGET:-all}"
         
         echo " [*] Processing active verification ring circle: $ACTIVE_CIRCLE"
         
         # 3. Fire the orchestrator engine securely leveraging your dynamic stage parameters
         python master/struct/engineSigningCLI.py -stage manifest -circle "$ACTIVE_CIRCLE" -override update -run wet
+        BLUEPRINT_VERSION=$(python -c 'import json; print(json.load(open("master/struct/existentialCoreSchema.json")).get("existentialCoreMeta", {}).get("CoreVersion", "v0.76.17"))')
+        echo " [+] Resolved active registry layer track target: $BLUEPRINT_VERSION"
+
+        # 5. Commit operational configuration parameters natively to git
+        git config --global user.name "Existenz Platform Bot"
+        git config --global user.email "32355099+gowildchild@users.noreply.github.com"
+      
+        git add manifest.json
         
+        if git diff --staged --quiet; then
+          echo "[+] No structural changes detected. Skipping push."
+        else
+          git commit -m "Existenz: universal cross-language structures [$BLUEPRINT_VERSION]"
+          git pull --rebase origin main || true
+          git push
+        fi       
 #    - name: Existenz - Signing Pipeline
 #      env:
 #          GITHUB_ACTIONS: 'true'
