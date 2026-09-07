@@ -30,7 +30,7 @@ jobs:
     - name: Existenz - Installing Dependencies
       run: pip install pyyaml cryptography
 
-    - name: Existenz - Init Self-Healing Check
+    - name: Existenz - Installing Bootstrap INIT
       id: pipeline_init
       run: |
         # 1. Execute your compiled pre-flight dependency audit and self-healing loop
@@ -39,16 +39,16 @@ jobs:
         # 2. Extract runtime execution state from repository lock tracking assets
         if [ -f "master/.existentialLock" ]; then
           MODE=$(head -n 1 master/.existentialLock | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')
-          echo " [*] Status Phase: Active lockfile detected. Selected Core Mode: $MODE"
+          echo " [*]  Active lockfile detected. Selected Core Mode: $MODE"
         else
-          MODE="compile"
-          echo " [!] Status Phase: No lockfile detected. Defaulting Pipeline to Core Mode: $MODE"
+          MODE="manifest"
+          echo " [!]  No lockfile detected. Defaulting STAGE to Core Mode: $MODE"
         fi
         
         # 3. Securely export the verified mode variable out to the GitHub Actions environment map
         echo "RUN_MODE=$MODE" >> $GITHUB_ENV
 
-    - name: Existenz - Persist Self-Healed Assets
+    - name: Existenz - Self-Heal Bootstrap INIT
       id: conditional_push
       run: |
         # Configure local bot configurations
@@ -69,56 +69,81 @@ jobs:
 
         # FIXED: Utilizing standard Linux terminal environment mapping string variables ($BLUEPRINT_VERSION)
         if ! git diff-index --quiet HEAD; then
-          echo " [*] Pipeline Engine: Missing initialization assets detected and self-healed. Committing modifications..."
-          git commit -m "sys(core): Automatic Initialization from Blueprint [$BLUEPRINT_VERSION]"
+          echo " [*] Fixing missing assets. "
+          git commit -m "sys(core): Bootstrap export from Existenz Blueprint [$BLUEPRINT_VERSION]"
           git pull --rebase origin main || true
           git push origin main
         else
-          echo " [*] Pipeline Engine: Workspace is fully initialized and aligned. No commit sequence required."
+          echo " [*] No missing assets."
         fi
 
-    - name: Existenz - Signing Pipeline
+    - name: Existenz - Forensic File Catalog Manifest
       env:
-          GITHUB_ACTIONS: 'true'
-          SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
-          SIGN_EXISTENZ_AUDIT_PHRASE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PHRASE }}
-          SIGN_EXISTENZ_AUDIT_PUBLIC: ${{ vars.SIGN_EXISTENZ_AUDIT_PUBLIC }}
-          SIGN_EXISTENZ_AUDIT_FINGERPRINT: ${{ vars.SIGN_EXISTENZ_AUDIT_FINGERPRINT }}
-          SIGN_EXISTENZ_DIST_RAD_A: 7
-          SIGN_EXISTENZ_DIST_RAD_B: 31
+        GITHUB_ACTIONS: 'true'
+        SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
+        SIGN_EXISTENZ_AUDIT_PHRASE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PHRASE }}
+        SIGN_EXISTENZ_AUDIT_PUBLIC: ${{ vars.SIGN_EXISTENZ_AUDIT_PUBLIC }}
+        SIGN_EXISTENZ_AUDIT_FINGERPRINT: ${{ vars.SIGN_EXISTENZ_AUDIT_FINGERPRINT }}
+        SIGN_EXISTENZ_DIST_RAD_A: 7
+        SIGN_EXISTENZ_DIST_RAD_B: 31
       run: |
-          python master/struct/engineSigningCLI.py -stage sign -override update -run wet -circle master
+        # 1. Pure bash condition evaluation to eliminate static yaml parsing warnings
+        if [ "$RUN_MODE" = "locked" ]; then
+          echo " [!]  Repository builder is currently locked. Skipping manifest compilation."
+          exit 0
+        fi
 
-    - name: Existenz - git commit and push to repo
-      if: env.RUN_MODE == 'compile'
-      run: |
-        echo "[*] Compile mode active. Synchronizing repository files..."
-        git config --global user.name "Existenz Platform Bot"
-        git config --global user.email "32355099+gowildchild@users.noreply.github.com"
-      
-        cp master/existentialCore.py dist/ 2>/dev/null || true
-        cp master/existentialCoreThreat.py dist/ 2>/dev/null || true
+        # 2. Resolve fallback tracking values natively through pure shell assignments
+        ACTIVE_CIRCLE="${CIRCLE_TARGET:-dist}"
         
-        git add dist/
+        echo " [*] Processing active verification ring circle: $ACTIVE_CIRCLE"
         
-        if git diff --staged --quiet; then
-          echo "[+] No structural changes detected. Skipping push."
-        else
-          git commit -m "Existenz: universal cross-language structures [v0.76.16]"
-          git pull --rebase origin main || true
-          git push
-        fi      
+        # 3. Fire the orchestrator engine securely leveraging your dynamic stage parameters
+        python master/struct/engineSigningCLI.py -stage manifest -circle "$ACTIVE_CIRCLE" -override update -run wet
+        
+#    - name: Existenz - Signing Pipeline
+#      env:
+#          GITHUB_ACTIONS: 'true'
+#          SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
+#          SIGN_EXISTENZ_AUDIT_PHRASE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PHRASE }}
+#          SIGN_EXISTENZ_AUDIT_PUBLIC: ${{ vars.SIGN_EXISTENZ_AUDIT_PUBLIC }}
+#          SIGN_EXISTENZ_AUDIT_FINGERPRINT: ${{ vars.SIGN_EXISTENZ_AUDIT_FINGERPRINT }}
+#          SIGN_EXISTENZ_DIST_RAD_A: 7
+#          SIGN_EXISTENZ_DIST_RAD_B: 31
+#      run: |
+#          python master/struct/engineSigningCLI.py -stage sign -override update -run wet -circle master
+#
+#    - name: Existenz - git commit and push to repo
+#      if: env.RUN_MODE == 'compile'
+#      run: |
+#        echo "[*] Compile mode active. Synchronizing repository files..."
+#        git config --global user.name "Existenz Platform Bot"
+#        git config --global user.email "32355099+gowildchild@users.noreply.github.com"
+#      
+#        cp master/existentialCore.py dist/ 2>/dev/null || true
+#        cp master/existentialCoreThreat.py dist/ 2>/dev/null || true
+#        
+#        git add dist/
+#        
+#        if git diff --staged --quiet; then
+#          echo "[+] No structural changes detected. Skipping push."
+#        else
+#          git commit -m "Existenz: universal cross-language structures [v0.76.16]"
+#          git pull --rebase origin main || true
+#          git push
+#        fi      
 
-    - name: Existenz - Test Universal Data Structures
-      if: env.RUN_MODE != 'locked'
-      run: |
-        test -f dist/existentialCore.json || echo "Dist JSON pending compilation stage expansion"
-        test -f manifest.json
-        echo "[+] Compilation and schema verification successful."
-        
-    - name: Existenz - Terminate Integrity Check 
-      if: env.RUN_MODE == 'integritycheck'
-      run: |
-        echo "[*] Pipeline Status: Mode [INTEGRITYCHECK] complete."
-        echo "[+] Results: System signatures and structures verified clean."
-        echo "[+] Notice: Repository commit bypassed intentionally to protect active deployment."
+#    - name: Existenz - Test Universal Data Structures
+#      if: env.RUN_MODE != 'locked'
+#      run: |
+#        test -f dist/existentialCore.json || echo "Dist JSON pending compilation stage expansion"
+#        test -f manifest.json
+#        echo "[+] Compilation and schema verification successful."
+#        
+#    - name: Existenz - Terminate Integrity Check 
+#      if: env.RUN_MODE == 'integritycheck'
+#      run: |
+#        echo "[*] Pipeline Status: Mode [INTEGRITYCHECK] complete."
+#        echo "[+] Results: System signatures and structures verified clean."
+#        echo "[+] Notice: Repository commit bypassed intentionally to protect active deployment."
+#
