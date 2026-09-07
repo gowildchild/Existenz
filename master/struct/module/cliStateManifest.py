@@ -50,21 +50,21 @@ def execute(args, error_handler, repo_root: str):
     # 1. Surgical Ring Routing Mapped Straight to your Metadata Context Folders
     if active_circle == "master":
         error_handler.print("Re-signing Ring [MASTER & BUILD]. Preserving Tools and Dist tracks.", level="info")
-        files_master.update(engineSigningLibrary.gather_folder_files(repo_root, manifest_paths["master"]))
-        files_build.update(engineSigningLibrary.gather_folder_files(repo_root, manifest_paths["build"]))
+        files_master.update(engineSigningLibrary.gather_folder_files(manifest_paths["master"], repo_root))
+        files_build.update(engineSigningLibrary.gather_folder_files(manifest_paths["build"], repo_root))
         files_tools.update(old_tools_bucket)
         files_dist.update(old_dist_bucket)
         
     elif active_circle == "tools":
         error_handler.print("Re-signing Ring [TOOLS]. Preserving Master, Build, and Dist tracks.", level="info")
-        files_tools.update(engineSigningLibrary.gather_folder_files(repo_root, manifest_paths["tools"]))
+        files_tools.update(engineSigningLibrary.gather_folder_files(manifest_paths["tools"], repo_root))
         files_master.update(old_master_bucket)
         files_build.update(old_build_bucket)
         files_dist.update(old_dist_bucket)
         
     elif active_circle == "dist":
         error_handler.print("Re-signing Ring [DIST]. Preserving Master, Build, and Tools tracks.", level="info")
-        files_dist.update(engineSigningLibrary.gather_folder_files(repo_root, manifest_paths["dist"]))
+        files_dist.update(engineSigningLibrary.gather_folder_files(manifest_paths["dist"], repo_root))
         files_master.update(old_master_bucket)
         files_build.update(old_build_bucket)
         files_tools.update(old_tools_bucket)
