@@ -127,6 +127,19 @@ def execute(args, error_handler, repo_root: str):
                             if "threat" in d:
                                 v = d["val"]
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
+                                if bool(pol & existenzCorePolicy.CORE_PILLAR):
+                                    struct_type = "PILLAR"
+                                elif bool(pol & existenzCorePolicy.CORE_RIGHTS):
+                                    struct_type = "RIGHTS"
+                                elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY | existenzCorePolicy.CORE_WATCHDOG)):
+                                    struct_type = "CANARY"
+                                elif bool(pol & existenzCorePolicy.CORE_INTEGRITY):
+                                    struct_type = "SIGNATURE"
+                                else:
+                                    struct_type = "PILLAR"
+
+                                #bitmask_lines.append(f'    "existentialCore.{k}": {{ "type": "{struct_type}", "mask": "{d["msk"]}" }}')
+
                                 threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
 
                         bitmask_lines = []
@@ -137,6 +150,7 @@ def execute(args, error_handler, repo_root: str):
                             if "pol" in d:
                                 policy_lines.append(f'    "existentialCore.{k}": "{d["pol"]}"') 
 
+                        
                         from engineSigningStruct import existenzCorePolicy
 
                         core_lines = []
@@ -156,7 +170,18 @@ def execute(args, error_handler, repo_root: str):
                             # Left-pad the entry key name string to 28 characters for alignment matching your blueprint
                             line_entry = f'    "{k}":'.ljust(33)
                             line_entry += f'"val": {v},'.ljust(15)
-                            #line_entry += f'"pol": "{pol_hex}",'
+                            if bool(pol & existenzCorePolicy.CORE_PILLAR):
+                                struct_type = "PILLAR"
+                            elif bool(pol & existenzCorePolicy.CORE_RIGHTS):
+                                struct_type = "RIGHTS"
+                            elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY | existenzCorePolicy.CORE_WATCHDOG)):
+                                struct_type = "CANARY"
+                            elif bool(pol & existenzCorePolicy.CORE_INTEGRITY):
+                                struct_type = "SIGNATURE"
+                            else:
+                                struct_type = "PILLAR"
+               
+                            if pol > 0: line_entry += f'"type": {struct_type},'.ljust(16)
                             
                             # Surgical Conditional Addition: Only append msk if active on the node layout
                             #if "msk" in d:
@@ -168,7 +193,6 @@ def execute(args, error_handler, repo_root: str):
                             clean_cmnt = d.get("comment", "").replace('"', '\\"')
                             line_entry += f' "comment": "{clean_cmnt}"'
                             
-                            # Surgical Conditional Addition: Only append threat track if active on the node layout
                             if "threat" in d:
                                 line_entry += f', "threat": "{d["threat"]}"'
                                 
