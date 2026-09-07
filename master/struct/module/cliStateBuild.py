@@ -5,7 +5,7 @@
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
 
-# Auto-generated Operational Controller State Stub for cliStateBuild
+# Auto-generated Operational Controller State Stub for cliStateBuild 
 
 def execute(args, error_handler, repo_root):
     error_handler.print('cliStateBuild phase initialized.', level='notice')
