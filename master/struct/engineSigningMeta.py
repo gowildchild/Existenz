@@ -40,7 +40,6 @@ existenzLocations = {
         "Schema":        "master/struct/existentialCoreSchema.json",
         "Cores":         "master/existentialCores.json",
         "Threat":        "master/existentialCoreThreat.py",
-        "ThreatSigned":  "master/existentialCoreThreat.py",
         "Signatures":    "master/existentialSignatures.py"
     },
     "chain": {
