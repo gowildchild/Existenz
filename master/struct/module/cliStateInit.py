@@ -100,10 +100,10 @@ def execute(args, error_handler, repo_root: str):
             if filename.endswith(".json"):
                 try:
                     if token == "Cores":
-                        # 1. Start with an exact copy of the full blueprint schema
+                        # 1. existentialCores.json gets the entire blueprint schema base
                         merged_cores_block = dict(schema_data)
                         
-                        # 2. Extract the threat entries from existentialCore to map them into existentialCoreThreat
+                        # 2. Compile the existentialCoreThreat dictionary natively out of the core data nodes
                         threat_enum_data = {}
                         for k, d in schema_data.get("existentialCore", {}).items():
                             if "threat" in d:
@@ -114,12 +114,18 @@ def execute(args, error_handler, repo_root: str):
                                     "expr": expr
                                 }
                         
-                        # 3. Inject the compiled existentialCoreThreat structure directly into the payload
+                        # 3. Inject existentialCoreThreat directly into existentialCores.json
                         merged_cores_block["existentialCoreThreat"] = threat_enum_data
                         
                         with open(target_path, "w", encoding="utf-8") as json_out:
                             json.dump(merged_cores_block, json_out, indent=2)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint with existentialCoreThreat compiled to root.", level="info")
+                    
+                    else:
+                        shutil.copy2(schema_path, target_path)
+                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
+                except Exception as e:
+                    error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
                     else:
                         shutil.copy2(schema_path, target_path)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
