@@ -9,12 +9,12 @@ import json
 import shutil
 from engineSigningMeta import existenzLocations
 
-# Force Python to look inside the parent master/struct vault directory
+# Force Python to look inside the true parent vault directory (master/struct/)
 PARENT_STRUCT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PARENT_STRUCT_DIR not in sys.path:
     sys.path.insert(0, PARENT_STRUCT_DIR)
 
-# Now the library will import flawlessly without throwing a 254 exception!
+# Now it flitlessly links straight to master/struct/engineBuilderLibrary.py!
 import engineBuilderLibrary
 
 def execute(args, error_handler, repo_root: str):
