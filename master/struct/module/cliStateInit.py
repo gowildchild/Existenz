@@ -183,8 +183,8 @@ def execute(args, error_handler, repo_root: str):
                             else:
                                 struct_type = "PILLAR"
                                 
-                            if bool(pol & existenzCorePolicy.CORE_IMMUTABLE) and bool(pol & (existenzCorePolicy.CORE_PILLAR | existenzCorePolicy.CORE_CANARY)):
-                                calculated_basic.append(f'    "{k}"')                          
+                            if not bool(k == "NONE") and bool(pol & existenzCorePolicy.CORE_IMMUTABLE) and bool(pol & (existenzCorePolicy.CORE_PILLAR | existenzCorePolicy.CORE_RIGHTS | existenzCorePolicy.CORE_CANARY)):
+                                calculated_basic.append(f'    "{k}"')
 
                             # Build entry strings with column formatting matching your target layout rules
                             line_entry = f'    "{k}":'.ljust(33)
