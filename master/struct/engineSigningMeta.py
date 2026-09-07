@@ -47,8 +47,7 @@ existenzLocations = {
         "dist":     "dist",
         "tools":    "dist/tools",
         "build":    "master/build-tools",
-        "master":   "master/struct",
-        "manifest": "manifest.json"
+        "master":   "master/struct"
     },
     "engine": {
         "engineLogging":     "master/struct/visualMixEngineLogging.py",
@@ -56,6 +55,7 @@ existenzLocations = {
         "signingMeta":       "master/struct/engineSigningMeta.py",
         "signingStruct":     "master/struct/engineSigningStruct.py",
         "signingLibrary":    "master/struct/engineSigningLibrary.py",
+        "builderLibrary":    "master/struct/engineBuilderLibrary.py",
         "cliStateInit" :     "master/struct/module/cliStateInit.py",
         "cliStateManifest":  "master/struct/module/cliStateManifest.py",
         "cliStateSign":      "master/struct/module/cliStateSign.py",
