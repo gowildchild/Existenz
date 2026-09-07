@@ -9,6 +9,12 @@ import json
 import shutil
 from engineSigningMeta import existenzLocations
 
+# Force Python to look inside the parent master/struct vault directory
+PARENT_STRUCT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PARENT_STRUCT_DIR not in sys.path:
+    sys.path.insert(0, PARENT_STRUCT_DIR)
+
+# Now the library will import flawlessly without throwing a 254 exception!
 import engineBuilderLibrary
 
 def execute(args, error_handler, repo_root: str):
@@ -29,7 +35,6 @@ def execute(args, error_handler, repo_root: str):
         
         if not os.path.exists(full_target_path):
             if token == "Schema":
-                # Hard Blocker: The primary blueprint schema source must exist inside the vault
                 error_handler.print(f"Fatal Initialization fault: Master blueprint '{token}' missing at: {relative_path}", level="warning")
                 failed_initialization = "config"
             else:
@@ -42,7 +47,6 @@ def execute(args, error_handler, repo_root: str):
         else:
             error_handler.print(f"Core Asset Verified:   {relative_path:<40} [FOUND]")
 
-    # Halt immediately if the single source of truth is missing
     if failed_initialization == "config":
         error_handler.print("Pre-flight execution blocked: Missing core layout master schema structure.", level="error", exit_code=16)
 
@@ -74,7 +78,7 @@ def execute(args, error_handler, repo_root: str):
 
         version_str = "v0.76.16"
 
-        # A. Self-Heal Core Runtime Files (JSON Mirrors & Compiled Python Packages)
+        # A. Self-Heal Core Runtime Files
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.join(repo_root, asset_data["runtime_path"])
             filename = asset_data["filename"]
@@ -99,7 +103,6 @@ def execute(args, error_handler, repo_root: str):
                         },
                         header=engineBuilderLibrary.make_header(version_str, "#")
                     )
-                    # Relocate to expected path out of single-build artifacts directory structure
                     single_out = os.path.join(os.path.dirname(target_path), "python", "single", "existentialCore.py")
                     if os.path.exists(single_out):
                         shutil.move(single_out, target_path)
@@ -107,7 +110,6 @@ def execute(args, error_handler, repo_root: str):
                     error_handler.print(f"    [->] Compiled Enums Matrix: Core         -> Generated existentialCore.py", level="info")
 
                 elif token == "Threat":
-                    # Adapt and build the companion threat, legal, and shadow vacuum models inside the script
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
@@ -121,20 +123,18 @@ def execute(args, error_handler, repo_root: str):
                     except Exception as e:
                         error_handler.print(f"Failed to generate threat file: {e}", level="error", exit_code=1)
                 else:
-                    # Fallback lookup: if a pre-configured utility exists in master/struct/, restore it
                     struct_source = os.path.join(repo_root, "master", "struct", filename)
                     if os.path.exists(struct_source):
                         shutil.copy2(struct_source, target_path)
                         error_handler.print(f"    [->] Synced Script Asset: {token:<12} -> Restored from vault.", level="info")
 
-        # B. Self-Heal Missing Engine Opcodes, State Controllers, and Operational Configurations
+        # B. Self-Heal Missing Engine Opcodes & Stubs
         for token, asset_data in engine_assets_to_sync.items():
             target_path = os.path.join(repo_root, asset_data["runtime_path"])
             filename = asset_data["filename"]
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
 
             if filename.startswith("cliState") and filename.endswith(".py"):
-                # Automatically generate functional state controller stubs so pre-flight scans pass
                 with open(target_path, "w", encoding="utf-8") as f:
                     f.write(engineBuilderLibrary.make_header(version_str, "#"))
                     f.write(f"# Auto-generated Operational Controller State Stub for {token}\n\n")
@@ -143,7 +143,6 @@ def execute(args, error_handler, repo_root: str):
                 error_handler.print(f"    [->] Provisioned State Hook:  {token:<16} -> Stub generated.", level="info")
                 
             elif filename.endswith(".json"):
-                # Seed missing dynamic signature blocks or data mappings with clean empty templates
                 with open(target_path, "w", encoding="utf-8") as f:
                     json.dump({"existentialCore": {}, "comment": f"Auto-initialized dictionary envelope layer for {token}"}, f, indent=2)
                 error_handler.print(f"    [->] Seeded Data Blueprint:   {token:<16} -> JSON template written.", level="info")
