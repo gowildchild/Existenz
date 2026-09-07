@@ -18,19 +18,19 @@ jobs:
       contents: write
       
     steps:
-    - name: Existenz - Checkout Code Blueprint
+    - name: Existenz - CHECKOUT Code Blueprint
       uses: actions/checkout@v4
 
-    - name: Existenz - Initialize Python Runtime
+    - name: Existenz - INIT Python Runtime
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
     # Step 3: Determine Operational Mode from the Lockfile
-    - name: Existenz - Installing Dependencies
+    - name: Existenz - INSTALL Dependencies
       run: pip install pyyaml cryptography
 
-    - name: Existenz - Installing Bootstrap INIT
+    - name: Existenz - START Bootstrap Initialization
       id: pipeline_init
       run: |
         # 1. Execute your compiled pre-flight dependency audit and self-healing loop
@@ -48,7 +48,7 @@ jobs:
         # 3. Securely export the verified mode variable out to the GitHub Actions environment map
         echo "RUN_MODE=$MODE" >> $GITHUB_ENV
 
-    - name: Existenz - Self-Heal Bootstrap INIT
+    - name: Existenz - RECOVER Bootstrap Information
       id: conditional_push
       run: |
         # Configure local bot configurations
@@ -77,7 +77,7 @@ jobs:
           echo " [*] No missing assets."
         fi
 
-    - name: Existenz - Forensic File Catalog Manifest
+    - name: Existenz - INTEGRITY manifest.json
       env:
         GITHUB_ACTIONS: 'true'
         SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
@@ -116,8 +116,7 @@ jobs:
           git pull --rebase origin main || true
           git push
         fi
-    - name: Existenz - Dynamic Public Environmental Cryptographic Signing
-      #if: env.RUN_MODE != 'locked'
+    - name: Existenz - INTEGRITY Asymetric Signing
       env:
         GITHUB_ACTIONS: 'true'
         SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
@@ -127,32 +126,43 @@ jobs:
         SIGN_EXISTENZ_DIST_RAD_A: 7
         SIGN_EXISTENZ_DIST_RAD_B: 31
       run: |
-        echo " [*] Running Core Asymmetric Signature Loop..."
-        # Natively reads the step written to GITHUB_ENV by your manifest execution module
-        python master/struct/engineSigningCLI.py -stage sign -circle "${CIRCLE_TARGET:-all}" -override update -run wet
+        if [ "$RUN_MODE" = "locked" ]; then
+          echo " [!]  Repository builder is currently locked. Skipping signing."
+          exit 0
+        fi
+
+        ACTIVE_CIRCLE="${CIRCLE_TARGET:-dist}"
+        echo " [*] Running Asymmetric Signature Assembly Layer for Circle: $ACTIVE_CIRCLE"
         
-        # Pull dynamic version tags straight out of your schema layout meta strings
+        # FIXED: Clean, uniform command block invoking the simple unified 'sign' stage
+        python master/struct/engineSigningCLI.py -stage sign -circle "$ACTIVE_CIRCLE" -override update -run wet
+        
         BLUEPRINT_VERSION=$(python -c 'import json; print(json.load(open("master/struct/existentialCoreSchema.json")).get("existentialCoreMeta", {}).get("CoreVersion", "v0.76.17"))')
         
         git config --global user.name "Existenz Platform Bot"
-        git config --global user.email "32355099+gowildchild@users.noreply.github.com"
+        git config --global user.email "32355099+gowildchild@://github.com"
         
         git add manifest.json
         if git diff --staged --quiet; then
-          echo "[+] No structural changes detected. Skipping signing push."
+          echo "[+] No structural signature updates detected. Skipping push."
         else
           git commit -m "Existenz: cryptographically signed layer records [$BLUEPRINT_VERSION]"
           git pull --rebase origin main || true
           git push
         fi
 
-    - name: Existenz - Asymmetric Multi-Signature Verification Check
-      #if: env.RUN_MODE != 'locked'
+    - name: Existenz - Asymmetric Multi-Signature Verification Phase
       run: |
-        echo " [*] Transitioning to computed step target layer check..."
-        # Runs the deep bitmask verification gate to certify tree matches before permitting structural building
-        python master/struct/engineSigningCLI.py -stage verify -circle "${CIRCLE_TARGET:-all}" -override update -run wet
+        if [ "$RUN_MODE" = "locked" ]; then
+          echo " [!]  Repository builder is currently locked. Skipping verification."
+          exit 0
+        fi
+
+        ACTIVE_CIRCLE="${CIRCLE_TARGET:-dist}"
+        echo " [*] Running Cryptographic Multi-Signature Verification for Circle: $ACTIVE_CIRCLE"
         
+        # FIXED: Clean, uniform command block invoking the simple unified 'verify' stage
+        python master/struct/engineSigningCLI.py -stage verify -circle "$ACTIVE_CIRCLE" -override update -run wet
 #    - name: Existenz - Signing Pipeline
 #      env:
 #          GITHUB_ACTIONS: 'true'
