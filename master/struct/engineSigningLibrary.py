@@ -18,7 +18,7 @@ from typing import Dict, Any
 
 from engineSigningMeta import existenzLocations, existenzMeta
 # Added missing existenzIntegrityKeyStatus registration dependency entry
-from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler, existenzIntegrityKeyStatus
+from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler, existenzIntegrityKeyStatus, existenzSteps
 from existentialSignatures import existentialToken
 
 from visualMixEngineLogging import visualmixErrorHandler
@@ -38,6 +38,86 @@ if REPO_ROOT not in sys.path:
 
 # Initialize global diagnostic loop interceptor
 error_handler = visualmixErrorHandler(custom_post="_ERR")
+
+# The precise bitwise progression order for your repository pipeline matching your layout
+PIPELINE_SEQUENCE = [
+    existenzSteps.STEP_TEST,
+    existenzSteps.STEP_INIT,
+    existenzSteps.STEP_COMMIT,
+    existenzSteps.STEP_MANIFEST,
+    existenzSteps.STEP_SIGN_PUBLIC,
+    existenzSteps.STEP_SIGN_ENVIRONMENT,
+    existenzSteps.STEP_VERIFY,
+    existenzSteps.STEP_SIGN_PRIVATE,
+    existenzSteps.STEP_SIGN_SUCCESS,
+    existenzSteps.STEP_BUILD_DIST,
+    existenzSteps.STEP_BUILD_TOOLS,
+    existenzSteps.STEP_BUILD_BUILD,
+    existenzSteps.STEP_BUILD_MASTER,
+    existenzSteps.STEP_BUILD_SUCCESS,
+    existenzSteps.STEP_SUCCESS
+]
+
+def pipeline_step_current(current_stage_str: str, error_handler):
+    """
+    Resolves the incoming stage string against existenzSteps bitweights,
+    logs the current active state token, and exports it to the environment.
+    """
+    normalized_input = str(current_stage_str).strip().upper()
+    target_attribute_name = f"STEP_{normalized_input}"
+    
+    current_step_flag = getattr(existenzSteps, target_attribute_name, existenzSteps.STEP_NONE)
+    current_step_name = current_step_flag.name.replace("STEP_", "") if current_step_flag != existenzSteps.STEP_NONE else "UNKNOWN"
+    
+    # Render uniform block message tracking execution entry point
+    error_handler.print(f"  [➔] Pipeline Stage Active: {current_step_name:<16} [Weight: {int(current_step_flag)}]", level="notice")
+    
+    github_env_file = os.environ.get('GITHUB_ENV')
+    if github_env_file:
+        try:
+            with open(github_env_file, "a", encoding="utf-8") as gef:
+                gef.write(f"CURRENT_PIPELINE_STAGE={current_step_name.lower()}\n")
+        except Exception as env_err:
+            error_handler.print(f"Non-fatal error logging current state token: {env_err}", level="debug")
+
+def pipeline_step_next(current_stage_str: str, error_handler) -> str:
+    """
+    Evaluates the active execution step against the existenzSteps IntFlag bitweights,
+    calculates the progressive next pipeline target, and registers it to GITHUB_ENV.
+    """
+    # 1. Normalize the string entry and dynamically resolve its corresponding IntFlag attribute
+    normalized_input = str(current_stage_str).strip().upper()
+    target_attribute_name = f"STEP_{normalized_input}"
+    
+    current_step_flag = getattr(existenzSteps, target_attribute_name, existenzSteps.STEP_NONE)
+    
+    # 2. Compute subsequent target from sequence block indices
+    next_step_flag = existenzSteps.STEP_NONE
+    try:
+        current_index = PIPELINE_SEQUENCE.index(current_step_flag)
+        if current_index + 1 < len(PIPELINE_SEQUENCE):
+            next_step_flag = PIPELINE_SEQUENCE[current_index + 1]
+    except ValueError:
+        # Fall back gracefully if step name was unrecognized in sequence registry array
+        pass
+
+    # 3. Clean up the programmatic label token string fields
+    if next_step_flag != existenzSteps.STEP_NONE:
+        next_step_name = next_step_flag.name.replace("STEP_", "").lower()
+    else:
+        next_step_name = "success"
+
+    # 4. Atomically commit the variable layer to GitHub Environment maps
+    github_env_file = os.environ.get('GITHUB_ENV')
+    if github_env_file:
+        try:
+            with open(github_env_file, "a", encoding="utf-8") as gef:
+                gef.write(f"NEXT_PIPELINE_STAGE={next_step_name}\n")
+            error_handler.print(f"  [+] Pipeline Link: Progressive routing unblocked -> NEXT_PIPELINE_STAGE={next_step_name}", level="notice")
+        except Exception as env_err:
+            error_handler.print(f"Non-fatal error logging workspace boundary variable path: {env_err}", level="debug")
+            
+    return next_step_name
 
 def compute_sha256(file_path: str) -> str:
     """Redirects file streaming straight through your uniform crypto engine helper."""
