@@ -42,7 +42,7 @@ if REPO_ROOT not in sys.path:
 error_handler = visualmixErrorHandler(custom_post="_ERR")
 
 def main():
-    parser = argparse.ArgumentParser(description="Existenz SHA256 Manifest")
+    parser = argparse.ArgumentParser(description="EXISTENZ Veritas")
     # Added "init" into the parser stage choices profile array
     parser.add_argument(
         '-circle', '--circle',
@@ -63,8 +63,14 @@ def main():
         help='Execution routine target parameter block'
     )
 
+    parser.add_argument(
+        "-stage", "--stage", 
+        choices=["test","init", "sign", "check", "verify", "manifest","integrity","veritas","build"], 
+        required=True, 
+        help="Manifest operation state selection."
+    )    
+
     
-    parser.add_argument("-stage", "--stage", choices=["test","init", "sign", "check", "verify", "manifest","integrity","veritas"], required=True, help="Manifest operation state selection.")    
     parser.add_argument("-bitmask","--bitmask", help="Select BitMask")
     parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to your private key routes (offline signing)")
     parser.add_argument("-m", "--manifest", default=MANIFEST_OUTPUT, help="Path to your manifest file.")
@@ -72,14 +78,12 @@ def main():
 
     # Consolidated console blocks straight through uniform logging routing
     banner_payload = [
-        f"  VisualMIX Veritas CLI {INT_VERSION}   by Gunther Voet"]
+        f"  VisualMIX Veritas Triple Signer CLI {INT_VERSION}     by Gunther Voet "]
     engineSigningLibrary.render_better_box(error_handler, banner_payload, title_str="Existenz")
     #error_handler.print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐", level="local")
     #error_handler.print(f"│ VisualMIX Signing CLI {INT_VERSION}     by Gunther Voet │", level="local")
     #error_handler.print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘", level="local")
-    error_handler.print(f"Operational: -stage {args.stage} -circle {args.circle} -config {args.config} -m {args.manifest}", level="info")
-
-    
+    error_handler.print(f"-stage {args.stage} -circle {args.circle} -o {args.override}"-config {args.config} ", level="local")
     engineSigningLibrary.pipeline_step_current(args.stage, error_handler)
     
     if args.stage == "test":
