@@ -75,10 +75,13 @@ def resolve_live_git_commit(repo_root: str) -> str:
         return "0000000000000000000000000000000000000000"
 
 
-def gather_folder_files(repo_root: str, folder_relative_path: str) -> dict:
+def gather_folder_files(folder_relative_path: str, repo_root: str = None) -> dict:
     """Traverses a single target folder recursively to catalog all available file hashes."""
     file_matrix = {}
-    full_folder_path = os.path.join(repo_root, folder_relative_path)
+    
+    # Dynamically resolve root: use the passed parameter or fall back to your global tracking flag constant
+    active_root = repo_root if repo_root is not None else (REPO_ROOT if 'REPO_ROOT' in globals() else ".")
+    full_folder_path = os.path.join(active_root, folder_relative_path)
 
     if not os.path.exists(full_folder_path):
         return file_matrix
@@ -91,7 +94,7 @@ def gather_folder_files(repo_root: str, folder_relative_path: str) -> dict:
             if file == "manifest.json" or file.endswith(".pyc") or file.startswith("."):
                 continue
             full_path = os.path.join(root, file)
-            rel_path = os.path.relpath(full_path, repo_root)
+            rel_path = os.path.relpath(full_path, active_root)
             rel_path = rel_path.replace("\\", "/")
             file_matrix[rel_path] = compute_sha256(full_path)
     return file_matrix
