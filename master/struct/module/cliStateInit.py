@@ -121,27 +121,17 @@ def execute(args, error_handler, repo_root: str):
             if filename.endswith(".json"):
                 try:
                     if token == "Cores":
+                        from engineSigningStruct import existenzCorePolicy
+
                         # 1. Compile existentialCoreThreat entries compact on single lines
                         threat_lines = []
                         for k, d in schema_data.get("existentialCore", {}).items():
                             if "threat" in d:
                                 v = d["val"]
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
-                                if bool(pol & existenzCorePolicy.CORE_PILLAR):
-                                    struct_type = "PILLAR"
-                                elif bool(pol & existenzCorePolicy.CORE_RIGHTS):
-                                    struct_type = "RIGHTS"
-                                elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY | existenzCorePolicy.CORE_WATCHDOG)):
-                                    struct_type = "CANARY"
-                                elif bool(pol & existenzCorePolicy.CORE_INTEGRITY):
-                                    struct_type = "SIGNATURE"
-                                else:
-                                    struct_type = "PILLAR"
-
-                                #bitmask_lines.append(f'    "existentialCore.{k}": {{ "type": "{struct_type}", "mask": "{d["msk"]}" }}')
-
                                 threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
 
+                        # 2. Extract separate registries for Bitmask and Policy structures
                         bitmask_lines = []
                         policy_lines = []                        
                         for k, d in schema_data.get("existentialCore", {}).items():
@@ -150,15 +140,13 @@ def execute(args, error_handler, repo_root: str):
                             if "pol" in d:
                                 policy_lines.append(f'    "existentialCore.{k}": "{d["pol"]}"') 
 
-                        
-                        from engineSigningStruct import existenzCorePolicy
-
+                        # 3. Compile existentialCore entries with pristine, vertically aligned fields
                         core_lines = []
                         for k, d in schema_data.get("existentialCore", {}).items():
                             v = d["val"]
                             raw_pol = d.get("pol", 0)
                             
-                            # Format pol cleanly back to its raw hexadecimal string literal format
+                            # Safely convert hex string parameters using base 16
                             if isinstance(raw_pol, str):
                                 pol_hex = raw_pol.strip()
                                 pol = int(pol_hex, 16) if pol_hex.startswith("0x") else int(pol_hex)
@@ -166,10 +154,18 @@ def execute(args, error_handler, repo_root: str):
                                 pol = int(raw_pol)
                                 pol_hex = hex(pol)
 
-                            # Build entry dictionary keys conditionally to align column values
-                            # Left-pad the entry key name string to 28 characters for alignment matching your blueprint
-                            line_entry = f'    "{k}":'.ljust(33)
-                            line_entry += f'"val": {v},'.ljust(15)
+                            # Determine the clean bit-expression pattern based on the policy bitmask
+                            if bool(pol & existenzCorePolicy.BIT_MASK):
+                                calculated_expr = f"1 << {v.bit_length() - 1}"
+                            else:
+                                if v <= 0:
+                                    calculated_expr = "0"
+                                elif (v & (v - 1)) == 0:
+                                    calculated_expr = f"1 << {v.bit_length() - 1}"
+                                else:
+                                    calculated_expr = f"0x{v:08x}"
+
+                            # Evaluate structural types dynamically from your IntFlag priority order
                             if bool(pol & existenzCorePolicy.CORE_PILLAR):
                                 struct_type = "PILLAR"
                             elif bool(pol & existenzCorePolicy.CORE_RIGHTS):
@@ -180,33 +176,25 @@ def execute(args, error_handler, repo_root: str):
                                 struct_type = "SIGNATURE"
                             else:
                                 struct_type = "PILLAR"
-               
-                            if pol > 0: line_entry += f'"type": {struct_type},'.ljust(16)
+
+                            # Build entry strings with column formatting matching your target layout rules
+                            line_entry = f'    "{k}":'.ljust(33)
+                            line_entry += f'{{ "val": {v},'.ljust(15)
+                            line_entry += f'"expr": "{calculated_expr}",'.ljust(22)
+                            line_entry += f'"type": "{struct_type}",'.ljust(20)
                             
-                            # Surgical Conditional Addition: Only append msk if active on the node layout
-                            #if "msk" in d:
-                            #    line_entry += f' "msk": "{d["msk"]}",'.ljust(16)
-                            #else:
-                            #    line_entry += "".ljust(16)
-                                
-                            # Append localized comments dynamically
                             clean_cmnt = d.get("comment", "").replace('"', '\\"')
-                            line_entry += f' "comment": "{clean_cmnt}"'
-                            
-                            if "threat" in d:
-                                line_entry += f', "threat": "{d["threat"]}"'
-                                
-                            line_entry += " }"
+                            line_entry += f' "comment": "{clean_cmnt}" }}'
                             core_lines.append(line_entry)
 
-                        # 3. Pull the rest of the metadata fields out of your master schema
+                        # 4. Pull the rest of the metadata fields out of your master schema
                         ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
                         magic_val = schema_data.get("existentialCoreCheckMagic", "")
                         
                         legal_entries = [f'    "{lk}": "{lv}"' for lk, lv in schema_data.get("existentialCoreThreatLegal", {}).items()]
                         vacuum_entries = [f'    "{vk}": "{vv}"' for vk, vv in schema_data.get("existentialCoreThreatShadowVacuum", {}).items()]
 
-                        # 4. Construct the physical JSON string file payload in the exact target layout order
+                        # 5. Construct the physical JSON string file payload in the exact target layout order
                         json_str_payload = "{\n"
                         json_str_payload += f'  "existentialCoreVersion": "{ver_val}",\n'
                         json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
@@ -220,7 +208,7 @@ def execute(args, error_handler, repo_root: str):
 
                         with open(target_path, "w", encoding="utf-8") as custom_out:
                             custom_out.write(json_str_payload)
-                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON matching column layout written to root.", level="info")
+                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                     
                     elif "Signatures" in token or filename == "existentialSignatures.json":
                         # FIXED: Generate the empty JSON envelope for signatures rather than copying the blueprint schema
