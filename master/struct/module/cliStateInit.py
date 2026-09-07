@@ -102,7 +102,7 @@ def execute(args, error_handler, repo_root: str):
         # Dynamic Extraction: Read version directly from the blueprint payload
         #existenzMeta.HEADER.get("VERSION", version_str)
         version_str = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
-        error_handler.print(f"  [VERSION1] {version_str} {version_name}", level="info")
+        error_handler.print(f"  [VERSION1] {version_str} {version_name}", level="debug")
 
         # Export straight to GitHub Actions environment space natively
         github_env_file = os.environ.get('GITHUB_ENV')
@@ -207,7 +207,7 @@ def execute(args, error_handler, repo_root: str):
                             core_lines.append(line_entry)
 
                         # 4. Pull the rest of the metadata fields out of your master schema
-                        ver_val = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
+                        ver_val = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.10"))
                         error_handler.print(f"  [VERSION2] {ver_val}", level="info")
                         magic_val = schema_data.get("existentialCoreCheckMagic", "")
                         #version_str = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
@@ -242,7 +242,7 @@ def execute(args, error_handler, repo_root: str):
 
                         # 5. Construct the physical JSON string file payload in the exact target layout order
                         json_str_payload = "{\n"
-                        json_str_payload += f'  "existentialCoreMeta": "{ver_val}",\n'
+                        json_str_payload += f'  "Meta": "{ver_val}",\n'
                         #json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
                         json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
                         json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"  
@@ -263,7 +263,6 @@ def execute(args, error_handler, repo_root: str):
 
                         # Construct your physical structural layout payload matching your exact tracking realms
                         signatures_matrix = {
-                            "existentialMeta": version_str,
                             "existentialToken": {
                                 "MAGIC": {
                                     "TAG":                str(existenzMeta.MAGIC.get("RAW", "EX25")),
