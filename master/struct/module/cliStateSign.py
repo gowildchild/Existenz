@@ -37,8 +37,9 @@ def execute(args, error_handler, repo_root: str):
 
     # 2. Extract your live bitmask definitions out of your active integrity glue file
     # Imported inline to prevent circular references inside your library initialization
-    from engineSigningMeta import existenzIntegrityGlue
-    from engineSigningStruct import existenzIntegrityKeyStatus
+
+    from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler, existenzIntegrityKeyStatus, existenzSteps
+    from existentialSignatures import existentialToken
 
     # Map your target circle name directly to its corresponding glue key element
     circle_to_glue_map = {
