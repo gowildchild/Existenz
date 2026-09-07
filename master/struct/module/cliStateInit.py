@@ -127,10 +127,13 @@ def execute(args, error_handler, repo_root: str):
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                 threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
                         
-                        # 2. FIXED: Dynamically process true expr and type (pol) for existentialCore
+                        # 2. FIXED: Dynamically map the category labels directly using existenzCorePolicy
+                        from engineSigningStruct import existenzCorePolicy
+
                         core_lines = []
                         for k, d in schema_data.get("existentialCore", {}).items():
                             v = d["val"]
+                            bm = d.get("bitmask", 0) # Extract the primitive bitmask integer field from schema
                             
                             # Calculate the clean bit-expression or hexadecimal representation
                             if v <= 0:
@@ -140,20 +143,31 @@ def execute(args, error_handler, repo_root: str):
                             else:
                                 calculated_expr = f"0x{v:08x}"
                                 
-                            # Dynamically resolve structural type strictly out of your 'pol' definition string
-                            struct_type = d.get("pol", "UNKNOWN")
+                            # PURE STRUCT EVALUATION: Evaluate policy attributes natively via bitwise flags
+                            if bool(bm & existenzCorePolicy.CORE_PILLAR):
+                                struct_type = "PILLAR"
+                            elif bool(bm & existenzCorePolicy.CORE_RIGHTS):
+                                struct_type = "RIGHTS"
+                            elif bool(bm & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY)):
+                                struct_type = "CANARY"
+                            elif bool(bm & existenzCorePolicy.CORE_WATCHDOG):
+                                struct_type = "CANARY"
+                            elif bool(bm & existenzCorePolicy.CORE_INTEGRITY):
+                                struct_type = "SIGNATURE"
+                            else:
+                                struct_type = "PILLAR"
+                                
                             clean_cmnt = d.get("comment", "").replace('"', '\\"')
-                            
                             core_lines.append(f'    "{k}": {{"value": {v}, "expr": "{calculated_expr}", "type": "{struct_type}", "comment": "{clean_cmnt}"}}')
 
-                        # 3. Pull the rest of the metadata fields out of your master schema
+                        # 3. Pull the rest of the fields out of your master schema
                         ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
                         magic_val = schema_data.get("existentialCoreCheckMagic", "")
                         
                         legal_entries = [f'    "{lk}": "{lv}"' for lk, lv in schema_data.get("existentialCoreThreatLegal", {}).items()]
                         vacuum_entries = [f'    "{vk}": "{vv}"' for vk, vv in schema_data.get("existentialCoreThreatShadowVacuum", {}).items()]
 
-                        # 4. Construct the physical JSON string file payload in the exact target order
+                        # 4. Construct the physical JSON string file payload
                         json_str_payload = "{\n"
                         json_str_payload += f'  "existentialCoreVersion": "{ver_val}",\n'
                         json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
