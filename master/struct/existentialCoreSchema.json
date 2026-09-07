@@ -94,7 +94,7 @@
     "existentialMeta":                   ""
   },
   "existentialMeta": {
-    "CoreVersion":               "v0.76.15+",
+    "CoreVersion":               "v0.76.16",
     "CoreAuthor":                "Gunther Voet",
     "CoreWeb":                   "github.com/gowildchild/Existenz/",
     "CoreDate":                  "20260906"
