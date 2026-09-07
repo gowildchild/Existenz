@@ -282,29 +282,6 @@ def execute(args, error_handler, repo_root: str):
                                 if "pol" in d:
                                     f.write(f'    existentialCore.{k:<25}: "{d["pol"]}",\n')
                             f.write("}\n")
-
-                            # 3. FIXED: Compile existentialCoreExpression layout map dictionary
-                            from engineSigningStruct import existenzCorePolicy
-                            f.write("\nexistentialCoreExpression = {\n")
-                            for k, d in schema_data["existentialCore"].items():
-                                v = d["val"]
-                                raw_pol = d.get("pol", 0)
-                                if isinstance(raw_pol, str):
-                                    pol = int(raw_pol.strip(), 16) if raw_pol.strip().startswith("0x") else int(raw_pol.strip())
-                                else:
-                                    pol = int(raw_pol)
-
-                                if bool(pol & existenzCorePolicy.BIT_MASK):
-                                    calculated_expr = f"1 << {v.bit_length() - 1}"
-                                else:
-                                    if v <= 0:
-                                        calculated_expr = "0"
-                                    elif (v & (v - 1)) == 0:
-                                        calculated_expr = f"1 << {v.bit_length() - 1}"
-                                    else:
-                                        calculated_expr = f"0x{v:08x}"
-                                f.write(f'    existentialCore.{k:<25}: "{calculated_expr}",\n')
-                            f.write("}\n")
                             
                         error_handler.print(f"    [COMPILE FILE] Compiled native IntFlag class and expanded structural registries at: {target_path}", level="info")
                     except Exception as e:
