@@ -45,7 +45,8 @@ class visualmixErrorHandler:
         "local":   ("\033[0;37m[ ] Local",   "", False)
     }
 
-    def __init__(self, custom_struct: dict = None, custom_post: str, log_file_path: str = None):
+    def __init__(self, custom_post: str = "_ERR", custom_struct: dict = None, log_file_path: str = None):
+        # Kept your exact operational variables intact
         self.custom_post = custom_post if custom_post is not None else "_ERR"
         self.default_struct = {
             v: k for k, v in vars(self.__class__).items() 
@@ -58,6 +59,7 @@ class visualmixErrorHandler:
             # Open disk stream completely clear of ANSI overhead
             with open(self.log_file_path, "w", encoding="utf-8") as f:
                 f.write(f"--- VisualMixEngineLogging.py ({int(time.time())}) ---\n")
+
 
     def _write_to_disk_handler(self, plain_text: str):
         """Dedicated file writer handler ensuring pure plain-text isolation."""
