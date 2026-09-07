@@ -40,7 +40,8 @@ existenzLocations = {
         "Core":          "master/existentialCore.py",
         "Check":         "master/existentialCoreCheck.py",
         "Threat":        "master/existentialCoreThreat.py",
-        "SignaturesPy":  "master/existentialSignatures.py"
+        "SignaturesPy":  "master/existentialSignatures.py",
+        "SignaturesJson":  "master/existentialSignatures.json"
     },
     "manifest": {
         "dist":     "dist",
@@ -61,7 +62,6 @@ existenzLocations = {
         "cliStateSign":      "master/struct/module/cliStateSign.py",
         "cliStateVerify":    "master/struct/module/cliStateVerify.py",
         "cliStateBuild":     "master/struct/module/cliStateBuild.py",
-        "jsonSignatures":    "master/existentialSignatures.json",
         "Manifest":          "manifest.json"
     }
 }
