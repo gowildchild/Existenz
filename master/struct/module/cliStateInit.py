@@ -129,46 +129,44 @@ def execute(args, error_handler, repo_root: str):
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                 threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
                         
-                        from master.struct.engineSigningStruct import existenzCorePolicy
+                        # 2. FIXED: Custom line generation to match your aligned column layout perfectly
+                        from engineSigningStruct import existenzCorePolicy
 
                         core_lines = []
                         for k, d in schema_data.get("existentialCore", {}).items():
                             v = d["val"]
                             raw_pol = d.get("pol", 0)
-                            #raw_msk = d.get("msk", None)
                             
-                            if isinstance(raw_pol, str) and raw_pol.startswith("0x"):
-                                pol = int(raw_pol, 16)
-                            elif isinstance(raw_pol, str):
-                                pol = int(getattr(existenzCorePolicy, raw_pol.strip(), 0))
+                            # Format pol cleanly back to its raw hexadecimal string literal format
+                            if isinstance(raw_pol, str):
+                                pol_hex = raw_pol.strip()
+                                pol = int(pol_hex, 16) if pol_hex.startswith("0x") else int(pol_hex)
                             else:
                                 pol = int(raw_pol)
-                            
-                            # Determine the clean bit-expression pattern based on the policy bitmask
-                            if bool(pol & existenzCorePolicy.BIT_MASK):
-                                calculated_expr = f"1 << {v.bit_length() - 1}"
-                            else:
-                                if v <= 0:
-                                    calculated_expr = "0"
-                                elif (v & (v - 1)) == 0:
-                                    calculated_expr = f"1 << {v.bit_length() - 1}"
-                                else:
-                                    calculated_expr = f"0x{v:08x}"
+                                pol_hex = hex(pol)
 
-                            # Evaluate structural types dynamically straight from your IntFlag definitions
-                            if bool(pol & existenzCorePolicy.CORE_PILLAR):
-                                struct_type = "PILLAR"
-                            elif bool(pol & existenzCorePolicy.CORE_RIGHTS):
-                                struct_type = "RIGHTS"
-                            elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY | existenzCorePolicy.CORE_WATCHDOG)):
-                                struct_type = "CANARY"
-                            elif bool(pol & existenzCorePolicy.CORE_INTEGRITY):
-                                struct_type = "SIGNATURE"
+                            # Build entry dictionary keys conditionally to align column values
+                            # Left-pad the entry key name string to 28 characters for alignment matching your blueprint
+                            line_entry = f'    "{k}":'.ljust(33)
+                            line_entry += f'"val": {v},'.ljust(15)
+                            line_entry += f'"pol": "{pol_hex}",'
+                            
+                            # Surgical Conditional Addition: Only append msk if active on the node layout
+                            if "msk" in d:
+                                line_entry += f' "msk": "{d["msk"]}",'.ljust(16)
                             else:
-                                struct_type = "PILLAR"
+                                line_entry += "".ljust(16)
                                 
+                            # Append localized comments dynamically
                             clean_cmnt = d.get("comment", "").replace('"', '\\"')
-                            core_lines.append(f'    "{k}": {{"value": {v}, "expr": "{calculated_expr}", "type": "{struct_type}", "pol": "{pol}", "comment": "{clean_cmnt}"}}')
+                            line_entry += f' "comment": "{clean_cmnt}"'
+                            
+                            # Surgical Conditional Addition: Only append threat track if active on the node layout
+                            if "threat" in d:
+                                line_entry += f', "threat": "{d["threat"]}"'
+                                
+                            line_entry += " }"
+                            core_lines.append(line_entry)
 
                         # 3. Pull the rest of the metadata fields out of your master schema
                         ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
@@ -177,7 +175,7 @@ def execute(args, error_handler, repo_root: str):
                         legal_entries = [f'    "{lk}": "{lv}"' for lk, lv in schema_data.get("existentialCoreThreatLegal", {}).items()]
                         vacuum_entries = [f'    "{vk}": "{vv}"' for vk, vv in schema_data.get("existentialCoreThreatShadowVacuum", {}).items()]
 
-                        # 4. Construct the physical JSON string file payload in the exact target order
+                        # 4. Construct the physical JSON string file payload in the exact target layout order
                         json_str_payload = "{\n"
                         json_str_payload += f'  "existentialCoreVersion": "{ver_val}",\n'
                         json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
@@ -189,7 +187,7 @@ def execute(args, error_handler, repo_root: str):
 
                         with open(target_path, "w", encoding="utf-8") as custom_out:
                             custom_out.write(json_str_payload)
-                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Compiled 1-line ordered JSON written to root.", level="info")
+                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON matching column layout written to root.", level="info")
                     
                     elif "Signatures" in token or filename == "existentialSignatures.json":
                         # FIXED: Generate the empty JSON envelope for signatures rather than copying the blueprint schema
