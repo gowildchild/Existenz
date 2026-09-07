@@ -115,7 +115,44 @@ jobs:
           git commit -m "Existenz: universal cross-language structures [$BLUEPRINT_VERSION]"
           git pull --rebase origin main || true
           git push
-        fi       
+        fi
+    - name: Existenz - Dynamic Public Environmental Cryptographic Signing
+      #if: env.RUN_MODE != 'locked'
+      env:
+        GITHUB_ACTIONS: 'true'
+        SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
+        SIGN_EXISTENZ_AUDIT_PHRASE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PHRASE }}
+        SIGN_EXISTENZ_AUDIT_PUBLIC: ${{ vars.SIGN_EXISTENZ_AUDIT_PUBLIC }}
+        SIGN_EXISTENZ_AUDIT_FINGERPRINT: ${{ vars.SIGN_EXISTENZ_AUDIT_FINGERPRINT }}
+        SIGN_EXISTENZ_DIST_RAD_A: 7
+        SIGN_EXISTENZ_DIST_RAD_B: 31
+      run: |
+        echo " [*] Running Core Asymmetric Signature Loop..."
+        # Natively reads the step written to GITHUB_ENV by your manifest execution module
+        python master/struct/engineSigningCLI.py -stage sign -circle "${CIRCLE_TARGET:-all}" -override update -run wet
+        
+        # Pull dynamic version tags straight out of your schema layout meta strings
+        BLUEPRINT_VERSION=$(python -c 'import json; print(json.load(open("master/struct/existentialCoreSchema.json")).get("existentialCoreMeta", {}).get("CoreVersion", "v0.76.17"))')
+        
+        git config --global user.name "Existenz Platform Bot"
+        git config --global user.email "32355099+gowildchild@users.noreply.github.com"
+        
+        git add manifest.json
+        if git diff --staged --quiet; then
+          echo "[+] No structural changes detected. Skipping signing push."
+        else
+          git commit -m "Existenz: cryptographically signed layer records [$BLUEPRINT_VERSION]"
+          git pull --rebase origin main || true
+          git push
+        fi
+
+    - name: Existenz - Asymmetric Multi-Signature Verification Check
+      #if: env.RUN_MODE != 'locked'
+      run: |
+        echo " [*] Transitioning to computed step target layer check..."
+        # Runs the deep bitmask verification gate to certify tree matches before permitting structural building
+        python master/struct/engineSigningCLI.py -stage verify -circle "${CIRCLE_TARGET:-all}" -override update -run wet
+        
 #    - name: Existenz - Signing Pipeline
 #      env:
 #          GITHUB_ACTIONS: 'true'
