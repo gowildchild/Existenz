@@ -9,12 +9,12 @@ import json
 import shutil
 from engineSigningMeta import existenzLocations
 
-# Register the absolute parent vault directory to ensure all helper references resolve
 PARENT_STRUCT_MASTER = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PARENT_STRUCT_MASTER not in sys.path:
     sys.path.insert(0, PARENT_STRUCT_MASTER)
 
 import engineBuilderLibrary
+from engineSigningStruct import existenzIntegrityGlue
 
 def execute(args, error_handler, repo_root: str):
     """
