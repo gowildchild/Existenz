@@ -58,8 +58,9 @@ jobs:
         # Stage all potentially self-healed paths dynamically (sign_integrity_config.json is strictly excluded)
         git add master/existentialCore.py \
                 master/existentialCoreThreat.py \
+                master/existentialCoreCheck.py \
+                master/existentialSignatures.py \
                 master/existentialCores.json \
-                master/existenzSignatures.py \
                 master/existentialSignatures.json \
                 master/struct/module/cliStateManifest.py \
                 master/struct/module/cliStateSign.py \
