@@ -45,19 +45,19 @@ def main():
     parser = argparse.ArgumentParser(description="Existenz SHA256 Manifest")
     # Added "init" into the parser stage choices profile array
     parser.add_argument("-stage", "--stage", choices=["test","init", "sign", "check", "verify", "manifest"], required=True, help="Manifest operation state selection.")
-    parser.add_argument("-override", "--override", choices=["update", "recreate", "retry"], required=True, help="Manifest operation override.")
+    parser.add_argument("-override", "--override", choices=["update", "recreate", "retry","newer"], required=True, help="Manifest operation override.")
     parser.add_argument("-run","--run", choices=["wet","dry"], default="wet", required=True, help="DRY shows only what it does, WET writes files")
     parser.add_argument("-circle", "--circle", choices=["dist","tools","build","master","all"], default="all", help="Select circle")
     parser.add_argument("-bitmask","--bitmask", help="Select BitMask")
     parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to your private key routes (offline signing)")
-    parser.add_argument("-o", "--manifest", default=MANIFEST_OUTPUT, help="Path to your manifest file.")
+    parser.add_argument("-m", "--manifest", default=MANIFEST_OUTPUT, help="Path to your manifest file.")
     args = parser.parse_args()
 
     # Consolidated console blocks straight through uniform logging routing
     error_handler.print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐", level="local")
     error_handler.print(f"│ VisualMIX Signing CLI {INT_VERSION}     by Gunther Voet │", level="local")
     error_handler.print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘", level="local")
-    error_handler.print(f"Operational: -stage {args.stage} -circle {args.circle} -config {args.config} -o {args.manifest}", level="info")
+    error_handler.print(f"Operational: -stage {args.stage} -circle {args.circle} -config {args.config} -m {args.manifest}", level="info")
 
     
     engineSigningLibrary.pipeline_step_current(args.stage, error_handler)
