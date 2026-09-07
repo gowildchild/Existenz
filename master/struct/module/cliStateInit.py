@@ -156,13 +156,13 @@ def execute(args, error_handler, repo_root: str):
                             # Left-pad the entry key name string to 28 characters for alignment matching your blueprint
                             line_entry = f'    "{k}":'.ljust(33)
                             line_entry += f'"val": {v},'.ljust(15)
-                            line_entry += f'"pol": "{pol_hex}",'
+                            #line_entry += f'"pol": "{pol_hex}",'
                             
                             # Surgical Conditional Addition: Only append msk if active on the node layout
-                            if "msk" in d:
-                                line_entry += f' "msk": "{d["msk"]}",'.ljust(16)
-                            else:
-                                line_entry += "".ljust(16)
+                            #if "msk" in d:
+                            #    line_entry += f' "msk": "{d["msk"]}",'.ljust(16)
+                            #else:
+                            #    line_entry += "".ljust(16)
                                 
                             # Append localized comments dynamically
                             clean_cmnt = d.get("comment", "").replace('"', '\\"')
