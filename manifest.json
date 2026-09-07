@@ -91,5 +91,7 @@
     "Personal": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKn1/r+k9+T5OJyoIjcrkj0DBmLq//x0/sffNMJNWofK existenz-dev-gv@xsrv.net",
     "Platform": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"
   },
-  "signatures": {}
+  "signatures": {
+    "Environment": "05357934c39938239ae46bf44ec6647a49812ec1dc3ac0a4e738ef090aa872ac54cddf6fb0cd149503cf4e422e747d658c69ed6da931f5ce52f2e22eb6f53e04"
+  }
 }
