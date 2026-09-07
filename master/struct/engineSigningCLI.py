@@ -78,12 +78,13 @@ def main():
 
     # Consolidated console blocks straight through uniform logging routing
     banner_payload = [
-        f"  VisualMIX Veritas Triple Signer CLI {INT_VERSION}     by Gunther Voet "]
+        f"  VisualMIX Veritas Triple Signer CLI {INT_VERSION}     by Gunther Voet ",
+        f"  -stage {args.stage} -circle {args.circle} -o {args.override}" ]
     engineSigningLibrary.render_better_box(error_handler, banner_payload, title_str="Existenz")
     #error_handler.print("┌───────────────────────────────────  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ┐", level="local")
     #error_handler.print(f"│ VisualMIX Signing CLI {INT_VERSION}     by Gunther Voet │", level="local")
     #error_handler.print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘", level="local")
-    error_handler.print(f"-stage {args.stage} -circle {args.circle} -o {args.override}"-config {args.config} ", level="local")
+    error_handler.print(f"-c {args.config} -m {args.manifest}", level="local")
     engineSigningLibrary.pipeline_step_current(args.stage, error_handler)
     
     if args.stage == "test":
