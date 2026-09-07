@@ -15,7 +15,7 @@ if PARENT_STRUCT_MASTER not in sys.path:
     sys.path.insert(0, PARENT_STRUCT_MASTER)
 
 # 2. SAFE NATIVE IMPORTS: Now resolves flawlessly from the active parent search path
-import master.build-tools.engineBuilderLibrary
+import engineBuilderLibrary
 from engineSigningStruct import existenzIntegrityGlue, existenzCorePolicy
 
 
