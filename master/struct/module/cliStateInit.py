@@ -241,7 +241,7 @@ def execute(args, error_handler, repo_root: str):
 
                         # 5. Construct the physical JSON string file payload in the exact target layout order
                         json_str_payload = "{\n"
-                        json_str_payload += f'  "existentialCoreVersion": "{ver_val}",\n'
+                        json_str_payload += f'  "existentialCoreMeta": "{ver_val}",\n'
                         #json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
                         json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
                         json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"  
