@@ -82,7 +82,7 @@ def execute(args, error_handler, repo_root: str):
         name, pub_str, _, _, _, _ = key_meta
         public_keys_registry[name] = pub_str
 
-    # 3. FIXED: Extract raw circle hashes and build your precise dot-separated token map layout
+    # 3. Extract raw circle hashes and build your precise dot-separated token map layout
     hash_dist   = engineSigningLibrary.calculate_aggregate_circle_hash(files_dist)
     hash_tools  = engineSigningLibrary.calculate_aggregate_circle_hash(files_tools)
     hash_build  = engineSigningLibrary.calculate_aggregate_circle_hash(files_build)
@@ -102,7 +102,7 @@ def execute(args, error_handler, repo_root: str):
         "sign.master": old_circle_block.get("sign.master", "")
     }
 
-    # FIXED: Run bitmask-driven verification check to warn on signature drifts
+    # Run bitmask-driven verification check to warn on signature drifts
     from engineSigningStruct import existenzIntegrityGlue, existenzIntegrityKeyStatus
 
     circle_to_glue_map = {
@@ -112,13 +112,28 @@ def execute(args, error_handler, repo_root: str):
         "master": "CircleMaster"
     }
 
+    # SECURITY HARDENING: Detect unauthorized modifications before writing out the manifest update
+    is_github_runner = os.environ.get("GITHUB_ACTIONS") == "true"
+    master_changed = (hash_master != old_circle_block.get("hash.master", ""))
+    build_changed  = (hash_build != old_circle_block.get("hash.build", ""))
+
+    if (master_changed or build_changed) and is_github_runner:
+        error_handler.print("=" * 90, level="local")
+        error_handler.print(f" [!!!] MANIFEST SECURITY INTERCEPT: REJECTING REMOTE OVERWRITE [!!!]", level="local")
+        error_handler.print(f"       Unsigned changes detected in high-privilege tracks on remote public runner.", level="local")
+        error_handler.print(f"       Master Changed: {master_changed} | Build Changed: {build_changed}", level="local")
+        error_handler.print(f"       File system update is BLOCKED until signed locally via private keys.", level="local")
+        error_handler.print("=" * 90, level="local")
+        sys.exit(65) # Safely crashes the step before modifying the manifest or staging git updates
+
     for target_c, glue_key in circle_to_glue_map.items():
         current_hash = signatures_circle_registry.get(f"hash.{target_c}")
         old_hash = old_circle_block.get(f"hash.{target_c}", "")
         has_signature = bool(signatures_circle_registry.get(f"sign.{target_c}", ""))
 
         if current_hash != old_hash or not has_signature:
-            bitmask_weight = existenzIntegrityGlue.get(glue_key, [0, 0])[1] if isinstance(existenzIntegrityGlue.get(glue_key), tuple) else 0
+            # FIXED: Correctly extracts status weight integer from index 1 of the metadata tuple configuration
+            bitmask_weight = existenzIntegrityGlue[glue_key][1] if glue_key in existenzIntegrityGlue else 0
             
             needed_keys = []
             if bool(bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM):  needed_keys.append("Platform")
