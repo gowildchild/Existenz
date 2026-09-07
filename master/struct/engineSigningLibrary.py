@@ -61,6 +61,24 @@ PIPELINE_SEQUENCE = [
 ]
 
 
+def calculate_aggregate_circle_hash(circle_files_dict: dict) -> str:
+    """
+    Computes a canonical SHA-256 hash across all sorted filename-hash pairs 
+    in a tracking circle to capture an absolute state snapshot.
+    """
+    if not circle_files_dict:
+        return hashlib.sha256(b"").hexdigest()
+        
+    # Serialize with strict, sorted, zero-whitespace rules matching your configuration
+    canonical_body = json.dumps(
+        circle_files_dict, 
+        sort_keys=True, 
+        ensure_ascii=True, 
+        separators=(',', ':')
+    ).encode('utf-8')
+    
+    return hashlib.sha256(canonical_body).hexdigest()
+
 def resolve_live_git_commit(repo_root: str) -> str:
     """Dynamically extracts the raw local 64-character SHA-256 Git commit head tracking signature hash."""
     try:
