@@ -27,7 +27,7 @@ existentialToken = {
     },
     "chain": {
         "Core":               "",
-        "Cores":              "",
+        "CoresChain":         "",
         "Threat":             "",
     },
     "manifest": {
