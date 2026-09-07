@@ -6,8 +6,7 @@
 import os
 import json
 import engineSigningLibrary
-from engineSigningMeta import existenzLocations, existenzConfig
-#from engineSigningLocations import existenzLocations, existenzConfig
+from engineSigningMeta import existenzLocations, existenzConfig, existenzMeta, existenzPublicKeys
 
 def execute(args, error_handler, repo_root: str):
     """
