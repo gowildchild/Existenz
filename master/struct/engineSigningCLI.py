@@ -44,10 +44,27 @@ error_handler = visualmixErrorHandler(custom_post="_ERR")
 def main():
     parser = argparse.ArgumentParser(description="Existenz SHA256 Manifest")
     # Added "init" into the parser stage choices profile array
-    parser.add_argument("-stage", "--stage", choices=["test","init", "sign", "check", "verify", "manifest","integrity","veritas"], required=True, help="Manifest operation state selection.")
-    parser.add_argument("-override", "--override", choices=["update", "recreate", "retry","newer"], required=True, help="Manifest operation override.")
-    parser.add_argument("-run","--run", choices=["wet","dry"], default="wet", required=True, help="DRY shows only what it does, WET writes files")
-    parser.add_argument("-circle", "--circle", choices=["dist","tools","build","master","all"], default="all", help="Select circle")
+    parser.add_argument(
+        '-circle', '--circle',
+        choices=['dist', 'tools', 'build', 'master', 'all'],
+        default='all', # FIXED: Defaults straight to processing the entire workspace structure
+        help='Target circle ring'
+    )
+    parser.add_argument(
+        '-override',
+        choices=['update', 'recreate', 'retry', 'newer'],
+        default='update', # FIXED: Defaults straight to updating records smoothly
+        help='State execution action parameter strategy'
+    )
+    parser.add_argument(
+        '-run',
+        choices=['wet', 'dry'],
+        default='wet', # FIXED: Defaults straight to true live file system writes
+        help='Execution routine target parameter block'
+    )
+
+    
+    parser.add_argument("-stage", "--stage", choices=["test","init", "sign", "check", "verify", "manifest","integrity","veritas"], required=True, help="Manifest operation state selection.")    
     parser.add_argument("-bitmask","--bitmask", help="Select BitMask")
     parser.add_argument("-c", "--config", default=DEFAULT_CONFIG_PATH, help="Path to your private key routes (offline signing)")
     parser.add_argument("-m", "--manifest", default=MANIFEST_OUTPUT, help="Path to your manifest file.")
