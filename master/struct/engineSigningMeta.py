@@ -56,6 +56,7 @@ existenzLocations = {
         "signingStruct":     "master/struct/engineSigningStruct.py",
         "signingLibrary":    "master/struct/engineSigningLibrary.py",
         "builderLibrary":    "master/struct/engineBuilderLibrary.py",
+        "cliStateTest" :     "master/struct/module/cliStateTest.py",
         "cliStateInit" :     "master/struct/module/cliStateInit.py",
         "cliStateManifest":  "master/struct/module/cliStateManifest.py",
         "cliStateSign":      "master/struct/module/cliStateSign.py",
