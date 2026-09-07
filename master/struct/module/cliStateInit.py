@@ -127,7 +127,7 @@ def execute(args, error_handler, repo_root: str):
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                 threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
                         
-                       from engineSigningStruct import existenzCorePolicy
+                        from engineSigningStruct import existenzCorePolicy
 
                         core_lines = []
                         for k, d in schema_data.get("existentialCore", {}).items():
