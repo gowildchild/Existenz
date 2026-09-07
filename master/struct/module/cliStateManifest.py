@@ -14,12 +14,12 @@ def execute(args, error_handler, repo_root: str):
     Executes progressive  directory scanning and manifest file cataloging.
     Preserves untouched signature tracks while consolidating live cryptographic layers.
     """
-    error_handler.print("Initiating repository file scan to manifest.json", level="notice")
+    error_handler.print(" [M] Initiating file scan for manifest.json", level="notice")
     
     # Extract the true master destination configurations from your metadata layout maps
     manifest_filename = existenzLocations["engine"]["Manifest"]
     manifest_target_path = os.path.abspath(os.path.join(repo_root, manifest_filename))
-    error_handler.print(f"  [REGISTRY TARGET] {manifest_target_path}", level="info")
+    error_handler.print(f" [M] {manifest_target_path}", level="info")
 
     # Load existing manifest ledger blocks to allow partial circle preservation
     old_data = {}
@@ -48,30 +48,29 @@ def execute(args, error_handler, repo_root: str):
     active_circle = str(args.circle).strip().lower()
     git_commit_sha = engineSigningLibrary.resolve_live_git_commit(repo_root)
 
-    # 1. Surgical Ring Routing Mapped Straight to your Metadata Context Folders
     if active_circle == "master":
-        error_handler.print("Re-signing Ring [MASTER & BUILD]. Preserving Tools and Dist tracks.", level="info")
+        error_handler.print(" [S] SCOPE:MASTER <- RE-SIGN -> Except Tools and Dist", level="info")
         files_master.update(engineSigningLibrary.gather_folder_files(manifest_paths["master"], repo_root))
         files_build.update(engineSigningLibrary.gather_folder_files(manifest_paths["build"], repo_root))
         files_tools.update(old_tools_bucket)
         files_dist.update(old_dist_bucket)
         
     elif active_circle == "tools":
-        error_handler.print("Re-signing Ring [TOOLS]. Preserving Master, Build, and Dist tracks.", level="info")
+        error_handler.print(" [S] SCOPE:TOOLS <- RE-SIGN -> Except Master, Build and Dist", level="info")
         files_tools.update(engineSigningLibrary.gather_folder_files(manifest_paths["tools"], repo_root))
         files_master.update(old_master_bucket)
         files_build.update(old_build_bucket)
         files_dist.update(old_dist_bucket)
         
     elif active_circle == "dist":
-        error_handler.print("Re-signing Ring [DIST]. Preserving Master, Build, and Tools tracks.", level="info")
+        error_handler.print(" [S] SCOPE:DIST <- RE-SIGN -> Except Master, Build and Tools", level="info")
         files_dist.update(engineSigningLibrary.gather_folder_files(manifest_paths["dist"], repo_root))
         files_master.update(old_master_bucket)
         files_build.update(old_build_bucket)
         files_tools.update(old_tools_bucket)
         
     else: # Full global baseline overwrite ("circleall" or default fallback configuration)
-        error_handler.print("Scoping Full Workspace - Baseline Overwrite.", level="info")
+        error_handler.print(" [S] SCOPE:ALL <- OVERWRITE -> Baseline ALL", level="info")
         files_dist.update(engineSigningLibrary.gather_folder_files(manifest_paths["dist"], repo_root))
         files_tools.update(engineSigningLibrary.gather_folder_files(manifest_paths["tools"], repo_root))
         files_build.update(engineSigningLibrary.gather_folder_files(manifest_paths["build"], repo_root))
@@ -113,24 +112,17 @@ def execute(args, error_handler, repo_root: str):
         "master": "CircleMaster"
     }
 
-    # SECURITY HARDENING: Detect unauthorized modifications before writing out the manifest update
     is_github_runner = os.environ.get("GITHUB_ACTIONS") == "true"
     master_changed = (hash_master != old_circle_block.get("hash.master", ""))
     build_changed  = (hash_build != old_circle_block.get("hash.build", ""))
 
     if (master_changed or build_changed) and is_github_runner:
-        #error_handler.print("=" * 90, level="local")
-        #error_handler.print(f" [!!!] MANIFEST SECURITY INTERCEPT: REJECTING REMOTE OVERWRITE [!!!]", level="local")
-        #error_handler.print(f"       Unsigned changes detected in high-privilege tracks on remote public runner.", level="local")
-        #error_handler.print(f"       Master Changed: {master_changed} | Build Changed: {build_changed}", level="local")
-        #error_handler.print(f"       File system update is BLOCKED until signed locally via private keys.", level="local")
-        #error_handler.print("=" * 90, level="local")
         error_handler.notice(
             level="error",
             message=f"MANIFEST ESCALATION INTERCEPTION: GHL{is_github_runner}",
-            details=[f"Unsigned changesd detected in master core code, while core is immutable!",
+            details=[f"Unsigned changesd detected in master core code!",
                      f"File system update is blocked till signed with private keys!",
-                     f"Master Changed: {master_changed} | Build Changed: {build_changed}"], exit_code=65
+                     f"From {master_changed} -> {build_changed}"], exit_code=65
         ) 
     # sys.exit(65) # Safely crashes the step before modifying the manifest or staging git updates
 
@@ -140,7 +132,6 @@ def execute(args, error_handler, repo_root: str):
         has_signature = bool(signatures_circle_registry.get(f"sign.{target_c}", ""))
 
         if current_hash != old_hash or not has_signature:
-            # FIXED: Correctly extracts status weight integer from index 1 of the metadata tuple configuration
             bitmask_weight = existenzIntegrityGlue[glue_key][1] if glue_key in existenzIntegrityGlue else 0
             
             needed_keys = []
@@ -154,17 +145,10 @@ def execute(args, error_handler, repo_root: str):
                     message=f"MANIFEST ESCALATION INTERCEPTION: Circle: [{target_c.upper()}]",
                     details=[f"Unsigned changesd detected in master core code, while core is immutable!",
                              f"File system update is blocked till signed with private keys!",
-                             f"Structural Hash updated: {old_hash[:16]}... -> {current_hash[:16]}..."]
+                             f"From {old_hash} -> {current_hash}"]
                     #exit_code=65
                 ) 
-                #error_handler.print("=" * 90, level="local")
-                #error_handler.print(f" [!] UN-SIGNED payload track changes detected in Circle Ring: [{target_c.upper()}]", level="local")
-                #error_handler.print(f"     Structural Hash updated: {old_hash[:16]}... -> {current_hash[:16]}...", level="local")
-                #error_handler.print(f"     MANDATORY LOCAL ACTION: Requires signing with private keys: {needed_keys}", level="local")
-                #error_handler.print(f"     Downstream deployment builds will remain locked until keys are committed.", level="local")
-                #error_handler.print("=" * 90, level="local")
 
-    # Assemble Consolidated Manifest Ledger Database File Structure
     manifest_data = {
         "existentialCoreVersion": existenzMeta.HEADER["VERSION"].decode(),
         "commit": git_commit_sha,
@@ -179,16 +163,16 @@ def execute(args, error_handler, repo_root: str):
 
     # Bypasses direct file saves if strategy is set to dry simulation
     if str(args.run).strip().lower() == "dry":
-        error_handler.print("Not writing to manifest (DRY mode!).", level="notice")
+        error_handler.print("DRY-MODE prevents writing to disk!", level="notice")
         return
 
     # 4. Serialize layout straight to root path destination with sorted attributes
     try:
         with open(manifest_target_path, "w", encoding="utf-8") as out_mf:
             json.dump(manifest_data, out_mf, indent=2, sort_keys=True)
-        error_handler.print("[+] SUCCESS: Manifest successfully consolidated.", level="notice")
+        error_handler.print(" [+] Manifest consolidated succesfully", level="notice")
     except Exception as e:
-        error_handler.print(f"Failed to write to manifest: {e}", level="error", exit_code=32)
+        error_handler.print(f" FAILURE writing to manifest: {e}", level="error", exit_code=32)
 
     # 5. Transition seamlessly straight to your bitmask-driven step calculation handler loop
     engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
