@@ -126,10 +126,10 @@ def execute(args, error_handler, repo_root: str):
         if not glue_key or glue_key not in existenzIntegrityGlue:
             continue
 
-        # Extract the bitmask weight integer from your configuration layout tuples
-        circle_bitmask_weight = existenzIntegrityGlue[glue_key] if isinstance(existenzIntegrityGlue[glue_key], int) else existenzIntegrityGlue[glue_key]
+        # FIXED: Extract the raw bitmask status weight integer directly from index 1 of your tuple configuration
+        circle_bitmask_weight = existenzIntegrityGlue[glue_key][1]
 
-        # Compute dynamic bitmask permissions for this loop circle track
+        # Compute dynamic bitmask permissions for this target validation ring track loop
         req_env = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT)
         req_pfm = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM)
         req_dev = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER)
