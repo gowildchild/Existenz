@@ -37,7 +37,7 @@ existenzIntegrityGlue = {
                                                                                existentialToken.get("manifest", {}).get("build", "PENDING_SIGN")),
     "CircleMaster":           ( "existentialCircleMaster",   2815, 255,  0x5F, existenzLocations["manifest"]["master"],
                                                                                existentialToken.get("manifest", {}).get("master", "PENDING_SIGN")),
-    "CircleChain":            ( "existentialCircleSigned",   3839, 511,  0x9F, existenzLocations["engine"]["jsonManifest"],
+    "CircleChain":            ( "existentialCircleSigned",   3839, 511,  0x9F, existenzLocations["engine"]["Manifest"],
                                                                                existentialToken.get("engine", {}).get("Manifest", "PENDING_SIGN"))
 }
 
