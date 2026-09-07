@@ -5,24 +5,22 @@
 # ==========================================================================
 import os
 import sys
-
-# 1. FORCE THE PATH: Extract the absolute path of the parent master/struct/ folder
-PARENT_STRUCT_MASTER = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-
-# 2. Append it directly to the top of the active search list
-if PARENT_STRUCT_MASTER not in sys.path:
-    sys.path.insert(0, PARENT_STRUCT_MASTER)
-
 import json
 import shutil
 from engineSigningMeta import existenzLocations
+
+# Register the parent vault directory to ensure library references resolve
+PARENT_STRUCT_MASTER = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PARENT_STRUCT_MASTER not in sys.path:
+    sys.path.insert(0, PARENT_STRUCT_MASTER)
+
 import engineBuilderLibrary
 
 def execute(args, error_handler, repo_root: str):
     """
     Modular execution block for -stage init.
     Scans runtime targets and dynamically self-heals the repository workspace
-    by creating engine stubs, copying configurations, and compiling python classes.
+    by writing engine stubs, copying configurations, and compiling python classes.
     """
     error_handler.print("Initiating structural integrity baseline pre-flight check...", level="notice")
     
@@ -79,7 +77,7 @@ def execute(args, error_handler, repo_root: str):
 
         version_str = "v0.76.16"
 
-        # A. Self-Heal Core Runtime Files (JSON Mirrors & Compiled Python Packages)
+        # A. Self-Heal Core Runtime Files (Compiling directly to final destination)
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.join(repo_root, asset_data["runtime_path"])
             filename = asset_data["filename"]
@@ -94,21 +92,24 @@ def execute(args, error_handler, repo_root: str):
             
             elif filename.endswith(".py"):
                 if token == "Core":
-                    engineBuilderLibrary._export_python_framework(
-                        dist_dir=os.path.dirname(target_path),
-                        core_registry=schema_data["existentialCore"],
-                        version_str=version_str,
-                        w={
-                            'f_expr': lambda v: "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}"),
-                            'py_c': max(len(f"    {k} = " + ("0" if d["val"] <= 0 else (f"1 << {d['val'].bit_length() - 1}" if (d["val"] & (d["val"] - 1)) == 0 else f"0x{d['val']:08x}"))) for k, d in schema_data["existentialCore"].items()) + 2
-                        },
-                        header=engineBuilderLibrary.make_header(version_str, "#")
-                    )
-                    single_out = os.path.join(os.path.dirname(target_path), "python", "single", "existentialCore.py")
-                    if os.path.exists(single_out):
-                        shutil.move(single_out, target_path)
-                        shutil.rmtree(os.path.join(os.path.dirname(target_path), "python"))
-                    error_handler.print(f"    [->] Compiled Enums Matrix: Core         -> Generated existentialCore.py", level="info")
+                    try:
+                        # Direct clean rendering into the active runtime destination path
+                        with open(target_path, "w", encoding="utf-8") as f:
+                            f.write(engineBuilderLibrary.make_header(version_str, "#"))
+                            f.write("from enum import IntFlag\n\nclass existentialCore(IntFlag):\n")
+                            for k, d in schema_data["existentialCore"].items():
+                                v = d["val"]
+                                expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
+                                f.write(f"    {k:<30} = {expr}  # {d.get('comment', '')}\n")
+                            
+                            f.write("\nexistentialCoreBitmask = {\n")
+                            for k, d in schema_data["existentialCore"].items():
+                                if "msk" in d:
+                                    f.write(f"    existentialCore.{k}: \"{d['msk']}\",\n")
+                            f.write("}\n")
+                        error_handler.print(f"    [->] Compiled Enums Matrix: Core         -> Generated existentialCore.py", level="info")
+                    except Exception as e:
+                        error_handler.print(f"Failed to compile existentialCore.py: {e}", level="error", exit_code=1)
 
                 elif token == "Threat":
                     try:
@@ -120,6 +121,19 @@ def execute(args, error_handler, repo_root: str):
                                     v = d["val"]
                                     expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                     f.write(f"    {d['threat']:<30} = {expr}\n")
+                                    
+                            f.write("\nexistentialCoreThreatLegal = {\n")
+                            for k, v in schema_data.get("existentialCoreThreatLegal", {}).items():
+                                # Match back string index keys safely to threats
+                                target_node = next((d["threat"] for d in schema_data["existentialCore"].values() if "threat" in d and str(d["val"]) == k), None)
+                                if target_node: f.write(f"    existentialCoreThreat.{target_node}: \"{v}\",\n")
+                            f.write("}\n")
+
+                            f.write("\nexistentialCoreThreatShadowVacuum = {\n")
+                            for k, v in schema_data.get("existentialCoreThreatShadowVacuum", {}).items():
+                                target_node = next((d["threat"] for d in schema_data["existentialCore"].values() if "threat" in d and str(d["val"]) == k), None)
+                                if target_node: f.write(f"    existentialCoreThreat.{target_node}: \"{v}\",\n")
+                            f.write("}\n")
                         error_handler.print(f"    [->] Compiled Enums Matrix: Threat       -> Generated existentialCoreThreat.py", level="info")
                     except Exception as e:
                         error_handler.print(f"Failed to generate threat file: {e}", level="error", exit_code=1)
@@ -129,7 +143,7 @@ def execute(args, error_handler, repo_root: str):
                         shutil.copy2(struct_source, target_path)
                         error_handler.print(f"    [->] Synced Script Asset: {token:<12} -> Restored from vault.", level="info")
 
-        # B. Self-Heal Missing Engine Opcodes, State Controllers, and Operational Configurations
+        # B. Self-Heal Missing Engine Opcodes & Stubs
         for token, asset_data in engine_assets_to_sync.items():
             target_path = os.path.join(repo_root, asset_data["runtime_path"])
             filename = asset_data["filename"]
