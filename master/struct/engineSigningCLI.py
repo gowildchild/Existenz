@@ -57,6 +57,9 @@ def main():
     error_handler.print(f"│ VisualMIX Signing CLI {INT_VERSION}     by Gunther Voet │", level="local")
     error_handler.print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘", level="local")
     error_handler.print(f"Operational: -stage {args.stage} -circle {args.circle} -config {args.config} -o {args.manifest}", level="info")
+
+    
+    engineSigningLibrary.pipeline_step_current(args.stage, error_handler)
     
     if args.stage == "test":
         from module import cliStateTest
@@ -65,7 +68,7 @@ def main():
         from module import cliStateInit
         cliStateInit.execute(args, error_handler, REPO_ROOT)
 
-
+    engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
 if __name__ == "__main__":
     try:
         main()
