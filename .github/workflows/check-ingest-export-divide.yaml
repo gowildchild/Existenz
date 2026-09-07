@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    environment: distribution
+    environment: KEY_PVT_ENVIRONMENT
     
     steps:
     - name: Existenz - CHECKOUT Code Blueprint
