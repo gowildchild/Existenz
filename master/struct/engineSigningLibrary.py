@@ -61,6 +61,69 @@ PIPELINE_SEQUENCE = [
 ]
 
 
+import hmac
+import hashlib
+from engineSigningMeta import existenzMeta
+
+def compute_integrity_chain(error_handler, rule_group_list: list, live_hashes: dict) -> dict:
+    """
+    Natively parses structural sequences, aggregates look-back history blocks, 
+    and writes the final compiled signature tokens straight into the ending chain node.
+    """
+    # Sort rules strictly by their order sequence field parameter to keep the trail predictable
+    sorted_elements = sorted(rule_group_list, key=lambda x: x[2])
+    
+    chain_active = False
+    accumulated_trail_hashes = []
+    chain_metadata_log = []
+    
+    # Extract your root magic string bytes to salt your loops
+    magic_salt_bytes = existenzMeta.MAGIC["RAW"].encode('utf-8')
+
+    for label, glue_tuple, chronological_order in sorted_elements:
+        struct_name, status_mask, op_flags, hex_identifier, file_path, old_sig = glue_tuple
+        
+        # Look up the current hash computed during this session
+        hash_var_name = f"existential{label}Hash"
+        current_node_hash = live_hashes.get(hash_var_name, "")
+
+        # 1. TRIGGER: Open Chain Window Sequence
+        if bool(op_flags & 1): # SIGN_CHAIN_START
+            chain_active = True
+            accumulated_trail_hashes = []
+            chain_metadata_log = []
+            error_handler.print(f"      [⛓️] Chain Session Opened at Sequence: {chronological_order} ({label})", level="info")
+
+        if chain_active and current_node_hash:
+            # Check if this link requires magic salting blocks
+            if bool(op_flags & 2): # SIGN_MAGIC_HASH
+                salted_payload = magic_salt_bytes + current_node_hash.encode('utf-8')
+                link_hash = hmac.new(magic_salt_bytes, salted_payload, hashlib.sha256).hexdigest()
+                chain_metadata_log.append(f"Seq {chronological_order} ({label}) + MAGIC")
+            else:
+                link_hash = current_node_hash
+                chain_metadata_log.append(f"Seq {chronological_order} ({label}) + HASH")
+                
+            accumulated_trail_hashes.append(link_hash)
+
+        # 2. ANCHOR TRIGGER: Seal and Commit the Compiled Signature
+        if bool(op_flags & 256) and chain_active: # SIGN_CHAIN_END
+            # Assemble the consolidated block signature boundaries
+            block_payload_string = "".join(accumulated_trail_hashes)
+            final_chain_hash = hmac.new(magic_salt_bytes, block_payload_string.encode('utf-8'), hashlib.sha256).hexdigest()
+            
+            # Map the resulting hash straight to the ending node's session tracking variable
+            live_hashes[f"existential{label}ChainHash"] = final_chain_hash
+            
+            error_handler.print(f"      [🔒] Chain Sealed at Sequence {chronological_order}! Connected Elements: {chain_metadata_log}", level="notice")
+            error_handler.print(f"           Final Compiled Signature: {final_chain_hash[:32]}...", level="info")
+            
+            # Close the tracking window until the next START bit triggers
+            chain_active = False
+
+    return live_hashes
+
+
 def calculate_op_driven_hash(target_dict: dict, op_flags: int) -> str:
     """
     Executes an opcode-driven cryptographic hash pass based on your 
