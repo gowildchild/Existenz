@@ -175,6 +175,174 @@ class visualMixEngineEnvironment:
 
         return skeleton
 
+def render_cryptographic_structural_tree(error_handler, session_hashes: dict, matrix_signed_rows: list):
+    """
+    Renders your exact data-dense repository tree map natively using your 
+    centralized, decoupled logging engine interface shortcuts.
+    """
+    # 1. Build rapid rule lookup directories eliminating global name collisions
+    matrix_rules_lookup = {row[0]: row for row in matrix_signed_rows if row[0] != "Magic"}
+
+    def get_layer_tags(layer_name, is_last_in_group=False):
+        chain_arrow = " | "
+        connector = "└──" if is_last_in_group else "├──"
+        v_line    = "│  "
+        
+        if layer_name not in matrix_rules_lookup:
+            return "0x00", "0", "+[HASH]+", connector, v_line, chain_arrow
+            
+        name, short_var, hash_var, sign_var, bitmask, seq = matrix_rules_lookup[layer_name]
+        requires_signing = bool(bitmask & 16 or bitmask & 32 or bitmask & 64) # Synced to your new KeyStatus flags
+        is_signed = len(sign_var) >= 64 and not sign_var.startswith(name)
+        
+        if bool(bitmask > 1 and (bitmask & 1)):
+            chain_arrow = " ► "
+            connector = "╚══" if is_last_in_group else "╠══"
+            v_line    = "║  "
+
+        tags = []
+        if is_signed:
+            if bitmask > 1 and (bitmask & 1): tags.append("+[CHN]")
+            if bitmask & 2:   tags.append("+[MAGIC]")
+            if bitmask & 8:   tags.append("+[SHA256]")
+            if bitmask & 262144: tags.append("+[IMMUTABLE]")
+        else:
+            if requires_signing:
+                tags.append("+PK:" + ("+PFM" if bitmask & 32 else "") + ("+DEV" if bitmask & 64 else "") + ("+PSN" if bitmask & 128 else ""))
+            else:
+                tags.append("-PK:" + ("-PFM" if bitmask & 32 else "") + ("-DEV" if bitmask & 64 else "") + ("-PSN" if bitmask & 128 else ""))
+
+        if not is_signed and requires_signing:
+            return f"{hex(bitmask)}", str(seq), f"\033[1;31m[ ! NOT SIGNED ! ] {' '.join(tags)}\033[0m", "├──", "│ ", " └► " if is_last_in_group else "├──"
+            
+        return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line, chain_arrow
+
+    # 2. Extract specific session tokens safely avoiding lookup dropouts
+    magic_token = session_hashes.get("existentialCoreMagicHash", "UNKNOWN")
+    check_token = session_hashes.get("existentialCoreCheckHash", "UNSIGNED")
+    core_ver    = "v0.76.16"
+
+    # 3. Stream out your vibrant structural mapping grid lines through error_handler.print
+    error_handler.print(f"  [MAGIC] existentialCoreCheckMagic        : {magic_token}", level="local")
+    error_handler.print(f"  [CHECK] existentialCoreCheckSignature    : {check_token}", level="local")
+    error_handler.print("", level="local")
+    
+    # Combined line construction matching horizontal tree padding specs
+    error_handler.print(f"──┬ [ Existenz {core_ver}   ] " + "─" * 103, level="local")
+
+    bm_c, sq_c, tg_c, _, _, _ = get_layer_tags("Core")
+    bm_cb, sq_cb, tg_cb, _, _, _ = get_layer_tags("Cores")        
+    bm_cc, sq_cc, tg_cc, _, _, _ = get_layer_tags("CoreCheck")
+    bm_ch, sq_ch, tg_ch, _, _, _ = get_layer_tags("CoreChain")        
+    bm_ct, sq_ct, tg_ct, conn_ct, vl_ct, ch_ct = get_layer_tags("CoreThreatStruct", is_last_in_group=False)
+    bm_ctl, sq_ctl, tg_ctl, conn_ctl, vl_ctl, ch_ctl = get_layer_tags("CoreThreatLegal", is_last_in_group=False)
+    bm_ctv, sq_ctv, tg_ctv, conn_ctv, vl_ctv, ch_ctv = get_layer_tags("CoreThreatShadowVacuum", is_last_in_group=False)
+    bm_cts, sq_cts, tg_cts, conn_cts, vl_cts, ch_cts = get_layer_tags("CoreThreat", is_last_in_group=True)
+
+    error_handler.print("  │ ", level="local")
+    error_handler.print(f"  ├── [SQ {sq_c.zfill(2)} | {bm_c.ljust(6)}] existentialCore.py          ─┬─► Sign: 0x{session_hashes.get('core_sign', '00000000')} | {tg_c}", level="local")
+    error_handler.print(f"  │                                              └─► Signature: \"{session_hashes.get('existentialCoreHash', '')}\"", level="local")
+    
+    error_handler.print(f"  ├── [SQ {sq_cb.zfill(2)} | {bm_cb.ljust(6)}] existentialCores.json       ─┬─► Sign: 0x{session_hashes.get('cores_sign', '00000000')} | {tg_cb}", level="local")
+    error_handler.print(f"  │                                              └─► Signature: \"{session_hashes.get('existentialCoresHash', '')}\"", level="local")        
+    
+    error_handler.print(f"  ├── [SQ {sq_cc.zfill(2)} | {bm_cc.ljust(6)}] existentialCoreCheck.py     ─┬─► Sign: 0x{session_hashes.get('check_sign', '00000000')} | {tg_cc}", level="local")
+    error_handler.print(f"  │                                              └─► Signature: \"{session_hashes.get('existentialCoreCheckHash', '')}\"", level="local")
+    
+    error_handler.print("  │  ", level="local")            
+    error_handler.print("  ├──► class existentialCoreThreatSignatures ────────────  ── ─ ── ─────  ─  ─ ─   ─ ─ ─  ─►", level="local")
+    
+    error_handler.print(f"  │    {conn_ct} [SQ {sq_ct.zfill(2)}{ch_ct}{bm_ct.ljust(6)}] existentialCoreThreat    ─┬──► Sign: 0x{session_hashes.get('threat_struct_sign', '00000000')} {ch_ct} {tg_ct}", level="local")
+    error_handler.print(f"  │    {vl_ct}                                         └──► Signature: \"{session_hashes.get('existentialCoreThreatStructHash', '')}\"", level="local")
+    
+    error_handler.print(f"  │    {conn_ctl} [SQ {sq_ctl.zfill(2)}{ch_ctl}{bm_ctl.ljust(6)}] CoreThreatLegal          ─┬──► Sign: 0x{session_hashes.get('threat_legal_sign', '00000000')} {ch_ctl} {tg_ctl}", level="local")
+    error_handler.print(f"  │    {vl_ctl}                                         └──► Signature: \"{session_hashes.get('existentialCoreThreatLegalHash', '')}\"", level="local")
+    
+    error_handler.print(f"  │    {conn_ctv} [SQ {sq_ctv.zfill(2)}{ch_ctv}{bm_ctv.ljust(6)}] CoreThreatShadowVacuum    ─┬─► Sign: 0x{session_hashes.get('threat_vacuum_sign', '00000000')} {ch_ctv} {tg_ctv}", level="local")
+    error_handler.print(f"  │    {vl_ctv}                                          └─► Signature: \"{session_hashes.get('existentialCoreThreatShadowVacuumHash', '')}\"", level="local")        
+    
+    error_handler.print(f"  │    {conn_cts} [SQ {sq_cts.zfill(2)}{ch_cts}{bm_cts.ljust(6)}] existentialCoreThreat.py  ─┬─► Sign: 0x{session_hashes.get('threat_sign', '00000000')} {ch_cts} {tg_cts}", level="local")
+    error_handler.print(f"  │                                                 └─► Signature: \"{session_hashes.get('existentialCoreThreatHash', '')}\"", level="local")
+    
+    error_handler.print("─ │ ─" + "─" * 122, level="local")
+    error_handler.print(f"  └── [SQ {sq_ch.zfill(2)} : {bm_ch.ljust(6)}] existen...CoreSignatures.py   ──┬─► Sign: 0x{session_hashes.get('chain_sign', '00000000')} | {tg_ch}", level="local")
+    error_handler.print(f"                                                    └─► Signature: \"{session_hashes.get('existentialCoreChainHash', '')}\"", level="local")
+    error_handler.print("─" * 127, level="local")
+
+def execute_lookback_chain_validation(error_handler, live_session_hashes: dict, sorted_rules: list, magic_bytes: bytes):
+    """
+    Executes a rigorous backward trace through active sequence keys to assert 
+    unbroken chain continuity and intercept unauthorized payload drift.
+    """
+    # Extract structural array index tracking flags natively
+    all_active_sequences = {row[5] for row in sorted_rules}
+
+    # 1. Phase One: Step through sorted execution rules and evaluate look-back vectors
+    for layer_meta in sorted_rules:
+        name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+        resolved_target_hash = live_session_hashes.get(hash_var, hash_var)
+        preceding_hashes, chain_metadata_log = [], []
+        
+        # Target the trailing boundary node of a sequence sequence loop block
+        if (sequence - 1 in all_active_sequences) and (sequence + 1 not in all_active_sequences):
+            check_seq = sequence - 1
+            
+            while True:
+                # Trace backward to find preceding transactional node causes
+                cause_row = next((row for row in sorted_rules if row[5] == check_seq), None)
+                if not cause_row: 
+                    break
+                    
+                c_name, c_short, c_hash, c_sign, c_bitmask, c_seq = cause_row
+                resolved_cause_hash = live_session_hashes.get(c_hash, c_hash)
+                
+                # Check for cryptographic protection layers matching KeyStatus bit permissions
+                requires_signature_modes = bool(c_bitmask & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM or 
+                                                c_bitmask & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER or 
+                                                c_bitmask & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
+                
+                if requires_signature_modes:
+                    row_payload = magic_bytes + resolved_cause_hash.encode('utf-8')
+                    preceding_hashes.insert(0, hmac.new(magic_bytes, row_payload, hashlib.sha256).hexdigest())
+                    chain_metadata_log.insert(0, f"      [*] Seq {c_seq}+MAGIC | Connected Cryptographic Node: '{c_name}'")
+                else:
+                    preceding_hashes.insert(0, resolved_cause_hash)
+                    chain_metadata_log.insert(0, f"      [*] Seq {c_seq}+HASH  | Connected Structural Asset:  '{c_name}'")
+                
+                check_seq -= 1
+                
+            if preceding_hashes:
+                # Output operational validation steps cleanly to screen
+                for log_line in chain_metadata_log: 
+                    error_handler.print(log_line, level="local")
+                    
+                # Assemble consolidated block signature mapping boundaries
+                accumulated_byte_string = "".join(preceding_hashes)
+                computed_verify_hash = hmac.new(magic_bytes, accumulated_byte_string.encode('utf-8'), hashlib.sha256).hexdigest()
+                
+                # FIXED: Verified computed live values straight against target frozen signature mappings
+                if not hmac.compare_digest(resolved_target_hash, computed_verify_hash):
+                    error_handler.print("=" * 90, level="local")
+                    error_handler.print(f" [!!!] CRYPTOGRAPHIC INTEGRITY MISSING [!!!]", level="local")
+                    error_handler.print(f"       Layer Name:   '{name}' [Sequence: {sequence}]", level="local")
+                    error_handler.print(f"       Expected:     {resolved_target_hash}", level="local")
+                    error_handler.print(f"       Computed:     {computed_verify_hash}", level="local")
+                    error_handler.print("=" * 90, level="local")
+                    error_handler.print(f"Look-back mismatch at node '{name}' Seq [{sequence}]. Execution terminated.", level="error", exit_code=1)
+
+    # 2. Phase Two: Assert that all required cryptographic format constraints remain unbroken
+    for layer_meta in sorted_rules:
+        name, short_var, hash_var, sign_var, bitmask, sequence = layer_meta
+        requires_signing = bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM or 
+                                bitmask & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER or 
+                                bitmask & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
+                                
+        if requires_signing:
+            valid_hex_format = bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32
+            if not valid_hex_format:
+                error_handler.print(f"Bitfield cryptographic validation failure: Layer '{name}' failed bitmask check {hex(bitmask)}", level="error", exit_code=67)
+
+    error_handler.print("Core cryptographic structural validations verified clean.", level="notice")
 
 
 if __name__ == "__main__":
