@@ -43,7 +43,7 @@ error_handler = visualmixErrorHandler(custom_post="_ERR")
 def main():
     parser = argparse.ArgumentParser(description="Existenz SHA256 Manifest")
     # Added "init" into the parser stage choices profile array
-    parser.add_argument("-stage", "--stage", choices=["init", "sign", "check", "verify", "manifest"], required=True, help="Manifest operation state selection.")
+    parser.add_argument("-stage", "--stage", choices=["test","init", "sign", "check", "verify", "manifest"], required=True, help="Manifest operation state selection.")
     parser.add_argument("-override", "--override", choices=["update", "recreate", "retry"], required=True, help="Manifest operation override.")
     parser.add_argument("-run","--run", choices=["wet","dry"], default="wet", required=True, help="DRY shows only what it does, WET writes files")
     parser.add_argument("-circle", "--circle", choices=["dist","tools","build","master","all"], default="all", help="Select circle")
@@ -58,7 +58,10 @@ def main():
     error_handler.print("└─  ── ─ ── ─  ─  ─ ─   ─ ─ ─  ──────────────────────────────────┘", level="local")
     error_handler.print(f"Operational: -stage {args.stage} -circle {args.circle} -config {args.config} -o {args.manifest}", level="info")
     
-    if args.stage == "init":
+    if args.stage == "test":
+        from module import cliStateTest
+        cliStateTest.execute(args, error_handler, REPO_ROOT)
+    elif args.stage == "init":
         from module import cliStateInit
         cliStateInit.execute(args, error_handler, REPO_ROOT)
 
