@@ -115,7 +115,7 @@ jobs:
         if git diff --staged --quiet; then
           echo "[+] No structural changes detected. Skipping push."
         else
-          git commit -m "Existenz: universal cross-language structures [$BLUEPRINT_VERSION]"
+          git commit -m "Existenz universal cross-language structures [$BLUEPRINT_VERSION]"
           git pull --rebase origin ${{ github.head_ref || github.ref_name }} || true
           git push origin ${{ github.head_ref || github.ref_name }}
         fi
@@ -143,7 +143,7 @@ jobs:
         BLUEPRINT_VERSION=$(python -c 'import json; print(json.load(open("master/struct/existentialCoreSchema.json")).get("existentialCoreMeta", {}).get("CoreVersion", "v0.76.17"))')
         
         git config --global user.name "Existenz Platform Bot"
-        git config --global user.email "32355099+gowildchild@://github.com"
+        git config --global user.email "32355099+gowildchild@users.noreply.github.com"
         
         git add manifest.json
         if git diff --staged --quiet; then
@@ -166,45 +166,7 @@ jobs:
         
         # FIXED: Clean, uniform command block invoking the simple unified 'verify' stage
         python master/struct/engineSigningCLI.py -stage verify -circle "$ACTIVE_CIRCLE" -override update -run wet
-#    - name: Existenz - Signing Pipeline
-#      env:
-#          GITHUB_ACTIONS: 'true'
-#          SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
-#          SIGN_EXISTENZ_AUDIT_PHRASE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PHRASE }}
-#          SIGN_EXISTENZ_AUDIT_PUBLIC: ${{ vars.SIGN_EXISTENZ_AUDIT_PUBLIC }}
-#          SIGN_EXISTENZ_AUDIT_FINGERPRINT: ${{ vars.SIGN_EXISTENZ_AUDIT_FINGERPRINT }}
-#          SIGN_EXISTENZ_DIST_RAD_A: 7
-#          SIGN_EXISTENZ_DIST_RAD_B: 31
-#      run: |
-#          python master/struct/engineSigningCLI.py -stage sign -override update -run wet -circle master
-#
-#    - name: Existenz - git commit and push to repo
-#      if: env.RUN_MODE == 'compile'
-#      run: |
-#        echo "[*] Compile mode active. Synchronizing repository files..."
-#        git config --global user.name "Existenz Platform Bot"
-#        git config --global user.email "32355099+gowildchild@users.noreply.github.com"
-#      
-#        cp master/existentialCore.py dist/ 2>/dev/null || true
-#        cp master/existentialCoreThreat.py dist/ 2>/dev/null || true
-#        
-#        git add dist/
-#        
-#        if git diff --staged --quiet; then
-#          echo "[+] No structural changes detected. Skipping push."
-#        else
-#          git commit -m "Existenz: universal cross-language structures [v0.76.16]"
-#          git pull --rebase origin main || true
-#          git push
-#        fi      
 
-#    - name: Existenz - Test Universal Data Structures
-#      if: env.RUN_MODE != 'locked'
-#      run: |
-#        test -f dist/existentialCore.json || echo "Dist JSON pending compilation stage expansion"
-#        test -f manifest.json
-#        echo "[+] Compilation and schema verification successful."
-#        
 #    - name: Existenz - Terminate Integrity Check 
 #      if: env.RUN_MODE == 'integritycheck'
 #      run: |
