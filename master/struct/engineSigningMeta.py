@@ -44,8 +44,8 @@ existenzLocations = {
         "Signatures":    "master/existentialSignatures.py"
     },
     "chain": {
-        "CoresChain":    "",
-        "ThreatSigned":  ""
+        "CoresChain":    "master/existentialSignatures.py",
+        "ThreatSigned":  "master/existentialSignatures.py"
     },
     "manifest": {
         "dist":     "dist",
