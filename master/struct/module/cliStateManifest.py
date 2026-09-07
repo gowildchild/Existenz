@@ -125,7 +125,8 @@ def execute(args, error_handler, repo_root: str):
         error_handler.print(f"       Master Changed: {master_changed} | Build Changed: {build_changed}", level="local")
         error_handler.print(f"       File system update is BLOCKED until signed locally via private keys.", level="local")
         error_handler.print("=" * 90, level="local")
-        sys.exit(65) # Safely crashes the step before modifying the manifest or staging git updates
+        error_handler.notice(level="error", message=f"MANIFEST ESCALATION INTERCEPT: {str(e)}", exit_code=65, details=f"Unsigned changes detected in master code! Master Changed: {master_changed} | Build Changed: {build_changed}")
+        # sys.exit(65) # Safely crashes the step before modifying the manifest or staging git updates
 
     for target_c, glue_key in circle_to_glue_map.items():
         current_hash = signatures_circle_registry.get(f"hash.{target_c}")
