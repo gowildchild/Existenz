@@ -1,5 +1,5 @@
 // From inside your runtime web application dashboard controller:
-import { ExistentialCore, ExistentialThreat, ExistentialRipple } from 'https://cdn.jsdelivr.net/gh/gowildchild/Existenz@master/struct/existenz_core.js';
+import { ExistentialCore, ExistentialThreat, ExistentialRipple } from 'https://cdn.jsdelivr.net/gh/gowildchild/Existenz@master/existentialCores.json';
 
 // Bitwise Mask Match Assertions
 let activeThreat = ExistentialThreat.THREAT_PSYCHOLOGY | ExistentialThreat.THREAT_AUTONOMY;
