@@ -100,7 +100,8 @@ def execute(args, error_handler, repo_root: str):
         version_name = "module/cliStateInit.py"
         
         # Dynamic Extraction: Read version directly from the blueprint payload
-        version_str = schema_data.get("existentialCoreVersion", schema_data.get("version", "v0.76.15"))
+        #existenzMeta.HEADER.get("VERSION", version_str)
+        version_str = schema_data.HEADER.get("existentialCoreVersion", schema_data.get("version", "v0.76.08"))
 
         # Export straight to GitHub Actions environment space natively
         github_env_file = os.environ.get('GITHUB_ENV')
@@ -205,8 +206,8 @@ def execute(args, error_handler, repo_root: str):
                             core_lines.append(line_entry)
 
                         # 4. Pull the rest of the metadata fields out of your master schema
-                        ver_val = schema_data.get("existentialCoreVersion", "v0.76.15")
-                        magic_val = schema_data.get("existentialCoreCheckMagic", "")
+                        ver_val = schema_data.HEADER.get("existentialCoreVersion", "v0.76.08")
+                        magic_val = schema_data.HEADER.get("existentialCoreCheckMagic", "")
                         
                         # Build unified enum token resolver map once
                         val_to_enum_map = {}
