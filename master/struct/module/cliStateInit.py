@@ -183,9 +183,13 @@ def execute(args, error_handler, repo_root: str):
                             else:
                                 struct_type = "PILLAR"
                                 
-                            if not bool(k == "NONE") and bool(pol & existenzCorePolicy.CORE_IMMUTABLE) and not bool(pol & existenzCorePolicy.BIT_MASK):
-                                if bool(pol & (existenzCorePolicy.CORE_PILLAR | existenzCorePolicy.CORE_RIGHTS | existenzCorePolicy.USER_CANARY)):
+                            if not bool(k == "NONE") and bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
+                                if bool(pol & (existenzCorePolicy.CORE_PILLAR | existenzCorePolicy.CORE_RIGHTS)):
                                     calculated_basic.append(f'    "{k}"')
+                                    
+                                elif bool(pol & existenzCorePolicy.CORE_CANARY):
+                                    if k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM", "CANARY_4_FOOTPRINT","CANARY_IV_PRESENCE","CANARY_5_METRICS","CANARY_V_RIGHTS","CANARY_VI_SYSTEMIC"]:
+                                        calculated_basic.append(f'    "{k}"')
 
 
                             # Build entry strings with column formatting matching your target layout rules
@@ -199,7 +203,7 @@ def execute(args, error_handler, repo_root: str):
                             core_lines.append(line_entry)
 
                         # 4. Pull the rest of the metadata fields out of your master schema
-                        ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
+                        ver_val = schema_data.get("existentialCoreVersion", "v0.76.15")
                         magic_val = schema_data.get("existentialCoreCheckMagic", "")
                         
                         # Build unified enum token resolver map once
