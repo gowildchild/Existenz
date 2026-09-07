@@ -8,7 +8,6 @@ import json
 import engineSigningLibrary
 from engineSigningMeta import existenzLocations, existenzMeta, existenzPublicKeys
 
-
 def execute(args, error_handler, repo_root: str):
     """
     Executes progressive  directory scanning and manifest file cataloging.
