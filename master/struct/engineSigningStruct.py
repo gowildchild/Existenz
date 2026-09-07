@@ -28,7 +28,7 @@ existenzIntegrityGlue = {
     "CoreThreatShadowVacuum": ( "existentialCoreThreatShadowVacuum", 3575, 1599, 0x08, existenzLocations["core"]["Threat"],
                                                                                existentialToken["master"]["ThreatShadowVacuum"]),
     "CoreThreatSigned":       ( "existentialCoreThreatSigned",3583, 382,  0x09, existenzLocations["core"]["Threat"],
-                                                                               existentialToken["chain"]["Threat"]),
+                                                                               existentialToken["master"]["Threat"]),
     "CoreSigned":             ( "existentialCoreSigned",     3583, 511,  0x0F, existenzLocations["core"]["Signatures"],
                                                                                existentialToken["master"]["ThreatChain"]),
     "CircleDist":             ( "existentialCircleDist",     2615, 23,   0x2F, existenzLocations["manifest"]["dist"],
