@@ -8,8 +8,6 @@ name: Check Ingest Export Divide | Existenz
 on:
   push:
     branches: [ "main", "master", "develop" ]
-  pull_request:
-    branches: [ "main", "master", "develop" ]
 
 jobs:
   validate-and-compile:
