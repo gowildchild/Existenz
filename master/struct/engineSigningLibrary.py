@@ -278,29 +278,27 @@ def solve_ring_requirements(stage: str) -> tuple:
     )
 
 class visualMixEngineEnvironment:
-    def __init__(self, post:str="SIGN_EXISTENZ_AUDIT_", conf: Dict[str, Any] = None, namespace="visualMix"):
+    def __init__(self, error_handler, repo_github_flag: bool, post: str = "SIGN_EXISTENZ_AUDIT_", conf: dict = None, namespace="visualMix"):
+        self.error_handler = error_handler
+        self.repo_github_flag = repo_github_flag
         self.post   = post
         self.conf   = conf or {}
         self.namespace = namespace
 
-    def load_secret_key(self) -> Dict[str, Any]:
-        """Loads file configurations smoothly matching extensions."""
-        skeleton = {}  # Fixed critical missing dictionary variable instantiation
+    def load_secret_key(self) -> dict:
+        """Loads environment configurations smoothly by handling strict uppercase mappings."""
+        skeleton = {}
 
-        keys_pub = ["PUBLIC","FINGERPRINT"]
-        keys_pvt = ["PRIVATE","PHRASE"]
+        keys_pub = ["PUBLIC", "FINGERPRINT"]
+        keys_pvt = ["PRIVATE", "PHRASE"]
 
         for key in (keys_pvt + keys_pub):
-            conf_key = f"{self.post}{key.capitalize()}"
-            env_key  = f"{self.post}{key}"
+            # FIXED: Force upper-case token matching across all config blocks to prevent mask drops
+            conf_key = f"{self.post}{key.upper()}"
+            env_key  = f"{self.post}{key.upper()}"
 
-            if key == "FINGERPRINT":
-                env_fallback_value = os.environ.get(env_key, os.environ.get(f"{self.post}FINGERPRINT"))
-            else:
-                env_fallback_value = os.environ.get(env_key)
-        
+            env_fallback_value = os.environ.get(env_key)
             skeleton[env_key] = self.conf.get(conf_key, env_fallback_value)
-
 
         time_key = f"{self.post}TIME"
         skeleton[time_key] = self.conf.get(time_key, os.environ.get(time_key, int(time.time())))
@@ -311,19 +309,12 @@ class visualMixEngineEnvironment:
         raw_phrase  = skeleton.get(f"{self.post}PHRASE")
 
         missing_fields = []
-        if not raw_pvt_key: 
-            missing_fields.append(f"{self.post}PRIVATE")
-        if not env_pub_key: 
-            missing_fields.append(f"{self.post}PUBLIC")
-        if not env_finger:  
-            missing_fields.append(f"{self.post}FINGERPRINT")
+        if not raw_pvt_key: missing_fields.append(f"{self.post}PRIVATE")
+        if not env_pub_key:  missing_fields.append(f"{self.post}PUBLIC")
+        if not env_finger:   missing_fields.append(f"{self.post}FINGERPRINT")
         
         if missing_fields:
-            error_handler.notice(
-                level="error",
-                message=f"Loop-driven environment validation failed. Unresolved tracks: {missing_fields}",
-                exit_code=visualmixErrorHandler.ERR_MISSING_KEY
-            )
+            self.error_handler.print(f"Loop-driven environment validation failed. Unresolved tracks: {missing_fields}", level="error", exit_code=63)
 
         clean_pub_display = env_pub_key.strip().split()[-1] if len(env_pub_key.strip().split()) > 1 else 'Custom Format'
         print(f"  [+] Ingest Namespace:      '{self.namespace}' Loop-Driven Tracker Block")
@@ -331,7 +322,6 @@ class visualMixEngineEnvironment:
         print(f"  [+] Ingested Fingerprint:  {env_finger.strip()}")
         print(f"  [+] Private Key Payload:   Loaded ({len(raw_pvt_key.strip())} characters)")
 
-        # 3. Handle asymmetric password protection mechanics
         password_bytes = None
         if raw_phrase and str(raw_phrase).strip():
             print(f"  [+] Key Protection State:  Encrypted passphrase token active")
@@ -339,7 +329,6 @@ class visualMixEngineEnvironment:
         else:
             print(f"  [ ] Key Protection State:  Assuming plaintext unencrypted asset format")
 
-        # 4. Attempt Cryptographic instantiation checks via decoupled engine library
         try:
             pvt_bytes = raw_pvt_key.strip().encode('utf-8')
             parsed_private_key = visualMixEngineCrypto.deserialize_ssh_private_key(
@@ -350,11 +339,7 @@ class visualMixEngineEnvironment:
             skeleton["_OBJECT"] = parsed_private_key
             
         except Exception as crypto_fault:
-            error_handler.notice(
-                level="error",
-                message=f"Failed to instantiate environment key: {crypto_fault}",
-                exit_code=visualmixErrorHandler.ERR_KEY_FORMAT
-            )
+            self.error_handler.print(f"Failed to instantiate environment key: {crypto_fault}", level="error", exit_code=67)
 
         return skeleton
 
