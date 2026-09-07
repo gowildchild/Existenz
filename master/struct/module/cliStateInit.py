@@ -240,7 +240,7 @@ def execute(args, error_handler, repo_root: str):
                             custom_out.write(json_str_payload)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                     
-                    elif "Signatures" in token or filename == "existentialSignatures.json":
+                    elif "jsonSignatures" in token or filename == "existentialSignatures.json":
                         from engineSigningMeta import existenzMeta
 
                         # Construct your physical structural layout payload matching your exact tracking realms
