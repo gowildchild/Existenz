@@ -127,13 +127,18 @@ def execute(args, error_handler, repo_root: str):
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                 threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
                         
-                        # 2. Extract and format your verified bitmask evaluations natively
-                        from engineSigningStruct import existenzCorePolicy
+                       from engineSigningStruct import existenzCorePolicy
 
                         core_lines = []
                         for k, d in schema_data.get("existentialCore", {}).items():
                             v = d["val"]
-                            pol = d.get("pol", 0)
+                            raw_pol = d.get("pol", 0)
+                            
+                            # FIXED: Dynamically convert string policy names to true integer bitweights
+                            if isinstance(raw_pol, str):
+                                pol = int(getattr(existenzCorePolicy, raw_pol.strip(), 0))
+                            else:
+                                pol = int(raw_pol)
                             
                             # Determine the clean bit-expression pattern based on the policy bitmask
                             if bool(pol & existenzCorePolicy.BIT_MASK):
@@ -149,13 +154,13 @@ def execute(args, error_handler, repo_root: str):
                             # Evaluate structural types dynamically straight from your IntFlag definitions
                             if bool(pol & existenzCorePolicy.CORE_INTEGRITY):
                                 struct_type = "SIGNATURE"
-                            elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY)):
-                                struct_type = "CANARY"
                             elif bool(pol & existenzCorePolicy.CORE_WATCHDOG):
                                 struct_type = "SHIELD"
+                            elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY)):
+                                struct_type = "CANARY"
                             elif bool(pol & existenzCorePolicy.CORE_RIGHTS):
                                 struct_type = "RIGHTS"
-                            elif bool(bm & existenzCorePolicy.CORE_PILLAR):
+                            elif bool(pol & existenzCorePolicy.CORE_PILLAR):
                                 struct_type = "PILLAR"
                             else:
                                 struct_type = "PILLAR"
