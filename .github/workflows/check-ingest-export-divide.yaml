@@ -20,6 +20,8 @@ jobs:
     steps:
     - name: Existenz - CHECKOUT Code Blueprint
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref || github.ref_name }} 
 
     - name: Existenz - INIT Python Runtime
       uses: actions/setup-python@v5
@@ -67,12 +69,13 @@ jobs:
                 master/struct/module/cliStateVerify.py \
                 master/struct/module/cliStateBuild.py 2>/dev/null || true
 
-        # FIXED: Utilizing standard Linux terminal environment mapping string variables ($BLUEPRINT_VERSION)
         if ! git diff-index --quiet HEAD; then
           echo " [*] Fixing missing assets. "
+          # FIXED: Dynamically extract active core version string inline to prevent empty bracket strings
+          BLUEPRINT_VERSION=$(python -c 'import json; print(json.load(open("master/struct/existentialCoreSchema.json")).get("existentialCoreMeta", {}).get("CoreVersion", "v0.76.17"))')
           git commit -m "sys(core): Bootstrap export Existenz Blueprints [$BLUEPRINT_VERSION]"
-          git pull --rebase origin main || true
-          git push origin main
+          git pull --rebase origin ${{ github.head_ref || github.ref_name }} || true
+          git push origin ${{ github.head_ref || github.ref_name }}
         else
           echo " [*] No missing assets."
         fi
@@ -100,7 +103,7 @@ jobs:
         
         # 3. Fire the orchestrator engine securely leveraging your dynamic stage parameters
         python master/struct/engineSigningCLI.py -stage manifest -circle "$ACTIVE_CIRCLE" -override update -run wet
-        BLUEPRINT_VERSION=$(python -c 'import json; print(json.load(open("master/struct/existentialCoreSchema.json")).get("existentialCoreMeta", {}).get("CoreVersion", "v0.76.17"))')
+        BLUEPRINT_VERSION=$(python -c 'import json; print(json.load(open("master/struct/existentialCoreSchema.json")).get("existentialCoreMeta", {}).get("CoreVersion", "v0.76.15"))')
         echo " [+] Resolved active registry layer track target: $BLUEPRINT_VERSION"
 
         # 5. Commit operational configuration parameters natively to git
@@ -113,8 +116,8 @@ jobs:
           echo "[+] No structural changes detected. Skipping push."
         else
           git commit -m "Existenz: universal cross-language structures [$BLUEPRINT_VERSION]"
-          git pull --rebase origin main || true
-          git push
+          git pull --rebase origin ${{ github.head_ref || github.ref_name }} || true
+          git push origin ${{ github.head_ref || github.ref_name }}
         fi
     - name: Existenz - INTEGRITY Asymetric Signing
       env:
@@ -147,8 +150,8 @@ jobs:
           echo "[+] No structural signature updates detected. Skipping push."
         else
           git commit -m "Existenz: cryptographically signed layer records [$BLUEPRINT_VERSION]"
-          git pull --rebase origin main || true
-          git push
+          git pull --rebase origin ${{ github.head_ref || github.ref_name }} || true
+          git push origin ${{ github.head_ref || github.ref_name }}
         fi
 
     - name: Existenz - Asymmetric Multi-Signature Verification Phase
