@@ -269,12 +269,44 @@ def execute(args, error_handler, repo_root: str):
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                 f.write(f"    {k:<30} = {expr}  # {d.get('comment', '')}\n")
                             
+                            # 1. Compile existentialCoreBitmask layout map dictionary
                             f.write("\nexistentialCoreBitmask = {\n")
                             for k, d in schema_data["existentialCore"].items():
                                 if "msk" in d:
-                                    f.write(f"    existentialCore.{k}: \"{d['msk']}\",\n")
+                                    f.write(f'    existentialCore.{k:<25}: "{d["msk"]}",\n')
                             f.write("}\n")
-                        error_handler.print(f"    [COMPILE FILE] Compiled native IntFlag class and Bitmasks at: {target_path}", level="info")
+
+                            # 2. FIXED: Compile existentialCorePolicy layout map dictionary
+                            f.write("\nexistentialCorePolicy = {\n")
+                            for k, d in schema_data["existentialCore"].items():
+                                if "pol" in d:
+                                    f.write(f'    existentialCore.{k:<25}: "{d["pol"]}",\n')
+                            f.write("}\n")
+
+                            # 3. FIXED: Compile existentialCoreExpression layout map dictionary
+                            from engineSigningStruct import existenzCorePolicy
+                            f.write("\nexistentialCoreExpression = {\n")
+                            for k, d in schema_data["existentialCore"].items():
+                                v = d["val"]
+                                raw_pol = d.get("pol", 0)
+                                if isinstance(raw_pol, str):
+                                    pol = int(raw_pol.strip(), 16) if raw_pol.strip().startswith("0x") else int(raw_pol.strip())
+                                else:
+                                    pol = int(raw_pol)
+
+                                if bool(pol & existenzCorePolicy.BIT_MASK):
+                                    calculated_expr = f"1 << {v.bit_length() - 1}"
+                                else:
+                                    if v <= 0:
+                                        calculated_expr = "0"
+                                    elif (v & (v - 1)) == 0:
+                                        calculated_expr = f"1 << {v.bit_length() - 1}"
+                                    else:
+                                        calculated_expr = f"0x{v:08x}"
+                                f.write(f'    existentialCore.{k:<25}: "{calculated_expr}",\n')
+                            f.write("}\n")
+                            
+                        error_handler.print(f"    [COMPILE FILE] Compiled native IntFlag class and expanded structural registries at: {target_path}", level="info")
                     except Exception as e:
                         error_handler.print(f"Failed to compile existentialCore.py: {e}", level="error", exit_code=1)
 
