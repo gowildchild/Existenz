@@ -9,9 +9,9 @@ from engineSigningMeta import existenzLocations, existenzMeta
 from existentialSignatures import existentialToken
 
 existenzIntegrityGlue = {
-    "Magic":                  ( "existentialMagicSignature", 3583, 118,  0x00, existenzLocations["core"]["Signatures"],  
+    "Magic":                  ( "existentialMagicSignature", 3583, 118,  0x00, existenzLocations["core"]["SignaturesPy"],  
                                                                                existentialToken.get("MAGIC", {}).get("SIGNATURE", "PENDING_SIGN")),
-    "MagicCheck":             ( "existentialMagicToken",     3575, 110,  0x00, existenzLocations["core"]["Signatures"],  
+    "MagicCheck":             ( "existentialMagicToken",     3575, 110,  0x00, existenzLocations["core"]["SignaturesPy"],  
                                                                                existentialToken.get("MAGIC", {}).get("TOKEN", "PENDING_SIGN")),
     "Core":                   ( "existentialCore",           3575, 1790, 0x00, existenzLocations["core"]["Core"],  
                                                                                existentialToken.get("master", {}).get("Core", "PENDING_SIGN")),
