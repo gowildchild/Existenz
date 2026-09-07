@@ -90,8 +90,8 @@ def execute(args, error_handler, repo_root: str):
     if core_assets_to_sync or engine_assets_to_sync:
         error_handler.print(" [*] Pre-flight Scan Complete: Bootstrapping runtime environment configurations...", level="notice")
         schema_path = os.path.abspath(os.path.join(repo_root, existenzLocations["core"]["Schema"]))
-        meta_path = os.path.abspath(os.path.join(repo_root, existenzLocations["engine"]["signingMeta"]))
-        meta_data = None
+        #meta_path = os.path.abspath(os.path.join(repo_root, existenzLocations["engine"]["signingMeta"]))
+        meta_data = ""
         
         try:
             with open(schema_path, "r", encoding="utf-8") as f:
@@ -99,11 +99,11 @@ def execute(args, error_handler, repo_root: str):
         except Exception as e:
             error_handler.print(f"Failed to parse master schema JSON database layers: {e}", level="error", exit_code=16)
 
-        try:
-            with open(meta_path, "r", encoding="utf-8") as f:
-                meta_data = json.load(f)
-        except Exception as e:
-            error_handler.print(f"Failed to parse meta JSON database layers: {e}", level="error", exit_code=16)
+        #try:
+        #    with open(meta_path, "r", encoding="utf-8") as f:
+        #        meta_data = json.load(f)
+        #except Exception as e:
+        #    error_handler.print(f"Failed to parse meta JSON database layers: {e}", level="error", exit_code=16)
 
         
         version_name = "module/cliStateInit.py"
@@ -112,7 +112,8 @@ def execute(args, error_handler, repo_root: str):
         #existenzMeta.HEADER.get("VERSION", version_str)
         version_full = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
         version_str = schema_data.get("existentialMeta", {}).get("CoreVersion", schema_data.get("coreVersion", "v0.76.09"))
-        magic_str = meta_data.get("existenzMeta", {}).get("HEADER", schema_data.get("SECRET", "HEADERSECRET"))
+        #magic_str = meta_data.get("existenzMeta", {}).get("HEADER", schema_data.get("SECRET", "HEADERSECRET"))
+        magic_str = "blah"
         #version_str = schema_data.get("existentialMeta", {}).get("CoreVersion", schema_data.get("coreVersion", "v0.76.09"))
 
 
