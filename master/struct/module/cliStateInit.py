@@ -89,9 +89,6 @@ def execute(args, error_handler, repo_root: str):
             except Exception as env_err:
                 error_handler.print(f"Non-fatal error mapping version variable to shell runner: {env_err}", level="debug")
 
-        # The rest of your core asset loop follows right below...
-        for token, asset_data in core_assets_to_sync.items():
-
         # A. Self-Heal Core Runtime Files (Compiling directly to final destination)
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.join(repo_root, asset_data["runtime_path"])
