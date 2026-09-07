@@ -102,7 +102,6 @@ def execute(args, error_handler, repo_root: str):
         # Dynamic Extraction: Read version directly from the blueprint payload
         #existenzMeta.HEADER.get("VERSION", version_str)
         version_str = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
-        error_handler.print(f"  [VERSION1] {version_str} {version_name}", level="debug")
 
         # Export straight to GitHub Actions environment space natively
         github_env_file = os.environ.get('GITHUB_ENV')
@@ -114,6 +113,8 @@ def execute(args, error_handler, repo_root: str):
             except Exception as env_err:
                 error_handler.print(f"Non-fatal error mapping version variable to shell runner: {env_err}", level="debug")
 
+        
+        error_handler.print(f"  [VERSION1] {version_str} {version_name}", level="debug")
         # A. Self-Heal Core Runtime Files (Compiling directly to final destination)
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.abspath(os.path.join(repo_root, asset_data["runtime_path"]))
@@ -208,8 +209,10 @@ def execute(args, error_handler, repo_root: str):
 
                         # 4. Pull the rest of the metadata fields out of your master schema
                         ver_val = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.10"))
-                        error_handler.print(f"  [VERSION2] {ver_val}", level="info")
-                        magic_val = schema_data.get("existentialCoreCheckMagic", "")
+                        ver_val_meta = schema_data.get("existentialMeta", {})
+                        ver_val_json = json.dumps(ver_val_meta, indent=2)
+                        ver_val_json_indent = ver_val_json.replace("\n", "\n  ")
+                        magic_val = schema_data.get("existentialCoreCheckMagic", "test")
                         #version_str = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
                         # Build unified enum token resolver map once
                         val_to_enum_map = {}
@@ -243,6 +246,7 @@ def execute(args, error_handler, repo_root: str):
                         # 5. Construct the physical JSON string file payload in the exact target layout order
                         json_str_payload = "{\n"
                         json_str_payload += f'  "Meta": "{ver_val}",\n'
+                        json_str_payload += f'  "existentialCoreMeta": {ver_val_json_indent},\n'
                         #json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
                         json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
                         json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"  
@@ -257,6 +261,7 @@ def execute(args, error_handler, repo_root: str):
                         with open(target_path, "w", encoding="utf-8") as custom_out:
                             custom_out.write(json_str_payload)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
+                        error_handler.print(f"  [VERSION2] {ver_val}", level="debug")
                     
                     elif "SignaturesJson" in token or filename == "existentialSignatures.json":
                         from engineSigningMeta import existenzMeta
