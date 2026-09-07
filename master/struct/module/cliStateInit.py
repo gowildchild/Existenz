@@ -117,6 +117,7 @@ def execute(args, error_handler, repo_root: str):
             target_path = os.path.abspath(os.path.join(repo_root, asset_data["runtime_path"]))
             calculated_basic = []
             calculated_immutable = []
+            calculated_immutable_count = 0
             filename = asset_data["filename"]
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
             
@@ -185,15 +186,13 @@ def execute(args, error_handler, repo_root: str):
                                 struct_type = "PILLAR"
                                 
                             if not bool(k == "NONE") and bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
+                                calculated_immutable.append(f'    "{k}"')
                                 if bool(pol & (existenzCorePolicy.CORE_PILLAR | existenzCorePolicy.CORE_RIGHTS)):
                                     calculated_basic.append(f'    "{k}"')
                                     
                                 elif bool(pol & existenzCorePolicy.CORE_CANARY):
-                                    if k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM", "CANARY_4_FOOTPRINT","CANARY_IV_PRESENCE","CANARY_5_METRICS","CANARY_V_RIGHTS","CANARY_VI_SYSTEMIC"]:
+                                    if k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM"]:
                                         calculated_basic.append(f'    "{k}"')
-                                        
-                            if not bool(k == "NONE") and bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
-                                calculated_immutable.append(f'    "{k}"')
                                     
                             # Build entry strings with column formatting matching your target layout rules
                             line_entry = f'    "{k}":'.ljust(33)
