@@ -11,11 +11,13 @@ import hmac
 import engineSigningLibrary
 from engineSigningMeta import existenzLocations, existenzMeta
 from engineSigningStruct import existenzIntegrityKeysHandler, existenzIntegrityGlue, existenzSignatures
+import sys
+import importlib.util
 
 def execute(args, error_handler, repo_root: str):
     """
     Executes a project-agnostic structural integrity scanning pass.
-    Strictly queries tuple arrays by explicit numerical indices to prevent unpacking errors.
+    Surgically inspects and hashes distinct dictionary structures inside a shared file.
     """
     error_handler.print("Initiating universal structural signature engine [MODE: INTEGRITY]...", level="notice")
     
@@ -24,25 +26,37 @@ def execute(args, error_handler, repo_root: str):
 
     # 1. PHASE ONE: Dynamic Component Hashing via Clean Index Extraction
     for key, glue_tuple in existenzIntegrityGlue.items():
-        # Safely extract records from the 6-element tuple via explicit index placement
-        name          = str(glue_tuple[0])
-        status_mask   = int(glue_tuple[1])
-        op_flags      = int(glue_tuple[2])
-        hex_id        = str(glue_tuple[3])
-        relative_path = str(glue_tuple[4])
-        old_sig       = str(glue_tuple[5])
-
+        name, status_mask, op_flags, hex_id, relative_path, old_sig = glue_tuple
         absolute_path = os.path.abspath(os.path.join(repo_root, relative_path))
         computed_hash = ""
 
         # Check Opcode: SIGN_TYPE_FILE
         if bool(op_flags & existenzIntegrityKeysHandler.SIGN_TYPE_FILE) and os.path.exists(absolute_path):
-            if absolute_path.endswith(".json"):
-                with open(absolute_path, "r", encoding="utf-8") as j_in:
-                    json_payload = json.load(j_in)
-                computed_hash = engineSigningLibrary.calculate_op_driven_hash(json_payload, op_flags)
-            else:
-                computed_hash = engineSigningLibrary.calculate_file_sha256(absolute_path)
+            # FIXED: Target distinct inner dictionary variables inside the shared threat file
+            if "Threat" in key and not absolute_path.endswith(".json"):
+                try:
+                    module_name = f"dynamic_{key}"
+                    spec = importlib.util.spec_from_file_location(module_name, absolute_path)
+                    mod = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(mod)
+                    
+                    # Map the glue key to your true file variable layout names
+                    target_var_name = name  # Uses the 1st parameter from the glue tuple (e.g. "existentialCoreThreatLegal")
+                    
+                    if hasattr(mod, target_var_name):
+                        target_structure = getattr(mod, target_var_name)
+                        # Process using your opcode-driven key/value sequential hashing parameters
+                        computed_hash = engineSigningLibrary.calculate_op_driven_hash(target_structure, op_flags)
+                except Exception as ex:
+                    error_handler.print(f"     [!] Failed dynamic memory import for structure {key}: {ex}", level="warning")
+
+            if not computed_hash:
+                if absolute_path.endswith(".json"):
+                    with open(absolute_path, "r", encoding="utf-8") as j_in:
+                        json_payload = json.load(j_in)
+                    computed_hash = engineSigningLibrary.calculate_op_driven_hash(json_payload, op_flags)
+                else:
+                    computed_hash = engineSigningLibrary.calculate_file_sha256(absolute_path)
 
         # Check Opcode: SIGN_TYPE_STRING
         elif bool(op_flags & existenzIntegrityKeysHandler.SIGN_TYPE_STRING):
@@ -53,13 +67,11 @@ def execute(args, error_handler, repo_root: str):
             computed_hash = engineSigningLibrary.calculate_file_sha256(absolute_path) if os.path.exists(absolute_path) else "0000000000000000000000000000000000000000"
 
         session_hashes[f"{key}_hash"] = computed_hash
-        session_hashes[f"{key}_sign"] = hex_id
+        session_hashes[f"{key}_sign"] = f"0x{hex_id:X}" if isinstance(hex_id, int) else str(hex_id)
 
     # 2. PHASE TWO: Agnostic Blockchain Link Sequencer via Direct Indices
     active_tree_rules = existenzSignatures.existentialCore
-    
-    # Sorts strictly using index 2 (the order priority integer field)
-    sorted_rules = sorted(active_tree_rules, key=lambda x: x[2])
+    sorted_rules = sorted(active_tree_rules, key=lambda x: x[2]) # Sorted strictly by priority field
     
     chain_active = False
     accumulated_chain_hashes = []
@@ -67,9 +79,7 @@ def execute(args, error_handler, repo_root: str):
     for rule_row in sorted_rules:
         label = str(rule_row[0])
         inner_glue_record = rule_row[1]
-        chronological_order = int(rule_row[2])
         
-        # Extract op_flags strictly from index 2 of the inner 6-element config tuple
         op_flags = int(inner_glue_record[2])
         current_node_hash = session_hashes.get(f"{label}_hash", "")
 
@@ -105,25 +115,28 @@ def execute(args, error_handler, repo_root: str):
     for rule_row in sorted_rules:
         label = str(rule_row[0])
         inner_glue = rule_row[1]
-        
-        # Pull live hashes computed in this run
         live_hash = session_hashes.get(f"{label}_hash", "")
         
-        # Synthesize a full 6-element row matching your tree renderer expectations exactly
+        # Maps names to match tree renderer variables exactly, preventing blank string outputs
         rebuilt_row = [
-            label,               # Name [0]
-            inner_glue[1],       # Short var / Weight status [1]
-            live_hash,           # Hash variable value [2]
-            inner_glue[5],       # Signature value field token string [3]
-            inner_glue[1],       # Bitmask integer payload [4]
-            rule_row[2]          # Sequence sequence tracking identifier [5]
+            label,
+            inner_glue[1],  # status_mask
+            live_hash,      # hash
+            inner_glue[5],  # old_sig
+            inner_glue[2],  # op_flags
+            rule_row[2]     # chronological_order
         ]
         pushed_matrix_rows.append(rebuilt_row)
         
+        # FIXED: Ensure all key variations map correctly into your display lookup fields
         tree_session_hashes[f"existential{label}Hash"] = live_hash
         tree_session_hashes[f"{label.lower()}_sign"] = session_hashes.get(f"{label}_sign", "00000000")
+        
+        # Explicit backup map entries to ensure lookups catch short key names too
+        tree_session_hashes[f"existential{label.replace('Core', '')}Hash"] = live_hash
+        if "Struct" in label:
+            tree_session_hashes["existentialCoreThreatStructHash"] = live_hash
 
-    # Pass the correctly formed 6-element matrix rows down to prevent tree viewer unpack failure crashes
     engineSigningLibrary.render_cryptographic_structural_tree(error_handler, tree_session_hashes, pushed_matrix_rows)
 
     # 4. PHASE FOUR: Flush Universal Tracking Maps to Disk Filesystem Targets
