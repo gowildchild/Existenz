@@ -114,11 +114,12 @@ def execute(args, error_handler, repo_root: str):
                 expanded_path = os.path.expanduser(local_key_path)
                 if os.path.exists(expanded_path):
                     try:
+                        # FIXED: Shifted argument assignments to positional notation
                         private_key_object = engineSigningLibrary.load_private_key(
-                            identity=identity,
-                            path=expanded_path,
-                            error_handler=error_handler,
-                            repo_github_flag=is_github_runner
+                            identity,
+                            expanded_path,
+                            error_handler,
+                            is_github_runner
                         )
                     except Exception as file_err:
                         error_handler.print(f"  [!] Failed loading local key profile from path: {file_err}", level="warning")
