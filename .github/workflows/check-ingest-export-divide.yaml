@@ -79,7 +79,7 @@ jobs:
           echo " [*] No missing assets."
         fi
 
-    - name: Existenz - INTEGRITY manifest.json
+    - name: Existenz - manifest.json
       env:
         GITHUB_ACTIONS: 'true'
         SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
@@ -116,7 +116,7 @@ jobs:
           git pull --rebase origin ${{ github.head_ref || github.ref_name }} || true
           git push origin ${{ github.head_ref || github.ref_name }}
         fi
-    - name: Existenz - INTEGRITY Asymetric Signing
+    - name: Existenz - Asymetric Signing
       env:
         GITHUB_ACTIONS: 'true'
         SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
@@ -161,6 +161,20 @@ jobs:
         
         # FIXED: Clean, uniform command block invoking the simple unified 'verify' stage
         python master/struct/engineSigningCLI.py -stage verify -circle "$ACTIVE_CIRCLE" -override update -run wet
+
+    - name: Existenz - Master Multi-Signature Verification Phase
+      run: |
+        if [ "$RUN_MODE" = "locked" ]; then
+          echo " [!]  Repository builder is currently locked. Skipping verification."
+          exit 0
+        fi
+
+        ACTIVE_CIRCLE="${CIRCLE_TARGET:-master}"
+        echo " [*] Running Cryptographic Multi-Signature Verification for Circle: $ACTIVE_CIRCLE"
+        
+        # FIXED: Clean, uniform command block invoking the simple unified 'verify' stage
+        python master/struct/engineSigningCLI.py -stage verify -circle "$ACTIVE_CIRCLE" -override update -run wet
+
 
 #    - name: Existenz - Terminate Integrity Check 
 #      if: env.RUN_MODE == 'integritycheck'
