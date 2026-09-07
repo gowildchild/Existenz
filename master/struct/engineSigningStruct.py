@@ -41,8 +41,8 @@ existenzIntegrityGlue = {
                                                                                existentialToken["manifest"]["build"]),
     "CircleMaster":           ( "existentialCircleMaster",   2815, 255,  0x5F, existenzLocations["manifest"]["master"],
                                                                                existentialToken["manifest"]["master"]),
-    "CircleChain":            ( "existentialCircleSigned",   3839, 511,  0x9F, existenzLocations["manifest"]["manifest"],
-                                                                               existentialToken["chain"]["manifest"])
+    "CircleChain":            ( "existentialCircleSigned",   3839, 511,  0x9F, existenzLocations["engine"]["jsonManifest"],
+                                                                               existentialToken["engine"]["jsonManifest"])
 }
 
 class existenzSignatures:
