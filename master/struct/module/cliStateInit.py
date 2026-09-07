@@ -100,32 +100,45 @@ def execute(args, error_handler, repo_root: str):
             if filename.endswith(".json"):
                 try:
                     if token == "Cores":
-                        # 1. existentialCores.json gets the entire blueprint schema base
-                        merged_cores_block = dict(schema_data)
-                        
-                        # 2. Compile the existentialCoreThreat dictionary natively out of the core data nodes
-                        threat_enum_data = {}
+                        # 1. Compile existentialCoreThreat entries compact on single lines
+                        threat_lines = []
                         for k, d in schema_data.get("existentialCore", {}).items():
                             if "threat" in d:
                                 v = d["val"]
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
-                                threat_enum_data[d["threat"]] = {
-                                    "value": v,
-                                    "expr": expr
-                                }
+                                # Encapsulate the sub-object on a single horizontal line
+                                threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
                         
-                        # 3. Inject existentialCoreThreat directly into existentialCores.json
-                        merged_cores_block["existentialCoreThreat"] = threat_enum_data
+                        # 2. Re-render existentialCore entries compact on single lines
+                        core_lines = []
+                        for k, d in schema_data.get("existentialCore", {}).items():
+                            clean_cmnt = d.get("comment", "").replace('"', '\\"')
+                            core_lines.append(f'    "{k}": {{"value": {d["val"]}, "expr": "{d.get("expr", "0")}", "type": "{d.get("type", "UNKNOWN")}", "comment": "{clean_cmnt}"}}')
+
+                        # 3. Pull the rest of the metadata fields out of your master schema
+                        ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
+                        magic_val = schema_data.get("existentialCoreCheckMagic", "")
                         
-                        with open(target_path, "w", encoding="utf-8") as json_out:
-                            json.dump(merged_cores_block, json_out, indent=2)
-                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint with existentialCoreThreat compiled to root.", level="info")
+                        legal_entries = [f'    "{lk}": "{lv}"' for lk, lv in schema_data.get("existentialCoreThreatLegal", {}).items()]
+                        vacuum_entries = [f'    "{vk}": "{vv}"' for vk, vv in schema_data.get("existentialCoreThreatShadowVacuum", {}).items()]
+
+                        # 4. Construct the physical JSON string file payload in the exact target order
+                        json_str_payload = "{\n"
+                        json_str_payload += f'  "existentialCoreVersion": "{ver_val}",\n'
+                        json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
+                        json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
+                        json_str_payload += '  "existentialCoreThreat": {\n' + ",\n".join(threat_lines) + "\n  },\n"
+                        json_str_payload += '  "existentialCoreThreatLegal": {\n' + ",\n".join(legal_entries) + "\n  },\n"
+                        json_str_payload += '  "existentialCoreThreatShadowVacuum": {\n' + ",\n".join(vacuum_entries) + "\n  }\n"
+                        json_str_payload += "}\n"
+
+                        with open(target_path, "w", encoding="utf-8") as custom_out:
+                            custom_out.write(json_str_payload)
+                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Compiled 1-line ordered JSON written to root.", level="info")
                     
-                    else:
+                    elif token == "CoresChain":
                         shutil.copy2(schema_path, target_path)
-                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
-                except Exception as e:
-                    error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
+                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Raw blueprint schema copied to root.", level="info")
                     else:
                         shutil.copy2(schema_path, target_path)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
