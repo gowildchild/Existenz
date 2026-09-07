@@ -109,17 +109,14 @@ def execute(args, error_handler, repo_root: str):
             error_handler.print(f" [*] Bitmask match active for identity role: [{identity}] on circle: [{current_circle}]", level="info")
             private_key_object = None
 
-            # A. LOCAL OPERATION TRACK: Load from file system using your config paths if active
             if local_key_path:
                 expanded_path = os.path.expanduser(local_key_path)
                 if os.path.exists(expanded_path):
                     try:
-                        # FIXED: Shifted argument assignments to positional notation
+                        # FIXED: Pass exactly 2 arguments to match your actual library signature
                         private_key_object = engineSigningLibrary.load_private_key(
                             identity,
-                            expanded_path,
-                            error_handler,
-                            is_github_runner
+                            expanded_path
                         )
                     except Exception as file_err:
                         error_handler.print(f"  [!] Failed loading local key profile from path: {file_err}", level="warning")
