@@ -176,7 +176,7 @@ def pipeline_step_current(current_stage_str: str, error_handler):
         except Exception as env_err:
             error_handler.print(f"Non-fatal error logging current state token: {env_err}", level="debug")
 
-def pipeline_step_next(current_stage_str: str, error_handler) -> str:
+def pipeline_step_next_v1(current_stage_str: str, error_handler) -> str:
     """
     Evaluates the active execution step and updates GITHUB_ENV dynamically.
     """
@@ -200,6 +200,33 @@ def pipeline_step_next(current_stage_str: str, error_handler) -> str:
             error_handler.print(f"Non-fatal error logging workspace environment variable: {env_err}", level="debug")
             
     return next_step_name
+
+def pipeline_step_next(current_stage_str: str, error_handler) -> str:
+    """
+    Evaluates the active execution step string and advances the tracking state.
+    Maps simple stage arguments to the next logical step name for GITHUB_ENV.
+    """
+    stage_lower = str(current_stage_str).strip().lower()
+    
+    # Directly translate clean unified command states into their next chronological target names
+    if stage_lower == "manifest":
+        next_step_name = "sign"
+    elif stage_lower == "sign":
+        next_step_name = "verify"
+    else:
+        next_step_name = "success"
+
+    github_env_file = os.environ.get('GITHUB_ENV')
+    if github_env_file:
+        try:
+            with open(github_env_file, "a", encoding="utf-8") as gef:
+                gef.write(f"NEXT_PIPELINE_STAGE={next_step_name}\n")
+            error_handler.print(f"  [+] Pipeline Link: Progressive routing unblocked -> NEXT_PIPELINE_STAGE={next_step_name}", level="notice")
+        except Exception as env_err:
+            error_handler.print(f"Non-fatal error logging workspace environment variable: {env_err}", level="debug")
+            
+    return next_step_name
+
 
 def compute_sha256(file_path: str) -> str:
     """Redirects file streaming straight through your uniform crypto engine helper."""
