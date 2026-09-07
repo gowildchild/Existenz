@@ -241,16 +241,69 @@ def execute(args, error_handler, repo_root: str):
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                     
                     elif "Signatures" in token or filename == "existentialSignatures.json":
-                        # FIXED: Generate the empty JSON envelope for signatures rather than copying the blueprint schema
-                        signatures_payload = "{\n"
-                        signatures_payload += f'  "existentialCoreVersion": "{version_str}",\n'
-                        signatures_payload += '  "existentialSignatures": {}\n'
-                        signatures_payload += "}\n"
+                        from engineSigningMeta import existenzMeta
+
+                        # Construct your physical structural layout payload matching your exact tracking realms
+                        signatures_matrix = {
+                            "existentialCoreVersion": version_str,
+                            "existentialToken": {
+                                "MAGIC": {
+                                    "TAG":                str(existenzMeta.MAGIC.get("RAW", "EX25")),
+                                    "TOKEN":              str(existenzMeta.MAGIC.get("TOKEN", "IMMUTABLE")),
+                                    "SIGNATURE":          str(existenzMeta.MAGIC.get("SIGNATURE", "CORE")),
+                                    "REALM":              str(existenzMeta.HEADER.get("REALM", "VAULT")),
+                                    "VERSION":            str(existenzMeta.HEADER.get("VERSION", version_str)),
+                                    "AUTHOR":             str(existenzMeta.META.get("AUTHOR", "Gunther Voet"))
+                                },
+                                "master": {
+                                    "Core":               "",
+                                    "Check":              "",        
+                                    "Schema":             "",
+                                    "Cores":              "",
+                                    "Threat":             "",
+                                    "ThreatLegal":        "",
+                                    "ThreatShadowVacuum": "",
+                                    "ThreatSigned":       ""
+                                },
+                                "chain": {
+                                    "Core":               "",
+                                    "CoresChain":         "",
+                                    "Threat":             ""
+                                },
+                                "manifest": {
+                                    "dist":               "dist",
+                                    "tools":              "dist/tools",
+                                    "build":              "master/build-tools",
+                                    "master":             "master/struct"
+                                },
+                                "structs": {
+                                    "KeysPublic":         "",
+                                    "KeysHandler":        "",
+                                    "KeysType":           "",
+                                    "Locations":          ""
+                                },
+                                "engine": {
+                                    "engineLogging":      "",
+                                    "engineCrypto":       "",
+                                    "signingMeta":        "",
+                                    "signingStruct":      "",
+                                    "signingLibrary":     "",
+                                    "builderLibrary":     "",
+                                    "cliStateTest":       "",
+                                    "cliStateInit":       "",
+                                    "cliStateManifest":   "",
+                                    "cliStateSign":       "",
+                                    "cliStateVerify":     "",
+                                    "cliStateBuild":      "",
+                                    "Signatures":         "",
+                                    "Manifest":           ""
+                                }
+                            }
+                        }
                         
                         with open(target_path, "w", encoding="utf-8") as sf_out:
-                            sf_out.write(signatures_payload)
-                        error_handler.print(f"    [SEED FILE] Seeded clean empty structural JSON signature registry at: {target_path}", level="info")
-                        
+                            json.dump(signatures_matrix, sf_out, indent=2)
+                        error_handler.print(f"    [SEED FILE] Seeded complete structural tracking registry matrix at: {target_path}", level="info")                        
                     else:
                         shutil.copy2(schema_path, target_path)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
