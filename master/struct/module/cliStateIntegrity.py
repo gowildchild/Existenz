@@ -22,9 +22,7 @@ def execute(args, error_handler, repo_root: str):
     session_hashes = {}
     magic_salt_bytes = existenzMeta.MAGIC["RAW"].encode('utf-8')
 
-    # ==========================================================================
-    # PHASE 1: INDIVIDUAL COMPONENT HASHING (6-ELEMENT DICTIONARY LOOKUP)
-    # ==========================================================================
+    # 1. PHASE ONE: Dynamic Component Hashing via Clean Index Extraction
     for key, glue_tuple in existenzIntegrityGlue.items():
         # Safely extract records from the 6-element tuple via explicit index placement
         name          = str(glue_tuple[0])
@@ -57,9 +55,7 @@ def execute(args, error_handler, repo_root: str):
         session_hashes[f"{key}_hash"] = computed_hash
         session_hashes[f"{key}_sign"] = hex_id
 
-    # ==========================================================================
-    # PHASE 2: CRYPTOGRAPHIC SEQUENTIAL BLOCKCHAIN LOOK-BACK TRACKS
-    # ==========================================================================
+    # 2. PHASE TWO: Agnostic Blockchain Link Sequencer via Direct Indices
     active_tree_rules = existenzSignatures.existentialCore
     
     # Sorts strictly using index 2 (the order priority integer field)
@@ -69,8 +65,8 @@ def execute(args, error_handler, repo_root: str):
     accumulated_chain_hashes = []
 
     for rule_row in sorted_rules:
-        label               = str(rule_row[0])
-        inner_glue_record   = rule_row[1]
+        label = str(rule_row[0])
+        inner_glue_record = rule_row[1]
         chronological_order = int(rule_row[2])
         
         # Extract op_flags strictly from index 2 of the inner 6-element config tuple
@@ -98,23 +94,39 @@ def execute(args, error_handler, repo_root: str):
             session_hashes[f"{label}_hash"] = final_chain_signature
             chain_active = False
 
-    # ==========================================================================
-    # PHASE 3: PREPARE SESSION TOKENS FOR DENSE TREE VISUALIZER RENDER
-    # ==========================================================================
+    # 3. PHASE THREE: Prepare session tokens dynamically to drive your custom tree visualizer
     tree_session_hashes = {
         "existentialCoreMagicHash": session_hashes.get("MagicCheck_hash", "UNKNOWN"),
         "existentialCoreCheckHash": session_hashes.get("CoreCheck_hash", "UNSIGNED"),
     }
+    
+    # FIXED: Reconstruct a clean 6-element matrix format to feed your actual tree renderer function perfectly
+    pushed_matrix_rows = []
     for rule_row in sorted_rules:
         label = str(rule_row[0])
-        tree_session_hashes[f"existential{label}Hash"] = session_hashes.get(f"{label}_hash", "")
+        inner_glue = rule_row[1]
+        
+        # Pull live hashes computed in this run
+        live_hash = session_hashes.get(f"{label}_hash", "")
+        
+        # Synthesize a full 6-element row matching your tree renderer expectations exactly
+        rebuilt_row = [
+            label,               # Name [0]
+            inner_glue[1],       # Short var / Weight status [1]
+            live_hash,           # Hash variable value [2]
+            inner_glue[5],       # Signature value field token string [3]
+            inner_glue[1],       # Bitmask integer payload [4]
+            rule_row[2]          # Sequence sequence tracking identifier [5]
+        ]
+        pushed_matrix_rows.append(rebuilt_row)
+        
+        tree_session_hashes[f"existential{label}Hash"] = live_hash
         tree_session_hashes[f"{label.lower()}_sign"] = session_hashes.get(f"{label}_sign", "00000000")
 
-    engineSigningLibrary.render_cryptographic_structural_tree(error_handler, tree_session_hashes, sorted_rules)
+    # Pass the correctly formed 6-element matrix rows down to prevent tree viewer unpack failure crashes
+    engineSigningLibrary.render_cryptographic_structural_tree(error_handler, tree_session_hashes, pushed_matrix_rows)
 
-    # ==========================================================================
-    # PHASE 4: RECORD COMPILED REGISTERS LEDGER LEDGERS OUT TO DISK
-    # ==========================================================================
+    # 4. PHASE FOUR: Flush Universal Tracking Maps to Disk Filesystem Targets
     py_signatures_path = os.path.abspath(os.path.join(repo_root, existenzLocations["core"]["SignaturesPy"]))
     json_signatures_path = os.path.abspath(os.path.join(repo_root, existenzLocations["core"]["SignaturesJson"]))
 
