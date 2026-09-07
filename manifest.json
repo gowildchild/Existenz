@@ -1,5 +1,5 @@
 {
-  "commit": "01c89e56a75d2a329ba42c581bb162250e3dd0c5",
+  "commit": "93ccc0235c551abb84ab8a334268fe318fe6352c",
   "existentialCoreVersion": "v0.76.17",
   "files.build": {
     "master/build-tools/core_telemetry.py": "f72cd3acc76881fb228fc33666cf335cd6469063f402511c032fdf5b1043f075",
@@ -66,14 +66,14 @@
   "files.master": {
     "master/struct/engineBuilderLibrary.py": "a85cbe702d134526e24497b3ffe0018f9f6853edfdcdf167ff70da04f70eb2b6",
     "master/struct/engineSigningCLI.py": "9f2e0e852a3879919f1d5914dd52e9af6224cacf90be5086217ca29290699489",
-    "master/struct/engineSigningLibrary.py": "3d785211fa533e0f9c8b6c21236a01c083c8221a800002574464f91e248e3469",
+    "master/struct/engineSigningLibrary.py": "4f22706cc953415f578f5dc2d019d5ca40628e13d9e34cd81b942bbe648925d0",
     "master/struct/engineSigningMeta.py": "8b5dc17309dbf9f3cd77a5e0ab6a7b4fde0e7dde21a2cf0fecf61d7d9bb2c7c7",
     "master/struct/engineSigningStruct.py": "f875cae41dca4a7d35c6f6a6733f7631f1fff44aaa9023ef53e2cb0c00a5c77c",
     "master/struct/existentialCoreSchema.json": "8b0aee53f962ac9d20975226cf4ea36276dc16df08c04587f9168c4d0924ac95",
     "master/struct/existentialSignatures.py": "49cb7c9576ef8a351e18cc6ff889352d3879222799491158b59d99ee6e4a5a72",
     "master/struct/module/cliStateBuild.py": "e7d241a91a0e160ae1e0963b16b00dcf408f6e7e84c41cb0a63067a60d89184e",
     "master/struct/module/cliStateInit.py": "bd891fc70885d7b84d5cc4c0ea791398308b7a25279061c933e9eb561ea52991",
-    "master/struct/module/cliStateManifest.py": "708258c1f1a1e0d238a687a72657914eade18217739784825d51a49a1218b675",
+    "master/struct/module/cliStateManifest.py": "7b6dda4aabdab34022bc0131b2dfe2cb6633d7b5ab8daff123d54bbbc4798182",
     "master/struct/module/cliStateSign.py": "e9985181f233e244be5e37aa3f9a2bc78ed73c689f29438a8e134e56f54ee4fb",
     "master/struct/module/cliStateTest.py": "e8a6c64754e74904994a5e7f73250d1e10c0bc8a6f7bf53e6be0a24505456417",
     "master/struct/module/cliStateVerify.py": "782c64b8d9a46da4151c6848eb128264fa26ff0a7667a496209c328053f1a237",
@@ -93,5 +93,15 @@
   },
   "signatures": {
     "Environment": "ca9498c00a159840ae0a82056dae91dc3e32ccd45ce1fdf0a837ed43e12cb9b4d69242821c87344dd0b99a16c74fade3d2403165f1a7d89be3fc057b03d15f0f"
+  },
+  "signatures.circle": {
+    "hash.build": "bea3a7c7f7f975fd6ab002ebcad17664059203a0a2dd7cdc20e6168bbf93803b",
+    "hash.dist": "54af6e594b5da3f52b252df5105f335f41956b99b9a2a5286793537eaea4b3dd",
+    "hash.master": "6b9cef2a3e4853e036c1009cfb9d591827df768f6a52eb905af373b92741393b",
+    "hash.tools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sign.build": "",
+    "sign.dist": "",
+    "sign.master": "",
+    "sign.tools": ""
   }
 }
