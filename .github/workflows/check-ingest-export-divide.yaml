@@ -83,11 +83,9 @@ jobs:
       env:
         GITHUB_ACTIONS: 'true'
         SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
-        SIGN_EXISTENZ_AUDIT_PHRASE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PHRASE }}
+        SIGN_EXISTENZ_AUDIT_PHRASE: ''
         SIGN_EXISTENZ_AUDIT_PUBLIC: ${{ vars.SIGN_EXISTENZ_AUDIT_PUBLIC }}
         SIGN_EXISTENZ_AUDIT_FINGERPRINT: ${{ vars.SIGN_EXISTENZ_AUDIT_FINGERPRINT }}
-        SIGN_EXISTENZ_DIST_RAD_A: 7
-        SIGN_EXISTENZ_DIST_RAD_B: 31
       run: |
         # 1. Pure bash condition evaluation to eliminate static yaml parsing warnings
         if [ "$RUN_MODE" = "locked" ]; then
@@ -122,11 +120,9 @@ jobs:
       env:
         GITHUB_ACTIONS: 'true'
         SIGN_EXISTENZ_AUDIT_PRIVATE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PRIVATE }}
-        SIGN_EXISTENZ_AUDIT_PHRASE: ${{ secrets.SIGN_EXISTENZ_AUDIT_PHRASE }}
+        SIGN_EXISTENZ_AUDIT_PHRASE: ''
         SIGN_EXISTENZ_AUDIT_PUBLIC: ${{ vars.SIGN_EXISTENZ_AUDIT_PUBLIC }}
         SIGN_EXISTENZ_AUDIT_FINGERPRINT: ${{ vars.SIGN_EXISTENZ_AUDIT_FINGERPRINT }}
-        SIGN_EXISTENZ_DIST_RAD_A: 7
-        SIGN_EXISTENZ_DIST_RAD_B: 31
       run: |
         if [ "$RUN_MODE" = "locked" ]; then
           echo " [!]  Repository builder is currently locked. Skipping signing."
@@ -136,7 +132,7 @@ jobs:
         ACTIVE_CIRCLE="${CIRCLE_TARGET:-dist}"
         echo " [*] Running Asymmetric Signature Assembly Layer for Circle: $ACTIVE_CIRCLE"
         
-        # FIXED: Clean, uniform command block invoking the simple unified 'sign' stage
+        # Clean, uniform command block invoking the simple unified 'sign' stage
         python master/struct/engineSigningCLI.py -stage sign -circle "$ACTIVE_CIRCLE" -override update -run wet
         
         BLUEPRINT_VERSION=$(python -c 'import json; print(json.load(open("master/struct/existentialCoreSchema.json")).get("existentialCoreMeta", {}).get("CoreVersion", "v0.76.17"))')
