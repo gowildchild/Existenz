@@ -12,7 +12,7 @@ from typing import Dict, Any
 
 from engineSigningMeta import existenzLocations, existenzMeta
 from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler
-from existenzSignatures import existentialToken
+from existentialSignatures import existentialToken
 import engineSigningLibrary
 
 from visualMixEngineLogging import visualmixErrorHandler
