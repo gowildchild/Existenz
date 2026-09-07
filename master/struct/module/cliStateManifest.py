@@ -119,14 +119,21 @@ def execute(args, error_handler, repo_root: str):
     build_changed  = (hash_build != old_circle_block.get("hash.build", ""))
 
     if (master_changed or build_changed) and is_github_runner:
-        error_handler.print("=" * 90, level="local")
-        error_handler.print(f" [!!!] MANIFEST SECURITY INTERCEPT: REJECTING REMOTE OVERWRITE [!!!]", level="local")
-        error_handler.print(f"       Unsigned changes detected in high-privilege tracks on remote public runner.", level="local")
-        error_handler.print(f"       Master Changed: {master_changed} | Build Changed: {build_changed}", level="local")
-        error_handler.print(f"       File system update is BLOCKED until signed locally via private keys.", level="local")
-        error_handler.print("=" * 90, level="local")
-        error_handler.notice(level="error", message=f"MANIFEST ESCALATION INTERCEPT: {master_changed}", exit_code=65, details=f"Unsigned changes detected in master code! Master Changed: {master_changed} | Build Changed: {build_changed}")
-        # sys.exit(65) # Safely crashes the step before modifying the manifest or staging git updates
+        #error_handler.print("=" * 90, level="local")
+        #error_handler.print(f" [!!!] MANIFEST SECURITY INTERCEPT: REJECTING REMOTE OVERWRITE [!!!]", level="local")
+        #error_handler.print(f"       Unsigned changes detected in high-privilege tracks on remote public runner.", level="local")
+        #error_handler.print(f"       Master Changed: {master_changed} | Build Changed: {build_changed}", level="local")
+        #error_handler.print(f"       File system update is BLOCKED until signed locally via private keys.", level="local")
+        #error_handler.print("=" * 90, level="local")
+        error_handler.notice(
+            level="error",
+            message=f"MANIFEST ESCALATION INTERCEPTION: GHL{is_github_runner}",
+            details=[f"Unsigned changesd detected in master core code, while core is immutable!",
+                     f"File system update is blocked till signed with private keys!",
+                     f"Master Changed: {master_changed} | Build Changed: {build_changed}"],
+            exit_code=65
+        ) 
+    # sys.exit(65) # Safely crashes the step before modifying the manifest or staging git updates
 
     for target_c, glue_key in circle_to_glue_map.items():
         current_hash = signatures_circle_registry.get(f"hash.{target_c}")
@@ -143,12 +150,20 @@ def execute(args, error_handler, repo_root: str):
             if bool(bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL):  needed_keys.append("Personal")
 
             if needed_keys:
-                error_handler.print("=" * 90, level="local")
-                error_handler.print(f" [!] UN-SIGNED payload track changes detected in Circle Ring: [{target_c.upper()}]", level="local")
-                error_handler.print(f"     Structural Hash updated: {old_hash[:16]}... -> {current_hash[:16]}...", level="local")
-                error_handler.print(f"     MANDATORY LOCAL ACTION: Requires signing with private keys: {needed_keys}", level="local")
-                error_handler.print(f"     Downstream deployment builds will remain locked until keys are committed.", level="local")
-                error_handler.print("=" * 90, level="local")
+                error_handler.notice(
+                    level="error",
+                    message=f"MANIFEST ESCALATION INTERCEPTION: Circle: [{target_c.upper()}]",
+                    details=[f"Unsigned changesd detected in master core code, while core is immutable!",
+                             f"File system update is blocked till signed with private keys!",
+                             f"Structural Hash updated: {old_hash[:16]}... -> {current_hash[:16]}..."]
+                    #exit_code=65
+                ) 
+                #error_handler.print("=" * 90, level="local")
+                #error_handler.print(f" [!] UN-SIGNED payload track changes detected in Circle Ring: [{target_c.upper()}]", level="local")
+                #error_handler.print(f"     Structural Hash updated: {old_hash[:16]}... -> {current_hash[:16]}...", level="local")
+                #error_handler.print(f"     MANDATORY LOCAL ACTION: Requires signing with private keys: {needed_keys}", level="local")
+                #error_handler.print(f"     Downstream deployment builds will remain locked until keys are committed.", level="local")
+                #error_handler.print("=" * 90, level="local")
 
     # Assemble Consolidated Manifest Ledger Database File Structure
     manifest_data = {
