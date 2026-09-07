@@ -11,10 +11,10 @@ from engineSigningMeta import existenzLocations, existenzMeta, existenzPublicKey
 
 def execute(args, error_handler, repo_root: str):
     """
-    Executes progressive forensic workspace directory scanning and manifest file cataloging.
-    Preserves untouched signature tracks while consolidating live cryptographic circle layers.
+    Executes progressive  directory scanning and manifest file cataloging.
+    Preserves untouched signature tracks while consolidating live cryptographic layers.
     """
-    error_handler.print("Initiating repository forensic file validation tracking scan...", level="notice")
+    error_handler.print("Initiating repository file scan to manifest.json", level="notice")
     
     # Extract the true master destination configurations from your metadata layout maps
     manifest_filename = existenzLocations["engine"]["Manifest"]
@@ -72,7 +72,6 @@ def execute(args, error_handler, repo_root: str):
         
     else: # Full global baseline overwrite ("circleall" or default fallback configuration)
         error_handler.print("Scoping Full Workspace - Baseline Overwrite.", level="info")
-        # FIXED: Synchronized argument parameter order (Relative Path first, Repo Root second)
         files_dist.update(engineSigningLibrary.gather_folder_files(manifest_paths["dist"], repo_root))
         files_tools.update(engineSigningLibrary.gather_folder_files(manifest_paths["tools"], repo_root))
         files_build.update(engineSigningLibrary.gather_folder_files(manifest_paths["build"], repo_root))
@@ -84,7 +83,27 @@ def execute(args, error_handler, repo_root: str):
         name, pub_str, _, _, _, _ = key_meta
         public_keys_registry[name] = pub_str
 
-    # 3. Assemble Consolidated Manifest Ledger Database File Structure
+    # 3. FIXED: Extract raw circle hashes and build your precise dot-separated token map layout
+    hash_dist   = engineSigningLibrary.calculate_aggregate_circle_hash(files_dist)
+    hash_tools  = engineSigningLibrary.calculate_aggregate_circle_hash(files_tools)
+    hash_build  = engineSigningLibrary.calculate_aggregate_circle_hash(files_build)
+    hash_master = engineSigningLibrary.calculate_aggregate_circle_hash(files_master)
+
+    old_circle_block = old_data.get("signatures.circle", {})
+
+    signatures_circle_registry = {
+        "hash.dist":   hash_dist,
+        "hash.tools":  hash_tools,
+        "hash.build":  hash_build,
+        "hash.master": hash_master,
+        
+        "sign.dist":   old_circle_block.get("sign.dist", ""),
+        "sign.tools":  old_circle_block.get("sign.tools", ""),
+        "sign.build":  old_circle_block.get("sign.build", ""),
+        "sign.master": old_circle_block.get("sign.master", "")
+    }
+
+    # Assemble Consolidated Manifest Ledger Database File Structure
     manifest_data = {
         "existentialCoreVersion": existenzMeta.HEADER["VERSION"].decode(),
         "commit": git_commit_sha,
@@ -93,21 +112,22 @@ def execute(args, error_handler, repo_root: str):
         "files.tools": files_tools,
         "files.build": files_build,
         "files.master": files_master,
+        "signatures.circle": signatures_circle_registry,
         "signatures": old_data.get("signatures", {})
     }
 
     # Bypasses direct file saves if strategy is set to dry simulation
     if str(args.run).strip().lower() == "dry":
-        error_handler.print("Bypassing manifest ledger writes due to dry strategy constraint.", level="notice")
+        error_handler.print("Not writing to manifest (DRY mode!).", level="notice")
         return
 
     # 4. Serialize layout straight to root path destination with sorted attributes
     try:
         with open(manifest_target_path, "w", encoding="utf-8") as out_mf:
             json.dump(manifest_data, out_mf, indent=2, sort_keys=True)
-        error_handler.print("[+] SUCCESS: Manifest ledger successfully consolidated.", level="notice")
+        error_handler.print("[+] SUCCESS: Manifest successfully consolidated.", level="notice")
     except Exception as e:
-        error_handler.print(f"Failed to write output manifest ledger target: {e}", level="error", exit_code=32)
+        error_handler.print(f"Failed to write to manifest: {e}", level="error", exit_code=32)
 
     # 5. Transition seamlessly straight to your bitmask-driven step calculation handler loop
     engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
