@@ -155,9 +155,17 @@ def execute(args, error_handler, repo_root: str):
                             custom_out.write(json_str_payload)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Compiled 1-line ordered JSON written to root.", level="info")
                     
-                    #elif token == "CoresChain":
-                    #    shutil.copy2(schema_path, target_path)
-                    #    error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Raw blueprint schema copied to root.", level="info")
+                    elif "Signatures" in token or filename == "existentialSignatures.json":
+                        # FIXED: Generate the empty JSON envelope for signatures rather than copying the blueprint schema
+                        signatures_payload = "{\n"
+                        signatures_payload += f'  "existentialCoreVersion": "{version_str}",\n'
+                        signatures_payload += '  "existentialSignatures": {}\n'
+                        signatures_payload += "}\n"
+                        
+                        with open(target_path, "w", encoding="utf-8") as sf_out:
+                            sf_out.write(signatures_payload)
+                        error_handler.print(f"    [SEED FILE] Seeded clean empty structural JSON signature registry at: {target_path}", level="info")
+                        
                     else:
                         shutil.copy2(schema_path, target_path)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
