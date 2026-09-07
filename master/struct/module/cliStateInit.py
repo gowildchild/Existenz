@@ -116,6 +116,7 @@ def execute(args, error_handler, repo_root: str):
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.abspath(os.path.join(repo_root, asset_data["runtime_path"]))
             calculated_basic = []
+            calculated_immutable = []
             filename = asset_data["filename"]
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
             
@@ -190,8 +191,10 @@ def execute(args, error_handler, repo_root: str):
                                 elif bool(pol & existenzCorePolicy.CORE_CANARY):
                                     if k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM", "CANARY_4_FOOTPRINT","CANARY_IV_PRESENCE","CANARY_5_METRICS","CANARY_V_RIGHTS","CANARY_VI_SYSTEMIC"]:
                                         calculated_basic.append(f'    "{k}"')
-
-
+                                        
+                            if not bool(k == "NONE") and bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
+                                calculated_immutable.append(f'    "{k}"')
+                                    
                             # Build entry strings with column formatting matching your target layout rules
                             line_entry = f'    "{k}":'.ljust(33)
                             line_entry += f'{{ "val": {v},'.ljust(15)
@@ -242,6 +245,7 @@ def execute(args, error_handler, repo_root: str):
                         json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
                         json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"  
                         json_str_payload += '  "existentialCoreBasic": [\n' + ",\n".join(calculated_basic) + "\n  ],\n" 
+                        json_str_payload += '  "existentialCoreImmutable": [\n' + ",\n".join(calculated_immutable) + "\n  ],\n" 
                         json_str_payload += '  "existentialCoreThreat": {\n' + ",\n".join(threat_lines) + "\n  },\n"
                         json_str_payload += '  "existentialCoreThreatLegal": {\n' + ",\n".join(legal_entries) + "\n  },\n"
                         json_str_payload += '  "existentialCoreThreatShadowVacuum": {\n' + ",\n".join(vacuum_entries) + "\n  },\n"
