@@ -129,7 +129,12 @@ def execute(args, error_handler, repo_root: str):
                             if "threat" in d:
                                 v = d["val"]
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
-                                threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
+                             # Format keys with precise left padding alignment matching your core layouts
+                                threat_entry = f'    "{d["threat"]}":'.ljust(38)
+                                threat_entry += f'{{ "val": {v},'.ljust(15)
+                                threat_entry += f'"expr": "{expr}" }}'
+                                threat_lines.append(threat_entry)
+                                #threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
 
                         # 2. Extract separate registries for Bitmask and Policy structures
                         bitmask_lines = []
