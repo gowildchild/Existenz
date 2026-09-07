@@ -130,15 +130,13 @@ def execute(args, error_handler, repo_root: str):
                                 threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
 
                         bitmask_lines = []
+                        policy_lines = []                        
                         for k, d in schema_data.get("existentialCore", {}).items():
                             if "msk" in d:
                                 bitmask_lines.append(f'    "existentialCore.{k}": "{d["msk"]}"') 
-
-                        policy_lines = []
-                        for k, d in schema_data.get("existentialCore", {}).items():
                             if "pol" in d:
-                                bitmask_lines.append(f'    "existentialCore.{k}": "{d["pol"]}"') 
-                        
+                                policy_lines.append(f'    "existentialCore.{k}": "{d["pol"]}"') 
+
                         from engineSigningStruct import existenzCorePolicy
 
                         core_lines = []
