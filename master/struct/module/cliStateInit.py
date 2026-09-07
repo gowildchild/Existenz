@@ -9,7 +9,6 @@ import json
 import shutil
 from engineSigningMeta import existenzLocations
 
-# Register the parent vault directory to ensure library references resolve
 PARENT_STRUCT_MASTER = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PARENT_STRUCT_MASTER not in sys.path:
     sys.path.insert(0, PARENT_STRUCT_MASTER)
@@ -86,15 +85,24 @@ def execute(args, error_handler, repo_root: str):
             
             if filename.endswith(".json"):
                 try:
-                    shutil.copy2(schema_path, target_path)
-                    error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
+                    if token == "Cores":
+                        # CRITICAL CORRECTION: Isolate ONLY the primary human core layout parameters
+                        isolated_cores_block = {
+                            "existentialCore": schema_data.get("existentialCore", {})
+                        }
+                        with open(target_path, "w", encoding="utf-8") as json_out:
+                            json.dump(isolated_cores_block, json_out, indent=2)
+                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Isolate Core definitions mapped to root.", level="info")
+                    else:
+                        # Raw replication for CoresChain or other consolidated schema tracking mirrors
+                        shutil.copy2(schema_path, target_path)
+                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
             
             elif filename.endswith(".py"):
                 if token == "Core":
                     try:
-                        # Direct clean rendering into the active runtime destination path
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
                             f.write("from enum import IntFlag\n\nclass existentialCore(IntFlag):\n")
@@ -125,7 +133,6 @@ def execute(args, error_handler, repo_root: str):
                                     
                             f.write("\nexistentialCoreThreatLegal = {\n")
                             for k, v in schema_data.get("existentialCoreThreatLegal", {}).items():
-                                # Match back string index keys safely to threats
                                 target_node = next((d["threat"] for d in schema_data["existentialCore"].values() if "threat" in d and str(d["val"]) == k), None)
                                 if target_node: f.write(f"    existentialCoreThreat.{target_node}: \"{v}\",\n")
                             f.write("}\n")
@@ -142,7 +149,7 @@ def execute(args, error_handler, repo_root: str):
                     struct_source = os.path.join(repo_root, "master", "struct", filename)
                     if os.path.exists(struct_source):
                         shutil.copy2(struct_source, target_path)
-                        error_handler.print(f"    [->] Synced Script Asset: {token:<12} -> Restored from vault.", level="info")
+                        error_handler.print(f"    [->] Synced Script Asset: {token:<12} -> Restored from blueprint.", level="info")
 
         # B. Self-Heal Missing Engine Opcodes & Stubs
         for token, asset_data in engine_assets_to_sync.items():
