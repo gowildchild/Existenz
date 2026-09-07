@@ -1,5 +1,5 @@
 {
-  "commit": "7482cade5920166d8326d96fbc687a019f664d57",
+  "commit": "0db286530712b87468c7b91f36f7e63e1d29faa2",
   "existentialCoreVersion": "v0.76.17",
   "files.build": {
     "master/build-tools/deprecated/cliStateBuild.py": "0d053d0cb8e705f9f1797f51745bcd55459a22300b14680f28b497eb1201398c",
@@ -58,7 +58,6 @@
     "dist/existentialCores.json": "369ee5774aa2d19a203edadd011f239a0ad36df8bbf33e4040002cf05d783f10",
     "dist/existenzStruct/master/existentialCores.json": "1cc760044d12c2f4d3d72caf890c2e9839b52d8c2e6247a2f267e58ed4cb459a",
     "dist/index.html": "22afd01175a7ea7f7ec95a7be3a1c1e15e3001262308f80c7fcb57364505ed0f",
-    "dist/master/existentialCoreSignatures.py": "990b054c375f163544f921dc1cd55cf8ecc0e0c6ebdb3242fc0aed351f0ee0a2",
     "dist/perl/existentialCoreCheck.pm": "49b1f697c189d0202b164daba323ba3d7cd3b0496b719a09e121f950d9efae11",
     "dist/perl/existentialCores.pm": "ed3d7bca5afbcf710c71aa586eada8366747d296050e4e2f64f9e01956d05009",
     "dist/perl/single/existentialCore.pm": "69366046cea69167421048181717c7a8a9e59f5ea0c2c51988ebece62ce0d4e6",
@@ -118,7 +117,7 @@
   },
   "signatures.circle": {
     "hash.build": "da8b3d844fe2a94b00c533ba41f9ceeae89132479765a205d6c81a3e4b75d358",
-    "hash.dist": "722e283ad8bc2efa41a7e2de051ca970075228bf3b0f01bc1ebe4e3f252402f5",
+    "hash.dist": "54af6e594b5da3f52b252df5105f335f41956b99b9a2a5286793537eaea4b3dd",
     "hash.master": "ef285cb1b3482ca2cdbf86317817f58dda2146a5944c5703c8dd86f098a1cdc0",
     "hash.tools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "sign.build": "f66510ad6b571c5ed54ba091c9dabacad17620887f269ba00f1328e444e299048812aa8c7be0fb5cd5f982b7e32ba1d339a51e305cf0bfc31d2b1052b5846b03",
