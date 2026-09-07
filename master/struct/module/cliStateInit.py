@@ -125,14 +125,26 @@ def execute(args, error_handler, repo_root: str):
                             if "threat" in d:
                                 v = d["val"]
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
-                                # Encapsulate the sub-object on a single horizontal line
                                 threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
                         
-                        # 2. Re-render existentialCore entries compact on single lines
+                        # 2. FIXED: Dynamically process true expr and type (pol) for existentialCore
                         core_lines = []
                         for k, d in schema_data.get("existentialCore", {}).items():
+                            v = d["val"]
+                            
+                            # Calculate the clean bit-expression or hexadecimal representation
+                            if v <= 0:
+                                calculated_expr = "0"
+                            elif (v & (v - 1)) == 0:
+                                calculated_expr = f"1 << {v.bit_length() - 1}"
+                            else:
+                                calculated_expr = f"0x{v:08x}"
+                                
+                            # Dynamically resolve structural type strictly out of your 'pol' definition string
+                            struct_type = d.get("pol", "UNKNOWN")
                             clean_cmnt = d.get("comment", "").replace('"', '\\"')
-                            core_lines.append(f'    "{k}": {{"value": {d["val"]}, "expr": "{d.get("expr", "0")}", "type": "{d.get("type", "UNKNOWN")}", "comment": "{clean_cmnt}"}}')
+                            
+                            core_lines.append(f'    "{k}": {{"value": {v}, "expr": "{calculated_expr}", "type": "{struct_type}", "comment": "{clean_cmnt}"}}')
 
                         # 3. Pull the rest of the metadata fields out of your master schema
                         ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
