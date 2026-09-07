@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
       
     steps:
     - name: Existenz - Checkout Code Blueprint
@@ -30,7 +29,8 @@ jobs:
     # Step 3: Determine Operational Mode from the Lockfile
     - name: Existenz - Installing Dependencies
       run: pip install pyyaml cryptography
-    - name: Existenz - Initializing Self-Healing Check
+
+    - name: Existenz - Init Self-Healing Check
       id: pipeline_init
       run: |
         # 1. Execute your compiled pre-flight dependency audit and self-healing loop
@@ -48,7 +48,10 @@ jobs:
         # 3. Securely export the verified mode variable out to the GitHub Actions environment map
         echo "RUN_MODE=$MODE" >> $GITHUB_ENV
 
-        # 4. CONDITIONAL COMMIT: Check if the initialization phase generated or adapted any missing assets
+    - name: Existenz - Persist Self-Healed Assets
+      id: conditional_push
+      run: |
+        # Configure local bot configurations
         git config --global user.name "Existenz Build Bot"
         git config --global user.email "bot@existenz.xsrv.net"
         
@@ -65,10 +68,10 @@ jobs:
                 master/struct/module/cliStateVerify.py \
                 master/struct/module/cliStateBuild.py 2>/dev/null || true
 
-        # Only perform a push sequence if 'git diff-index' detects files changed against HEAD
+        # FIXED: Utilizing standard Linux terminal environment mapping string variables ($BLUEPRINT_VERSION)
         if ! git diff-index --quiet HEAD; then
           echo " [*] Pipeline Engine: Missing initialization assets detected and self-healed. Committing modifications..."
-          git commit -m "sys(core): automatic initialization and workspace bootstrapping [v0.76.16]"
+          git commit -m "sys(core): Automatic Initialization from Blueprint [$BLUEPRINT_VERSION]"
           git pull --rebase origin main || true
           git push origin main
         else
