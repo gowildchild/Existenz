@@ -9,29 +9,28 @@ import json
 import hashlib
 import hmac
 import engineSigningLibrary
-# FIXED: Unified namespaces matching your exact structural blueprint
 from engineSigningMeta import existenzLocations, existenzMeta
 from engineSigningStruct import existenzIntegrityKeysHandler, existenzIntegrityGlue, existenzSignatures
 
 def execute(args, error_handler, repo_root: str):
     """
     Executes a project-agnostic structural integrity scanning pass.
-    Surgically slices 6-element data configurations and 3-element sequence rules.
+    Strictly queries tuple arrays by explicit numerical indices to prevent unpacking errors.
     """
     error_handler.print("Initiating universal structural signature engine [MODE: INTEGRITY]...", level="notice")
     
     session_hashes = {}
     magic_salt_bytes = existenzMeta.MAGIC["RAW"].encode('utf-8')
 
-    # 1. PHASE ONE: Dynamic Component Hashing via Clean Registry Tuple Extraction
-    for key, raw_tuple in existenzIntegrityGlue.items():
-        # Safely extracts indices directly from your 6-element dictionary tracking structures
-        name          = str(raw_tuple[0])
-        status_mask   = int(raw_tuple[1]) if isinstance(raw_tuple[1], int) else 0
-        op_flags      = int(raw_tuple[2]) if isinstance(raw_tuple[2], int) else 0
-        hex_id        = str(raw_tuple[3])
-        relative_path = str(raw_tuple[4])
-        old_sig       = str(raw_tuple[5])
+    # 1. PHASE ONE: Dynamic Component Hashing via Clean Index Extraction
+    for key, glue_tuple in existenzIntegrityGlue.items():
+        # Safely extract records from the 6-element tuple via explicit index placement
+        name          = str(glue_tuple[0])
+        status_mask   = int(glue_tuple[1])
+        op_flags      = int(glue_tuple[2])
+        hex_id        = str(glue_tuple[3])
+        relative_path = str(glue_tuple[4])
+        old_sig       = str(glue_tuple[5])
 
         absolute_path = os.path.abspath(os.path.join(repo_root, relative_path))
         computed_hash = ""
@@ -47,7 +46,7 @@ def execute(args, error_handler, repo_root: str):
 
         # Check Opcode: SIGN_TYPE_STRING
         elif bool(op_flags & existenzIntegrityKeysHandler.SIGN_TYPE_STRING):
-            computed_hash = engineSigningLibrary.calculate_op_driven_hash({"payload": old_sig}, op_flags)
+            computed_hash = engineSigningLibrary.calculate_op_driven_hash({"payload": str(old_sig)}, op_flags)
 
         # Agnostic Fallback: Resolve via standard path verification if flags are empty
         if not computed_hash:
@@ -56,16 +55,22 @@ def execute(args, error_handler, repo_root: str):
         session_hashes[f"{key}_hash"] = computed_hash
         session_hashes[f"{key}_sign"] = hex_id
 
-    # 2. PHASE TWO: Agnostic Blockchain Link Sequencer
+    # 2. PHASE TWO: Agnostic Blockchain Link Sequencer via Direct Indices
     active_tree_rules = existenzSignatures.existentialCore
-    sorted_rules = sorted(active_tree_rules, key=lambda x: x[2]) # Sorted strictly by priority index 2
+    
+    # Sorts strictly using index 2 (the order priority integer field)
+    sorted_rules = sorted(active_tree_rules, key=lambda x: x[2])
     
     chain_active = False
     accumulated_chain_hashes = []
 
-    for label, inner_glue_tuple, chronological_order in sorted_rules:
-        # Reads the exact inner 6 elements directly from index 1 of the list tuples
-        op_flags = int(inner_glue_tuple[2]) if isinstance(inner_glue_tuple[2], int) else 0
+    for rule_row in sorted_rules:
+        label = str(rule_row[0])
+        inner_glue_record = rule_row[1]
+        chronological_order = int(rule_row[2])
+        
+        # Extract op_flags strictly from index 2 of the inner 6-element config tuple
+        op_flags = int(inner_glue_record[2])
         current_node_hash = session_hashes.get(f"{label}_hash", "")
 
         # Open Chain Frame (SIGN_CHAIN_START)
@@ -89,12 +94,13 @@ def execute(args, error_handler, repo_root: str):
             session_hashes[f"{label}_hash"] = final_chain_signature
             chain_active = False
 
-    # 3. PHASE THREE: Dynamic Tree Rendering Pass
+    # 3. PHASE THREE: Prepare session tokens dynamically to drive your custom tree visualizer
     tree_session_hashes = {
         "existentialCoreMagicHash": session_hashes.get("MagicCheck_hash", "UNKNOWN"),
         "existentialCoreCheckHash": session_hashes.get("CoreCheck_hash", "UNSIGNED"),
     }
-    for label, _, _ in sorted_rules:
+    for rule_row in sorted_rules:
+        label = str(rule_row[0])
         tree_session_hashes[f"existential{label}Hash"] = session_hashes.get(f"{label}_hash", "")
         tree_session_hashes[f"{label.lower()}_sign"] = session_hashes.get(f"{label}_sign", "00000000")
 
@@ -105,7 +111,8 @@ def execute(args, error_handler, repo_root: str):
     json_signatures_path = os.path.abspath(os.path.join(repo_root, existenzLocations["core"]["SignaturesJson"]))
 
     master_dict_lines = []
-    for label, _, _ in sorted_rules:
+    for rule_row in sorted_rules:
+        label = str(rule_row[0])
         master_dict_lines.append(f'        "{label}":'.ljust(30) + f'"{session_hashes.get(f"{label}_hash")}"')
 
     py_payload = f"""# ==========================================================================
