@@ -1,5 +1,5 @@
 {
-  "commit": "160cdf01d025f5236e8ad76395c7080006793513",
+  "commit": "9a40c17c9bbf19a0ad1ea3db4e725567f2f9fc2c",
   "existentialCoreVersion": "v0.76.17",
   "files.build": {
     "master/build-tools/core_telemetry.py": "f72cd3acc76881fb228fc33666cf335cd6469063f402511c032fdf5b1043f075",
@@ -73,7 +73,7 @@
     "master/struct/existentialSignatures.py": "49cb7c9576ef8a351e18cc6ff889352d3879222799491158b59d99ee6e4a5a72",
     "master/struct/module/cliStateBuild.py": "e7d241a91a0e160ae1e0963b16b00dcf408f6e7e84c41cb0a63067a60d89184e",
     "master/struct/module/cliStateInit.py": "bd891fc70885d7b84d5cc4c0ea791398308b7a25279061c933e9eb561ea52991",
-    "master/struct/module/cliStateManifest.py": "91bd1ba7170604d22873cec9d6d6c3194a22406299232278ba125e0df5d03076",
+    "master/struct/module/cliStateManifest.py": "819f99f49ca0266d9f190fc70d6726360ced69377d253d12a763755a8938df15",
     "master/struct/module/cliStateSign.py": "22cf67ffa5f41fef86b31df153a4627abb3934344f4c49f099a07793913fc4f3",
     "master/struct/module/cliStateTest.py": "e8a6c64754e74904994a5e7f73250d1e10c0bc8a6f7bf53e6be0a24505456417",
     "master/struct/module/cliStateVerify.py": "782c64b8d9a46da4151c6848eb128264fa26ff0a7667a496209c328053f1a237",
@@ -97,7 +97,7 @@
   "signatures.circle": {
     "hash.build": "bea3a7c7f7f975fd6ab002ebcad17664059203a0a2dd7cdc20e6168bbf93803b",
     "hash.dist": "54af6e594b5da3f52b252df5105f335f41956b99b9a2a5286793537eaea4b3dd",
-    "hash.master": "dcc4fdad57fefc1ce77818ac05bee0b4049bd7464239b06905271375e38b7e3d",
+    "hash.master": "c64a7737e2edf924960fbb76966f7fff6afcd5fddfb416f58709940a8a22503a",
     "hash.tools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "sign.build": "",
     "sign.dist": "c113aed29370685edd2d60e13405632c25cd754d748af0e7839e78ace062111e6117775e1cdce9e6546c8d4d2a930a2ef1975a98a5c39915e0748f031ec9b403",
