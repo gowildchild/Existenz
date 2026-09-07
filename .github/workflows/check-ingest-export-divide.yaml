@@ -26,9 +26,10 @@ jobs:
 
     # Step 3: Determine Operational Mode from the Lockfile
     - name: Existenz - Installing Dependencies
-      run: pip install pyyaml cryptography    
+      run: pip install pyyaml cryptography
+    - name: Existenz - Initializing Self-Healing Check
+      id: pipeline_init
       run: |
-        # 1. Execute your compiled pre-flight dependency audit and self-healing loop
         python master/struct/engineSigningCLI.py -stage init -override update -run wet -circle master
 
         # 2. Extract runtime execution state from repository lock tracking assets
