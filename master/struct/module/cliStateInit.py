@@ -135,7 +135,7 @@ def execute(args, error_handler, repo_root: str):
                         for k, d in schema_data.get("existentialCore", {}).items():
                             v = d["val"]
                             raw_pol = d.get("pol", 0)
-                            raw_msk = d.get("msk", None)
+                            #raw_msk = d.get("msk", None)
                             
                             if isinstance(raw_pol, str):
                                 pol = int(getattr(existenzCorePolicy, raw_pol.strip(), 0))
