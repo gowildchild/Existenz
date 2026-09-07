@@ -1,0 +1,330 @@
+{
+  "existentialCore": {
+    "NONE": {
+      "val": 0,
+      "pol": "0x422c1",
+      "comment": "No Record",
+      "threat": "THREAT_NONE"
+    },
+    "EXISTENCE": {
+      "val": 1,
+      "pol": "0x422c1",
+      "comment": "You, alive, with a body",
+      "threat": "THREAT_EXISTENCE"
+    },
+    "AUTONOMY": {
+      "val": 2,
+      "pol": "0x422c1",
+      "comment": "The Sovereign Right to Choose",
+      "threat": "THREAT_AUTONOMY"
+    },
+    "INTEGRITY": {
+      "val": 4,
+      "pol": "0x422c1",
+      "comment": "The Moral Axis of Personal Choice",
+      "threat": "THREAT_INTEGRITY"
+    },
+    "CANARY_1_SOVEREIGN": {
+      "val": 8,
+      "pol": "0x43230",
+      "msk": "0x7",
+      "comment": "WATCHDOG_SOVEREIGN"
+    },
+    "PSYCHOLOGY": {
+      "val": 16,
+      "pol": "0x422c1",
+      "comment": "Cognitive Mental State and Peace",
+      "threat": "THREAT_PSYCHOLOGY"
+    },
+    "PHYSICAL": {
+      "val": 32,
+      "pol": "0x422c1",
+      "comment": "Physical Body Vessel and bio-state",
+      "threat": "THREAT_PHYSICAL"
+    },
+    "DISABILITY": {
+      "val": 64,
+      "pol": "0x422c1",
+      "comment": "Nature's way of checks and balances",
+      "threat": "THREAT_ABLEISM"
+    },
+    "DEVELOPMENT": {
+      "val": 128,
+      "pol": "0x422c1",
+      "comment": "Evolutionary, Intellectual, Growth",
+      "threat": "THREAT_DEVELOPMENT"
+    },
+    "PROPERTY": {
+      "val": 256,
+      "pol": "0x422c1",
+      "comment": "Material Assets and Income Protection",
+      "threat": "THREAT_PROPERTY"
+    },
+    "CANARY_2_SOMATIC": {
+      "val": 512,
+      "pol": "0x43230",
+      "msk": "0x3f",
+      "comment": "WATCHDOG_SOMATIC"
+    },
+    "PRESENCE": {
+      "val": 1024,
+      "pol": "0x422c1",
+      "comment": "Real-Time Spacetime Footprint",
+      "threat": "THREAT_PRESENCE"
+    },
+    "CANARY_P_SAFE": {
+      "val": 2048,
+      "pol": "0x3fc0",
+      "comment": "WATCHDOG_PRESENCE_SAFE",
+      "threat": "THREAT_P_SAFE_OK"
+    },
+    "CANARY_P_DURESS": {
+      "val": 4096,
+      "pol": "0x3fc0",
+      "comment": "WATCHDOG_PRESENCE_NO_DURESS",
+      "threat": "THREAT_P_DURESS_OFF"
+    },
+    "CANARY_3_ABLEISM": {
+      "val": 8192,
+      "pol": "0x43230",
+      "msk": "0x27f",
+      "comment": "WATCHDOG_ABLEISM"
+    },
+    "CANARY_USER_A": {
+      "val": 16384,
+      "pol": "0x1fc4",
+      "comment": "WATCHDOG_USER_DEFINABLE_A",
+      "threat": "THREAT_USER_A"
+    },
+    "CANARY_USER_B": {
+      "val": 32768,
+      "pol": "0x1fc4",
+      "comment": "WATCHDOG_USER_DEFINABLE_B",
+      "threat": "THREAT_USER_B"
+    },
+    "CANARY_USER_C": {
+      "val": 65536,
+      "pol": "0x1fc4",
+      "comment": "WATCHDOG_USER_DEFINABLE_C",
+      "threat": "THREAT_USER_C"
+    },
+    "CANARY_4_FOOTPRINT": {
+      "val": 131072,
+      "pol": "0x43230",
+      "msk": "0x33f",
+      "comment": "WATCHDOG_FOOTPRINT"
+    },
+    "CANARY_IV_PRESENCE": {
+      "val": 262144,
+      "pol": "0x43230",
+      "msk": "0x7ff",
+      "comment": "WATCHDOG_PRESENCE_OK"
+    },
+    "SHIELD_RIGHTS_HUMAN": {
+      "val": 1048576,
+      "pol": "0x422c2",
+      "comment": "SHIELD-A (Institutional)",
+      "threat": "THREAT_RIGHTS_HUMAN"
+    },
+    "CANARY_P_SAFETY": {
+      "val": 2097152,
+      "pol": "0x3fc0",
+      "msk": "0x63fff",
+      "comment": "WATCHDOG_PRESENCE_SAFETY",
+      "threat": "THREAT_PRESENCE_SAFETY"
+    },
+    "SHIELD_RIGHTS_INCLUSIVE": {
+      "val": 4194304,
+      "pol": "0x422c2",
+      "comment": "SHIELD-A2 (Systemic)",
+      "threat": "THREAT_RIGHTS_INCLUSIVE"
+    },
+    "SHIELD_RIGHTS_ASYLUM": {
+      "val": 8388608,
+      "pol": "0x422c2",
+      "comment": "SHIELD-A3 (Asylum Seekers)",
+      "threat": "THREAT_RIGHTS_ASYLUM"
+    },
+    "SHIELD_RIGHTS_BASIC": {
+      "val": 16777216,
+      "pol": "0x422c2",
+      "comment": "SHIELD-B (Institutional)",
+      "threat": "THREAT_RIGHTS_BASIC"
+    },
+    "CANARY_5_METRICS": {
+      "val": 33554432,
+      "pol": "0x43230",
+      "msk": "0x263fff",
+      "comment": "WATCHDOG_METRICS"
+    },
+    "CANARY_V_RIGHTS": {
+      "val": 67108864,
+      "pol": "0x43230",
+      "msk": "0x3f63fff",
+      "comment": "WATCHDOG_RIGHTS"
+    },
+    "CANARY_VI_SYSTEMIC": {
+      "val": 536870912,
+      "pol": "0x43230",
+      "msk": "0xc000",
+      "comment": "WATCHDOG_SYSTEMIC"
+    },
+    "CANARY_6_IMMUTABLE": {
+      "val": 2147483648,
+      "pol": "0x43230",
+      "msk": "0x26262208",
+      "comment": "WATCHDOG_IMMUTABLE"
+    }
+  },
+  "existentialCorePolicy": {
+    "0": "CORE_NONE",
+    "1": "CORE_IS_PILLAR",
+    "2": "CORE_IS_RIGHTS",
+    "8": "CORE_IS_INTEGRITY",
+    "16": "CORE_IS_CANARY",
+    "32": "CORE_IS_WATCHDOG",
+    "64": "CORE_THREAT_MIRROR",
+    "128": "CORE_THREAT_TOGGLE",
+    "256": "USER_CUSTOMIZE",
+    "512": "USER_READ",
+    "1024": "USER_UPDATE",
+    "2048": "USER_DISABLE",
+    "4096": "BIT_MASK",
+    "8192": "BIT_SHIFT",
+    "16384": "BIT_SHIFT_RIGHT",
+    "32768": "BIT_ZERO_FILL_RIGHT",
+    "65536": "BIT_ROTATE_LEFT",
+    "131072": "BIT_ROTATE_RIGHT",
+    "262144": "CORE_IS_IMMUTABLE"
+  },
+  "existentialCoreThreatLegal": {
+    "1": "LEGAL_CAT1_MURDER",
+    "2": "LEGAL_CAT2_PHYSICAL_VIOLATION",
+    "4": "LEGAL_CAT3_COERCION",
+    "8": "LEGAL_CAT4_CHARACTER_ASSASSINATION",
+    "16": "LEGAL_CAT5_PSYCHOLOGICAL_INTIMIDATION",
+    "32": "LEGAL_CAT2_PHYSICAL_VIOLATION",
+    "64": "LEGAL_CAT6_ABLEISM",
+    "128": "LEGAL_CAT8_INTELLECTUAL_PIRACY",
+    "256": "LEGAL_CAT9_THEFT",
+    "8192": "LEGAL_CAN1_SYSTEMCRISIS",
+    "1048576": "LEGAL_CAN3_HUMAN",
+    "4194304": "LEGAL_CAN4_INCLUSION",
+    "89130487": "LEGAL_CAN2_EXPLOITATION",
+    "2290263560": "LEGAL_CAN5_PREDATORY"
+  },
+  "existentialCoreThreatShadowVacuum": {
+    "1": "VACUUM_DEHUMANISATION",
+    "2": "VACUUM_DISFRANCHISEMENT",
+    "4": "VACUUM_CORRUPTION",
+    "8": "VACUUM_DRIFT_SOVEREIGN",
+    "16": "VACUUM_ATTRITION_PSYCHOLOGY",
+    "32": "VACUUM_SOMATIC_DRAIN",
+    "64": "VACUUM_NEURONORMATIVITY",
+    "128": "VACUUM_ATTRITION_INSTITUTIONAL",
+    "256": "VACUUM_SYSTEMIC_DESPOILMENT",
+    "512": "VACUUM_DRIFT_SOMATIC",
+    "1024": "VACUUM_PANOPTICISM",
+    "8192": "VACUUM_DRIFT_SYSTEMIC",
+    "1048576": "VACUUM_INVERT_COMPLIANCE",
+    "4194304": "VACUUM_INVERT_NORMALIZATION",
+    "16777216": "VACUUM_INVERT_INERTIA",
+    "89130487": "VACUUM_PARASITISM",
+    "2290263560": "VACUUM_HARVESTING"
+  },
+  "CoreSignatures": {
+    "existentialCore": "sha256",
+    "existentialCorePolicy": "",
+    "existentialCoreThreatLegal": "",
+    "existentialCoreThreatShadowVacuum": "",
+    "existentialMeta": ""
+  },
+  "existentialMeta": {
+    "CoreVersion": "v0.76.15+",
+    "CoreAuthor": "Gunther Voet",
+    "CoreWeb": "github.com/gowildchild/Existenz/",
+    "CoreDate": "20260906"
+  },
+  "existentialCoreThreat": {
+    "THREAT_NONE": {
+      "value": 0,
+      "expr": "0"
+    },
+    "THREAT_EXISTENCE": {
+      "value": 1,
+      "expr": "1 << 0"
+    },
+    "THREAT_AUTONOMY": {
+      "value": 2,
+      "expr": "1 << 1"
+    },
+    "THREAT_INTEGRITY": {
+      "value": 4,
+      "expr": "1 << 2"
+    },
+    "THREAT_PSYCHOLOGY": {
+      "value": 16,
+      "expr": "1 << 4"
+    },
+    "THREAT_PHYSICAL": {
+      "value": 32,
+      "expr": "1 << 5"
+    },
+    "THREAT_ABLEISM": {
+      "value": 64,
+      "expr": "1 << 6"
+    },
+    "THREAT_DEVELOPMENT": {
+      "value": 128,
+      "expr": "1 << 7"
+    },
+    "THREAT_PROPERTY": {
+      "value": 256,
+      "expr": "1 << 8"
+    },
+    "THREAT_PRESENCE": {
+      "value": 1024,
+      "expr": "1 << 10"
+    },
+    "THREAT_P_SAFE_OK": {
+      "value": 2048,
+      "expr": "1 << 11"
+    },
+    "THREAT_P_DURESS_OFF": {
+      "value": 4096,
+      "expr": "1 << 12"
+    },
+    "THREAT_USER_A": {
+      "value": 16384,
+      "expr": "1 << 14"
+    },
+    "THREAT_USER_B": {
+      "value": 32768,
+      "expr": "1 << 15"
+    },
+    "THREAT_USER_C": {
+      "value": 65536,
+      "expr": "1 << 16"
+    },
+    "THREAT_RIGHTS_HUMAN": {
+      "value": 1048576,
+      "expr": "1 << 20"
+    },
+    "THREAT_PRESENCE_SAFETY": {
+      "value": 2097152,
+      "expr": "1 << 21"
+    },
+    "THREAT_RIGHTS_INCLUSIVE": {
+      "value": 4194304,
+      "expr": "1 << 22"
+    },
+    "THREAT_RIGHTS_ASYLUM": {
+      "value": 8388608,
+      "expr": "1 << 23"
+    },
+    "THREAT_RIGHTS_BASIC": {
+      "value": 16777216,
+      "expr": "1 << 24"
+    }
+  }
+}
