@@ -261,7 +261,7 @@ def compute_integrity_chain(error_handler, rule_group_list: list, live_hashes: d
             chain_active = True
             accumulated_trail_hashes = []
             chain_metadata_log = []
-            error_handler.print(f"      [⛓️] Chain Session Opened at Sequence: {chronological_order} ({label})", level="info")
+            error_handler.print(f" [C] Chain Session Opened at Sequence: {chronological_order} ({label})", level="info")
 
         if chain_active and current_node_hash:
             # Check if this link requires magic salting blocks
@@ -333,26 +333,6 @@ def calculate_op_driven_hash(target_dict: dict, op_flags: int) -> str:
             hasher.update(v_str.encode('utf-8'))
 
     return hasher.hexdigest()
-
-
-
-def calculate_aggregate_circle_hash_v1(circle_files_dict: dict) -> str:
-    """
-    Computes a canonical SHA-256 hash across all sorted filename-hash pairs 
-    in a tracking circle to capture an absolute state snapshot.
-    """
-    if not circle_files_dict:
-        return hashlib.sha256(b"").hexdigest()
-        
-    # Serialize with strict, sorted, zero-whitespace rules matching your configuration
-    canonical_body = json.dumps(
-        circle_files_dict, 
-        sort_keys=True, 
-        ensure_ascii=True, 
-        separators=(',', ':')
-    ).encode('utf-8')
-    
-    return hashlib.sha256(canonical_body).hexdigest()
 
 def calculate_aggregate_circle_hash(circle_files_dict: dict, op_flags: int = 0) -> str:
     """
@@ -482,8 +462,16 @@ def pipeline_step_current(current_stage_str: str, error_handler):
         target_attribute_name = "STEP_SIGN_PUBLIC"
     elif normalized_input == "VERIFY":
         target_attribute_name = "STEP_VERIFY"
+    elif normalized_input == "TEST":
+        target_attribute_name = "STEP_TEST"        
+    elif normalized_input == "INIT":
+        target_attribute_name = "STEP_INIT"        
     elif normalized_input == "MANIFEST":
         target_attribute_name = "STEP_MANIFEST"
+    elif normalized_input == "INTEGRITY":
+        target_attribute_name = "STEP_INTEGRITY"
+    elif normalized_input == "VERITAS":
+        target_attribute_name = "STEP_VERITAS"        
     else:
         target_attribute_name = f"STEP_{normalized_input}"
     
@@ -493,7 +481,7 @@ def pipeline_step_current(current_stage_str: str, error_handler):
         current_step_flag = existenzSteps.STEP_NONE
         
     current_step_name = current_step_flag.name.replace("STEP_", "") if current_step_flag != existenzSteps.STEP_NONE else "UNKNOWN"
-    error_handler.print(f"  [➔] Pipeline Stage Active: {current_step_name:<16} [Weight: {int(current_step_flag)}]", level="notice")
+    error_handler.print(f" [➔] Cryptographic routines active -> {current_step_name:<16} [Weight: {int(current_step_flag)}]", level="notice")
 
 def pipeline_step_next(current_stage_str: str, error_handler) -> str:
     """
@@ -515,9 +503,9 @@ def pipeline_step_next(current_stage_str: str, error_handler) -> str:
         try:
             with open(github_env_file, "a", encoding="utf-8") as gef:
                 gef.write(f"NEXT_PIPELINE_STAGE={next_step_name}\n")
-            error_handler.print(f"  [+] Pipeline Link: Progressive routing unblocked -> NEXT_PIPELINE_STAGE={next_step_name}", level="notice")
+            error_handler.print(f" [+] Cryptographic routines active -> NEXT_PIPELINE_STAGE={next_step_name}", level="notice")
         except Exception as env_err:
-            error_handler.print(f"Non-fatal error logging workspace environment variable: {env_err}", level="debug")
+            error_handler.print(f"Non-fatal error logging environment variable: {env_err}", level="debug")
             
     return next_step_name
 
@@ -653,24 +641,23 @@ class visualMixEngineEnvironment:
         if missing_fields:
             # FIXED: If running on a public server, missing offline keys are totally normal. Skip instead of crashing.
             if self.repo_github_flag and self.post != "SIGN_EXISTENZ_AUDIT_":
-                print(f"  [ ] Ingest Namespace:      '{self.namespace}' -> Skipping offline signing track (running on public server).")
+                print(f"  [x]                        '{self.namespace}' -> Private keys cannot be used on private server!.")
                 return skeleton
             
             # Crash only if the mandatory cloud environment key itself is missing
-            self.error_handler.print(f"Loop-driven environment validation failed. Unresolved tracks: {missing_fields}", level="error", exit_code=63)
+            self.error_handler.print(f" [!] Environment validation failed. Unresolved: {missing_fields}", level="error", exit_code=63)
 
         clean_pub_display = env_pub_key.strip().split()[-1] if len(env_pub_key.strip().split()) > 1 else 'Custom Format'
-        print(f"  [+] Ingest Namespace:      '{self.namespace}' Loop-Driven Tracker Block")
-        print(f"  [+] Ingested Public Key:   '{clean_pub_display}'")
-        print(f"  [+] Ingested Fingerprint:  {env_finger.strip()}")
-        print(f"  [+] Private Key Payload:   Loaded ({len(raw_pvt_key.strip())} characters)")
+        print(f" [+] Ingest:               '{self.namespace}'")
+        print(f" [+] Ingested Fingerprint:  {env_finger.strip()}")
+        print(f" [+] Private Key Payload:   Loaded ({len(raw_pvt_key.strip())} characters)")
 
         password_bytes = None
         if raw_phrase and str(raw_phrase).strip():
-            print(f"  [+] Key Protection State:  Encrypted passphrase token active")
+            print(f" [+] Key Protection State:  Encrypted token active")
             password_bytes = str(raw_phrase).strip().encode('utf-8')
         else:
-            print(f"  [ ] Key Protection State:  Assuming plaintext unencrypted asset format")
+            print(f" [ ] Key Protection State:  Unencrypted asset format")
 
         try:
             pvt_bytes = raw_pvt_key.strip().encode('utf-8')
@@ -678,7 +665,7 @@ class visualMixEngineEnvironment:
                 pvt_bytes,
                 password_bytes=password_bytes
             )
-            print("\033[1;32m  [+] Cryptographic Validation: Key parsing loop verified successfully!\033[0m")
+            print("\033[1;32m [+] Cryptographic Validation: Key parsing loop verified successfully!\033[0m")
             skeleton["_OBJECT"] = parsed_private_key
             
         except Exception as crypto_fault:
