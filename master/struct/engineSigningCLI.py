@@ -19,7 +19,7 @@ from visualMixEngineLogging import visualmixErrorHandler
 import visualMixEngineCrypto
 
 INT_NAME    = "engineSigningCLI.py"
-INT_VERSION = "v0.76.16"
+INT_VERSION = "v0.76.15+"
 
 # Dynamic workspace root tracking relative to master/struct
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -68,8 +68,21 @@ def main():
     elif args.stage == "init":
         from module import cliStateInit
         cliStateInit.execute(args, error_handler, REPO_ROOT)
+    elif args.stage == "manifest":
+        from module import cliStateManifest
+        cliStateManifest.execute(args, error_handler, REPO_ROOT)        
+    elif args.stage == "verify":
+        from module import cliStateVerify
+        cliStateVerify.execute(args, error_handler, REPO_ROOT)        
+    elif args.stage == "sign":
+        from module import cliStateSign
+        cliStateSign.execute(args, error_handler, REPO_ROOT)        
+    elif args.stage == "build":
+        from module import cliStateBuild
+        cliStateBuild.execute(args, error_handler, REPO_ROOT)        
 
     engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
+    
 if __name__ == "__main__":
     try:
         main()
