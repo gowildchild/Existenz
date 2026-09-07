@@ -143,17 +143,16 @@ def execute(args, error_handler, repo_root: str):
                             else:
                                 calculated_expr = f"0x{v:08x}"
                                 
-                            # PURE STRUCT EVALUATION: Evaluate policy attributes natively via bitwise flags
-                            if bool(bm & existenzCorePolicy.CORE_PILLAR):
-                                struct_type = "PILLAR"
-                            elif bool(bm & existenzCorePolicy.CORE_RIGHTS):
-                                struct_type = "RIGHTS"
+                            if bool(bm & existenzCorePolicy.CORE_INTEGRITY):
+                                struct_type = "SIGNATURE"
                             elif bool(bm & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY)):
                                 struct_type = "CANARY"
                             elif bool(bm & existenzCorePolicy.CORE_WATCHDOG):
-                                struct_type = "CANARY"
-                            elif bool(bm & existenzCorePolicy.CORE_INTEGRITY):
-                                struct_type = "SIGNATURE"
+                                struct_type = "SHIELD"
+                            elif bool(bm & existenzCorePolicy.CORE_RIGHTS):
+                                struct_type = "RIGHTS"
+                            elif bool(bm & existenzCorePolicy.CORE_PILLAR):
+                                struct_type = "PILLAR"
                             else:
                                 struct_type = "PILLAR"
                                 
