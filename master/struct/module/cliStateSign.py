@@ -6,39 +6,64 @@
 import os
 import json
 import engineSigningLibrary
-from engineSigningMeta import existenzLocations, existenzConfig, existenzMeta, existenzPublicKeys
+from engineSigningMeta import existenzLocations, existenzConfig
 
 def execute(args, error_handler, repo_root: str):
     """
-    Executes asymmetric multi-signature compilation against the manifest.
-    Ingests loop-driven environment variables and configuration file paths cleanly.
+    Executes bitmask-driven asymmetric signature updates against tracking circles.
+    Dynamically decodes existenzIntegrityGlue bit weights to map key permissions.
     """
-    error_handler.print("Initiating asymmetric multi-signature routines...", level="notice")
+    error_handler.print("Initiating bitmask-driven asymmetric multi-signature execution...", level="notice")
     
     manifest_filename = existenzLocations["engine"]["Manifest"]
     manifest_target_path = os.path.abspath(os.path.join(repo_root, manifest_filename))
     config_target_path = os.path.abspath(os.path.join(repo_root, args.config))
     
     if not os.path.exists(manifest_target_path):
-        error_handler.print("Manifest. Execute manifest stage first.", level="error", exit_code=33)
+        error_handler.print("Manifest database tracking ledger missing. Run manifest stage first.", level="error", exit_code=33)
 
     # 1. Ingest consolidated tracking payload structures from file destination
     with open(manifest_target_path, "r", encoding="utf-8") as mf:
         manifest_data = json.load(mf)
 
-    # Load local configuration private key paths if the file exists on disk
+    # Load local configuration private key paths from disk template
     config_paths = {}
     if os.path.exists(config_target_path):
         try:
             with open(config_target_path, "r", encoding="utf-8") as cf:
                 config_paths = json.load(cf).get("private_key_paths", {})
-        except Exception as ce:
-            error_handler.print(f"Non-fatal configuration read warning: {ce}", level="warning")
+        except Exception:
+            pass
 
-    # 2. Compute the bitmask verification requirements for the active execution stage
-    req_env, req_pfm, req_dev, req_psn = engineSigningLibrary.solve_ring_requirements(args.stage)
+    # 2. Extract your live bitmask definitions out of your active integrity glue file
+    # Imported inline to prevent circular references inside your library initialization
+    from engineSigningMeta import existenzIntegrityGlue
+    from engineSigningStruct import existenzIntegrityKeyStatus
+
+    # Map your target circle name directly to its corresponding glue key element
+    circle_to_glue_map = {
+        "dist":   "CircleDist",
+        "tools":  "CircleTools",
+        "build":  "CircleBuild",
+        "master": "CircleMaster"
+    }
+
+    active_circle_arg = str(args.circle).strip().lower()
+    glue_key = circle_to_glue_map.get(active_circle_arg)
     
-    # Compile the strict sorting layout matching your cross-language byte payload specifications
+    if not glue_key or glue_key not in existenzIntegrityGlue:
+        error_handler.print(f"Aborting signing pass: unresolved circle target: {active_circle_arg}", level="error", exit_code=34)
+
+    # Extract the exact bitmask status profile value (e.g. 2615 or 2815) straight from your entry tuple
+    circle_bitmask_weight = existenzIntegrityGlue[glue_key][1]
+
+    # 3. DYNAMIC BITMASK MATCHING GATES: Determine exactly what keys have permissions for this circle
+    req_env = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT)
+    req_pfm = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM)
+    req_dev = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER)
+    req_psn = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
+
+    # Compile the canonical sorting layout matching your cross-language byte payload specifications
     payload_to_sign = {
         "commit":                  manifest_data.get("commit"),
         "existentialCoreVersion":  manifest_data.get("existentialCoreVersion"),
@@ -62,7 +87,7 @@ def execute(args, error_handler, repo_root: str):
     if "signatures" not in manifest_data:
         manifest_data["signatures"] = {}
 
-    # 3. Map identities queue straight to their required loop environment prefixes and file paths
+    # 4. Map identities queue straight to their required loop environment prefixes and file paths
     identities_queue = [
         ("Environment", req_env, "SIGN_EXISTENZ_AUDIT_",     None),
         ("Platform",    req_pfm, "SIGN_EXISTENZ_PLATFORM_",  config_paths.get("Platform")),
@@ -74,7 +99,7 @@ def execute(args, error_handler, repo_root: str):
         if not is_required:
             continue
             
-        error_handler.print(f" [*] Processing signing sequence for: [{identity}]", level="info")
+        error_handler.print(f" [*] Bitmask match active for identity role: [{identity}] on circle: [{active_circle_arg}]", level="info")
         private_key_object = None
 
         # A. LOCAL OPERATION TRACK: Load from file system using your config paths if active
@@ -89,7 +114,7 @@ def execute(args, error_handler, repo_root: str):
                         repo_github_flag=is_github_runner
                     )
                 except Exception as file_err:
-                    error_handler.print(f"  [!] Failed loading local key from path: {file_err}", level="warning")
+                    error_handler.print(f"  [!] Failed loading local key profile from path: {file_err}", level="warning")
 
         # B. CLOUD PIPELINE TRACK: Fall back natively to your loop-driven environment loader if running on runner
         if not private_key_object:
@@ -102,26 +127,40 @@ def execute(args, error_handler, repo_root: str):
             secret_env_map = env_loader.load_secret_key()
             private_key_object = secret_env_map.get("_OBJECT")
 
-        # C. EXECUTE ASYMMETRIC SIGNATURE STAMP
+        # C. EXECUTE CRYPTOGRAPHIC STAMP IF KEY IS LOADED
         if private_key_object:
             try:
+                # Stamp global manifest database envelope signature
                 signature_bytes = private_key_object.sign(serialized_manifest_body)
                 manifest_data["signatures"][identity] = signature_bytes.hex()
-                error_handler.print(f"  [+] Cryptographically signed manifest: [{identity}]", level="notice")
-            except Exception as sig_err:
-                error_handler.print(f"Failed to sign for role [{identity}]: {sig_err}", level="error", exit_code=64)
-        else:
-            error_handler.print(f"  [ ] Skipping signature for [{identity}]: Private key not loaded.", level="warning")
+                error_handler.print(f"  [+] Cryptographically signed manifest ledger block: [{identity}]", level="notice")
+                
+                # Stamp the individual circle target tracking signature path inside signatures.circle
+                hash_key = f"hash.{active_circle_arg}"
+                sign_key = f"sign.{active_circle_arg}"
+                
+                # Look up the dynamic aggregate hash of the active track
+                target_circle_hash = manifest_data.get("signatures.circle", {}).get(hash_key, "")
+                
+                if target_circle_hash:
+                    # Generate the explicit cryptographic signature for this individual track payload
+                    circle_sig_bytes = private_key_object.sign(target_circle_hash.encode('utf-8'))
+                    manifest_data["signatures.circle"][sign_key] = circle_sig_bytes.hex()
+                    error_handler.print(f"  [+] Stamped circle verification ring signature: [{sign_key}]", level="notice")
 
-    # 4. Flush signed ledger updates straight back to the file system destination
+            except Exception as sig_err:
+                error_handler.print(f"Failed to compile signature for role [{identity}]: {sig_err}", level="error", exit_code=64)
+        else:
+            error_handler.print(f"  [ ] Skipping signature for [{identity}]: Private key asset not loaded.", level="warning")
+
+    # 5. Flush signed ledger updates straight back to the file system destination
     if str(args.run).strip().lower() != "dry":
         try:
             with open(manifest_target_path, "w", encoding="utf-8") as out_mf:
                 json.dump(manifest_data, out_mf, indent=2, sort_keys=True)
-            error_handler.print("[+] SUCCESS: Asymmetric signatures written to manifest.", level="notice")
+            error_handler.print("[+] SUCCESS: Asymmetric signatures written to manifest tracking registries.", level="notice")
         except Exception as e:
-            error_handler.print(f"Failed towrite signatures to file: {e}", level="error", exit_code=32)
+            error_handler.print(f"Failed to record signature tokens to file: {e}", level="error", exit_code=32)
 
     # Move smoothly into your dynamic pipeline routing step calculator
     engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
-
