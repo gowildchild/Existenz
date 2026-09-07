@@ -108,6 +108,7 @@ def execute(args, error_handler, repo_root: str):
         (existentialBuildLanguage.BUILD_CPP,    "cpp",    "cpp"),
         (existentialBuildLanguage.BUILD_PHP,    "php",    "php"),
         (existentialBuildLanguage.BUILD_RUST,   "rust",   "rust")
+        (existentialBuildLanguage.BUILD_TYPESCRIPT, "typescript", "typescript")
     ]
 
     # Evaluate dynamic language bitmask limits from args if specified; fallback to ALL languages
