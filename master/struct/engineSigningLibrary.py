@@ -19,7 +19,7 @@ from typing import Dict, Any
 from engineSigningMeta import existenzLocations, existenzMeta
 # Added missing existenzIntegrityKeyStatus registration dependency entry
 from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler, existenzIntegrityKeyStatus
-from existenzSignatures import existentialToken
+from existentialSignatures import existentialToken
 
 from visualMixEngineLogging import visualmixErrorHandler
 
