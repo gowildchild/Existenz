@@ -68,6 +68,43 @@ class existenzSignatures:
         ("CircleChain",            existenzIntegrityGlue["CircleChain"],            9)
     )
 
+class existenzSteps(IntFlag):
+    STEP_NONE               = 0
+    STEP_TEST               = 1
+    STEP_INIT               = 2
+    STEP_COMMIT             = 4
+    STEP_VERIFY             = 16
+    STEP_MANIFEST           = 64
+    STEP_SUCCESS            = 128
+    STEP_SIGN_PUBLIC        = 256
+    STEP_SIGN_ENVIRONMENT   = 512
+    STEP_SIGN_PRIVATE       = 1024
+    STEP_SIGN_WAITING       = 2048
+    STEP_SIGN_SUCCESS       = 4096
+    STEP_BUILD_DIST         = 16384
+    STEP_BUILD_TOOLS        = 32768
+    STEP_BUILD_BUILD        = 65536
+    STEP_BUILD_MASTER       = 131072
+    STEP_BUILD_SUCCESS      = 262144
+
+existenzStepsSeq = [
+    existenzSteps.STEP_TEST,
+    existenzSteps.STEP_INIT,
+    existenzSteps.STEP_COMMIT,
+    existenzSteps.STEP_MANIFEST,
+    existenzSteps.STEP_VERIFY,
+    existenzSteps.STEP_SIGN_PUBLIC,
+    existenzSteps.STEP_SIGN_ENVIRONMENT,
+    existenzSteps.STEP_SIGN_PRIVATE,
+    existenzSteps.STEP_SIGN_SUCCESS,
+    existenzSteps.STEP_BUILD_DIST,
+    existenzSteps.STEP_BUILD_TOOLS,
+    existenzSteps.STEP_BUILD_BUILD,
+    existenzSteps.STEP_BUILD_MASTER,
+    existenzSteps.STEP_BUILD_SUCCESS,
+    existenzSteps.STEP_SUCCESS
+]
+
 class existenzCorePolicy(IntFlag):
     CORE_NONE               = 0
     CORE_PILLAR             = 1      # is CORE Pillar (immutable)
