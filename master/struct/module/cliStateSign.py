@@ -102,7 +102,7 @@ def execute(args, error_handler, repo_root: str):
             ("Developer",   req_dev, "SIGN_EXISTENZ_DEVELOPER_", config_paths.get("Developer")),
             ("Personal",    req_psn, "SIGN_EXISTENZ_PERSONAL_",  config_paths.get("Personal"))
         ]
-             for identity, is_required, env_prefix, local_key_path in identities_queue:
+        for identity, is_required, env_prefix, local_key_path in identities_queue:
             if not is_required:
                 continue
                 
