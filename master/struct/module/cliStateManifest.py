@@ -8,6 +8,7 @@ import json
 import engineSigningLibrary
 from engineSigningMeta import existenzLocations, existenzMeta, existenzPublicKeys
 
+
 def execute(args, error_handler, repo_root: str):
     """
     Executes progressive forensic workspace directory scanning and manifest file cataloging.
@@ -71,10 +72,11 @@ def execute(args, error_handler, repo_root: str):
         
     else: # Full global baseline overwrite ("circleall" or default fallback configuration)
         error_handler.print("Scoping Full Workspace - Baseline Overwrite.", level="info")
-        files_dist.update(engineSigningLibrary.gather_folder_files(repo_root, manifest_paths["dist"]))
-        files_tools.update(engineSigningLibrary.gather_folder_files(repo_root, manifest_paths["tools"]))
-        files_build.update(engineSigningLibrary.gather_folder_files(repo_root, manifest_paths["build"]))
-        files_master.update(engineSigningLibrary.gather_folder_files(repo_root, manifest_paths["master"]))
+        # FIXED: Synchronized argument parameter order (Relative Path first, Repo Root second)
+        files_dist.update(engineSigningLibrary.gather_folder_files(manifest_paths["dist"], repo_root))
+        files_tools.update(engineSigningLibrary.gather_folder_files(manifest_paths["tools"], repo_root))
+        files_build.update(engineSigningLibrary.gather_folder_files(manifest_paths["build"], repo_root))
+        files_master.update(engineSigningLibrary.gather_folder_files(manifest_paths["master"], repo_root))
 
     # 2. Build Unified Public Keys Map Record Dictionary 1:1 out of your tuple profiles
     public_keys_registry = {}
