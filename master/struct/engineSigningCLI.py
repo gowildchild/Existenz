@@ -44,7 +44,7 @@ error_handler = visualmixErrorHandler(custom_post="_ERR")
 def main():
     parser = argparse.ArgumentParser(description="Existenz SHA256 Manifest")
     # Added "init" into the parser stage choices profile array
-    parser.add_argument("-stage", "--stage", choices=["test","init", "sign", "check", "verify", "manifest","integrity"], required=True, help="Manifest operation state selection.")
+    parser.add_argument("-stage", "--stage", choices=["test","init", "sign", "check", "verify", "manifest","integrity","veritas"], required=True, help="Manifest operation state selection.")
     parser.add_argument("-override", "--override", choices=["update", "recreate", "retry","newer"], required=True, help="Manifest operation override.")
     parser.add_argument("-run","--run", choices=["wet","dry"], default="wet", required=True, help="DRY shows only what it does, WET writes files")
     parser.add_argument("-circle", "--circle", choices=["dist","tools","build","master","all"], default="all", help="Select circle")
@@ -73,7 +73,13 @@ def main():
         cliStateManifest.execute(args, error_handler, REPO_ROOT)        
     elif args.stage == "verify":
         from module import cliStateVerify
-        cliStateVerify.execute(args, error_handler, REPO_ROOT)        
+        cliStateVerify.execute(args, error_handler, REPO_ROOT)     
+    elif args.stage == "integrity":
+        from module import cliStateIntegrity
+        cliStateIntegrity.execute(args, error_handler, REPO_ROOT)           
+    elif args.stage == "veritas":
+        from module import cliStateVeritas
+        cliStateVeritas.execute(args, error_handler, REPO_ROOT)           
     elif args.stage == "sign":
         from module import cliStateSign
         cliStateSign.execute(args, error_handler, REPO_ROOT)        
