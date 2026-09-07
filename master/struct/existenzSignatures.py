@@ -55,10 +55,7 @@ existentialToken = {
         "cliStateSign":      "sha256 of master/struct/module/cliStateSign.py",
         "cliStateVerify":    "sha256 of master/struct/module/cliStateVerify.py",
         "cliStateBuild":     "sha256 of master/struct/module/cliStateBuild.py",
-        "jsonConfig":        "sha256 of master/existentialSigningConfig.json",
-        "jsonSignatures":    "sha256 of master/existentialSignatures.json",
-        "jsonData":          "sha256 of master/existentialSigningData.json",
-        "jsonManifest":      "sha256 of manifest.json",
-        "jsonLocalConf":     "sign_integrity_config.json"
+        "Signatures":        "sha256 of master/existentialSignatures.json",
+        "Manifest":          "sha256 of manifest.json"
     }
 }
