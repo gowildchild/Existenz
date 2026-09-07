@@ -212,6 +212,27 @@ def render_cryptographic_structural_tree_boxed(error_handler, session_hashes: di
     error_handler.print("└" + "─" * box_width + "┘", level="local")
 
 
+def calculate_file_sha256(file_path: str) -> str:
+    """
+    Computes a pristine SHA-256 hash across a target file by streaming 
+    its raw binary data payload in safe, high-performance 64 KB memory chunks.
+    """
+    if not os.path.exists(file_path):
+        return "0000000000000000000000000000000000000000"
+
+    sha256_hasher = hashlib.sha256()
+    
+    try:
+        with open(file_path, "rb") as binary_stream:
+            # Read in 64 KB chunks to handle large structures without memory exhaustion
+            for block_chunk in iter(lambda: binary_stream.read(65536), b""):
+                sha256_hasher.update(block_chunk)
+        return sha256_hasher.hexdigest()
+    except Exception:
+        # Fallback tracking stub if an asset is locked or blocked by OS access constraints
+        return "0000000000000000000000000000000000000000"
+
+
 
 def compute_integrity_chain(error_handler, rule_group_list: list, live_hashes: dict) -> dict:
     """
