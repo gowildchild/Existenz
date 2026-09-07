@@ -127,43 +127,33 @@ def execute(args, error_handler, repo_root: str):
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                 threat_lines.append(f'    "{d["threat"]}": {{"value": {v}, "expr": "{expr}"}}')
                         
-                        # 2. FIXED: Dynamically map the category labels directly using existenzCorePolicy
+                        # 2. Extract and format your verified bitmask evaluations natively
                         from engineSigningStruct import existenzCorePolicy
 
                         core_lines = []
                         for k, d in schema_data.get("existentialCore", {}).items():
                             v = d["val"]
+                            pol = d.get("pol", 0)
                             
-                            # Extract the raw policy element (string, number, or array) from the node
-                            pol_data = d.get("pol", 0)
-                            
-                            # 1. Compute the active numeric mask value natively out of your pol entry
-                            bm = 0
-                            if isinstance(pol_data, int):
-                                bm = pol_data
-                            elif isinstance(pol_data, str):
-                                # Try to look it up directly from the enum attributes
-                                bm = int(getattr(existenzCorePolicy, pol_data.strip(), 0))
-                            elif isinstance(pol_data, list):
-                                for attribute_name in pol_data:
-                                    bm |= int(getattr(existenzCorePolicy, str(attribute_name).strip(), 0))
-
-                            # 2. Calculate the clean bit-expression or hexadecimal representation
-                            if v <= 0:
-                                calculated_expr = "0"
-                            elif (v & (v - 1)) == 0:
+                            # Determine the clean bit-expression pattern based on the policy bitmask
+                            if bool(pol & existenzCorePolicy.BIT_MASK):
                                 calculated_expr = f"1 << {v.bit_length() - 1}"
                             else:
-                                calculated_expr = f"0x{v:08x}"
-                                
-                            # 3. PURE STRUCT EVALUATION: Evaluate policy attributes natively via bitwise flags from most specific to baseline
-                            if bool(bm & existenzCorePolicy.CORE_INTEGRITY):
+                                if v <= 0:
+                                    calculated_expr = "0"
+                                elif (v & (v - 1)) == 0:
+                                    calculated_expr = f"1 << {v.bit_length() - 1}"
+                                else:
+                                    calculated_expr = f"0x{v:08x}"
+
+                            # Evaluate structural types dynamically straight from your IntFlag definitions
+                            if bool(pol & existenzCorePolicy.CORE_INTEGRITY):
                                 struct_type = "SIGNATURE"
-                            elif bool(bm & existenzCorePolicy.CORE_WATCHDOG):
-                                struct_type = "SHIELD"
-                            elif bool(bm & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY)):
+                            elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY)):
                                 struct_type = "CANARY"
-                            elif bool(bm & existenzCorePolicy.CORE_RIGHTS):
+                            elif bool(pol & existenzCorePolicy.CORE_WATCHDOG):
+                                struct_type = "SHIELD"
+                            elif bool(pol & existenzCorePolicy.CORE_RIGHTS):
                                 struct_type = "RIGHTS"
                             elif bool(bm & existenzCorePolicy.CORE_PILLAR):
                                 struct_type = "PILLAR"
@@ -173,14 +163,14 @@ def execute(args, error_handler, repo_root: str):
                             clean_cmnt = d.get("comment", "").replace('"', '\\"')
                             core_lines.append(f'    "{k}": {{"value": {v}, "expr": "{calculated_expr}", "type": "{struct_type}", "comment": "{clean_cmnt}"}}')
 
-                        # 3. Pull the rest of the fields out of your master schema
+                        # 3. Pull the rest of the metadata fields out of your master schema
                         ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
                         magic_val = schema_data.get("existentialCoreCheckMagic", "")
                         
                         legal_entries = [f'    "{lk}": "{lv}"' for lk, lv in schema_data.get("existentialCoreThreatLegal", {}).items()]
                         vacuum_entries = [f'    "{vk}": "{vv}"' for vk, vv in schema_data.get("existentialCoreThreatShadowVacuum", {}).items()]
 
-                        # 4. Construct the physical JSON string file payload
+                        # 4. Construct the physical JSON string file payload in the exact target order
                         json_str_payload = "{\n"
                         json_str_payload += f'  "existentialCoreVersion": "{ver_val}",\n'
                         json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
