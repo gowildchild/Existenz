@@ -1,6 +1,6 @@
 # ==========================================================================
 # EXISTENZ CORE BUILDER (Signing Suite & Cross-Compiler)
-# Version: {'CoreVersion': 'v0.76.16', 'CoreAuthor': 'Gunther Voet', 'CoreWeb': 'github.com/gowildchild/Existenz/', 'CoreDate': '20260906'} | Github Deployment
+# Version: v0.76.16 | Github Deployment
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
