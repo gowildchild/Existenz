@@ -212,7 +212,7 @@ def execute(args, error_handler, repo_root: str):
                         ver_val_meta = schema_data.get("existentialMeta", {})
                         ver_val_json = json.dumps(ver_val_meta, indent=2)
                         ver_val_json_indent = ver_val_json.replace("\n", "\n  ")
-                        magic_val = schema_data.get("existentialCoreCheckMagic", "test")
+                        magic_val = ver_val_meta.get("coreVersion", "v0.76.08")
                         #version_str = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
                         # Build unified enum token resolver map once
                         val_to_enum_map = {}
@@ -245,7 +245,7 @@ def execute(args, error_handler, repo_root: str):
 
                         # 5. Construct the physical JSON string file payload in the exact target layout order
                         json_str_payload = "{\n"
-                        json_str_payload += f'  "Meta": "{ver_val}",\n'
+                        #json_str_payload += f'  "Meta": "{ver_val}",\n'
                         json_str_payload += f'  "existentialCoreMeta": {ver_val_json_indent},\n'
                         #json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
                         json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
@@ -261,7 +261,7 @@ def execute(args, error_handler, repo_root: str):
                         with open(target_path, "w", encoding="utf-8") as custom_out:
                             custom_out.write(json_str_payload)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
-                        error_handler.print(f"  [VERSION2] {ver_val}", level="debug")
+                        #error_handler.print(f"  [VERSION2] {ver_val}", level="debug")
                     
                     elif "SignaturesJson" in token or filename == "existentialSignatures.json":
                         from engineSigningMeta import existenzMeta
@@ -270,11 +270,12 @@ def execute(args, error_handler, repo_root: str):
                         signatures_matrix = {
                             "existentialToken": {
                                 "MAGIC": {
-                                    "TAG":                str(existenzMeta.MAGIC.get("RAW", "EX25")),
+                                    "RAW":                str(existenzMeta.MAGIC.get("RAW", "TOKEN")),
                                     "TOKEN":              str(existenzMeta.MAGIC.get("TOKEN", "IMMUTABLE")),
                                     "SIGNATURE":          str(existenzMeta.MAGIC.get("SIGNATURE", "CORE")),
-                                    "REALM":              str(existenzMeta.HEADER.get("REALM", "VAULT")),
+                                    "REALM":              str(existenzMeta.HEADER.get("REALM", "REALM_DEFAULT")),
                                     "VERSION":            str(existenzMeta.HEADER.get("VERSION", version_str)),
+                                    "SECRET":             str(existenzMeta.HEADER.get("SECRET", version_str)),                                    
                                     "AUTHOR":             str(existenzMeta.META.get("AUTHOR", "Gunther Voet"))
                                 },
                                 "master": {
