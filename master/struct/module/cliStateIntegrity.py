@@ -9,8 +9,8 @@ import json
 import hashlib
 import hmac
 import engineSigningLibrary
-from engineSigningMeta import existenzLocations, existenzMeta, existenzSignatures
-from engineSigningStruct import existenzIntegrityKeysHandler, existenzIntegrityGlue
+from engineSigningMeta import existenzLocations, existenzMeta
+from engineSigningStruct import existenzIntegrityKeysHandler, existenzIntegrityGlue, existenzSignatures
 
 def execute(args, error_handler, repo_root: str):
     """
