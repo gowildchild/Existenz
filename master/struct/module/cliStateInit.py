@@ -198,7 +198,7 @@ def execute(args, error_handler, repo_root: str):
 
                         # 4. Pull the rest of the metadata fields out of your master schema
                         ver_val = schema_data.get("existentialCoreVersion", "v0.76.16")
-                        #magic_val = schema_data.get("existentialCoreCheckMagic", "")
+                        magic_val = schema_data.get("existentialCoreCheckMagic", "")
                         
                         # Build unified enum token resolver map once
                         val_to_enum_map = {}
