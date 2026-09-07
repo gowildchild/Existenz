@@ -79,7 +79,7 @@ def execute(args, error_handler, repo_root: str):
         version_name = "module/cliStateInit.py"
         
         # Dynamic Extraction: Read version directly from the blueprint payload
-        version_str = schema_data.get("existentialCoreVersion", schema_data.get("version", "v0.76.16"))
+        version_str = schema_data.get("existentialCoreVersion", schema_data.get("version", "v0.76.15"))
 
         # Export straight to GitHub Actions environment space natively
         github_env_file = os.environ.get('GITHUB_ENV')
