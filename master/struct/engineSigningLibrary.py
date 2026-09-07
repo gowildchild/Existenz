@@ -7,23 +7,25 @@ import visualMixEngineCrypto
 import os
 import sys
 import json
+import subprocess
 import argparse
 import hashlib
 import getpass
 import time
 from enum import IntFlag
 from cryptography.hazmat.primitives.asymmetric import ed25519
-from cryptography.hazmat.primitives import serialization
+#from cryptography.hazmat.primitives import serialization
+
 from typing import Dict, Any
 
-from engineSigningMeta import existenzLocations, existenzMeta
+from engineSigningMeta import existenzLocations, existenzMeta, existenzConfig, existenzPublicKeys
 # Added missing existenzIntegrityKeyStatus registration dependency entry
 from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler, existenzIntegrityKeyStatus, existenzSteps
 from existentialSignatures import existentialToken
 
 from visualMixEngineLogging import visualmixErrorHandler
 
-INT_VERSION = "v0.76.16"
+INT_VERSION = "v0.76.15+"
 
 # Dynamic workspace root tracking relative to master/struct
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -57,6 +59,73 @@ PIPELINE_SEQUENCE = [
     existenzSteps.STEP_BUILD_SUCCESS,
     existenzSteps.STEP_SUCCESS
 ]
+
+
+def resolve_live_git_commit(repo_root: str) -> str:
+    """Dynamically extracts the raw local 64-character SHA-256 Git commit head tracking signature hash."""
+    try:
+        commit_hash = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], 
+            cwd=repo_root, 
+            stderr=subprocess.DEVNULL
+        ).decode("utf-8").strip()
+        return commit_hash
+    except Exception:
+        # Graceful fallback signature stub if executing in an uninitialized environment space
+        return "0000000000000000000000000000000000000000"
+
+
+def gather_folder_files(repo_root: str, folder_relative_path: str) -> dict:
+    """Traverses a single target folder recursively to catalog all available file hashes."""
+    file_matrix = {}
+    full_folder_path = os.path.join(repo_root, folder_relative_path)
+
+    if not os.path.exists(full_folder_path):
+        return file_matrix
+
+    for root, _, files in os.walk(full_folder_path):
+        if "__pycache__" in root or ".git" in root:
+            continue
+
+        for file in files:
+            if file == "manifest.json" or file.endswith(".pyc") or file.startswith("."):
+                continue
+            full_path = os.path.join(root, file)
+            rel_path = os.path.relpath(full_path, repo_root)
+            rel_path = rel_path.replace("\\", "/")
+            file_matrix[rel_path] = compute_sha256(full_path)
+    return file_matrix
+
+def catalog_circle_track(repo_root: str, relative_path: str, manifest_filename: str) -> dict:
+    """
+    Recursively scans an active ring folder directory and compiles its internal file 
+    structures into a clean tracking map of relative repository path keys to binary SHA-256 hashes.
+    """
+    track_matrix = {}
+    absolute_folder_path = os.path.abspath(os.path.join(repo_root, relative_path))
+    
+    if not os.path.exists(absolute_folder_path):
+        return track_matrix
+
+    for root, _, files in os.walk(absolute_folder_path):
+        if "__pycache__" in root or ".git" in root:
+            continue
+            
+        for file in files:
+            # Explicitly exclude state tracking lockfiles, configurations, or the manifest ledger itself
+            if file in [manifest_filename, "sign_integrity_config.json", ".existentialLock"] or file.endswith(".pyc") or file.startswith("."):
+                continue
+
+            full_file_path = os.path.abspath(os.path.join(root, file))
+            # Build forward-slash path keys matching standard web repository tracking rules
+            relative_repo_key = os.path.relpath(full_file_path, repo_root).replace("\\", "/")
+            
+            # Use your library's binary hasher routine natively
+            hasher_signature = engineSigningLibrary.calculate_file_sha256(full_file_path)
+            if hasher_signature:
+                track_matrix[relative_repo_key] = hasher_signature
+
+    return track_matrix
 
 def pipeline_step_current(current_stage_str: str, error_handler):
     """
@@ -260,6 +329,115 @@ def render_cryptographic_structural_tree(error_handler, session_hashes: dict, ma
     Renders your exact data-dense repository tree map natively using your 
     centralized, decoupled logging engine interface shortcuts.
     """
+    from engineSigningStruct import existenzIntegrityKeyStatus
+
+    # 1. Build rapid rule lookup directories eliminating global name collisions
+    matrix_rules_lookup = {row[0]: row for row in matrix_signed_rows if row[0] != "Magic"}
+
+    def get_layer_tags(layer_name, is_last_in_group=False):
+        chain_arrow = " | "
+        connector = "└──" if is_last_in_group else "├──"
+        v_line    = "│  "
+        
+        if layer_name not in matrix_rules_lookup:
+            return "0x00", "0", "+[HASH]+", connector, v_line, chain_arrow
+            
+        name, short_var, hash_var, sign_var, bitmask, seq = matrix_rules_lookup[layer_name]
+        
+        # FIXED: Bound strictly to your true IntFlag structural attributes to avoid mask dropping
+        requires_signing = bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT or 
+                                bitmask & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM or 
+                                bitmask & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER or
+                                bitmask & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
+                                
+        is_signed = len(sign_var) >= 64 and not sign_var.startswith(name)
+        
+        # Check if the asset is chained natively via the status flags
+        if bool(bitmask > 1 and (bitmask & existenzIntegrityKeyStatus.KEY_IS_PUBLIC)):
+            chain_arrow = " ► "
+            connector = "╚══" if is_last_in_group else "╠══"
+            v_line    = "║  "
+
+        tags = []
+        if is_signed:
+            if bitmask > 1 and (bitmask & existenzIntegrityKeyStatus.KEY_IS_PUBLIC): tags.append("+[CHN]")
+            if bitmask & existenzIntegrityKeyStatus.KEY_IS_VERIFIED:   tags.append("+[MAGIC]")
+            if bitmask & existenzIntegrityKeyStatus.KEY_IS_PRIVATE:    tags.append("+[SHA256]")
+            if bitmask & 262144:                                       tags.append("+[IMMUTABLE]") # Core Immutable boundary check
+        else:
+            if requires_signing:
+                pfm_tag = "+PFM" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM) else ""
+                dev_tag = "+DEV" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER) else ""
+                psn_tag = "+PSN" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL) else ""
+                tags.append(f"+PK:{pfm_tag}{dev_tag}{psn_tag}")
+            else:
+                pfm_tag = "-PFM" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM) else ""
+                dev_tag = "-DEV" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER) else ""
+                psn_tag = "-PSN" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL) else ""
+                tags.append(f"-PK:{pfm_tag}{dev_tag}{psn_tag}")
+
+        if not is_signed and requires_signing:
+            return f"{hex(bitmask)}", str(seq), f"\033[1;31m[ ! NOT SIGNED ! ] {' '.join(tags)}\033[0m", "├──", "│ ", " └► " if is_last_in_group else "├──"
+            
+        return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line, chain_arrow
+
+    # 2. Extract specific session tokens safely avoiding lookup dropouts
+    magic_token = session_hashes.get("existentialCoreMagicHash", "UNKNOWN")
+    check_token = session_hashes.get("existentialCoreCheckHash", "UNSIGNED")
+    core_ver    = "v0.76.16"
+
+    # 3. Stream out your vibrant structural mapping grid lines through error_handler.print
+    error_handler.print(f"  [MAGIC] existentialCoreCheckMagic        : {magic_token}", level="local")
+    error_handler.print(f"  [CHECK] existentialCoreCheckSignature    : {check_token}", level="local")
+    error_handler.print("", level="local")
+    
+    # Combined line construction matching horizontal tree padding specs
+    error_handler.print(f"──┬ [ Existenz {core_ver}   ] " + "─" * 103, level="local")
+
+    bm_c, sq_c, tg_c, _, _, _ = get_layer_tags("Core")
+    bm_cb, sq_cb, tg_cb, _, _, _ = get_layer_tags("Cores")        
+    bm_cc, sq_cc, tg_cc, _, _, _ = get_layer_tags("CoreCheck")
+    bm_ch, sq_ch, tg_ch, _, _, _ = get_layer_tags("CoreChain")        
+    bm_ct, sq_ct, tg_ct, conn_ct, vl_ct, ch_ct = get_layer_tags("CoreThreatStruct", is_last_in_group=False)
+    bm_ctl, sq_ctl, tg_ctl, conn_ctl, vl_ctl, ch_ctl = get_layer_tags("CoreThreatLegal", is_last_in_group=False)
+    bm_ctv, sq_ctv, tg_ctv, conn_ctv, vl_ctv, ch_ctv = get_layer_tags("CoreThreatShadowVacuum", is_last_in_group=False)
+    bm_cts, sq_cts, tg_cts, conn_cts, vl_cts, ch_cts = get_layer_tags("CoreThreat", is_last_in_group=True)
+
+    error_handler.print("  │ ", level="local")
+    error_handler.print(f"  ├── [SQ {sq_c.zfill(2)} | {bm_c.ljust(6)}] existentialCore.py          ─┬─► Sign: 0x{session_hashes.get('core_sign', '00000000')} | {tg_c}", level="local")
+    error_handler.print(f"  │                                              └─► Signature: \"{session_hashes.get('existentialCoreHash', '')}\"", level="local")
+    
+    error_handler.print(f"  ├── [SQ {sq_cb.zfill(2)} | {bm_cb.ljust(6)}] existentialCores.json       ─┬─► Sign: 0x{session_hashes.get('cores_sign', '00000000')} | {tg_cb}", level="local")
+    error_handler.print(f"  │                                              └─► Signature: \"{session_hashes.get('existentialCoresHash', '')}\"", level="local")        
+    
+    error_handler.print(f"  ├── [SQ {sq_cc.zfill(2)} | {bm_cc.ljust(6)}] existentialCoreCheck.py     ─┬─► Sign: 0x{session_hashes.get('check_sign', '00000000')} | {tg_cc}", level="local")
+    error_handler.print(f"  │                                              └─► Signature: \"{session_hashes.get('existentialCoreCheckHash', '')}\"", level="local")
+    
+    error_handler.print("  │  ", level="local")            
+    error_handler.print("  ├──► class existentialCoreThreatSignatures ────────────  ── ─ ── ─────  ─  ─ ─   ─ ─ ─  ─►", level="local")
+    
+    error_handler.print(f"  │    {conn_ct} [SQ {sq_ct.zfill(2)}{ch_ct}{bm_ct.ljust(6)}] existentialCoreThreat    ─┬──► Sign: 0x{session_hashes.get('threat_struct_sign', '00000000')} {ch_ct} {tg_ct}", level="local")
+    error_handler.print(f"  │    {vl_ct}                                         └──► Signature: \"{session_hashes.get('existentialCoreThreatStructHash', '')}\"", level="local")
+    
+    error_handler.print(f"  │    {conn_ctl} [SQ {sq_ctl.zfill(2)}{ch_ctl}{bm_ctl.ljust(6)}] CoreThreatLegal          ─┬──► Sign: 0x{session_hashes.get('threat_legal_sign', '00000000')} {ch_ctl} {tg_ctl}", level="local")
+    error_handler.print(f"  │    {vl_ctl}                                         └──► Signature: \"{session_hashes.get('existentialCoreThreatLegalHash', '')}\"", level="local")
+    
+    error_handler.print(f"  │    {conn_ctv} [SQ {sq_ctv.zfill(2)}{ch_ctv}{bm_ctv.ljust(6)}] CoreThreatShadowVacuum    ─┬─► Sign: 0x{session_hashes.get('threat_vacuum_sign', '00000000')} {ch_ctv} {tg_ctv}", level="local")
+    error_handler.print(f"  │    {vl_ctv}                                          └─► Signature: \"{session_hashes.get('existentialCoreThreatShadowVacuumHash', '')}\"", level="local")        
+    
+    error_handler.print(f"  │    {conn_cts} [SQ {sq_cts.zfill(2)}{ch_cts}{bm_cts.ljust(6)}] existentialCoreThreat.py  ─┬─► Sign: 0x{session_hashes.get('threat_sign', '00000000')} {ch_cts} {tg_cts}", level="local")
+    error_handler.print(f"  │                                                 └─► Signature: \"{session_hashes.get('existentialCoreThreatHash', '')}\"", level="local")
+    
+    error_handler.print("─ │ ─" + "─" * 122, level="local")
+    error_handler.print(f"  └── [SQ {sq_ch.zfill(2)} : {bm_ch.ljust(6)}] existen...CoreSignatures.py   ──┬─► Sign: 0x{session_hashes.get('chain_sign', '00000000')} | {tg_ch}", level="local")
+    error_handler.print(f"                                                    └─► Signature: \"{session_hashes.get('existentialCoreChainHash', '')}\"", level="local")
+    error_handler.print("─" * 127, level="local")
+
+def render_cryptographic_structural_tree_old(error_handler, session_hashes: dict, matrix_signed_rows: list):
+    """
+    Renders your exact data-dense repository tree map natively using your 
+    centralized, decoupled logging engine interface shortcuts.
+    """
     # 1. Build rapid rule lookup directories eliminating global name collisions
     matrix_rules_lookup = {row[0]: row for row in matrix_signed_rows if row[0] != "Magic"}
 
@@ -420,7 +598,7 @@ def execute_lookback_chain_validation(error_handler, live_session_hashes: dict, 
         if requires_signing:
             valid_hex_format = bool(re.match(r"^[0-9a-fA-F:]+$", sign_var)) and len(sign_var) >= 32
             if not valid_hex_format:
-                error_handler.print(f"Bitfield cryptographic validation failure: Layer '{name}' failed bitmask check {hex(bitmask)}", level="error", exit_code=67)
+                error_handler.print(f"Bitfield cryptographic cryptographic validation failure: Layer '{name}' failed bitmask check {hex(bitmask)}", level="error", exit_code=67)
 
     error_handler.print("Core cryptographic structural validations verified clean.", level="notice")
 
