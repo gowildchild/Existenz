@@ -95,6 +95,124 @@ def render_better_box(error_handler, raw_lines_list: list, title_str: str = "SYS
         
     error_handler.print("└" + "─" * (box_width + 2) + "┘", level="local")
 
+def render_cryptographic_structural_tree_boxed(error_handler, session_hashes: dict, matrix_signed_rows: list):
+    """
+    Renders a pristine, fully dynamic visual box layout mapping your cryptographic
+    verification layers and session hashes, guaranteed to never wrap or break.
+    """
+    from engineSigningStruct import existenzIntegrityKeyStatus
+
+    # 1. Build rapid rule lookup directories eliminating global name collisions
+    matrix_rules_lookup = {row[0]: row for row in matrix_signed_rows if row[0] != "Magic"}
+
+    def get_layer_tags(layer_name, is_last_in_group=False):
+        chain_arrow = " | "
+        connector = "└──" if is_last_in_group else "├──"
+        v_line    = "│  "
+        
+        if layer_name not in matrix_rules_lookup:
+            return "0x00", "0", "+[HASH]+", connector, v_line, chain_arrow
+            
+        name, short_var, hash_var, sign_var, bitmask, seq = matrix_rules_lookup[layer_name]
+        
+        requires_signing = bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT or 
+                                bitmask & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM or 
+                                bitmask & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER or
+                                bitmask & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL)
+                                
+        is_signed = len(sign_var) >= 64 and not sign_var.startswith(name)
+        
+        if bool(bitmask > 1 and (bitmask & existenzIntegrityKeyStatus.KEY_IS_PUBLIC)):
+            chain_arrow = " ► "
+            connector = "╚══" if is_last_in_group else "╠══"
+            v_line    = "║  "
+
+        tags = []
+        if is_signed:
+            if bitmask > 1 and (bitmask & existenzIntegrityKeyStatus.KEY_IS_PUBLIC): tags.append("+[CHN]")
+            if bitmask & existenzIntegrityKeyStatus.KEY_IS_VERIFIED:   tags.append("+[MAGIC]")
+            if bitmask & existenzIntegrityKeyStatus.KEY_IS_PRIVATE:    tags.append("+[SHA256]")
+            if bitmask & 262144:                                       tags.append("+[IMMUTABLE]")
+        else:
+            if requires_signing:
+                pfm_tag = "+PFM" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM) else ""
+                dev_tag = "+DEV" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER) else ""
+                psn_tag = "+PSN" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL) else ""
+                tags.append(f"+PK:{pfm_tag}{dev_tag}{psn_tag}")
+            else:
+                pfm_tag = "-PFM" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM) else ""
+                dev_tag = "-DEV" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER) else ""
+                psn_tag = "-PSN" if bool(bitmask & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL) else ""
+                tags.append(f"-PK:{pfm_tag}{dev_tag}{psn_tag}")
+
+        if not is_signed and requires_signing:
+            return f"{hex(bitmask)}", str(seq), f"\033[1;31m[ ! NOT SIGNED ! ] {' '.join(tags)}\033[0m", "├──", "│ ", " └► " if is_last_in_group else "├──"
+            
+        return f"{hex(bitmask)}", str(seq), " ".join(tags), connector, v_line, chain_arrow
+
+    magic_token = session_hashes.get("existentialCoreMagicHash", "UNKNOWN")
+    check_token = session_hashes.get("existentialCoreCheckHash", "UNSIGNED")
+    core_ver    = "v0.76.16"
+
+    # Ingest layout parameter configurations dynamically
+    bm_c, sq_c, tg_c, _, _, _ = get_layer_tags("Core")
+    bm_cb, sq_cb, tg_cb, _, _, _ = get_layer_tags("Cores")        
+    bm_cc, sq_cc, tg_cc, _, _, _ = get_layer_tags("CoreCheck")
+    bm_ch, sq_ch, tg_ch, _, _, _ = get_layer_tags("CoreChain")        
+    bm_ct, sq_ct, tg_ct, conn_ct, vl_ct, ch_ct = get_layer_tags("CoreThreatStruct", is_last_in_group=False)
+    bm_ctl, sq_ctl, tg_ctl, conn_ctl, vl_ctl, ch_ctl = get_layer_tags("CoreThreatLegal", is_last_in_group=False)
+    bm_ctv, sq_ctv, tg_ctv, conn_ctv, vl_ctv, ch_ctv = get_layer_tags("CoreThreatShadowVacuum", is_last_in_group=False)
+    bm_cts, sq_cts, tg_cts, conn_cts, vl_cts, ch_cts = get_layer_tags("CoreThreat", is_last_in_group=True)
+
+    # 2. Gather all lines dynamically to determine the absolute widest string element
+    raw_lines = [
+        f" [MAGIC] existentialCoreCheckMagic        : {magic_token}",
+        f" [CHECK] existentialCoreCheckSignature    : {check_token}",
+        "",
+        f" ──┬ [ Existenz {core_ver}   ] ──────────────────────────",
+        "   │ ",
+        f"   ├── [SQ {sq_c.zfill(2)} | {bm_c.ljust(6)}] existentialCore.py          ─┬─► Sign: 0x{session_hashes.get('core_sign', '00000000')} | {tg_c}",
+        f"   │                                              └─► Signature: \"{session_hashes.get('existentialCoreHash', '')}\"",
+        f"   ├── [SQ {sq_cb.zfill(2)} | {bm_cb.ljust(6)}] existentialCores.json       ─┬─► Sign: 0x{session_hashes.get('cores_sign', '00000000')} | {tg_cb}",
+        f"   │                                              └─► Signature: \"{session_hashes.get('existentialCoresHash', '')}\"",
+        f"   ├── [SQ {sq_cc.zfill(2)} | {bm_cc.ljust(6)}] existentialCoreCheck.py     ─┬─► Sign: 0x{session_hashes.get('check_sign', '00000000')} | {tg_cc}",
+        f"   │                                              └─► Signature: \"{session_hashes.get('existentialCoreCheckHash', '')}\"",
+        "   │  ",
+        "   ├──► class existentialCoreThreatSignatures ────────────  ── ─ ── ─────  ─  ─ ─   ─ ─ ─  ─►",
+        f"   │    {conn_ct} [SQ {sq_ct.zfill(2)}{ch_ct}{bm_ct.ljust(6)}] existentialCoreThreat    ─┬──► Sign: 0x{session_hashes.get('threat_struct_sign', '00000000')} {ch_ct} {tg_ct}",
+        f"   │    {vl_ct}                                         └──► Signature: \"{session_hashes.get('existentialCoreThreatStructHash', '')}\"",
+        f"   │    {conn_ctl} [SQ {sq_ctl.zfill(2)}{ch_ctl}{bm_ctl.ljust(6)}] CoreThreatLegal          ─┬──► Sign: 0x{session_hashes.get('threat_legal_sign', '00000000')} {ch_ctl} {tg_ctl}",
+        f"   │    {vl_ct}                                         └──► Signature: \"{session_hashes.get('existentialCoreThreatLegalHash', '')}\"",
+        f"   │    {conn_ctv} [SQ {sq_ctv.zfill(2)}{ch_ctv}{bm_ctv.ljust(6)}] CoreThreatShadowVacuum    ─┬─► Sign: 0x{session_hashes.get('threat_vacuum_sign', '00000000')} {ch_ctv} {tg_ctv}",
+        f"   │    {vl_ctv}                                          └─► Signature: \"{session_hashes.get('existentialCoreThreatShadowVacuumHash', '')}\"",
+        f"   │    {conn_cts} [SQ {sq_cts.zfill(2)}{ch_cts}{bm_cts.ljust(6)}] existentialCoreThreat.py  ─┬─► Sign: 0x{session_hashes.get('threat_sign', '00000000')} {ch_cts} {tg_cts}",
+        f"   │                                                 └─► Signature: \"{session_hashes.get('existentialCoreThreatHash', '')}\"",
+        " ─ │ ───────────────────────────────────────────────────",
+        f"   └── [SQ {sq_ch.zfill(2)} : {bm_ch.ljust(6)}] existen...CoreSignatures.py   ──┬─► Sign: 0x{session_hashes.get('chain_sign', '00000000')} | {tg_ch}",
+        f"                                                    └─► Signature: \"{session_hashes.get('existentialCoreChainHash', '')}\""
+    ]
+
+    # Helper function to remove ANSI escape color codes when calculating terminal character lengths
+    def clean_len(s):
+        import re
+        return len(re.sub(r'\033\[[0-9;]*m', '', s))
+
+    # Calculate precise horizontal box padding boundaries
+    max_content_width = max(clean_len(line) for line in raw_lines)
+    box_width = max_content_width + 4
+
+    # 3. PAINT THE PERFECT SEAMLESS ENCLOSURE BOX
+    error_handler.print("┌" + "─" * box_width + "┐", level="local")
+    
+    for line in raw_lines:
+        visible_length = clean_len(line)
+        trailing_spaces = " " * (box_width - visible_length - 2)
+        error_handler.print(f"│ {line}{trailing_spaces} │", level="local")
+        
+    error_handler.print("└" + "─" * box_width + "┘", level="local")
+
+
+
 def compute_integrity_chain(error_handler, rule_group_list: list, live_hashes: dict) -> dict:
     """
     Natively parses structural sequences, aggregates look-back history blocks, 
