@@ -233,7 +233,7 @@ def execute(args, error_handler, repo_root: str):
                         # 5. Construct the physical JSON string file payload in the exact target layout order
                         json_str_payload = "{\n"
                         json_str_payload += f'  "existentialCoreVersion": "{ver_val}",\n'
-                        json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
+                        #json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
                         json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
                         json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"  
                         json_str_payload += '  "existentialCoreBasic": [\n' + ",\n".join(calculated_basic) + "\n  ],\n" 
@@ -247,7 +247,7 @@ def execute(args, error_handler, repo_root: str):
                             custom_out.write(json_str_payload)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                     
-                    elif "jsonSignatures" in token or filename == "existentialSignatures.json":
+                    elif "SignaturesJson" in token or filename == "existentialSignatures.json":
                         from engineSigningMeta import existenzMeta
 
                         # Construct your physical structural layout payload matching your exact tracking realms
@@ -384,7 +384,7 @@ def execute(args, error_handler, repo_root: str):
                     except Exception as e:
                         error_handler.print(f"Failed to compile existentialCoreCheck.py: {e}", level="error", exit_code=1)
 
-                elif token == "Signatures":
+                elif token == "SignaturesPy":
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
