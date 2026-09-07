@@ -103,8 +103,7 @@ def execute(args, error_handler, repo_root: str):
     }
 
     # FIXED: Run bitmask-driven verification check to warn on signature drifts
-    from engineSigningMeta import existenzIntegrityGlue
-    from engineSigningStruct import existenzIntegrityKeyStatus
+    from engineSigningStruct import existenzIntegrityGlue, existenzIntegrityKeyStatus
 
     circle_to_glue_map = {
         "dist":   "CircleDist",
