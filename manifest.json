@@ -1,5 +1,5 @@
 {
-  "commit": "9f1afd49d9aecfff69678b7ab8ab9868ff93a7ad",
+  "commit": "d13f2a41c072a8613a3328e294bc99ab9b2370e7",
   "existentialCoreVersion": "v0.76.17",
   "files.build": {
     "master/build-tools/deprecated/cliStateBuild.py": "0d053d0cb8e705f9f1797f51745bcd55459a22300b14680f28b497eb1201398c",
@@ -78,6 +78,7 @@
     "dist/rust/single/existentialCore.rs": "d4971b2a7d566dae09fba83d0c6e444015e0b4d7cb2a36d600c35c6c39b8433f",
     "dist/rust/single/existentialCoreSignatures.rs": "241e96bf643a74d61f93dc1a2a240d1078a4c5d92c7f990577357677f07d8305",
     "dist/rust/single/existentialCoreThreat.rs": "bdbd0a7d377b835b2f6bf40416a79ab63f97c3a222286ad345a2d0339700fef4",
+    "dist/tools/js/remote_pull.js": "c296d02db56e4dedb889e1e78d8d110476a36ba92d2a3f7787b7ad446bf3c757",
     "dist/tools/python/remote_pull.py": "9d8fa2b26674b3e054053954fc8fe278aa1edf78ede7c81761f73ed18a21674f"
   },
   "files.master": {
@@ -104,6 +105,7 @@
     "master/struct/visualMixEngineValidators.py": "039295a3ef9bd26e7146f411bfae3cf32f0370f2590bb409c104185eb2debd12"
   },
   "files.tools": {
+    "dist/tools/js/remote_pull.js": "c296d02db56e4dedb889e1e78d8d110476a36ba92d2a3f7787b7ad446bf3c757",
     "dist/tools/python/remote_pull.py": "9d8fa2b26674b3e054053954fc8fe278aa1edf78ede7c81761f73ed18a21674f"
   },
   "public_keys": {
@@ -120,9 +122,9 @@
   },
   "signatures.circle": {
     "hash.build": "da8b3d844fe2a94b00c533ba41f9ceeae89132479765a205d6c81a3e4b75d358",
-    "hash.dist": "7ded965f4ac7181ad0e24af353c662b8d3495d6290e050d180ac5918ae7b331a",
+    "hash.dist": "f2b6de44450e8fa4694087b1bbe028fcb85cdad3e0efdbf831bd7f424571c6ab",
     "hash.master": "ef285cb1b3482ca2cdbf86317817f58dda2146a5944c5703c8dd86f098a1cdc0",
-    "hash.tools": "f6332ad8a0b4e9196d9cce9e9fc0cdfd12997ffe2eca60572aa18f3745b04ee3",
+    "hash.tools": "925c5a0230ea9aad4ef4997f40dc883b60fb0a9c561fd6621fbffb2b34cd4171",
     "sign.build": "f66510ad6b571c5ed54ba091c9dabacad17620887f269ba00f1328e444e299048812aa8c7be0fb5cd5f982b7e32ba1d339a51e305cf0bfc31d2b1052b5846b03",
     "sign.dist": "5899b2512b9087e2c48aba1df73801f2ceb1cedf93422660e70565c054e0748aaf7e7ceb2f2c3a9758ab20527b0033c9052dce4e3994198b74f02c2acb82a800",
     "sign.master": "0a456339243ac42f06565cc53a7039e25dd0781e2e3972099289214bc19f1adbb84d53fed29b6b6bd80f9544159892f296715074049e6786c21e736c4dd03009",
