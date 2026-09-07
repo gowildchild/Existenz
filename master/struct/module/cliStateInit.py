@@ -161,7 +161,7 @@ def execute(args, error_handler, repo_root: str):
 
                             # Determine the clean bit-expression pattern based on the policy bitmask
                             calculated_basic = []
-                            if bool(pol & existenzCorePolicy.CORE_IS_IMMUTABLE):
+                            if bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
                                 calculated_basic.append(k)
 
                                 
