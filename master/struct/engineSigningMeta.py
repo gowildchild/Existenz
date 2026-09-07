@@ -5,7 +5,7 @@
 # ==========================================================================
 _HEADER = {
     "REALM":   b"Existenz",
-    "VERSION": b"v0.76.16",
+    "VERSION": b"v0.76.17",
     "SECRET":  b"EX25IMMUT32CORE7617"
 }
 
@@ -39,7 +39,6 @@ existenzLocations = {
         "Check":      "master/existentialCoreCheck.py",
         "Schema":     "master/struct/existentialCoreSchema.json",
         "Cores":      "master/existentialCores.json",
-        "CoresChain": "master/existentialCoresChain.json",
         "Threat":     "master/existentialCoreThreat.py",
         "Signatures": "master/existentialSignatures.py"
     },
