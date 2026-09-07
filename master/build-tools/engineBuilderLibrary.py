@@ -10,6 +10,7 @@ import shutil
 
 import os
 import json
+import importlib.util
 import inspect
 from enum import IntFlag
 
@@ -50,7 +51,93 @@ class existentialBuildLanguage(IntFlag):
     BUILD_POWERSHELL        = 32768
     BUILD_TYPESCRIPT        = 65536
 
-def execute_universal_builder_matrix(repo_root: str, error_handler, active_langs_mask: int, blueprint_path: str):
+def execute_universal_builder_matrix(repo_root: str, error_handler, bitmask_arg: int, blueprint_path: str):
+    """
+    Ingests the master blueprint JSON data matrix and processes active languages 
+    sequentially by dynamically invoking isolated code-generation plugins.
+    """
+    dist_dir = os.path.abspath(os.path.join(repo_root, "dist"))
+    
+    if not os.path.exists(blueprint_path):
+        error_handler.print(f"Build aborted: Blueprint source file tracking asset missing: {blueprint_path}", level="error", exit_code=35)
+
+    # 1. Ingest your data map straight out of your master blueprint JSON file
+    with open(blueprint_path, "r", encoding="utf-8") as bf:
+        blueprint_data = json.load(bf)
+
+    # Extract dynamic environment variables and version meta data to pass down to modules
+    version_str = blueprint_data.get("existentialMeta", {}).get("CoreVersion", "v0.76.16")
+
+    # 2. Define the complete decoupling route map matching your language bitmasks
+    language_routing_blueprint = [
+        (existentialBuildLanguage.BUILD_JSON,       "json",       "#"),
+        (existentialBuildLanguage.BUILD_XML,        "xml",        "<!--"),
+        (existentialBuildLanguage.BUILD_CSV,        "csv",        "#"),
+        (existentialBuildLanguage.BUILD_MD,         "md",         "<!--"),
+        (existentialBuildLanguage.BUILD_TXT,        "txt",        "#"),
+        (existentialBuildLanguage.BUILD_YAML,       "yaml",       "#"),
+        (existentialBuildLanguage.BUILD_HTML_JS,    "html_js",    "//"),
+        (existentialBuildLanguage.BUILD_BASH,       "bash",       "#"),
+        (existentialBuildLanguage.BUILD_PYTHON,     "python",     "#"),
+        (existentialBuildLanguage.BUILD_PERL,       "perl",       "#"),
+        (existentialBuildLanguage.BUILD_CPP,        "cpp",        "//"),
+        (existentialBuildLanguage.BUILD_ESPHOME,    "esphome",    "#"),
+        (existentialBuildLanguage.BUILD_PHP,        "php",        "//"),
+        (existentialBuildLanguage.BUILD_RUST,       "rust",       "//"),
+        (existentialBuildLanguage.BUILD_TYPESCRIPT, "typescript", "//")
+    ]
+
+    # 3. RUN PROGRAMMATIC TRANSFORMS OVER ENABLED BITMASK ENTRIES
+    for lang_bit, plugin_name, comment_char in language_routing_blueprint:
+        # Check if this language bit is flagged active inside your -bitmask argument parameter
+        if not (bitmask_arg & lang_bit):
+            continue
+
+        error_handler.print(f" [*] Spanning Build Target Phase for Language Track: [{plugin_name.upper()}]", level="info")
+        
+        # Look up plugin module file inside your builder modules folder path location
+        plugin_file_path = os.path.abspath(os.path.join(repo_root, f"master/build-tools/module/builder/{plugin_name}.py"))
+        
+        if not os.path.exists(plugin_file_path):
+            error_handler.print(f"  [ ] Skipping compiler track [{plugin_name.upper()}]: Plugin script missing on disk.", level="warning")
+            continue
+
+        try:
+            # Dynamically look up and load the plugin module directly into memory context
+            spec = importlib.util.spec_from_file_location(f"builder_{plugin_name}", plugin_file_path)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            
+            # Setup structured output root paths: /dist/<languagename>/
+            lang_root_dir = os.path.join(dist_dir, plugin_name)
+            lang_sub_dir  = os.path.join(lang_root_dir, "structures")
+            
+            os.makedirs(lang_root_dir, exist_ok=True)
+            os.makedirs(lang_sub_dir, exist_ok=True)
+
+            # Construct your standardized type-safe layout header file block string
+            generated_header = f"{comment_char} " + "=" * 74 + f"\n{comment_char} EXISTENZ Auto-Generated Release Asset [{version_str}]\n{comment_char} " + "=" * 74 + "\n\n"
+
+            # Trigger Phase 1: Output compilation core files cleanly into root folder
+            # (existentialCores, existentialCore, existentialSignatures, existentialCoreThreat)
+            if hasattr(mod, "compile_root_structures"):
+                mod.compile_root_structures(lang_root_dir, blueprint_data, generated_header, error_handler)
+                
+            # Trigger Phase 2: Output individual structures in loose form inside the sub-folder
+            if hasattr(mod, "compile_loose_structures"):
+                mod.compile_loose_structures(lang_sub_dir, blueprint_data, generated_header, error_handler)
+                
+            # Trigger Phase 3: Output two alternative code approaches to fetch existentialCores.json
+            if hasattr(mod, "inject_fetch_logic"):
+                mod.inject_fetch_logic(lang_root_dir, generated_header, error_handler)
+
+            error_handler.print(f"  [+] Finished compiling target folder paths: dist/{plugin_name}/", level="notice")
+
+        except Exception as plugin_fault:
+            error_handler.print(f"Critical execution error inside language plugin compiler [{plugin_name}]: {plugin_fault}", level="error")
+            continue
+
+def execute_universal_builder_matrix_v1(repo_root: str, error_handler, active_langs_mask: int, blueprint_path: str):
     """
     Ingests the master blueprint JSON data matrix and processes active languages 
     sequentially by dynamically invoking isolated code-generation plugins.
