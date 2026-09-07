@@ -7,8 +7,7 @@ import os
 import json
 import getpass
 import engineSigningLibrary
-from engineSigningMeta import existenzLocations, existenzConfig, existenzIntegrityGlue
-from engineSigningStruct import existenzIntegrityKeyStatus
+from engineSigningMeta import existenzLocations, existenzConfig, existenzIntegrityGlue, existenzIntegrityKeyStatus
 
 def execute(args, error_handler, repo_root: str):
     """
