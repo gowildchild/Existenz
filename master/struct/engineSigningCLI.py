@@ -22,7 +22,13 @@ INT_VERSION = "v0.76.16"
 
 # Dynamic workspace root tracking relative to master/struct
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+STRUCT_DIR = os.path.dirname(os.path.abspath(__file__)) # master/struct/
+MODULE_DIR = os.path.join(STRUCT_DIR, "module")         # master/struct/module/
 
+for directory in [REPO_ROOT, STRUCT_DIR, MODULE_DIR]:
+    if directory not in sys.path:
+        sys.path.insert(0, directory)
+        
 DEFAULT_CONFIG_PATH = os.path.join(REPO_ROOT, "sign_integrity_config.json")
 MANIFEST_OUTPUT = os.path.join(REPO_ROOT, "manifest.json")
 REPO_GITHUB = os.environ.get('GITHUB_ACTIONS') == 'true'
