@@ -160,46 +160,24 @@ def pipeline_step_current(current_stage_str: str, error_handler):
     logs the current active state token, and exports it to the environment.
     """
     normalized_input = str(current_stage_str).strip().upper()
-    target_attribute_name = f"STEP_{normalized_input}"
     
-    current_step_flag = getattr(existenzSteps, target_attribute_name, existenzSteps.STEP_NONE)
-    current_step_name = current_step_flag.name.replace("STEP_", "") if current_step_flag != existenzSteps.STEP_NONE else "UNKNOWN"
-    
-    # Render uniform block message tracking execution entry point
-    error_handler.print(f"  [➔] Pipeline Stage Active: {current_step_name:<16} [Weight: {int(current_step_flag)}]", level="notice")
-    
-    github_env_file = os.environ.get('GITHUB_ENV')
-    if github_env_file:
-        try:
-            with open(github_env_file, "a", encoding="utf-8") as gef:
-                gef.write(f"CURRENT_PIPELINE_STAGE={current_step_name.lower()}\n")
-        except Exception as env_err:
-            error_handler.print(f"Non-fatal error logging current state token: {env_err}", level="debug")
-
-def pipeline_step_next_v1(current_stage_str: str, error_handler) -> str:
-    """
-    Evaluates the active execution step and updates GITHUB_ENV dynamically.
-    """
-    stage_lower = str(current_stage_str).strip().lower()
-    
-    # Keep the stage name completely clean and simple as requested
-    if stage_lower == "manifest":
-        next_step_name = "sign"
-    elif stage_lower == "sign":
-        next_step_name = "verify"
+    # FIXED: Map unified staging terms directly to your exact IntFlag tokens
+    if normalized_input == "SIGN":
+        target_attribute_name = "STEP_SIGN_PUBLIC"
+    elif normalized_input == "VERIFY":
+        target_attribute_name = "STEP_VERIFY"
+    elif normalized_input == "MANIFEST":
+        target_attribute_name = "STEP_MANIFEST"
     else:
-        next_step_name = "success"
-
-    github_env_file = os.environ.get('GITHUB_ENV')
-    if github_env_file:
-        try:
-            with open(github_env_file, "a", encoding="utf-8") as gef:
-                gef.write(f"NEXT_PIPELINE_STAGE={next_step_name}\n")
-            error_handler.print(f"  [+] Pipeline Link: Progressive routing unblocked -> NEXT_PIPELINE_STAGE={next_step_name}", level="notice")
-        except Exception as env_err:
-            error_handler.print(f"Non-fatal error logging workspace environment variable: {env_err}", level="debug")
-            
-    return next_step_name
+        target_attribute_name = f"STEP_{normalized_input}"
+    
+    if hasattr(existenzSteps, target_attribute_name):
+        current_step_flag = getattr(existenzSteps, target_attribute_name)
+    else:
+        current_step_flag = existenzSteps.STEP_NONE
+        
+    current_step_name = current_step_flag.name.replace("STEP_", "") if current_step_flag != existenzSteps.STEP_NONE else "UNKNOWN"
+    error_handler.print(f"  [➔] Pipeline Stage Active: {current_step_name:<16} [Weight: {int(current_step_flag)}]", level="notice")
 
 def pipeline_step_next(current_stage_str: str, error_handler) -> str:
     """
