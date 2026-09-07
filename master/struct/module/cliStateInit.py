@@ -263,7 +263,7 @@ def execute(args, error_handler, repo_root: str):
 
                         # Construct your physical structural layout payload matching your exact tracking realms
                         signatures_matrix = {
-                            "existentialCoreVersion": version_str,
+                            "existentialMeta": version_str,
                             "existentialToken": {
                                 "MAGIC": {
                                     "TAG":                str(existenzMeta.MAGIC.get("RAW", "EX25")),
@@ -399,7 +399,7 @@ def execute(args, error_handler, repo_root: str):
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
-                            f.write(f"existentialCoreVersion = \"{version_str}\"\n")
+                            f.write(f"existentialNeta = \"{version_str}\"\n")
                             f.write("existentialCoreCheckMagic = b\"EX25IMMUT32CORE7617\"\n\n")
                             f.write("class existentialCoreSignatures:\n    existentialCoreSigned = (\n")
                             f.write("        (\"Magic\", \"magic\", \"existentialCoreMagicHash\", \"\", 2, 0),\n")
