@@ -27,8 +27,6 @@ jobs:
     # Step 3: Determine Operational Mode from the Lockfile
     - name: Existenz - Installing Dependencies
       run: pip install pyyaml cryptography    
-    - name: Existenz - Initializing Self-Healing Check
-      id: mode_check
       run: |
         # 1. Execute your compiled pre-flight dependency audit and self-healing loop
         python master/struct/engineSigningCLI.py -stage init -override update -run wet -circle master
@@ -58,7 +56,6 @@ jobs:
                 master/existentialSigningConfig.json \
                 master/existentialSignatures.json \
                 master/existentialSigningData.json \
-                sign_integrity_config.json \
                 master/struct/module/cliStateManifest.py \
                 master/struct/module/cliStateSign.py \
                 master/struct/module/cliStateVerify.py \
@@ -68,6 +65,7 @@ jobs:
         if ! git diff-index --quiet HEAD; then
           echo " [*] Pipeline Engine: Missing initialization assets detected and self-healed. Committing modifications..."
           git commit -m "sys(core): automatic initialization and workspace bootstrapping [v0.76.16]"
+          git pull --rebase origin main || true
           git push origin main
         else
           echo " [*] Pipeline Engine: Workspace is fully initialized and aligned. No commit sequence required."
