@@ -194,11 +194,13 @@ def execute(args, error_handler, repo_root: str):
                         #legal_entries = [f'    "{lk}": "{lv}"' for lk, lv in schema_data.get("existentialCoreThreatLegal", {}).items()]
                         #vacuum_entries = [f'    "{vk}": "{vv}"' for vk, vv in schema_data.get("existentialCoreThreatShadowVacuum", {}).items()]
                         legal_entries = []
+                        val_to_enum_map = {}
                         for raw_key, val in schema_data.get("existentialCoreThreatLegal", {}).items():
                             enum_token = val_to_enum_map.get(str(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}")
                             legal_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
 
                         vacuum_entries = []
+                        val_to_enum_map = {}
                         for raw_key, val in schema_data.get("existentialCoreThreatShadowVacuum", {}).items():
                             enum_token = val_to_enum_map.get(str(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}")
                             vacuum_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
@@ -208,11 +210,11 @@ def execute(args, error_handler, repo_root: str):
                         json_str_payload += f'  "existentialCoreVersion": "{ver_val}",\n'
                         json_str_payload += f'  "existentialCoreCheckMagic": "{magic_val}",\n'
                         json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
-                        json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"
-                        json_str_payload += '  "existentialCorePolicy": {\n' + ",\n".join(policy_lines) + "\n  },\n"                        
+                        json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"                   
                         json_str_payload += '  "existentialCoreThreat": {\n' + ",\n".join(threat_lines) + "\n  },\n"
                         json_str_payload += '  "existentialCoreThreatLegal": {\n' + ",\n".join(legal_entries) + "\n  },\n"
                         json_str_payload += '  "existentialCoreThreatShadowVacuum": {\n' + ",\n".join(vacuum_entries) + "\n  }\n"
+                        json_str_payload += '  "existentialCorePolicy": {\n' + ",\n".join(policy_lines) + "\n  },\n"     
                         json_str_payload += "}\n"
 
                         with open(target_path, "w", encoding="utf-8") as custom_out:
