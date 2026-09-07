@@ -22,7 +22,9 @@ def execute(args, error_handler, repo_root: str):
     session_hashes = {}
     magic_salt_bytes = existenzMeta.MAGIC["RAW"].encode('utf-8')
 
-    # 1. PHASE ONE: Dynamic Component Hashing via Clean Index Extraction
+    # ==========================================================================
+    # PHASE 1: INDIVIDUAL COMPONENT HASHING (6-ELEMENT DICTIONARY LOOKUP)
+    # ==========================================================================
     for key, glue_tuple in existenzIntegrityGlue.items():
         # Safely extract records from the 6-element tuple via explicit index placement
         name          = str(glue_tuple[0])
@@ -55,7 +57,9 @@ def execute(args, error_handler, repo_root: str):
         session_hashes[f"{key}_hash"] = computed_hash
         session_hashes[f"{key}_sign"] = hex_id
 
-    # 2. PHASE TWO: Agnostic Blockchain Link Sequencer via Direct Indices
+    # ==========================================================================
+    # PHASE 2: CRYPTOGRAPHIC SEQUENTIAL BLOCKCHAIN LOOK-BACK TRACKS
+    # ==========================================================================
     active_tree_rules = existenzSignatures.existentialCore
     
     # Sorts strictly using index 2 (the order priority integer field)
@@ -65,8 +69,8 @@ def execute(args, error_handler, repo_root: str):
     accumulated_chain_hashes = []
 
     for rule_row in sorted_rules:
-        label = str(rule_row[0])
-        inner_glue_record = rule_row[1]
+        label               = str(rule_row[0])
+        inner_glue_record   = rule_row[1]
         chronological_order = int(rule_row[2])
         
         # Extract op_flags strictly from index 2 of the inner 6-element config tuple
@@ -94,7 +98,9 @@ def execute(args, error_handler, repo_root: str):
             session_hashes[f"{label}_hash"] = final_chain_signature
             chain_active = False
 
-    # 3. PHASE THREE: Prepare session tokens dynamically to drive your custom tree visualizer
+    # ==========================================================================
+    # PHASE 3: PREPARE SESSION TOKENS FOR DENSE TREE VISUALIZER RENDER
+    # ==========================================================================
     tree_session_hashes = {
         "existentialCoreMagicHash": session_hashes.get("MagicCheck_hash", "UNKNOWN"),
         "existentialCoreCheckHash": session_hashes.get("CoreCheck_hash", "UNSIGNED"),
@@ -106,7 +112,9 @@ def execute(args, error_handler, repo_root: str):
 
     engineSigningLibrary.render_cryptographic_structural_tree(error_handler, tree_session_hashes, sorted_rules)
 
-    # 4. PHASE FOUR: Flush Universal Tracking Maps to Disk Filesystem Targets
+    # ==========================================================================
+    # PHASE 4: RECORD COMPILED REGISTERS LEDGER LEDGERS OUT TO DISK
+    # ==========================================================================
     py_signatures_path = os.path.abspath(os.path.join(repo_root, existenzLocations["core"]["SignaturesPy"]))
     json_signatures_path = os.path.abspath(os.path.join(repo_root, existenzLocations["core"]["SignaturesJson"]))
 
