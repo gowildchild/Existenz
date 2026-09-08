@@ -1,4 +1,4 @@
-{
+{ 
   "existentialCore": {    
     "NONE": {                    "val": 0,          "pol": "0x422c1",                      "comment": "No Record",                             "threat": "THREAT_NONE"           },
     "EXISTENCE": {               "val": 1,          "pol": "0x422c1",                      "comment": "You, alive, with a body",               "threat": "THREAT_EXISTENCE"      },
