@@ -128,7 +128,7 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
                     pass
                     
         replacements[hook_key] = calculated_hash
-        
+        # Match keys directly to populate your JSON master map layout
         if glue_key not in ["Magic", "MagicCheck", "CircleDist", "CircleTools", "CircleBuild", "CircleMaster", "CircleChain"]:
             master_registry[glue_key] = calculated_hash
 
@@ -136,12 +136,10 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
     # Walks your native existenzSignatures.existentialCore array to build the map dynamically
     master_registry_dict = {}
     for core_item_tuple in existenzSignatures.existentialCore:
-        label_key = core_item_tuple[0]  # e.g., "Magic", "Core Check", "Cores"
-        
+        label_key = core_item_tuple[0]  # e.g., "Magic", "CoreCheck", "Cores"
         # Shorten dictionary naming conventions to match your exact output layout specs
         clean_json_label = label_key.replace("CoreCheck", "Check").replace("CoreThreat", "Threat")
-        
-        # Fetch the live computed hash straight out of the temporary buffer mapping
+        # FIX: Query live_glue_computed_hashes natively instead of the undefined variable name
         master_registry_dict[clean_json_label] = live_glue_computed_hashes.get(label_key, "")
 
     # 3. TRAVERSE ENGINE FILES DYNAMICALLY
