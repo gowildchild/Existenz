@@ -81,6 +81,7 @@ def execute(args, error_handler, repo_root: str):
             }
         else:
             error_handler.print(f"Verified [FOUND]: {full_target_path}", level="info")
+
     # 3. Execution Phase: Self-Heal and Provision Missing Workspace Blocks
     if core_assets_to_sync or engine_assets_to_sync:
         error_handler.print(" [*] Pre-flight Scan Complete: Bootstrapping runtime environment configurations...", level="notice")
@@ -120,7 +121,7 @@ def execute(args, error_handler, repo_root: str):
             filename = asset_data["filename"]
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
             
-            # UNIQUE PAR PASS GATEWAY: Intercept and process our three special live-monitored files
+            # UNIFIED VERIFICATION GATEWAY: Intercept and process our special live-monitored files
             if token in ["SignaturesPy", "SignaturesJson"] or filename == "existentialCores.json":
                 try:
                     import engineSigningLibrary
@@ -180,16 +181,16 @@ def execute(args, error_handler, repo_root: str):
 
                 except Exception as e:
                     error_handler.print(f"Failed executing auto-heal verification track for {filename}: {e}", level="error", exit_code=1)
-
             elif filename.endswith(".json") and token == "Cores":
                 try:
+                    import engineSigningLibrary
                     from engineSigningStruct import existenzCorePolicy
 
                     threat_lines = []
                     for k, d in schema_data.get("existentialCore", {}).items():
                         if "threat" in d:
                             v = d["val"]
-                            expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
+                            expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                             threat_entry = f'    "{d["threat"]}":'.ljust(38)
                             threat_entry += f'{{ "val": {v},'.ljust(15)
                             threat_entry += f'"expr": "{expr}" }}'
@@ -245,6 +246,8 @@ def execute(args, error_handler, repo_root: str):
                                 if k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM"]:
                                     calculated_basic.append(f'    "{k}"')
                                 
+                        # FIX: Added strict vertical padding metrics to prevent column stretching bugs
+                        val_string = f"{v},".ljust(12)
                         line_entry = f'    "{k}":'.ljust(33)
                         line_entry += f'{{ "val": {val_string}'
                         line_entry += f'"expr": "{calculated_expr}",'.ljust(22)
@@ -262,10 +265,7 @@ def execute(args, error_handler, repo_root: str):
                         node_label = d["threat"] if "threat" in d else (k if k.startswith("CANARY_") or k.startswith("SHIELD_") else f"THREAT_{k}")
                         val_to_enum_map[int(d["val"])] = f"existentialCoreThreat.{node_label}"
 
-                    composite_fallbacks = {
-                        89130487: "existentialCoreThreat.CANARY_7_EXPLOITATION", 
-                        2290263560: "existentialCoreThreat.CANARY_8_PREDATORY"
-                    }
+                    composite_fallbacks = {89130487: "existentialCoreThreat.CANARY_7_EXPLOITATION", 2290263560: "existentialCoreThreat.CANARY_8_PREDATORY"}
 
                     legal_entries = []
                     for raw_key, val in schema_data.get("existentialCoreThreatLegal", {}).items():
@@ -277,6 +277,12 @@ def execute(args, error_handler, repo_root: str):
                         enum_token = val_to_enum_map.get(int(raw_key), composite_fallbacks.get(int(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}"))
                         vacuum_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
 
+                    # DYNAMIC BLOCKS MATRIX IMMUTABLE INTEGRITY GENERATOR
+                    cores_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
+                        repo_root, schema_data, "existentialCores", group_filter_id=None
+                    )
+                    integrity_json_indent = json.dumps(cores_integrity_dict, indent=2).replace("\n", "\n  ")
+
                     json_str_payload = "{\n"
                     json_str_payload += f'  "existentialCoreMeta": {ver_val_json_indent},\n'
                     json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
@@ -286,7 +292,8 @@ def execute(args, error_handler, repo_root: str):
                     json_str_payload += '  "existentialCoreThreat": {\n' + ",\n".join(threat_lines) + "\n  },\n"
                     json_str_payload += '  "existentialCoreThreatLegal": {\n' + ",\n".join(legal_entries) + "\n  },\n"
                     json_str_payload += '  "existentialCoreThreatShadowVacuum": {\n' + ",\n".join(vacuum_entries) + "\n  },\n"
-                    json_str_payload += '  "existentialCorePolicy": {\n' + ",\n".join(policy_lines) + "\n  }\n"     
+                    json_str_payload += '  "existentialCorePolicy": {\n' + ",\n".join(policy_lines) + "\n  },\n"     
+                    json_str_payload += f'  "existenzIntegrity": {integrity_json_indent}\n'     
                     json_str_payload += "}\n"
 
                     with open(target_path, "w", encoding="utf-8") as custom_out:
@@ -297,6 +304,7 @@ def execute(args, error_handler, repo_root: str):
             elif filename.endswith(".py"):
                 if token == "Core":
                     try:
+                        import engineSigningLibrary
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
                             f.write("from enum import IntFlag\n\nclass existentialCore(IntFlag):\n")
@@ -330,12 +338,19 @@ def execute(args, error_handler, repo_root: str):
                                     f.write(f'    existentialCore.{k:<25}: "{d["pol"]}",\n')
                             f.write("}\n")
                             
-                        error_handler.print(f"    [COMPILE FILE] Compiled native IntFlag class and expanded structural registries at: {target_path}", level="info")
+                            # DYNAMIC SUPPLY-CHAIN INTEGRITY GATE IMMUTABLE PASS (GROUP 0x02)
+                            core_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
+                                repo_root, schema_data, "existentialCore", group_filter_id=0x02
+                            )
+                            f.write(engineSigningLibrary.serialize_integrity_block_to_python(core_integrity_dict))
+                            
+                        error_handler.print(f"    [COMPILE FILE] Compiled native IntFlag class and appended dynamic integrity tracking block at: {target_path}", level="info")
                     except Exception as e:
                         error_handler.print(f"Failed to compile existentialCore.py: {e}", level="error", exit_code=1)
 
                 elif token == "Threat":
                     try:
+                        import engineSigningLibrary
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
                             f.write("# " + "="*74 + "\n")
@@ -361,7 +376,14 @@ def execute(args, error_handler, repo_root: str):
                                 target_node = next((d["threat"] for d in schema_data["existentialCore"].values() if "threat" in d and str(d["val"]) == k), None)
                                 if target_node: f.write(f"    existentialCoreThreat.{target_node}: \"{v}\",\n")
                             f.write("}\n")
-                        error_handler.print(f"    [COMPILE FILE] Compiled native Threat legal & vacuum matrices at: {target_path}", level="info")
+                            
+                            # DYNAMIC SUPPLY-CHAIN THREAT INTEGRITY SEALLING PASS (GROUP 0x03)
+                            threat_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
+                                repo_root, schema_data, "existentialCoreThreat", group_filter_id=0x03
+                            )
+                            f.write(engineSigningLibrary.serialize_integrity_block_to_python(threat_integrity_dict))
+                            
+                        error_handler.print(f"    [COMPILE FILE] Compiled native Threat legal & vacuum matrices with integrity blocks at: {target_path}", level="info")
                     except Exception as e:
                         error_handler.print(f"Failed to generate threat file: {e}", level="error", exit_code=1)
 
@@ -375,12 +397,34 @@ def execute(args, error_handler, repo_root: str):
                         error_handler.print(f"    [COMPILE FILE] Compiled integrity verification routines at: {target_path}", level="info")
                     except Exception as e:
                         error_handler.print(f"Failed to compile existentialCoreCheck.py: {e}", level="error", exit_code=1)
+                
+                elif token == "CoresPy":
+                    try:
+                        import engineSigningLibrary
+                        with open(target_path, "w", encoding="utf-8") as f:
+                            f.write(engineBuilderLibrary.make_header(version_str, "#"))
+                            f.write("# " + "="*74 + "\n")
+                            f.write("# EXISTENZ UNIFIED MASTER CORES EXECUTIVE CONTEXT\n")
+                            f.write("# " + "="*74 + "\n")
+                            f.write("from master.existentialCore import existentialCore\n")
+                            f.write("from master.existentialCoreThreat import existentialCoreThreat\n\n")
+                            
+                            # Build the massive, combined python-side context footprint (Null group filter maps everything)
+                            cores_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
+                                repo_root, schema_data, "existentialCores", group_filter_id=None
+                            )
+                            f.write(engineSigningLibrary.serialize_integrity_block_to_python(cores_integrity_dict))
+                            
+                        error_handler.print(f"    [COMPILE FILE] Compiled unified master executable cores file with integrity registry track at: {target_path}", level="info")
+                    except Exception as e:
+                        error_handler.print(f"Failed to compile existentialCores.py: {e}", level="error", exit_code=1)
                 else:
                     struct_source = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
                     if os.path.exists(struct_source):
                         shutil.copy2(struct_source, target_path)
                         error_handler.print(f"    [SYNC FILE] Replicated fixed structural library component to: {target_path}", level="info")
 
+        # B. Self-Heal Missing Engine Opcodes & Stubs
         # B. Self-Heal Missing Engine Opcodes & Stubs
         for token, asset_data in engine_assets_to_sync.items():
             target_path = os.path.abspath(os.path.join(repo_root, asset_data["runtime_path"]))
@@ -402,3 +446,4 @@ def execute(args, error_handler, repo_root: str):
 
     error_handler.print("Initialization Complete: All repository structure dependencies verified and self-healed.", level="notice")
     sys.exit(0)
+
