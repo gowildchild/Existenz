@@ -82,20 +82,15 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     except Exception:
         magic_tag = "Existenz:v0.76.20:EX25IMMUT32CORE7617"
     
-    # 1. EXACT TIMESTAMP SPECIFICATION: Emits your exact required structure (e.g., "20260911 19:31")
-    current_timestamp = time.strftime("%Y%m%d %H:%M")
+    current_timestamp = time.strftime("%Y-%m-%d %H:%M 24h")
     
-    # 2. EXACT 6-COLUMN PUBLIC KEYS REGISTRY: Maps your exact authority schema structure row-for-row
     sanitized_public_keys = []
     for key_tuple in existenzPublicKeys:
-        if isinstance(key_tuple, tuple) and len(key_tuple) >= 6:
+        if isinstance(key_tuple, tuple) and len(key_tuple) >= 3:
             sanitized_public_keys.append((
                 str(key_tuple[0]),
                 str(key_tuple[1]),
-                int(key_tuple[2]),
-                int(key_tuple[3]),
-                int(key_tuple[4]),
-                str(key_tuple[5])
+                int(key_tuple[2])
             ))
 
     combined_glue_records = {}
@@ -111,7 +106,6 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
             continue
 
-        # Extract values explicitly by their true index layout positions from your glue tuples
         struct_name = str(glue_tuple[0])
         op_flags    = int(glue_tuple[1])
         config_word = int(glue_tuple[3])
@@ -126,13 +120,15 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         # INITIALIZATION SECURITY PASS: Compute pure cryptographic hash streams from raw data targets
         hasher = hashlib.sha256()
         
+        # Mix the magic tag string into the hashing buffer if SIGN_MAGIC_HASH (2) is active
         if bool(op_flags & 2):
             hasher.update(magic_tag.encode("utf-8"))
             
-        if struct_name == "existentialPublicKeys":
+        if struct_name == "existenzPublicKeys":
             for row in sanitized_public_keys:
                 hasher.update(str(row).encode("utf-8"))
         else:
+            # Hash the raw structural definition name context directly without adding custom placeholder seeds
             hasher.update(struct_name.encode("utf-8"))
             
         computed_hash = hasher.hexdigest()
