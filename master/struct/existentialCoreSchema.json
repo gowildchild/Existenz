@@ -86,13 +86,6 @@
     "89130487":                  "VACUUM_PARASITISM",
     "2290263560":                "VACUUM_HARVESTING"
   },
-  "CoreSignatures": {
-    "existentialCore":                   "sha256",
-    "existentialCorePolicy":             "",
-    "existentialCoreThreatLegal":        "",
-    "existentialCoreThreatShadowVacuum": "",
-    "existentialMeta":                   ""
-  },
   "existentialMeta": {
     "CoreVersion":               "v0.76.20",
     "CoreRealm":                 "Existenz",
