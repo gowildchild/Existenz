@@ -126,6 +126,34 @@ def execute(args, error_handler, repo_root: str):
         except Exception:
             magic_tag = "Existenz:v0.76.18:EX25IMMUT32CORE7617"
 
+        # ==========================================================================
+        # GLOBAL CRYPTOGRAPHIC LAYER GENERATION (RESOLVES SILENT WRITING BYPASS)
+        # ==========================================================================
+        import hashlib
+        live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
+        live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
+        live_secret  = str(meta_blueprint.get("CoreMagic", "EX25IMMUT32CORE7617"))
+        live_author  = str(meta_blueprint.get("CoreAuthor", "Gunther Voet"))
+        
+        # Compute dynamic tokens natively at execution start line scope
+        dynamic_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
+        chain_seed_string = f"{dynamic_token_hash}:{live_author}"
+        dynamic_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
+
+        # Helper method for file hashing accessible within loop routines down the line
+        def get_file_hash(target_token):
+            rel_p = existenzLocations["core"].get(target_token)
+            if not rel_p:
+                return ""
+            abs_p = os.path.abspath(os.path.join(repo_root, rel_p))
+            if os.path.exists(abs_p):
+                try:
+                    with open(abs_p, "rb") as fh:
+                        return hashlib.sha256(fh.read()).hexdigest()
+                except Exception:
+                    return ""
+            return ""
+
         # Export straight to GitHub Actions environment space natively
         github_env_file = os.environ.get('GITHUB_ENV')
         if github_env_file:
@@ -144,8 +172,7 @@ def execute(args, error_handler, repo_root: str):
             calculated_immutable_count = 0
             filename = asset_data["filename"]
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
-
-            
+           
             if filename.endswith(".json"):
                 try:
                     if token == "Cores":
