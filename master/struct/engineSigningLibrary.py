@@ -65,38 +65,67 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     100% UNIFIED GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
     Constructs a standardized, unified existenzIntegrity block layout array.
     """
+    import hashlib
+    import time
+    from engineSigningMeta import existenzPublicKeys
+    from engineSigningStruct import existenzIntegrityGlue, existenzStructureGlue
+    
     meta_blueprint = schema_data.get("existentialMeta", {})
     live_version = str(meta_blueprint.get("CoreVersion", "v0.76.20"))
+    magic_raw = meta_blueprint.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
+    
+    try:
+        fields = magic_raw.split(":")
+        magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
+    except Exception:
+        magic_tag = "Existenz:v0.76.20:EX25IMMUT32CORE7617"
+    
+    # 1. 19:20 TIMESTAMP LAYOUT: Emits your exact required structure (e.g., "20260911 19:20")
     current_timestamp = time.strftime("%Y%m%d %H:%M")
     
+    # 2. 19:20 PUBLIC KEYS LAYOUT: Maps your exact 6-column authority schema structure
     sanitized_public_keys = []
     for key_tuple in existenzPublicKeys:
-        sanitized_public_keys.append((
-            str(key_tuple[0]), str(key_tuple[1]), int(key_tuple[2]),
-            int(key_tuple[3]), int(key_tuple[4]), str(key_tuple[5])
-        ))
+        if isinstance(key_tuple, tuple) and len(key_tuple) >= 6:
+            sanitized_public_keys.append((
+                str(key_tuple[0]),
+                str(key_tuple[1]),
+                int(key_tuple[2]),
+                int(key_tuple[3]),
+                int(key_tuple[4]),
+                str(key_tuple[5])
+            ))
 
     combined_glue_records = {}
     combined_glue_records.update(existenzIntegrityGlue)
     combined_glue_records.update(existenzStructureGlue)
 
-    # Sort record items using explicit tuple indices to maintain strict priority alignment order
+    # 3. 19:20 UNIVERSAL SORTING KEY: High Byte (Group ID) then Low Byte (Priority Sequence Rank)
     sorted_glue_items = sorted(combined_glue_records.items(), key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF))
 
     compiled_signatures_rows = []
+
     for glue_key, glue_tuple in sorted_glue_items:
         if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
             continue
 
         struct_name = str(glue_tuple[0])
         op_flags    = int(glue_tuple[1])
-        config_word = int(glue_tuple[3])
+        config_word = int(glue_tuple[3])  # Unpacks your 16-bit configuration word (0xGGPP)
 
+        # Bit-Shift Extraction: Isolate Group ID natively
         item_group_id = config_word >> 8
+        
+        # FILTER LAYER: If a group filter is active, skip any items that don't belong to this module segment
         if group_filter_id is not None and item_group_id != group_filter_id:
             continue
 
+        # INITIALIZATION LOOP: Generate baseline verification hashes directly from raw data targets
         hasher = hashlib.sha256()
+        
+        if bool(op_flags & 2):
+            hasher.update(magic_tag.encode("utf-8"))
+            
         if struct_name == "existentialPublicKeys":
             for row in sanitized_public_keys:
                 hasher.update(str(row).encode("utf-8"))
@@ -104,11 +133,14 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
             hasher.update(struct_name.encode("utf-8"))
             
         computed_hash = hasher.hexdigest()
+        signed_signature = "PENDING_PRIVATE_KEY_SIGNATURE"
+        opcode_str = str(op_flags)
+        
         compiled_signatures_rows.append((
             struct_name,
-            op_flags,
+            opcode_str,
             computed_hash,
-            "PENDING_PRIVATE_KEY_SIGNATURE"
+            signed_signature
         ))
         
     integrity_matrix = {
@@ -119,11 +151,13 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         "PublicKeys": tuple(sanitized_public_keys),
         "Signatures": tuple(compiled_signatures_rows)
     }
+    
     return integrity_matrix
+
 
 def serialize_integrity_block_to_python(integrity_matrix: dict) -> str:
     """
-    UNIVERSAL TEXT SERIALIZATION ENWRITER
+    19:20 SPECIFICATION TEXT SERIALIZATION ENWRITER
     Converts an in-memory integrity dictionary payload into clean, vertically-aligned
     Python source code text strings. Ready to be appended down to any target structural file.
     """
