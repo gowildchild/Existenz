@@ -276,104 +276,20 @@ def execute(args, error_handler, repo_root: str):
                         #error_handler.print(f"  [VERSION2] {ver_val}", level="debug")
                     
                     elif "SignaturesJson" in token or filename == "existentialSignatures.json":
-                        import hashlib
-                        meta_blueprint = schema_data.get("existentialMeta", {})
-
-                        # 1. DYNAMIC SECURITY LAYER: Generate cryptographic signatures straight from the blueprint data
-                        live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
-                        live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
-                        live_secret  = str(meta_blueprint.get("CoreMagic", "EX25IMMUT32CORE7617"))
-                        live_author  = str(meta_blueprint.get("CoreAuthor", "Gunther Voet"))
-                        
-                        # Generate dynamic TOKEN hash from your live assembled magic_tag string data asset
-                        dynamic_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
-                        
-                        # Chain token hash with author attribute to dynamically compute SIGNATURE
-                        chain_seed_string = f"{dynamic_token_hash}:{live_author}"
-                        dynamic_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
-
-                        # Helper logic to dynamically calculate hashes of physical workspace code targets
-                        def get_file_hash(target_token):
-                            rel_p = existenzLocations["core"].get(target_token)
-                            if not rel_p:
-                                return ""
-                            abs_p = os.path.abspath(os.path.join(repo_root, rel_p))
-                            if os.path.exists(abs_p):
-                                try:
-                                    with open(abs_p, "rb") as fh:
-                                        return hashlib.sha256(fh.read()).hexdigest()
-                                except Exception:
-                                    return ""
-                            return ""
-
-                        # Construct your physical structural layout payload matching your exact tracking realms
-                        signatures_matrix = {
-                            "existentialToken": {
-                                "MAGIC": {
-                                    "RAW_TEMPLATE":       str(meta_blueprint.get("CoreMagicRaw", "")),
-                                    "RAW":                str(magic_tag),
-                                    "TOKEN":              str(dynamic_token_hash),
-                                    "SIGNATURE":          str(dynamic_signature_hash),
-                                    "REALM":              live_realm,
-                                    "VERSION":            live_version,
-                                    "SECRET":             live_secret,                                    
-                                    "AUTHOR":             live_author
-                                },
-                                "master": {
-                                    "Core":               get_file_hash("Core"),
-                                    "Check":              get_file_hash("Check"),        
-                                    "Schema":             get_file_hash("Schema"),
-                                    "Cores":              get_file_hash("Cores"),
-                                    "Threat":             get_file_hash("Threat"),
-                                    "ThreatLegal":        get_file_hash("Threat"), 
-                                    "ThreatShadowVacuum": get_file_hash("Threat"),
-                                    "ThreatSigned":       get_file_hash("SignaturesPy")
-                                },
-                                "chain": {
-                                    "Core":               "",
-                                    "CoresChain":         "",
-                                    "Threat":             ""
-                                },
-                                "manifest": {
-                                    "dist":               "dist",
-                                    "tools":              "dist/tools",
-                                    "build":              "master/build-tools",
-                                    "master":             "master/struct"
-                                },
-                                "structs": {
-                                    "KeysPublic":         "",
-                                    "KeysHandler":        "",
-                                    "KeysType":           "",
-                                    "Locations":          ""
-                                },
-                                "engine": {
-                                    "engineLogging":      "",
-                                    "engineCrypto":       "",
-                                    "signingMeta":        "",
-                                    "signingStruct":      "",
-                                    "signingLibrary":     "",
-                                    "builderLibrary":     "",
-                                    "cliStateTest":       "",
-                                    "cliStateInit":       "",
-                                    "cliStateManifest":   "",
-                                    "cliStateSign":       "",
-                                    "cliStateVerify":     "",
-                                    "cliStateBuild":      "",
-                                    "Signatures":         "",
-                                    "Manifest":           ""
-                                }
-                            }
-                        }
-                        
-                        with open(target_path, "w", encoding="utf-8") as sf_out:
-                            json.dump(signatures_matrix, sf_out, indent=2)
-                        error_handler.print(f"    [SEED FILE] Seeded complete structural tracking registry matrix at: {target_path}", level="info")                        
+                        try:
+                            # Surgically call your central library routine to calculate the live structural matrix
+                            signatures_matrix, _ = engineSigningLibrary.compute_blueprint_signature_matrix(repo_root, schema_data, magic_tag)
+                            
+                            with open(target_path, "w", encoding="utf-8") as sf_out:
+                                json.dump(signatures_matrix, sf_out, indent=2)
+                            error_handler.print(f"    [SEED FILE] Seeded complete structural tracking registry matrix at: {target_path}", level="info")                        
+                        except Exception as e:
+                            error_handler.print(f"Failed to generate structured JSON signatures matrix {token}: {e}", level="error")
                     else:
                         shutil.copy2(schema_path, target_path)
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
-
 
             
             elif filename.endswith(".py"):
@@ -462,8 +378,6 @@ def execute(args, error_handler, repo_root: str):
 
                 elif token == "SignaturesPy":
                     try:
-                        import hashlib
-                        import engineSigningLibrary  # Native library loaded dynamically
                         struct_template_path = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
                         
                         if os.path.exists(struct_template_path):
@@ -471,114 +385,10 @@ def execute(args, error_handler, repo_root: str):
                             with open(struct_template_path, "r", encoding="utf-8") as tf:
                                 template_content = tf.read()
                                 
-                            # Extract metadata properties from the active master blueprint payload dict
-                            meta_blueprint = schema_data.get("existentialMeta", {})
-                            live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
-                            live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
-                            live_author  = str(meta_blueprint.get("CoreAuthor", "Gunther Voet"))
+                            # Call the central library routine to fetch the 100% glue-driven replacements map
+                            _, replacements = engineSigningLibrary.compute_blueprint_signature_matrix(repo_root, schema_data, magic_tag)
 
-                            # Compute live cryptographic tokens natively using the global magic_tag string
-                            local_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
-                            chain_seed_string = f"{local_token_hash}:{live_author}"
-                            local_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
-
-                            # 1. INITIALIZE REPLACEMENTS MAP WITH CORE BLUEPRINT STRINGS
-                            replacements = {
-                                "{{LIVE_REALM}}":         live_realm,
-                                "{{LIVE_VERSION}}":       live_version,
-                                "{{LIVE_AUTHOR}}":        live_author,
-                                "{{DYNAMIC_TOKEN}}":      local_token_hash,
-                                "{{DYNAMIC_SIGNATURE}}":  local_signature_hash,
-                                "{{MAGIC_RAW}}":          str(magic_raw),
-                                "{{MAGIC_TAG}}":          str(magic_tag)
-                            }
-
-                            # Translation map to bind short template bracket tags to glue keys
-                            hook_translation_map = {
-                                "Magic":                  "MAGIC_SIGNATURE",
-                                "MagicCheck":             "MAGIC_TOKEN",
-                                "Core":                   "CORE",
-                                "CoreCheck":              "CHECK",
-                                "Cores":                  "CORES",
-                                "Schema":                 "SCHEMA",
-                                "CoreThreat":             "THREAT",
-                                "CoreThreatLegal":        "THREAT_LEGAL",
-                                "CoreThreatShadowVacuum": "THREAT_VACUUM",
-                                "CoreThreatSigned":       "THREAT_SIGNED",
-                                "CircleDist":             "KEYS_PUBLIC",
-                                "CircleTools":            "KEYS_HANDLER",
-                                "CircleBuild":            "KEYS_TYPE",
-                                "CircleMaster":           "LOCATIONS",
-                                "CircleChain":            "MANIFEST_JSON"
-                            }
-
-                            # Engine primitive definitions mapping dictionary
-                            engine_tokens_map = {
-                                "engineLogging":     "LOGGING",
-                                "engineCrypto":      "CRYPTO",
-                                "signingMeta":       "SIGNING_META",
-                                "signingStruct":     "SIGNING_STRUCT",
-                                "signingLibrary":    "SIGNING_LIBRARY",
-                                "builderLibrary":    "BUILDER_LIBRARY",
-                                "cliStateTest":      "CLI_TEST",
-                                "cliStateInit":      "CLI_INIT",
-                                "cliStateManifest":  "CLI_MANIFEST",
-                                "cliStateSign":      "CLI_SIGN",
-                                "cliStateVerify":    "CLI_VERIFY",
-                                "cliStateBuild":     "CLI_BUILD",
-                                "Signatures":        "SIGNATURES_JSON",
-                                "Manifest":          "MANIFEST_JSON"
-                            }
-
-                            # 2. OPCODE-DRIVEN TRAVERSAL: Compute file hashes matching your exact IntFlag rules
-                            for glue_key, glue_tuple in existenzIntegrityGlue.items():
-                                if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
-                                    continue
-                                
-                                # Extract properties natively: variable, op_flags, sub_flags, hex_id, rel_path
-                                op_flags = glue_tuple[1]  # FIX: Bound strictly to the first value integer (3575)
-                                rel_path = glue_tuple[4]
-                                
-                                target_suffix = hook_translation_map.get(glue_key, glue_key.upper())
-                                hook_key = f"{{{{HASH_{target_suffix}}}}}"
-                                
-                                abs_path = os.path.abspath(os.path.join(repo_root, rel_path))
-                                
-                                # Run opcode calculations directly through your library engine if file is alive
-                                if os.path.exists(abs_path) and os.path.isfile(abs_path):
-                                    try:
-                                        # Bundle file into a dictionary state payload and hash using native opcodes
-                                        mock_file_dict = {rel_path: engineSigningLibrary.calculate_file_sha256(abs_path)}
-                                        calculated_hash = engineSigningLibrary.calculate_aggregate_circle_hash(mock_file_dict, op_flags)
-                                    except Exception:
-                                        calculated_hash = ""
-                                else:
-                                    calculated_hash = ""
-                                    
-                                replacements[hook_key] = calculated_hash
-
-                            # 3. ENGINE SUB-TRAVERSAL: Map operational framework sub-components
-                            engine_locations_dict = existenzLocations.get("engine", {})
-                            for engine_key, engine_rel_path in engine_locations_dict.items():
-                                clean_rel_path = engine_rel_path.split(":")[-1] if ":" in engine_rel_path else engine_rel_path
-                                abs_engine_path = os.path.abspath(os.path.join(repo_root, clean_rel_path))
-                                
-                                suffix = engine_tokens_map.get(engine_key, engine_key.upper())
-                                engine_hook = f"{{{{HASH_{suffix}}}}}"
-                                
-                                if os.path.exists(abs_engine_path) and os.path.isfile(abs_engine_path):
-                                    try:
-                                        mock_eng_dict = {clean_rel_path: engineSigningLibrary.calculate_file_sha256(abs_engine_path)}
-                                        # Process engine primitives using standard file signature bits (512)
-                                        engine_hash = engineSigningLibrary.calculate_aggregate_circle_hash(mock_eng_dict, 512)
-                                    except Exception:
-                                        engine_hash = ""
-                                else:
-                                    engine_hash = ""
-                                    
-                                replacements[engine_hook] = engine_hash
-
-                            # 4. Apply the dynamic mapping substitutions completely across the template content
+                            # Run a complete string replacement sweep across the template variables
                             for hook, live_value in replacements.items():
                                 template_content = template_content.replace(hook, live_value)
 
