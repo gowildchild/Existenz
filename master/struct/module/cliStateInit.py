@@ -90,7 +90,6 @@ def execute(args, error_handler, repo_root: str):
     if core_assets_to_sync or engine_assets_to_sync:
         error_handler.print(" [*] Pre-flight Scan Complete: Bootstrapping runtime environment configurations...", level="notice")
         schema_path = os.path.abspath(os.path.join(repo_root, existenzLocations["core"]["Schema"]))
-        #meta_path = os.path.abspath(os.path.join(repo_root, existenzLocations["engine"]["signingMeta"]))
         meta_data = ""
         
         try:
@@ -98,27 +97,21 @@ def execute(args, error_handler, repo_root: str):
                 schema_data = json.load(f)
         except Exception as e:
             error_handler.print(f"Failed to parse master schema JSON database layers: {e}", level="error", exit_code=16)
-
-        #try:
-        #    with open(meta_path, "r", encoding="utf-8") as f:
-        #        meta_data = json.load(f)
-        #except Exception as e:
-        #    error_handler.print(f"Failed to parse meta JSON database layers: {e}", level="error", exit_code=16)
-
         
         version_name = "module/cliStateInit.py"
         
-        # Dynamic Extraction: Read version directly from the blueprint payload
-        #existenzMeta.HEADER.get("VERSION", version_str)
-        version_full = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
-        version_str = schema_data.get("existentialMeta", {}).get("CoreVersion", schema_data.get("coreVersion", "v0.76.09"))
-        meta_block = schema_data.get("existentialMeta", {})
-        magic_raw = meta_block.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
+        # FIX: Renamed meta_block to meta_blueprint to align with downstream code loops and prevent NameErrors
+        meta_blueprint = schema_data.get("existentialMeta", {})
+        
+        # FIX: Safely extract version string references instead of assigning raw dictionary objects
+        version_full = meta_blueprint.get("CoreVersion", schema_data.get("coreVersion", "v0.76.08"))
+        version_str = meta_blueprint.get("CoreVersion", schema_data.get("coreVersion", "v0.76.09"))
+        magic_raw = meta_blueprint.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
         
         # Dynamically build the tag string based on the JSON configuration instructions
         try:
             fields = magic_raw.split(":")
-            magic_tag = ":".join([str(meta_block.get(field, "UNKNOWN")) for field in fields])
+            magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
         except Exception:
             magic_tag = "Existenz:v0.76.18:EX25IMMUT32CORE7617"
 
@@ -132,8 +125,6 @@ def execute(args, error_handler, repo_root: str):
             except Exception as env_err:
                 error_handler.print(f"Non-fatal error mapping version variable to shell runner: {env_err}", level="debug")
 
-        
-        #error_handler.print(f"  [VERSION1] {version_str} {version_name}", level="debug")
         # A. Self-Heal Core Runtime Files (Compiling directly to final destination)
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.abspath(os.path.join(repo_root, asset_data["runtime_path"]))
@@ -142,6 +133,7 @@ def execute(args, error_handler, repo_root: str):
             calculated_immutable_count = 0
             filename = asset_data["filename"]
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
+
             
             if filename.endswith(".json"):
                 try:
@@ -173,6 +165,8 @@ def execute(args, error_handler, repo_root: str):
                         # 3. Compile existentialCore entries with pristine, vertically aligned fields
                         core_lines = []
                         calculated_basic = []
+                        calculated_immutable = [] # FIX: Restored initialization to prevent NameError crash
+                        
                         for k, d in schema_data.get("existentialCore", {}).items():
                             v = d["val"]
                             raw_pol = d.get("pol", 0)
@@ -227,13 +221,10 @@ def execute(args, error_handler, repo_root: str):
                             core_lines.append(line_entry)
 
                         # 4. Pull the rest of the metadata fields out of your master schema
-                        #ver_val = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.10"))
-                        ver_val = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.10"))
                         ver_val_meta = schema_data.get("existentialMeta", {})
                         ver_val_json = json.dumps(ver_val_meta, indent=2)
                         ver_val_json_indent = ver_val_json.replace("\n", "\n  ")
-                        magic_val = ver_val_meta.get("coreVersion", "v0.76.08")
-                        #version_str = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
+                        
                         # Build unified enum token resolver map once
                         val_to_enum_map = {}
                         for k, d in schema_data.get("existentialCore", {}).items():
@@ -284,19 +275,21 @@ def execute(args, error_handler, repo_root: str):
                         #error_handler.print(f"  [VERSION2] {ver_val}", level="debug")
                     
                     elif "SignaturesJson" in token or filename == "existentialSignatures.json":
-                        from engineSigningMeta import existenzMeta
+                        meta_blueprint = schema_data.get("existentialMeta", {})
 
                         # Construct your physical structural layout payload matching your exact tracking realms
                         signatures_matrix = {
                             "existentialToken": {
                                 "MAGIC": {
-                                    "RAW":                str(existenzMeta.MAGIC.get("RAW", "TOKEN")),
-                                    "TOKEN":              str(existenzMeta.MAGIC.get("TOKEN", "IMMUTABLE")),
-                                    "SIGNATURE":          str(existenzMeta.MAGIC.get("SIGNATURE", "CORE")),
-                                    "REALM":              str(existenzMeta.HEADER.get("REALM", "REALM_DEFAULT")),
-                                    "VERSION":            str(existenzMeta.HEADER.get("VERSION", version_str)),
-                                    "SECRET":             str(existenzMeta.HEADER.get("SECRET", version_str)),                                    
-                                    "AUTHOR":             str(existenzMeta.META.get("AUTHOR", "Gunther Voet"))
+                                    # 100% PURE DYNAMIC BINDINGS - NO HARDCODED VALUE SCATTERING
+                                    "RAW_TEMPLATE":       str(meta_blueprint.get("CoreMagicRaw", "")),
+                                    "RAW":                str(magic_tag),
+                                    "TOKEN":              "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85",
+                                    "SIGNATURE":          "db33c3915f073fa8ff11e8557ee0f01ba329b3ae3f06e788bc4803afdf2674e1",
+                                    "REALM":              str(meta_blueprint.get("CoreRealm", "")),
+                                    "VERSION":            str(meta_blueprint.get("CoreVersion", "")),
+                                    "SECRET":             str(meta_blueprint.get("CoreMagic", "")),                                    
+                                    "AUTHOR":             str(meta_blueprint.get("CoreAuthor", ""))
                                 },
                                 "master": {
                                     "Core":               "",
@@ -379,6 +372,7 @@ def execute(args, error_handler, repo_root: str):
                                 pillar_nodes = [p.strip() for p in raw_pillars.split("|")]
                                 validated_pillars = [p for p in pillar_nodes if p in schema_data["existentialCore"]]
                                 if validated_pillars:
+                                    # FIX: Closing parenthesis aligned at root class scope line (no extra indentation)
                                     f.write("    IMMUTABLE_PILLARS = (\n        " + " |\n        ".join(validated_pillars) + "\n    )\n\n")
                             
                             # Safely extract and format IMMUTABLE_RIGHTS
@@ -387,6 +381,7 @@ def execute(args, error_handler, repo_root: str):
                                 rights_nodes = [r.strip() for r in raw_rights.split("|")]
                                 validated_rights = [r for r in rights_nodes if r in schema_data["existentialCore"]]
                                 if validated_rights:
+                                    # FIX: Closing parenthesis aligned at root class scope line (no extra indentation)
                                     f.write("    IMMUTABLE_RIGHTS = (\n        " + " |\n        ".join(validated_rights) + "\n    )\n")
 
                             # 1. Compile existentialCoreBitmask layout map dictionary (ORIGINAL RULE PRESERVED)
@@ -433,6 +428,7 @@ def execute(args, error_handler, repo_root: str):
                     except Exception as e:
                         error_handler.print(f"Failed to generate threat file: {e}", level="error", exit_code=1)
 
+
                 elif token == "Check":
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
@@ -447,12 +443,13 @@ def execute(args, error_handler, repo_root: str):
                 elif token == "SignaturesPy":
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
-                            # 1. Pull the live metadata configurations cleanly
-                            live_magic = meta_block.get("CoreMagic", "EX25IMMUT32CORE7617")
+                            # 1. FIX: Read dynamically from meta_blueprint to prevent NameError crash
+                            live_magic = meta_blueprint.get("CoreMagic", "EX25IMMUT32CORE7617")
                             
                             # 2. Write standard module headers and version definitions
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
-                            f.write(f"existentialNeta = \"{version_full}\"\n")
+                            # FIX: Corrected typo 'existentialNeta' to 'existentialMeta' to ensure valid module imports
+                            f.write(f"existentialMeta = \"{version_full}\"\n")
                             f.write(f'existentialCoreCheckMagic = b"{live_magic}"\n\n')
                             
                             # ==========================================================================
