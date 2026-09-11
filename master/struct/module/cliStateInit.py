@@ -68,17 +68,6 @@ def execute(args, error_handler, repo_root: str):
         else:
             error_handler.print(f"Verified [FOUND]: {full_target_path}", level="info")
 
-    # ==========================================================================
-    # FORCE SIGNATURE ASSET UPDATES IF BASELINE CORES REQUIRE SYNCHRONIZATION
-    # ==========================================================================
-    if core_assets_to_sync:
-        for sig_token in ["SignaturesPy", "SignaturesJson"]:
-            sig_rel_path = existenzLocations["core"][sig_token]
-            core_assets_to_sync[sig_token] = {
-                "runtime_path": sig_rel_path,
-                "filename": os.path.basename(sig_rel_path)
-            }
-
     if failed_initialization == "config":
         error_handler.print("Pre-flight execution blocked: Missing core layout master schema structure.", level="error", exit_code=16)
 
@@ -96,11 +85,12 @@ def execute(args, error_handler, repo_root: str):
             }
         else:
             error_handler.print(f"Verified [FOUND]: {full_target_path}", level="info")
-            
+
     # 3. Execution Phase: Self-Heal and Provision Missing Workspace Blocks
     if core_assets_to_sync or engine_assets_to_sync:
         error_handler.print(" [*] Pre-flight Scan Complete: Bootstrapping runtime environment configurations...", level="notice")
         schema_path = os.path.abspath(os.path.join(repo_root, existenzLocations["core"]["Schema"]))
+        #meta_path = os.path.abspath(os.path.join(repo_root, existenzLocations["engine"]["signingMeta"]))
         meta_data = ""
         
         try:
@@ -108,51 +98,29 @@ def execute(args, error_handler, repo_root: str):
                 schema_data = json.load(f)
         except Exception as e:
             error_handler.print(f"Failed to parse master schema JSON database layers: {e}", level="error", exit_code=16)
+
+        #try:
+        #    with open(meta_path, "r", encoding="utf-8") as f:
+        #        meta_data = json.load(f)
+        #except Exception as e:
+        #    error_handler.print(f"Failed to parse meta JSON database layers: {e}", level="error", exit_code=16)
+
         
         version_name = "module/cliStateInit.py"
         
-        # FIX: Renamed meta_block to meta_blueprint to align with downstream code loops and prevent NameErrors
-        meta_blueprint = schema_data.get("existentialMeta", {})
-        
-        # FIX: Safely extract version string references instead of assigning raw dictionary objects
-        version_full = meta_blueprint.get("CoreVersion", schema_data.get("coreVersion", "v0.76.08"))
-        version_str = meta_blueprint.get("CoreVersion", schema_data.get("coreVersion", "v0.76.09"))
-        magic_raw = meta_blueprint.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
+        # Dynamic Extraction: Read version directly from the blueprint payload
+        #existenzMeta.HEADER.get("VERSION", version_str)
+        version_full = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
+        version_str = schema_data.get("existentialMeta", {}).get("CoreVersion", schema_data.get("coreVersion", "v0.76.09"))
+        meta_block = schema_data.get("existentialMeta", {})
+        magic_raw = meta_block.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
         
         # Dynamically build the tag string based on the JSON configuration instructions
         try:
             fields = magic_raw.split(":")
-            magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
+            magic_tag = ":".join([str(meta_block.get(field, "UNKNOWN")) for field in fields])
         except Exception:
             magic_tag = "Existenz:v0.76.18:EX25IMMUT32CORE7617"
-
-        # ==========================================================================
-        # GLOBAL CRYPTOGRAPHIC LAYER GENERATION (RESOLVES SILENT WRITING BYPASS)
-        # ==========================================================================
-        import hashlib
-        live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
-        live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
-        live_secret  = str(meta_blueprint.get("CoreMagic", "EX25IMMUT32CORE7617"))
-        live_author  = str(meta_blueprint.get("CoreAuthor", "Gunther Voet"))
-        
-        # Compute dynamic tokens natively at execution start line scope
-        dynamic_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
-        chain_seed_string = f"{dynamic_token_hash}:{live_author}"
-        dynamic_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
-
-        # Helper method for file hashing accessible within loop routines down the line
-        def get_file_hash(target_token):
-            rel_p = existenzLocations["core"].get(target_token)
-            if not rel_p:
-                return ""
-            abs_p = os.path.abspath(os.path.join(repo_root, rel_p))
-            if os.path.exists(abs_p):
-                try:
-                    with open(abs_p, "rb") as fh:
-                        return hashlib.sha256(fh.read()).hexdigest()
-                except Exception:
-                    return ""
-            return ""
 
         # Export straight to GitHub Actions environment space natively
         github_env_file = os.environ.get('GITHUB_ENV')
@@ -164,6 +132,8 @@ def execute(args, error_handler, repo_root: str):
             except Exception as env_err:
                 error_handler.print(f"Non-fatal error mapping version variable to shell runner: {env_err}", level="debug")
 
+        
+        #error_handler.print(f"  [VERSION1] {version_str} {version_name}", level="debug")
         # A. Self-Heal Core Runtime Files (Compiling directly to final destination)
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.abspath(os.path.join(repo_root, asset_data["runtime_path"]))
@@ -172,7 +142,7 @@ def execute(args, error_handler, repo_root: str):
             calculated_immutable_count = 0
             filename = asset_data["filename"]
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
-           
+            
             if filename.endswith(".json"):
                 try:
                     if token == "Cores":
@@ -203,8 +173,6 @@ def execute(args, error_handler, repo_root: str):
                         # 3. Compile existentialCore entries with pristine, vertically aligned fields
                         core_lines = []
                         calculated_basic = []
-                        calculated_immutable = [] # FIX: Restored initialization to prevent NameError crash
-                        
                         for k, d in schema_data.get("existentialCore", {}).items():
                             v = d["val"]
                             raw_pol = d.get("pol", 0)
@@ -259,10 +227,13 @@ def execute(args, error_handler, repo_root: str):
                             core_lines.append(line_entry)
 
                         # 4. Pull the rest of the metadata fields out of your master schema
+                        #ver_val = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.10"))
+                        ver_val = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.10"))
                         ver_val_meta = schema_data.get("existentialMeta", {})
                         ver_val_json = json.dumps(ver_val_meta, indent=2)
                         ver_val_json_indent = ver_val_json.replace("\n", "\n  ")
-                        
+                        magic_val = ver_val_meta.get("coreVersion", "v0.76.08")
+                        #version_str = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
                         # Build unified enum token resolver map once
                         val_to_enum_map = {}
                         for k, d in schema_data.get("existentialCore", {}).items():
@@ -313,61 +284,29 @@ def execute(args, error_handler, repo_root: str):
                         #error_handler.print(f"  [VERSION2] {ver_val}", level="debug")
                     
                     elif "SignaturesJson" in token or filename == "existentialSignatures.json":
-                        import hashlib
-                        meta_blueprint = schema_data.get("existentialMeta", {})
-
-                        # 1. DYNAMIC SECURITY LAYER: Recalculate token and signature hashes from the blueprint live state
-                        live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
-                        live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
-                        live_secret  = str(meta_blueprint.get("CoreMagic", "EX25IMMUT32CORE7617"))
-                        live_author  = str(meta_blueprint.get("CoreAuthor", "Gunther Voet"))
-                        
-                        # Calculate TOKEN dynamically from your live magic_tag string asset
-                        dynamic_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
-                        
-                        # Calculate SIGNATURE dynamically by chaining the token hash with your author name
-                        chain_seed_string = f"{dynamic_token_hash}:{live_author}"
-                        dynamic_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
-
-                        # Helper logic to dynamically calculate hashes of physical workspace code targets
-                        def get_file_hash(target_token):
-                            rel_p = existenzLocations["core"].get(target_token)
-                            if not rel_p:
-                                return ""
-                            abs_p = os.path.abspath(os.path.join(repo_root, rel_p))
-                            if os.path.exists(abs_p):
-                                try:
-                                    with open(abs_p, "rb") as fh:
-                                        return hashlib.sha256(fh.read()).hexdigest()
-                                except Exception:
-                                    return ""
-                            # Safe default hash placeholder for unwritten files to avoid blank quote manifestation blocks
-                            return hashlib.sha256(target_token.encode("utf-8")).hexdigest()
+                        from engineSigningMeta import existenzMeta
 
                         # Construct your physical structural layout payload matching your exact tracking realms
                         signatures_matrix = {
                             "existentialToken": {
                                 "MAGIC": {
-                                    # 100% PURE DYNAMIC BINDINGS - NO HARDCODED VALUE SCATTERING
-                                    "RAW_TEMPLATE":       str(meta_blueprint.get("CoreMagicRaw", "")),
-                                    "RAW":                str(magic_tag),
-                                    "TOKEN":              str(dynamic_token_hash),
-                                    "SIGNATURE":          str(dynamic_signature_hash),
-                                    "REALM":              live_realm,
-                                    "VERSION":            live_version,
-                                    "SECRET":             live_secret,                                    
-                                    "AUTHOR":             live_author
+                                    "RAW":                str(existenzMeta.MAGIC.get("RAW", "TOKEN")),
+                                    "TOKEN":              str(existenzMeta.MAGIC.get("TOKEN", "IMMUTABLE")),
+                                    "SIGNATURE":          str(existenzMeta.MAGIC.get("SIGNATURE", "CORE")),
+                                    "REALM":              str(existenzMeta.HEADER.get("REALM", "REALM_DEFAULT")),
+                                    "VERSION":            str(existenzMeta.HEADER.get("VERSION", version_str)),
+                                    "SECRET":             str(existenzMeta.HEADER.get("SECRET", version_str)),                                    
+                                    "AUTHOR":             str(existenzMeta.META.get("AUTHOR", "Gunther Voet"))
                                 },
                                 "master": {
-                                    # LIVE CRYPTOGRAPHIC SEALS RE-CALCULATED DURING INIT EXECUTION RUN
-                                    "Core":               get_file_hash("Core"),
-                                    "Check":              get_file_hash("Check"),        
-                                    "Schema":             get_file_hash("Schema"),
-                                    "Cores":              get_file_hash("Cores"),
-                                    "Threat":             get_file_hash("Threat"),
-                                    "ThreatLegal":        get_file_hash("Threat"), 
-                                    "ThreatShadowVacuum": get_file_hash("Threat"),
-                                    "ThreatSigned":       get_file_hash("SignaturesPy")
+                                    "Core":               "",
+                                    "Check":              "",        
+                                    "Schema":             "",
+                                    "Cores":              "",
+                                    "Threat":             "",
+                                    "ThreatLegal":        "",
+                                    "ThreatShadowVacuum": "",
+                                    "ThreatSigned":       ""
                                 },
                                 "chain": {
                                     "Core":               "",
@@ -415,6 +354,7 @@ def execute(args, error_handler, repo_root: str):
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
 
             
+            elif filename.endswith(".py"):
                 if token == "Core":
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
@@ -425,41 +365,14 @@ def execute(args, error_handler, repo_root: str):
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                 f.write(f"    {k:<30} = {expr}  # {d.get('comment', '')}\n")
                             
-                            # ==========================================================================
-                            # INJECT PURE IMMUTABLE STRUCTURES SAFELY INSIDE THE INTFLAG CLASS
-                            # ==========================================================================
-                            f.write("\n    # " + "="*70 + "\n")
-                            f.write("    # IMMUTABLE EXISTENTIAL INTENTS (Pure unchangeable human elements)\n")
-                            f.write("    # " + "="*70 + "\n")
-                            
-                            immutable_meta = schema_data.get("existentialMeta", {}).get("immutable", {})
-                            
-                            # Safely extract and format IMMUTABLE_PILLARS
-                            raw_pillars = immutable_meta.get("PILLARS", "")
-                            if raw_pillars:
-                                pillar_nodes = [p.strip() for p in raw_pillars.split("|")]
-                                validated_pillars = [p for p in pillar_nodes if p in schema_data["existentialCore"]]
-                                if validated_pillars:
-                                    # FIX: Closing parenthesis aligned at root class scope line (no extra indentation)
-                                    f.write("    IMMUTABLE_PILLARS = (\n        " + " |\n        ".join(validated_pillars) + "\n    )\n\n")
-                            
-                            # Safely extract and format IMMUTABLE_RIGHTS
-                            raw_rights = immutable_meta.get("RIGHTS", "")
-                            if raw_rights:
-                                rights_nodes = [r.strip() for r in raw_rights.split("|")]
-                                validated_rights = [r for r in rights_nodes if r in schema_data["existentialCore"]]
-                                if validated_rights:
-                                    # FIX: Closing parenthesis aligned at root class scope line (no extra indentation)
-                                    f.write("    IMMUTABLE_RIGHTS = (\n        " + " |\n        ".join(validated_rights) + "\n    )\n")
-
-                            # 1. Compile existentialCoreBitmask layout map dictionary (ORIGINAL RULE PRESERVED)
+                            # 1. Compile existentialCoreBitmask layout map dictionary
                             f.write("\nexistentialCoreBitmask = {\n")
                             for k, d in schema_data["existentialCore"].items():
                                 if "msk" in d:
                                     f.write(f'    existentialCore.{k:<25}: "{d["msk"]}",\n')
                             f.write("}\n")
 
-                            # 2. FIXED: Compile existentialCorePolicy layout map dictionary (ORIGINAL RULE PRESERVED)
+                            # 2. FIXED: Compile existentialCorePolicy layout map dictionary
                             f.write("\nexistentialCorePolicy = {\n")
                             for k, d in schema_data["existentialCore"].items():
                                 if "pol" in d:
@@ -474,13 +387,18 @@ def execute(args, error_handler, repo_root: str):
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
+                            f.write("# " + "="*74 + "\n")
+                            f.write("# EXISTENZ CORE SIGNATURE CONTEXT\n")
+                            f.write("# " + "="*74 + "\n")
+                            f.write(f'CoreMagicRaw = "{magic_raw}"\n')
+                            f.write(f'CoreMagicTag = "{magic_tag}"\n\n')                            
                             f.write("from enum import IntFlag\n\nclass existentialCoreThreat(IntFlag):\n")
                             for k, d in schema_data["existentialCore"].items():
                                 if "threat" in d:
                                     v = d["val"]
                                     expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                     f.write(f"    {d['threat']:<30} = {expr}\n")
-                            
+                                    
                             f.write("\nexistentialCoreThreatLegal = {\n")
                             for k, v in schema_data.get("existentialCoreThreatLegal", {}).items():
                                 target_node = next((d["threat"] for d in schema_data["existentialCore"].values() if "threat" in d and str(d["val"]) == k), None)
@@ -496,7 +414,6 @@ def execute(args, error_handler, repo_root: str):
                     except Exception as e:
                         error_handler.print(f"Failed to generate threat file: {e}", level="error", exit_code=1)
 
-
                 elif token == "Check":
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
@@ -510,33 +427,24 @@ def execute(args, error_handler, repo_root: str):
 
                 elif token == "SignaturesPy":
                     try:
-                        import hashlib
                         with open(target_path, "w", encoding="utf-8") as f:
-                            # 1. Write standard module headers and version definitions
+                            live_magic = meta_block.get("CoreMagic", "EX25IMMUT32CORE7617")
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
-                            f.write(f"existentialMeta = \"{version_full}\"\n")
+                            f.write(f"existentialNeta = \"{version_full}\"\n")
                             
-                            # DYNAMIC FIX: Enforce absolute truth by using the locally computed token hash
-                            local_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
-                            f.write(f'existentialCoreCheckMagic = b"{local_token_hash}"\n\n')
-                            
-                            # ==========================================================================
-                            # ANCHOR EXISTENZ CORE SIGNATURE CONTEXT IN CRYPTO VAULT (SET IN STONE)
-                            # ==========================================================================
-                            f.write("# " + "="*74 + "\n")
-                            f.write("# EXISTENZ CORE SIGNATURE TEMPLATE REFERENCES\n")
-                            f.write("# " + "="*74 + "\n")
-                            f.write(f'CoreMagicRaw = "{magic_raw}"\n')
-                            f.write(f'CoreMagicTag = "{magic_tag}"\n\n')
-                            
-                            # 2. Print your original cryptographic lock definitions untouched
+                            f.write(f'existentialCoreCheckMagic = b"{live_magic}"\n\n')
                             f.write("class existentialCoreSignatures:\n    existentialCoreSigned = (\n")
                             f.write("        (\"Magic\", \"magic\", \"existentialCoreMagicHash\", \"\", 2, 0),\n")
                             f.write("        (\"Core\", \"core\", \"existentialCoreHash\", \"\", 12, 1),\n")
                             f.write("    )\n")
-                        error_handler.print(f"    [COMPILE FILE] Compiled dynamic signature tracking registries at: {target_path}", level="info")
+                        error_handler.print(f"    [COMPILE FILE] Compiled signature tracking registries at: {target_path}", level="info")
                     except Exception as e:
                         error_handler.print(f"Failed to compile existentialCoreSignatures.py: {e}", level="error", exit_code=1)
+                else:
+                    struct_source = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
+                    if os.path.exists(struct_source):
+                        shutil.copy2(struct_source, target_path)
+                        error_handler.print(f"    [SYNC FILE] Replicated fixed structural library component to: {target_path}", level="info")
 
         # B. Self-Heal Missing Engine Opcodes & Stubs
         for token, asset_data in engine_assets_to_sync.items():
