@@ -73,7 +73,7 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     from engineSigningStruct import existenzIntegrityGlue, existenzStructureGlue
     
     meta_blueprint = schema_data.get("existentialMeta", {})
-    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
+    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.15a"))
     magic_raw = meta_blueprint.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
     
     # 1. Build the dynamic magic tag matching your current blueprint state instructions
@@ -81,10 +81,10 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         fields = magic_raw.split(":")
         magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
     except Exception:
-        magic_tag = "Existenz:v0.76.18:EX25IMMUT32CORE7617"
+        magic_tag = "Existenz:v0.76.15a:EX25IMMUT32CORE7617"
     
     # 2. Acquire current active context timestamp matching your strict spec format
-    current_timestamp = time.strftime("%Y-%m-%d %H:%M 24h")
+    current_timestamp = time.strftime("%Y%m%d %H:%M")
     
     # 3. Extract and sanitize your authoritative PublicKeys registry tuples out of engineSigningMeta
     sanitized_public_keys = []
