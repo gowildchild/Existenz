@@ -68,6 +68,17 @@ def execute(args, error_handler, repo_root: str):
         else:
             error_handler.print(f"Verified [FOUND]: {full_target_path}", level="info")
 
+    # ==========================================================================
+    # FORCE SIGNATURE ASSET UPDATES IF BASELINE CORES REQUIRE SYNCHRONIZATION
+    # ==========================================================================
+    if core_assets_to_sync:
+        for sig_token in ["SignaturesPy", "SignaturesJson"]:
+            sig_rel_path = existenzLocations["core"][sig_token]
+            core_assets_to_sync[sig_token] = {
+                "runtime_path": sig_rel_path,
+                "filename": os.path.basename(sig_rel_path)
+            }
+
     if failed_initialization == "config":
         error_handler.print("Pre-flight execution blocked: Missing core layout master schema structure.", level="error", exit_code=16)
 
@@ -85,7 +96,7 @@ def execute(args, error_handler, repo_root: str):
             }
         else:
             error_handler.print(f"Verified [FOUND]: {full_target_path}", level="info")
-
+            
     # 3. Execution Phase: Self-Heal and Provision Missing Workspace Blocks
     if core_assets_to_sync or engine_assets_to_sync:
         error_handler.print(" [*] Pre-flight Scan Complete: Bootstrapping runtime environment configurations...", level="notice")
