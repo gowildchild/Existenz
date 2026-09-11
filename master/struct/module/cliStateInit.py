@@ -354,7 +354,6 @@ def execute(args, error_handler, repo_root: str):
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
 
             
-            elif filename.endswith(".py"):
                 if token == "Core":
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
@@ -365,14 +364,39 @@ def execute(args, error_handler, repo_root: str):
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                 f.write(f"    {k:<30} = {expr}  # {d.get('comment', '')}\n")
                             
-                            # 1. Compile existentialCoreBitmask layout map dictionary
+                            # ==========================================================================
+                            # INJECT PURE IMMUTABLE STRUCTURES SAFELY INSIDE THE INTFLAG CLASS
+                            # ==========================================================================
+                            f.write("\n    # " + "="*70 + "\n")
+                            f.write("    # IMMUTABLE EXISTENTIAL INTENTS (Pure unchangeable human elements)\n")
+                            f.write("    # " + "="*70 + "\n")
+                            
+                            immutable_meta = schema_data.get("existentialMeta", {}).get("immutable", {})
+                            
+                            # Safely extract and format IMMUTABLE_PILLARS
+                            raw_pillars = immutable_meta.get("PILLARS", "")
+                            if raw_pillars:
+                                pillar_nodes = [p.strip() for p in raw_pillars.split("|")]
+                                validated_pillars = [p for p in pillar_nodes if p in schema_data["existentialCore"]]
+                                if validated_pillars:
+                                    f.write("    IMMUTABLE_PILLARS = (\n        " + " |\n        ".join(validated_pillars) + "\n    )\n\n")
+                            
+                            # Safely extract and format IMMUTABLE_RIGHTS
+                            raw_rights = immutable_meta.get("RIGHTS", "")
+                            if raw_rights:
+                                rights_nodes = [r.strip() for r in raw_rights.split("|")]
+                                validated_rights = [r for r in rights_nodes if r in schema_data["existentialCore"]]
+                                if validated_rights:
+                                    f.write("    IMMUTABLE_RIGHTS = (\n        " + " |\n        ".join(validated_rights) + "\n    )\n")
+
+                            # 1. Compile existentialCoreBitmask layout map dictionary (ORIGINAL RULE PRESERVED)
                             f.write("\nexistentialCoreBitmask = {\n")
                             for k, d in schema_data["existentialCore"].items():
                                 if "msk" in d:
                                     f.write(f'    existentialCore.{k:<25}: "{d["msk"]}",\n')
                             f.write("}\n")
 
-                            # 2. FIXED: Compile existentialCorePolicy layout map dictionary
+                            # 2. FIXED: Compile existentialCorePolicy layout map dictionary (ORIGINAL RULE PRESERVED)
                             f.write("\nexistentialCorePolicy = {\n")
                             for k, d in schema_data["existentialCore"].items():
                                 if "pol" in d:
@@ -387,18 +411,13 @@ def execute(args, error_handler, repo_root: str):
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
-                            f.write("# " + "="*74 + "\n")
-                            f.write("# EXISTENZ CORE SIGNATURE CONTEXT\n")
-                            f.write("# " + "="*74 + "\n")
-                            f.write(f'CoreMagicRaw = "{magic_raw}"\n')
-                            f.write(f'CoreMagicTag = "{magic_tag}"\n\n')                            
                             f.write("from enum import IntFlag\n\nclass existentialCoreThreat(IntFlag):\n")
                             for k, d in schema_data["existentialCore"].items():
                                 if "threat" in d:
                                     v = d["val"]
                                     expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                     f.write(f"    {d['threat']:<30} = {expr}\n")
-                                    
+                            
                             f.write("\nexistentialCoreThreatLegal = {\n")
                             for k, v in schema_data.get("existentialCoreThreatLegal", {}).items():
                                 target_node = next((d["threat"] for d in schema_data["existentialCore"].values() if "threat" in d and str(d["val"]) == k), None)
@@ -428,11 +447,24 @@ def execute(args, error_handler, repo_root: str):
                 elif token == "SignaturesPy":
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
+                            # 1. Pull the live metadata configurations cleanly
                             live_magic = meta_block.get("CoreMagic", "EX25IMMUT32CORE7617")
+                            
+                            # 2. Write standard module headers and version definitions
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
                             f.write(f"existentialNeta = \"{version_full}\"\n")
-                            
                             f.write(f'existentialCoreCheckMagic = b"{live_magic}"\n\n')
+                            
+                            # ==========================================================================
+                            # ANCHOR EXISTENZ CORE SIGNATURE CONTEXT IN CRYPTO VAULT (SET IN STONE)
+                            # ==========================================================================
+                            f.write("# " + "="*74 + "\n")
+                            f.write("# EXISTENZ CORE SIGNATURE TEMPLATE REFERENCES\n")
+                            f.write("# " + "="*74 + "\n")
+                            f.write(f'CoreMagicRaw = "{magic_raw}"\n')
+                            f.write(f'CoreMagicTag = "{magic_tag}"\n\n')
+                            
+                            # 3. Print your original cryptographic lock definitions untouched
                             f.write("class existentialCoreSignatures:\n    existentialCoreSigned = (\n")
                             f.write("        (\"Magic\", \"magic\", \"existentialCoreMagicHash\", \"\", 2, 0),\n")
                             f.write("        (\"Core\", \"core\", \"existentialCoreHash\", \"\", 12, 1),\n")
@@ -440,11 +472,6 @@ def execute(args, error_handler, repo_root: str):
                         error_handler.print(f"    [COMPILE FILE] Compiled signature tracking registries at: {target_path}", level="info")
                     except Exception as e:
                         error_handler.print(f"Failed to compile existentialCoreSignatures.py: {e}", level="error", exit_code=1)
-                else:
-                    struct_source = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
-                    if os.path.exists(struct_source):
-                        shutil.copy2(struct_source, target_path)
-                        error_handler.print(f"    [SYNC FILE] Replicated fixed structural library component to: {target_path}", level="info")
 
         # B. Self-Heal Missing Engine Opcodes & Stubs
         for token, asset_data in engine_assets_to_sync.items():
