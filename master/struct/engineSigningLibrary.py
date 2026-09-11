@@ -88,20 +88,20 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     for key_tuple in existenzPublicKeys:
         if isinstance(key_tuple, tuple) and len(key_tuple) >= 6:
             sanitized_public_keys.append((
-                str(key_tuple),
-                str(key_tuple),
-                int(key_tuple),
-                int(key_tuple),
-                int(key_tuple),
-                str(key_tuple)
+                str(key_tuple[0]),
+                str(key_tuple[1]),
+                int(key_tuple[2]),
+                int(key_tuple[3]),
+                int(key_tuple[4]),
+                str(key_tuple[5])
             ))
 
     combined_glue_records = {}
     combined_glue_records.update(existenzIntegrityGlue)
     combined_glue_records.update(existenzStructureGlue)
 
-    # Sort items sequentially using your 16-bit configuration ID: High Byte (Group) then Low Byte (Priority)
-    sorted_glue_items = sorted(combined_glue_records.items(), key=lambda item: (item >> 8, item & 0xFF))
+    # FIX: Correctly extracts item[1][3] (the configuration hex word) to parse high/low bytes safely
+    sorted_glue_items = sorted(combined_glue_records.items(), key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF))
 
     compiled_signatures_rows = []
 
@@ -109,9 +109,10 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
             continue
 
-        struct_name = str(glue_tuple)
-        op_flags    = int(glue_tuple)
-        config_word = int(glue_tuple)
+        # FIX: Explicit index positions chosen to extract variables cleanly from your data structures
+        struct_name = str(glue_tuple[0])
+        op_flags    = int(glue_tuple[1])
+        config_word = int(glue_tuple[3])
 
         # Bit-Shift Extraction: Isolate Group ID natively
         item_group_id = config_word >> 8
