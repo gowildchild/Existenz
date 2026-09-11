@@ -60,7 +60,6 @@ PIPELINE_SEQUENCE = [
     existenzSteps.STEP_SUCCESS
 ]
 
-
 def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_tag: str) -> tuple:
     """
     100% GLUE-DRIVEN CRYPTOGRAPHIC HASHER (ZERO HARDCODING STRINGS)
@@ -111,18 +110,25 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
         if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
             continue
         
-        struct_name = glue_tuple[0]
-        op_flags    = glue_tuple[1] 
-        rel_path    = glue_tuple[4]
+        struct_name = glue_tuple[0]  # e.g., "existentialCore" or "existentialCores"
+        op_flags    = glue_tuple[1]  # e.g., 3575
+        rel_path    = glue_tuple[4]  # e.g., "master/existentialCore.py"
         
         calculated_hash = ""
         
-        # Bitmask Opcode Interception: Does this flag command an internal dictionary serialization?
+        # RULE A: Extract dictionary properties natively if SIGN_TYPE_KEYS (1024) or SIGN_TYPE_VALUES (2048) are active
         if bool(op_flags & 1024) or bool(op_flags & 2048):
-            target_payload_dict = schema_data.get(struct_name, schema_data.get("existentialCore", {}))
+            if struct_name == "existentialCores":
+                # Cores is everything combined together into a compatible structure
+                target_payload_dict = schema_data
+            else:
+                target_payload_dict = schema_data.get(struct_name, schema_data.get("existentialCore", {}))
+                
             if target_payload_dict:
                 calculated_hash = calculate_aggregate_circle_hash(target_payload_dict, op_flags)
-        else:
+                
+        # RULE B: Process native physical code file signatures if SIGN_TYPE_FILE (512) is active
+        elif bool(op_flags & 512):
             abs_path = os.path.abspath(os.path.join(repo_root, rel_path))
             if os.path.exists(abs_path) and os.path.isfile(abs_path):
                 try:
@@ -131,19 +137,20 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
                 except Exception:
                     pass
             else:
-                calculated_hash = hashlib.sha256(glue_key.encode("utf-8")).hexdigest()
+                # Dynamic distinct fallback seeds to prevent binding name collisions on initialization before files are written
+                calculated_hash = hashlib.sha256(f"ExistenzSecureSeed:{glue_key}".encode("utf-8")).hexdigest()
+        else:
+            calculated_hash = hashlib.sha256(f"ExistenzSecureSeedFallback:{glue_key}".encode("utf-8")).hexdigest()
                     
         live_glue_computed_hashes[glue_key] = calculated_hash
 
         # 2. DYNAMIC TEXTUAL RESOLUTION PARSER (ZERO RUNTIME INTERPRETATION DEPENDENCY)
-        # Scan the literal script text files line by line to locate the .get() tokens securely
         target_token_name = glue_key
         pattern_str = rf'"{glue_key}"\s*:\s*\([^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*existentialToken\.get\([^)]+\)\.get\(\s*"([^"]+)"'
         text_match = re.search(pattern_str, glue_raw_lines_text)
         if text_match:
             target_token_name = text_match.group(1)
         else:
-            # Secondary broader pattern sweep matching fallback tracking structures
             alt_pattern = rf'"{glue_key}"\s*:\s*\([^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*existentialToken\.get\(\s*"([^"]+)"'
             alt_match = re.search(alt_pattern, glue_raw_lines_text)
             if alt_match:
@@ -159,12 +166,11 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
             elif target_token_name.lower() == "build": structs_registry_dict["KeysType"] = calculated_hash
             elif target_token_name.lower() == "master": structs_registry_dict["Locations"] = calculated_hash
         else:
-            # Populate master json entries cleanly using the extracted short names
             short_clean_name = target_token_name.replace("CoreCheck", "Check").replace("CoreThreat", "Threat")
             master_registry_dict[short_clean_name] = calculated_hash
             
-            # Formulate the uppercase snake case placeholder key tags natively
             upper_suffix = re.sub(r'(?<!^)(?=[A-Z])', '_', short_clean_name).upper()
+            upper_suffix = upper_suffix.replace("THREAT_SHADOW_VACUUM", "THREAT_VACUUM")
             replacements[f"{{{{HASH_{upper_suffix}}}}}"] = calculated_hash
 
     # Map remaining structs tracking hooks to match your layout parameters
@@ -187,9 +193,8 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
             except Exception:
                 pass
         else:
-            engine_hash = hashlib.sha256(engine_key.encode("utf-8")).hexdigest()
+            engine_hash = hashlib.sha256(f"ExistenzEngineSecureSeed:{engine_key}".encode("utf-8")).hexdigest()
         
-        # Match engine hooks cleanly by extracting the short uppercase module word tags
         short_engine_name = engine_key.replace("engine", "").replace("cliState", "").upper()
         if engine_key == "Signatures": short_engine_name = "SIGNATURES_JSON"
         if engine_key == "Manifest": short_engine_name = "MANIFEST_JSON"
@@ -218,6 +223,172 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
     }
     
     return json_matrix, replacements
+
+
+def compute_blueprint_signature_matrix_v10(repo_root: str, schema_data: dict, magic_tag: str) -> tuple:
+    """
+    100% GLUE-DRIVEN CRYPTOGRAPHIC HASHER (ZERO HARDCODING STRINGS)
+    Decodes IntFlag bitmask opcodes and reads internal tuple structures dynamically
+    to map signature hashes directly to their true template and dictionary properties.
+    Returns a tuple: (raw_signatures_dict, template_replacements_map)
+    """
+    import re
+    import hashlib
+    from engineSigningStruct import existenzIntegrityGlue, existenzLocations, existenzSignatures
+    
+    meta_blueprint = schema_data.get("existentialMeta", {})
+    live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
+    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.15"))
+    live_author  = str(meta_blueprint.get("CoreAuthor", "Gunther Voet"))
+    live_secret  = str(meta_blueprint.get("CoreMagic", "EX25IMMUT32CORE7617"))
+
+    local_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
+    chain_seed_string = f"{local_token_hash}:{live_author}"
+    local_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
+
+    replacements = {
+        "{{LIVE_REALM}}":         live_realm,
+        "{{LIVE_VERSION}}":       live_version,
+        "{{LIVE_AUTHOR}}":        live_author,
+        "{{DYNAMIC_TOKEN}}":      local_token_hash,
+        "{{DYNAMIC_SIGNATURE}}":  local_signature_hash,
+        "{{MAGIC_RAW}}":          str(meta_blueprint.get("CoreMagicRaw", "")),
+        "{{MAGIC_TAG}}":          str(magic_tag)
+    }
+
+    live_glue_computed_hashes = {}
+    master_registry_dict = {}
+    structs_registry_dict = {}
+
+    # Extract literal source text layout string definitions directly out of the struct file to prevent object context drops
+    struct_source_path = os.path.abspath(os.path.join(repo_root, "master", "struct", "engineSigningStruct.py"))
+    glue_raw_lines_text = ""
+    if os.path.exists(struct_source_path):
+        try:
+            with open(struct_source_path, "r", encoding="utf-8") as sf:
+                glue_raw_lines_text = sf.read()
+        except Exception:
+            pass
+
+    # 1. PARSE CRYPTOGRAPHIC CORE ELEMENTS VIA LOGICAL GLUE ATTRIBUTES NATIVELY
+    for glue_key, glue_tuple in existenzIntegrityGlue.items():
+        if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
+            continue
+        
+        struct_name = glue_tuple[0]  # e.g., "existentialCore" or "existentialCores"
+        op_flags    = glue_tuple[1]  # e.g., 3575
+        rel_path    = glue_tuple[4]  # e.g., "master/existentialCore.py"
+        
+        calculated_hash = ""
+        
+        # RULE A: Extract dictionary properties natively if SIGN_TYPE_KEYS (1024) or SIGN_TYPE_VALUES (2048) are active
+        if bool(op_flags & 1024) or bool(op_flags & 2048):
+            if struct_name == "existentialCores":
+                # Cores is everything combined together into a compatible structure
+                target_payload_dict = schema_data
+            else:
+                target_payload_dict = schema_data.get(struct_name, schema_data.get("existentialCore", {}))
+                
+            if target_payload_dict:
+                calculated_hash = calculate_aggregate_circle_hash(target_payload_dict, op_flags)
+                
+        # RULE B: Process native physical code file signatures if SIGN_TYPE_FILE (512) is active
+        elif bool(op_flags & 512):
+            abs_path = os.path.abspath(os.path.join(repo_root, rel_path))
+            if os.path.exists(abs_path) and os.path.isfile(abs_path):
+                try:
+                    mock_file_dict = {rel_path: calculate_file_sha256(abs_path)}
+                    calculated_hash = calculate_aggregate_circle_hash(mock_file_dict, op_flags)
+                except Exception:
+                    pass
+            else:
+                # Dynamic distinct fallback seeds to prevent binding name collisions on initialization before files are written
+                calculated_hash = hashlib.sha256(f"ExistenzSecureSeed:{glue_key}".encode("utf-8")).hexdigest()
+        else:
+            calculated_hash = hashlib.sha256(f"ExistenzSecureSeedFallback:{glue_key}".encode("utf-8")).hexdigest()
+                    
+        live_glue_computed_hashes[glue_key] = calculated_hash
+
+        # 2. DYNAMIC TEXTUAL RESOLUTION PARSER (ZERO RUNTIME INTERPRETATION DEPENDENCY)
+        target_token_name = glue_key
+        pattern_str = rf'"{glue_key}"\s*:\s*\([^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*existentialToken\.get\([^)]+\)\.get\(\s*"([^"]+)"'
+        text_match = re.search(pattern_str, glue_raw_lines_text)
+        if text_match:
+            target_token_name = text_match.group(1)
+        else:
+            alt_pattern = rf'"{glue_key}"\s*:\s*\([^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*[^,]+,\s*existentialToken\.get\(\s*"([^"]+)"'
+            alt_match = re.search(alt_pattern, glue_raw_lines_text)
+            if alt_match:
+                target_token_name = alt_match.group(1)
+
+        if glue_key == "Magic":
+            replacements["{{HASH_MAGIC_SIGNATURE}}"] = calculated_hash
+        elif glue_key == "MagicCheck":
+            replacements["{{HASH_MAGIC_TOKEN}}"] = calculated_hash
+        elif glue_key.startswith("Circle"):
+            if target_token_name.lower() == "dist": structs_registry_dict["KeysPublic"] = calculated_hash
+            elif target_token_name.lower() == "tools": structs_registry_dict["KeysHandler"] = calculated_hash
+            elif target_token_name.lower() == "build": structs_registry_dict["KeysType"] = calculated_hash
+            elif target_token_name.lower() == "master": structs_registry_dict["Locations"] = calculated_hash
+        else:
+            short_clean_name = target_token_name.replace("CoreCheck", "Check").replace("CoreThreat", "Threat")
+            master_registry_dict[short_clean_name] = calculated_hash
+            
+            upper_suffix = re.sub(r'(?<!^)(?=[A-Z])', '_', short_clean_name).upper()
+            upper_suffix = upper_suffix.replace("THREAT_SHADOW_VACUUM", "THREAT_VACUUM")
+            replacements[f"{{{{HASH_{upper_suffix}}}}}"] = calculated_hash
+
+    # Map remaining structs tracking hooks to match your layout parameters
+    replacements["{{HASH_KEYS_PUBLIC}}"]  = structs_registry_dict.get("KeysPublic", "")
+    replacements["{{HASH_KEYS_HANDLER}}"] = structs_registry_dict.get("KeysHandler", "")
+    replacements["{{HASH_KEYS_TYPE}}"]    = structs_registry_dict.get("KeysType", "")
+    replacements["{{HASH_LOCATIONS}}"]    = structs_registry_dict.get("Locations", "")
+
+    # 3. TRAVERSE ENGINE FILE MODULE ENDINGS DYNAMICALLY
+    engine_locations_dict = existenzLocations.get("engine", {})
+    for engine_key, engine_rel_path in engine_locations_dict.items():
+        clean_rel_path = engine_rel_path.split(":")[-1] if ":" in engine_rel_path else engine_rel_path
+        abs_engine_path = os.path.abspath(os.path.join(repo_root, clean_rel_path))
+        
+        engine_hash = ""
+        if os.path.exists(abs_engine_path) and os.path.isfile(abs_engine_path):
+            try:
+                mock_eng_dict = {clean_rel_path: calculate_file_sha256(abs_engine_path)}
+                engine_hash = calculate_aggregate_circle_hash(mock_eng_dict, 512)
+            except Exception:
+                pass
+        else:
+            engine_hash = hashlib.sha256(f"ExistenzEngineSecureSeed:{engine_key}".encode("utf-8")).hexdigest()
+        
+        short_engine_name = engine_key.replace("engine", "").replace("cliState", "").upper()
+        if engine_key == "Signatures": short_engine_name = "SIGNATURES_JSON"
+        if engine_key == "Manifest": short_engine_name = "MANIFEST_JSON"
+        
+        replacements[f"{{{{HASH_{short_engine_name}}}}}"] = engine_hash
+
+    # Build the final unified dictionary object 100% dynamic out of your array loops
+    json_matrix = {
+        "existentialToken": {
+            "MAGIC": {
+                "RAW_TEMPLATE": str(meta_blueprint.get("CoreMagicRaw", "")),
+                "RAW":          str(magic_tag),
+                "TOKEN":        str(local_token_hash),
+                "SIGNATURE":    str(local_signature_hash),
+                "REALM":        live_realm,
+                "VERSION":      live_version,
+                "SECRET":       live_secret,                                    
+                "AUTHOR":       live_author
+            },
+            "master": master_registry_dict,
+            "chain": {"Core": "", "CoresChain": "", "Threat": ""},
+            "manifest": {"dist": "dist", "tools": "dist/tools", "build": "master/build-tools", "master": "master/struct"},
+            "structs": structs_registry_dict,
+            "engine": {k: v for k, v in replacements.items() if k.startswith("HASH_")}
+        }
+    }
+    
+    return json_matrix, replacements
+
 
 
 
