@@ -463,6 +463,7 @@ def execute(args, error_handler, repo_root: str):
                 elif token == "SignaturesPy":
                     try:
                         import hashlib
+                        import engineSigningLibrary  # Native library loaded dynamically
                         struct_template_path = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
                         
                         if os.path.exists(struct_template_path):
@@ -481,7 +482,7 @@ def execute(args, error_handler, repo_root: str):
                             chain_seed_string = f"{local_token_hash}:{live_author}"
                             local_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
 
-                            # 1. INITIALIZE DYNAMIC REPLACEMENTS WITH GLOBAL BLUEPRINT METADATA
+                            # 1. INITIALIZE REPLACEMENTS MAP WITH CORE BLUEPRINT STRINGS
                             replacements = {
                                 "{{LIVE_REALM}}":         live_realm,
                                 "{{LIVE_VERSION}}":       live_version,
@@ -492,40 +493,92 @@ def execute(args, error_handler, repo_root: str):
                                 "{{MAGIC_TAG}}":          str(magic_tag)
                             }
 
-                            # 2. GLUE-DRIVEN TRAVERSAL: Automate asset discovery using engineSigningStruct parameters
-                            # FIX: Redundant local import removed to clear the UnboundLocalError namespace blockade
+                            # Translation map to bind short template bracket tags to glue keys
+                            hook_translation_map = {
+                                "Magic":                  "MAGIC_SIGNATURE",
+                                "MagicCheck":             "MAGIC_TOKEN",
+                                "Core":                   "CORE",
+                                "CoreCheck":              "CHECK",
+                                "Cores":                  "CORES",
+                                "Schema":                 "SCHEMA",
+                                "CoreThreat":             "THREAT",
+                                "CoreThreatLegal":        "THREAT_LEGAL",
+                                "CoreThreatShadowVacuum": "THREAT_VACUUM",
+                                "CoreThreatSigned":       "THREAT_SIGNED",
+                                "CircleDist":             "KEYS_PUBLIC",
+                                "CircleTools":            "KEYS_HANDLER",
+                                "CircleBuild":            "KEYS_TYPE",
+                                "CircleMaster":           "LOCATIONS",
+                                "CircleChain":            "MANIFEST_JSON"
+                            }
+
+                            # Engine primitive definitions mapping dictionary
+                            engine_tokens_map = {
+                                "engineLogging":     "LOGGING",
+                                "engineCrypto":      "CRYPTO",
+                                "signingMeta":       "SIGNING_META",
+                                "signingStruct":     "SIGNING_STRUCT",
+                                "signingLibrary":    "SIGNING_LIBRARY",
+                                "builderLibrary":    "BUILDER_LIBRARY",
+                                "cliStateTest":      "CLI_TEST",
+                                "cliStateInit":      "CLI_INIT",
+                                "cliStateManifest":  "CLI_MANIFEST",
+                                "cliStateSign":      "CLI_SIGN",
+                                "cliStateVerify":    "CLI_VERIFY",
+                                "cliStateBuild":     "CLI_BUILD",
+                                "Signatures":        "SIGNATURES_JSON",
+                                "Manifest":          "MANIFEST_JSON"
+                            }
+
+                            # 2. OPCODE-DRIVEN TRAVERSAL: Compute file hashes matching your exact IntFlag rules
                             for glue_key, glue_tuple in existenzIntegrityGlue.items():
                                 if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
                                     continue
                                 
-                                # Extract properties natively: name, status_mask, op_flags, hex_id, path, old_sig
+                                # Extract properties natively: variable, op_flags, sub_flags, hex_id, rel_path
+                                op_flags = glue_tuple[1]  # FIX: Bound strictly to the first value integer (3575)
                                 rel_path = glue_tuple[4]
                                 
-                                # Build template bracket token keys matching your template file standard
-                                hook_key = f"{{{{HASH_{glue_key.upper()}}}}}"
+                                target_suffix = hook_translation_map.get(glue_key, glue_key.upper())
+                                hook_key = f"{{{{HASH_{target_suffix}}}}}"
                                 
-                                # Resolve the physical file path on the running host system container
                                 abs_path = os.path.abspath(os.path.join(repo_root, rel_path))
                                 
-                                # Rule A: Standalone or Magic-Salted targets mapped directly to distinct files on disk
+                                # Run opcode calculations directly through your library engine if file is alive
                                 if os.path.exists(abs_path) and os.path.isfile(abs_path):
                                     try:
-                                        with open(abs_path, "rb") as fh:
-                                            calculated_hash = hashlib.sha256(fh.read()).hexdigest()
+                                        # Bundle file into a dictionary state payload and hash using native opcodes
+                                        mock_file_dict = {rel_path: engineSigningLibrary.calculate_file_sha256(abs_path)}
+                                        calculated_hash = engineSigningLibrary.calculate_aggregate_circle_hash(mock_file_dict, op_flags)
                                     except Exception:
                                         calculated_hash = ""
-                                        
-                                # Rule B: Folders/Directories mapped inside manifest rings are kept clean or route to build
-                                elif os.path.exists(abs_path) and os.path.isdir(abs_path):
-                                    calculated_hash = ""
-                                    
-                                # Rule C: Sub-registries or chained structures remain unpopulated until processing loops sign them
                                 else:
                                     calculated_hash = ""
                                     
                                 replacements[hook_key] = calculated_hash
 
-                            # 3. Apply the dynamic mapping substitutions completely across the template content
+                            # 3. ENGINE SUB-TRAVERSAL: Map operational framework sub-components
+                            engine_locations_dict = existenzLocations.get("engine", {})
+                            for engine_key, engine_rel_path in engine_locations_dict.items():
+                                clean_rel_path = engine_rel_path.split(":")[-1] if ":" in engine_rel_path else engine_rel_path
+                                abs_engine_path = os.path.abspath(os.path.join(repo_root, clean_rel_path))
+                                
+                                suffix = engine_tokens_map.get(engine_key, engine_key.upper())
+                                engine_hook = f"{{{{HASH_{suffix}}}}}"
+                                
+                                if os.path.exists(abs_engine_path) and os.path.isfile(abs_engine_path):
+                                    try:
+                                        mock_eng_dict = {clean_rel_path: engineSigningLibrary.calculate_file_sha256(abs_engine_path)}
+                                        # Process engine primitives using standard file signature bits (512)
+                                        engine_hash = engineSigningLibrary.calculate_aggregate_circle_hash(mock_eng_dict, 512)
+                                    except Exception:
+                                        engine_hash = ""
+                                else:
+                                    engine_hash = ""
+                                    
+                                replacements[engine_hook] = engine_hash
+
+                            # 4. Apply the dynamic mapping substitutions completely across the template content
                             for hook, live_value in replacements.items():
                                 template_content = template_content.replace(hook, live_value)
 
