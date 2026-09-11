@@ -73,16 +73,16 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     from engineSigningStruct import existenzIntegrityGlue, existenzStructureGlue
     
     meta_blueprint = schema_data.get("existentialMeta", {})
-    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.15a"))
+    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.15L"))
     magic_raw = meta_blueprint.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
     
     try:
         fields = magic_raw.split(":")
         magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
     except Exception:
-        magic_tag = "Existenz:v0.76.15a:EX25IMMUT32CORE7617"
+        magic_tag = "Existenz:v0.76.20L:EX25IMMUT32CORE7617"
     
-    current_timestamp = time.strftime("%Y-%m-%d %H:%M 24h")
+    current_timestamp = time.strftime("%Y%m%d %H:%M")
     
     sanitized_public_keys = []
     for key_tuple in existenzPublicKeys:
@@ -100,7 +100,7 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     combined_glue_records.update(existenzIntegrityGlue)
     combined_glue_records.update(existenzStructureGlue)
 
-    # FIX: Correctly extracts item[1][3] (the configuration hex word) to parse high/low bytes safely
+    # Sort items sequentially using your 16-bit configuration ID: High Byte (Group) then Low Byte (Priority)
     sorted_glue_items = sorted(combined_glue_records.items(), key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF))
 
     compiled_signatures_rows = []
@@ -109,7 +109,7 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
             continue
 
-        # FIX: Explicit index positions chosen to extract variables cleanly from your data structures
+        # Extract values explicitly by their true index layout positions from your glue tuples
         struct_name = str(glue_tuple[0])
         op_flags    = int(glue_tuple[1])
         config_word = int(glue_tuple[3])
