@@ -19,16 +19,16 @@ existenzIntegrityGlue = {
                                                                                existentialToken.get("master", {}).get("CorePolicy", "PENDING_SIGN")),
     "CoreBitmask":            ( "existentialCoreBitmask",    3326, 4626, 0x0203, existenzLocations["core"]["Core"],
                                                                                existentialToken.get("master", {}).get("CoreBitmask", "PENDING_SIGN")),    
-    "CoreChain":              ( "existentialCoreChain",      3582, 4642,  0x0204, existenzLocations["core"]["Core"],
-                                                                               existentialToken.get("master", {}).get("CoreChain", "PENDING_SIGN")),   
+    "CoreChained":            ( "existentialCoreChained",    3582, 4642,  0x0204, existenzLocations["core"]["Core"],
+                                                                               existentialToken.get("master", {}).get("CoreChained", "PENDING_SIGN")),   
     "CoreThreat":             ( "existentialCoreThreat",     3327, 4641, 0x0301, existenzLocations["core"]["Threat"],
                                                                                existentialToken.get("master", {}).get("Threat", "PENDING_SIGN")),
     "CoreThreatLegal":        ( "existentialCoreThreatLegal",3326, 4642, 0x0302, existenzLocations["core"]["Threat"],
                                                                                existentialToken.get("master", {}).get("ThreatLegal", "PENDING_SIGN")),
     "CoreThreatShadowVacuum": ( "existentialCoreThreatShadowVacuum", 3326, 4642, 0x0303, existenzLocations["core"]["Threat"],
                                                                                existentialToken.get("master", {}).get("ThreatShadowVacuum", "PENDING_SIGN")),
-    "CoreThreatSigned":       ( "existentialCoreThreatSigned",3582, 4642,  0x0304, existenzLocations["core"]["Threat"],
-                                                                               existentialToken.get("master", {}).get("ThreatSigned", "PENDING_SIGN")),       
+    "CoreThreatChained":      ( "existentialCoreThreatChained",3582, 4642,  0x0304, existenzLocations["core"]["Threat"],
+                                                                               existentialToken.get("master", {}).get("ThreatChained", "PENDING_SIGN")),       
     "CoreCheck":              ( "existentialCoreCheck",      3583, 4865, 0x0700, existenzLocations["core"]["Check"],  
                                                                                existentialToken.get("master", {}).get("Check", "PENDING_SIGN")),
     "Cores":                  ( "existentialCores",          3583, 5250, 0x0800, existenzLocations["core"]["Cores"],
@@ -121,7 +121,7 @@ class existenzSignatures:
         ("CoreThreat",             existenzIntegrityGlue["CoreThreat"],             6),
         ("CoreThreatLegal",        existenzIntegrityGlue["CoreThreatLegal"],        7),
         ("CoreThreatShadowVacuum", existenzIntegrityGlue["CoreThreatShadowVacuum"], 8),
-        ("CoreThreatSigned",       existenzIntegrityGlue["CoreThreatSigned"],        9)
+        ("CoreThreatChained",      existenzIntegrityGlue["CoreThreatChained"],        9)
     )
 
     existentialStructures   = (
