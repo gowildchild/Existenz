@@ -3,24 +3,63 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
+import os
+import json
+import hashlib
+
+# 1. Resolve the blueprint path and ingest master configurations dynamically
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_schema_path = os.path.abspath(os.path.join(_current_dir, "existentialCoreSchema.json"))
+
+try:
+    with open(_schema_path, "r", encoding="utf-8") as _f:
+        _blueprint_data = json.load(_f)
+    _meta = _blueprint_data.get("existentialMeta", {})
+except Exception:
+    # Safe fallback matching your baseline configuration
+    _meta = {
+        "CoreRealm": "Existenz",
+        "CoreVersion": "v0.76.15",
+        "CoreMagic": "EX25IMMUT32CORE7617",
+        "CoreMagicRaw": "CoreRealm:CoreVersion:CoreMagic",
+        "CoreAuthor": "Gunther Voet"
+    }
+
+# 2. Dynamically build the magic tag matching your structural rules
+_magic_raw_template = str(_meta.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic"))
+try:
+    _fields = _magic_raw_template.split(":")
+    _magic_tag = ":".join([str(_meta.get(_field, "UNKNOWN")) for _field in _fields])
+except Exception:
+    _magic_tag = "Existenz:v0.76.15:EX25IMMUT32CORE7617"
+
+# 3. Compute live token and signature hashes on the fly from the JSON keys
+_dynamic_token_hash = hashlib.sha256(_magic_tag.encode("utf-8")).hexdigest()
+_live_author = str(_meta.get("CoreAuthor", "Gunther Voet"))
+_chain_seed_string = f"{_dynamic_token_hash}:{_live_author}"
+_dynamic_signature_hash = hashlib.sha256(_chain_seed_string.encode("utf-8")).hexdigest()
+
+# 4. Populate headers keeping 1:1 backward compatibility with your binary keys
 _HEADER = {
-    "REALM":   b"Existenz",
-    "VERSION": b"v0.76.17",
-    "SECRET":  b"EX25IMMUT32CORE7617"
+    "REALM":   str(_meta.get("CoreRealm", "Existenz")).encode(),
+    "VERSION": str(_meta.get("CoreVersion", "v0.76.15")).encode(),
+    "SECRET":  str(_meta.get("CoreMagic", "EX25IMMUT32CORE7617")).encode()
 }
 
 class existenzMeta:
     HEADER = _HEADER
     MAGIC = {
-        "RAW":       f"{_HEADER['REALM'].decode()}:{_HEADER['VERSION'].decode()}:{_HEADER['SECRET'].decode()}",
-        "TOKEN":     "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85",
-        "SIGNATURE": "db33c3915f073fa8ff11e8557ee0f01ba329b3ae3f06e788bc4803afdf2674e1"        
+        "RAW_TEMPLATE": _magic_raw_template,
+        "RAW":          _magic_tag,
+        "TOKEN":        _dynamic_token_hash,
+        "SIGNATURE":    _dynamic_signature_hash
     }
     META = {
-        "AUTHOR":    "Gunther Voet"
+        "AUTHOR":       _live_author
     }
 
-# del _HEADER
+# Clean up local temporary builder scope variables safely
+del _current_dir, _schema_path, _blueprint_data, _meta, _magic_raw_template, _fields, _magic_tag, _dynamic_token_hash, _live_author, _chain_seed_string, _dynamic_signature_hash, _HEADER
 
 class existenzConfig:
     FINGERPRINT = {
