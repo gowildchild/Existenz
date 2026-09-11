@@ -53,7 +53,7 @@ existenzStructureGlue = {
     "Locations":              ( "existenzLocations",            8695, 1790, 0x00, existenzLocations["engine"]["signingMeta"], 
                                                                                existentialToken.get("structs", {}).get("Locations", "PENDING_SIGN")),
     "Steps":                  ( "existenzSteps",                3575, 1790, 0x00, existenzLocations["engine"]["signingStruct"], 
-                                                                               existentialToken.get("structs", {}).get("Steos", "PENDING_SIGN")),
+                                                                               existentialToken.get("structs", {}).get("Steps", "PENDING_SIGN")),
     "KeysHandler":            ( "existenzIntegrityKeysHandler", 3575, 1790, 0x00, existenzLocations["engine"]["signingStruct"], 
                                                                                existentialToken.get("structs", {}).get("KeysHandler", "PENDING_SIGN")),
     "KeysIO":                 ( "existenzIntegrityKeysIO",      3575, 1790, 0x00, existenzLocations["engine"]["signingStruct"], 
