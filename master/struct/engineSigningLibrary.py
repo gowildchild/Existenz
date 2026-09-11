@@ -101,9 +101,9 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
         if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
             continue
         
-        struct_name = glue_tuple
-        op_flags    = glue_tuple
-        rel_path    = glue_tuple
+        struct_name = glue_tuple[0]
+        op_flags    = glue_tuple[1] # Extracts 3575 integer natively instead of the raw tuple object
+        rel_path    = glue_tuple[4] # Extracts the string location path on disk space
         
         # Turn camelCase keys into UPPER_SNAKE_CASE placeholder hooks dynamically
         clean_suffix = re.sub(r'(?<!^)(?=[A-Z])', '_', glue_key).upper()
@@ -128,7 +128,9 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
                     pass
                     
         replacements[hook_key] = calculated_hash
-        live_glue_computed_hashes[glue_key] = calculated_hash
+        
+        if glue_key not in ["Magic", "MagicCheck", "CircleDist", "CircleTools", "CircleBuild", "CircleMaster", "CircleChain"]:
+            master_registry[glue_key] = calculated_hash
 
     # 2. DYNAMIC MASTER MAP COMPILATION (NO TARGET KEYS HARDCODED)
     # Walks your native existenzSignatures.existentialCore array to build the map dynamically
