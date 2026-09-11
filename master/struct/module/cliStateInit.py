@@ -112,10 +112,15 @@ def execute(args, error_handler, repo_root: str):
         #existenzMeta.HEADER.get("VERSION", version_str)
         version_full = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
         version_str = schema_data.get("existentialMeta", {}).get("CoreVersion", schema_data.get("coreVersion", "v0.76.09"))
-        #magic_str = meta_data.get("existenzMeta", {}).get("HEADER", schema_data.get("SECRET", "HEADERSECRET"))
-        magic_str = "blah"
-        #version_str = schema_data.get("existentialMeta", {}).get("CoreVersion", schema_data.get("coreVersion", "v0.76.09"))
-
+        meta_block = schema_data.get("existentialMeta", {})
+        magic_raw = meta_block.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
+        
+        # Dynamically build the tag string based on the JSON configuration instructions
+        try:
+            fields = magic_raw.split(":")
+            magic_tag = ":".join([str(meta_block.get(field, "UNKNOWN")) for field in fields])
+        except Exception:
+            magic_tag = "Existenz:v0.76.18:EX25IMMUT32CORE7617"
 
         # Export straight to GitHub Actions environment space natively
         github_env_file = os.environ.get('GITHUB_ENV')
@@ -382,6 +387,11 @@ def execute(args, error_handler, repo_root: str):
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
+                            f.write("# " + "="*74 + "\n")
+                            f.write("# EXISTENZ CORE SIGNATURE CONTEXT\n")
+                            f.write("# " + "="*74 + "\n")
+                            f.write(f'CoreMagicRaw = "{magic_raw}"\n')
+                            f.write(f'CoreMagicTag = "{magic_tag}"\n\n')                            
                             f.write("from enum import IntFlag\n\nclass existentialCoreThreat(IntFlag):\n")
                             for k, d in schema_data["existentialCore"].items():
                                 if "threat" in d:
@@ -418,9 +428,11 @@ def execute(args, error_handler, repo_root: str):
                 elif token == "SignaturesPy":
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
+                            live_magic = meta_block.get("CoreMagic", "EX25IMMUT32CORE7617")
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
                             f.write(f"existentialNeta = \"{version_full}\"\n")
-                            f.write("existentialCoreCheckMagic = b\"EX25IMMUT32CORE7617\"\n\n")
+                            
+                            f.write(f'existentialCoreCheckMagic = b"{live_magic}"\n\n')
                             f.write("class existentialCoreSignatures:\n    existentialCoreSigned = (\n")
                             f.write("        (\"Magic\", \"magic\", \"existentialCoreMagicHash\", \"\", 2, 0),\n")
                             f.write("        (\"Core\", \"core\", \"existentialCoreHash\", \"\", 12, 1),\n")
