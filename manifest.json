@@ -1,5 +1,5 @@
 {
-  "commit": "ce2330faa9c5b0381a0f05789df79441d8467786",
+  "commit": "cb9358efa6e8628719ee6f1dbdd59782deb277b0",
   "existentialCoreVersion": "v0.76.17",
   "files.build": {
     "master/build-tools/deprecated/cliStateBuild.py": "0d053d0cb8e705f9f1797f51745bcd55459a22300b14680f28b497eb1201398c",
@@ -90,9 +90,9 @@
     "master/struct/existentialCoreSchema.json": "b7719b3671077f9d19913a13d2f5f992576ea2ed15a684289975b1e54f8b69f5",
     "master/struct/existentialSignatures.py": "49cb7c9576ef8a351e18cc6ff889352d3879222799491158b59d99ee6e4a5a72",
     "master/struct/module/cliStateBuild.py": "612f1c5128c06e02da8649777e5e40827ee76ee377e815a90be938578636cf12",
-    "master/struct/module/cliStateInit.py": "39e53d472de87e34ccf9b362eef771811a38363681cfe7973f46ef7dcd550d84",
+    "master/struct/module/cliStateInit.py": "17967d307dd6e5ba33a9d03ec1563967bc6f4350037e8c82b92242fb2885c042",
     "master/struct/module/cliStateIntegrity.py": "f1e460c13ac718c4830d12f04970a6e0d385fb5569bfeb564d1b51027670818d",
-    "master/struct/module/cliStateManifest.py": "7ca1c4a59a74b886c59480eea69426054920608afb27a63d20718f051b1f0be0",
+    "master/struct/module/cliStateManifest.py": "e12805015a864947f13700702a2719783ee4e7867b2431937b7bc217087ba2ab",
     "master/struct/module/cliStateSign.py": "c23d384c7b567124bfdac030910ed2289a88e731813d89d669516bca4adb25ee",
     "master/struct/module/cliStateTest.py": "e8a6c64754e74904994a5e7f73250d1e10c0bc8a6f7bf53e6be0a24505456417",
     "master/struct/module/cliStateVerify.py": "782c64b8d9a46da4151c6848eb128264fa26ff0a7667a496209c328053f1a237",
@@ -123,7 +123,7 @@
   "signatures.circle": {
     "hash.build": "da8b3d844fe2a94b00c533ba41f9ceeae89132479765a205d6c81a3e4b75d358",
     "hash.dist": "42359285eeef61e1069be804f233216accf88ebdf9a1c4c0e81f92806bfb2275",
-    "hash.master": "ba9bdafae1d9abae0944f01120ebc14a77793ad4ebe1bce577cea5127a082832",
+    "hash.master": "d35e095e68ca6f7463593afd0e80868ccbcd72f5e9dab0a2d3384150f4500d58",
     "hash.tools": "925c5a0230ea9aad4ef4997f40dc883b60fb0a9c561fd6621fbffb2b34cd4171",
     "sign.build": "f66510ad6b571c5ed54ba091c9dabacad17620887f269ba00f1328e444e299048812aa8c7be0fb5cd5f982b7e32ba1d339a51e305cf0bfc31d2b1052b5846b03",
     "sign.dist": "df9e4322dfdcbc8fc79be03b630de02ecabb1973234f124280d151936df408676ec07b795ddd7d7a57fe45ae153f6987c68f134cc3fd8c9cfd7e0d824559e506",
