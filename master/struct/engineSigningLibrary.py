@@ -62,9 +62,10 @@ PIPELINE_SEQUENCE = [
 
 def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_realm: str, group_filter_id: int = None) -> dict:
     """
-    DECOUPLED UNIFIED INTEGRITY BLOCK GENERATOR
-    Processes existenzIntegrityGlue and existenzStructureGlue as separate, distinct tracks
-    to preserve their native architectural meanings without cross-contamination.
+    100% UNIFIED GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
+    Constructs a standardized, unified existenzIntegrity block layout array.
+    Dynamically groups and filters elements using the 16-bit Hex configuration ID (0xGGPP)
+    to match the specific group partition block context natively.
     """
     import hashlib
     import time
@@ -81,8 +82,10 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     except Exception:
         magic_tag = "Existenz:v0.76.20:EX25IMMUT32CORE7617"
     
+    # 1. EXACT TIMESTAMP SPECIFICATION: Emits your exact required structure (e.g., "20260911 19:31")
     current_timestamp = time.strftime("%Y%m%d %H:%M")
     
+    # 2. EXACT 6-COLUMN PUBLIC KEYS REGISTRY: Maps your exact authority schema structure row-for-row
     sanitized_public_keys = []
     for key_tuple in existenzPublicKeys:
         if isinstance(key_tuple, tuple) and len(key_tuple) >= 6:
@@ -95,27 +98,32 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
                 str(key_tuple[5])
             ))
 
-    # Select the target source dictionary track cleanly based on the realm context
-    compiled_signatures_rows = []
-    
-    if target_realm == "existentialCores":
-        # The Master Matrix processes both dictionaries sequentially
-        source_records = list(existenzIntegrityGlue.items()) + list(existenzStructureGlue.items())
-        # Safe universal sort fallback for master matrix envelope aggregation
-        sorted_items = sorted(source_records, key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF) if len(item[1]) > 3 else (0, 0))
-    elif group_filter_id is not None:
-        # TRACK 1: Integrity Timeline Pass (Filtered strictly by High-Byte Group ID)
-        source_records = [item for item in existenzIntegrityGlue.items() if (item[1][3] >> 8) == group_filter_id]
-        sorted_items = sorted(source_records, key=lambda item: item[1][3] & 0xFF)
-    else:
-        # TRACK 2: Structure Registry Pass (Processed straight by alphabetical key alignment)
-        source_records = list(existenzStructureGlue.items())
-        sorted_items = sorted(source_records, key=lambda item: item[0])
+    combined_glue_records = {}
+    combined_glue_records.update(existenzIntegrityGlue)
+    combined_glue_records.update(existenzStructureGlue)
 
-    for glue_key, glue_tuple in sorted_items:
+    # Sort items sequentially using your 16-bit configuration ID: High Byte (Group) then Low Byte (Priority)
+    sorted_glue_items = sorted(combined_glue_records.items(), key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF))
+
+    compiled_signatures_rows = []
+
+    for glue_key, glue_tuple in sorted_glue_items:
+        if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
+            continue
+
+        # Extract values explicitly by their true index layout positions from your glue tuples
         struct_name = str(glue_tuple[0])
         op_flags    = int(glue_tuple[1])
+        config_word = int(glue_tuple[3])
 
+        # Bit-Shift Extraction: Isolate Group ID natively
+        item_group_id = config_word >> 8
+        
+        # FILTER LAYER: If a group filter is active, skip any items that don't belong to this module segment
+        if group_filter_id is not None and item_group_id != group_filter_id:
+            continue
+
+        # INITIALIZATION SECURITY PASS: Compute pure cryptographic hash streams from raw data targets
         hasher = hashlib.sha256()
         
         if bool(op_flags & 2):
@@ -138,6 +146,7 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
             signed_signature
         ))
         
+    # Assemble the unified database dictionary envelope payload structure
     integrity_matrix = {
         target_realm: {
             "Version": f"Existenz:{live_version}",
