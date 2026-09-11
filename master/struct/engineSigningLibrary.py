@@ -86,11 +86,14 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     
     sanitized_public_keys = []
     for key_tuple in existenzPublicKeys:
-        if isinstance(key_tuple, tuple) and len(key_tuple) >= 3:
+        if isinstance(key_tuple, tuple) and len(key_tuple) >= 6:
             sanitized_public_keys.append((
                 str(key_tuple[0]),
                 str(key_tuple[1]),
-                int(key_tuple[2])
+                int(key_tuple[2]),
+                int(key_tuple[3]),
+                int(key_tuple[4]),
+                str(key_tuple[5])
             ))
 
     combined_glue_records = {}
@@ -117,19 +120,17 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         if group_filter_id is not None and item_group_id != group_filter_id:
             continue
 
-        # INITIALIZATION SECURITY PASS: Compute pure cryptographic hash streams from raw data targets
+        # INITIALIZATION SECURITY LOOP: Generate the baseline verification hashes matching your bitweights
         hasher = hashlib.sha256()
         
-        # Mix the magic tag string into the hashing buffer if SIGN_MAGIC_HASH (2) is active
         if bool(op_flags & 2):
             hasher.update(magic_tag.encode("utf-8"))
             
-        if struct_name == "existenzPublicKeys":
+        if struct_name == "existentialPublicKeys":
             for row in sanitized_public_keys:
                 hasher.update(str(row).encode("utf-8"))
         else:
-            # Hash the raw structural definition name context directly without adding custom placeholder seeds
-            hasher.update(struct_name.encode("utf-8"))
+            hasher.update(f"ExistenzInitSeed:{struct_name}".encode("utf-8"))
             
         computed_hash = hasher.hexdigest()
         signed_signature = "PENDING_PRIVATE_KEY_SIGNATURE"
