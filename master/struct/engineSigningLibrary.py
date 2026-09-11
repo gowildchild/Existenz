@@ -141,8 +141,6 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
         bracket_suffix = re.sub(r'(?<!^)(?=[A-Z])', '_', label_key).upper()
         bracket_suffix = bracket_suffix.replace("CORE_THREAT_SHADOW_VACUUM", "THREAT_VACUUM").replace("CORE_THREAT_LEGAL", "THREAT_LEGAL").replace("CORE_THREAT_SIGNED", "THREAT_SIGNED").replace("CORE_THREAT", "THREAT").replace("CORE_CHECK", "CHECK")
         
-        # FIX: Clean, direct dictionary assignment to drop the formatting leak permanently
-        replacements[f"{{{{HASH_{bracket_suffix}}}} brick"] = computed_val
         replacements[f"{{{{HASH_{bracket_suffix}}}}}"] = computed_val
 
     # 3. TRAVERSE ENGINE AND STRUCTURAL CHANNELS SEAMLESSLY
