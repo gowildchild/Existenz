@@ -232,7 +232,12 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
         else:
             engine_hash = hashlib.sha256(f"ExistenzEngineSecureSeed:{engine_key}".encode("utf-8")).hexdigest()
         
-        short_engine_name = engine_key.replace("engine", "").replace("cliState", "").upper()
+        # FIX: Dynamically convert camelCase to UPPER_SNAKE_CASE to flawlessly match your template keys
+        # e.g., "signingMeta" -> "SIGNING_META", "cliStateInit" -> "CLI_STATE_INIT"
+        short_engine_name = re.sub(r'(?<!^)(?=[A-Z])', '_', engine_key).upper()
+        short_engine_name = short_engine_name.replace("ENGINE_", "")
+        
+        # Keep legacy short-name token anchors intact natively
         if engine_key == "Signatures": short_engine_name = "SIGNATURES_JSON"
         if engine_key == "Manifest": short_engine_name = "MANIFEST_JSON"
         
@@ -261,6 +266,7 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
     }
     
     return json_matrix, replacements
+
 
 
 
