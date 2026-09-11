@@ -61,8 +61,6 @@ PIPELINE_SEQUENCE = [
 ]
 
 
-
-
 def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_tag: str) -> tuple:
     """
     100% GLUE-DRIVEN CRYPTOGRAPHIC HASHER (ZERO HARDCODING STRINGS)
@@ -71,6 +69,7 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
     Returns a tuple: (raw_signatures_dict, template_replacements_map)
     """
     import re
+    import hashlib
     from engineSigningStruct import existenzIntegrityGlue, existenzLocations, existenzSignatures
     
     meta_blueprint = schema_data.get("existentialMeta", {})
@@ -99,12 +98,13 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
 
     # 1. PARSE CRYPTOGRAPHIC CORE ELEMENTS VIA LOGICAL GLUE ATTRIBUTES NATIVELY
     for glue_key, glue_tuple in existenzIntegrityGlue.items():
-        if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
+        if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 5):
             continue
         
-        struct_name = glue_tuple[0] # e.g., "existentialCore"
-        op_flags    = glue_tuple[1] # e.g., 3575
-        rel_path    = glue_tuple[4] # e.g., "master/existentialCore.py"
+        struct_name = glue_tuple[0]  # e.g., "existentialCore"
+        op_flags    = glue_tuple[1]  # e.g., 3575
+        rel_path    = glue_tuple[4]  # e.g., "master/existentialCore.py"
+        raw_get_str = glue_tuple[5]  # e.g., 'existentialToken.get("master", {}).get("Check", "PENDING_SIGN")'
         
         calculated_hash = ""
         
@@ -126,29 +126,28 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
                     
         live_glue_computed_hashes[glue_key] = calculated_hash
 
-        # 2. DYNAMIC LAYOUT KEY RESOLUTION FROM INDEX 5 (THE CORE FIX)
-        # Parse the short token names directly to match your template bracket tags
-        if glue_key == "Magic":
-            replacements["{{HASH_MAGIC_SIGNATURE}}"] = calculated_hash
-        elif glue_key == "MagicCheck":
-            replacements["{{HASH_MAGIC_TOKEN}}"] = calculated_hash
-        elif glue_key.startswith("Circle"):
-            # Map tracking rings dynamically to your structs section
-            # dist -> KeysPublic, tools -> KeysHandler, build -> KeysType, master -> Locations
-            ring_name = glue_key.replace("Circle", "")
-            if ring_name == "Dist": structs_registry_dict["KeysPublic"] = calculated_hash
-            elif ring_name == "Tools": structs_registry_dict["KeysHandler"] = calculated_hash
-            elif ring_name == "Build": structs_registry_dict["KeysType"] = calculated_hash
-            elif ring_name == "Master": structs_registry_dict["Locations"] = calculated_hash
-        else:
-            # Map master core attributes dynamically using their real short-name tokens
-            # e.g., "CoreCheck" maps straight to "Check" -> {{HASH_CHECK}}
-            short_tag_name = glue_key.replace("CoreCheck", "Check").replace("CoreThreat", "Threat")
-            master_registry_dict[short_tag_name] = calculated_hash
+        # 2. DYNAMIC LAYOUT KEY RESOLUTION FROM INDEX 5 (TRUE ARCHITECTURAL BLENT)
+        # Extract the exact layout parameter keys string sitting inside your .get() calls
+        get_matches = re.findall(r'"([^"]*)"', str(raw_get_str))
+        if get_matches:
+            target_token_name = get_matches[-2] if len(get_matches) > 1 else get_matches[0]
             
-            # Format the short target suffix to compile upper snake case placeholders
-            upper_suffix = re.sub(r'(?<!^)(?=[A-Z])', '_', short_tag_name).upper()
-            replacements[f"{{{{HASH_{upper_suffix}}}}}}"] = calculated_hash
+            if glue_key == "Magic":
+                replacements["{{HASH_MAGIC_SIGNATURE}}"] = calculated_hash
+            elif glue_key == "MagicCheck":
+                replacements["{{HASH_MAGIC_TOKEN}}"] = calculated_hash
+            elif glue_key.startswith("Circle"):
+                if target_token_name == "dist": structs_registry_dict["KeysPublic"] = calculated_hash
+                elif target_token_name == "tools": structs_registry_dict["KeysHandler"] = calculated_hash
+                elif target_token_name == "build": structs_registry_dict["KeysType"] = calculated_hash
+                elif target_token_name == "master": structs_registry_dict["Locations"] = calculated_hash
+            else:
+                # Map short names dynamically to match your master dictionary JSON output layout specifications
+                master_registry_dict[target_token_name] = calculated_hash
+                
+                # Format camelCase target token directly into upper snake case bracket tags
+                upper_suffix = re.sub(r'(?<!^)(?=[A-Z])', '_', target_token_name).upper()
+                replacements[f"{{{{HASH_{upper_suffix}}}}}"] = calculated_hash
 
     # Map remaining structs tracking hooks to match your layout parameters
     replacements["{{HASH_KEYS_PUBLIC}}"]  = structs_registry_dict.get("KeysPublic", "")
