@@ -352,12 +352,7 @@ def execute(args, error_handler, repo_root: str):
                     try:
                         import engineSigningLibrary
                         with open(target_path, "w", encoding="utf-8") as f:
-                            f.write(engineBuilderLibrary.make_header(version_str, "#"))
-                            f.write("# " + "="*74 + "\n")
-                            f.write("# EXISTENZ CORE SIGNATURE CONTEXT\n")
-                            f.write("# " + "="*74 + "\n")
-                            f.write(f'CoreMagicRaw = "{magic_raw}"\n')
-                            f.write(f'CoreMagicTag = "{magic_tag}"\n\n')                            
+                            f.write(engineBuilderLibrary.make_header(version_str, "#"))                          
                             f.write("from enum import IntFlag\n\nclass existentialCoreThreat(IntFlag):\n")
                             for k, d in schema_data["existentialCore"].items():
                                 if "threat" in d:
