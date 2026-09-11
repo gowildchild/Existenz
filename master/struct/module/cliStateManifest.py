@@ -117,12 +117,19 @@ def execute(args, error_handler, repo_root: str):
     build_changed  = (hash_build != old_circle_block.get("hash.build", ""))
 
     if (master_changed or build_changed) and is_github_runner:
+        changed_items = ""
+        if master_changed and build_changed:
+            changed_items = "MASTER & BUILD"
+        elif master_changed:
+            changed_items = "MASTER"
+        elif build_changed:
+            changed_items = "BUILD"
         error_handler.notice(
             level="error",
             message=f"* * * MASTER CHANGE INTERCEPTION! * * *",
             details=[f"Unsigned changes detected in MASTER CORE code!",
                      f"File system update is blocked till fully signed with private keys!",
-                     f"Changed MASTER: {master_changed} BUILD: {build_changed}"], exit_code=65
+                     f"Changed {changed_items}"], exit_code=65
         ) 
     # sys.exit(65) # Safely crashes the step before modifying the manifest or staging git updates
 
