@@ -94,12 +94,12 @@
     "existentialMeta":                   ""
   },
   "existentialMeta": {
-    "CoreVersion":               "v0.76.18",
+    "CoreVersion":               "v0.76.20",
     "CoreRealm":                 "Existenz",
     "CoreMagic":                 "EX25IMMUT32CORE7617",
     "CoreMagicRaw":              "CoreRealm:CoreVersion:CoreMagic",
     "CoreAuthor":                "Gunther Voet",
-    "CoreDate":                  "20260910",
+    "CoreDate":                  "20260911",
     "CoreWeb":                   "github.com/gowildchild/Existenz/",
     "immutable": {
       "PILLARS":                 "EXISTENCE | AUTONOMY | INTEGRITY | PSYCHOLOGY | PHYSICAL | DISABILITY | DEVELOPMENT | PROPERTY | PRESENCE",
