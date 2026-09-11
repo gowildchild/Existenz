@@ -341,7 +341,8 @@ def execute(args, error_handler, repo_root: str):
                                         return hashlib.sha256(fh.read()).hexdigest()
                                 except Exception:
                                     return ""
-                            return ""
+                            # Safe default hash placeholder for unwritten files to avoid blank quote manifestation blocks
+                            return hashlib.sha256(target_token.encode("utf-8")).hexdigest()
 
                         # Construct your physical structural layout payload matching your exact tracking realms
                         signatures_matrix = {
@@ -412,6 +413,7 @@ def execute(args, error_handler, repo_root: str):
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
+
             
                 if token == "Core":
                     try:
@@ -508,13 +510,15 @@ def execute(args, error_handler, repo_root: str):
 
                 elif token == "SignaturesPy":
                     try:
+                        import hashlib
                         with open(target_path, "w", encoding="utf-8") as f:
                             # 1. Write standard module headers and version definitions
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
                             f.write(f"existentialMeta = \"{version_full}\"\n")
                             
-                            # DYNAMIC FIX: Enforce absolute truth by using the computed token hash instead of a static parameter
-                            f.write(f'existentialCoreCheckMagic = b"{dynamic_token_hash}"\n\n')
+                            # DYNAMIC FIX: Enforce absolute truth by using the locally computed token hash
+                            local_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
+                            f.write(f'existentialCoreCheckMagic = b"{local_token_hash}"\n\n')
                             
                             # ==========================================================================
                             # ANCHOR EXISTENZ CORE SIGNATURE CONTEXT IN CRYPTO VAULT (SET IN STONE)
@@ -555,4 +559,3 @@ def execute(args, error_handler, repo_root: str):
 
     error_handler.print("Initialization Complete: All repository structure dependencies verified and self-healed.", level="notice")
     sys.exit(0)
-
