@@ -226,7 +226,8 @@ def execute(args, error_handler, repo_root: str):
 
                     threat_lines = []
                     for k, d in schema_data.get("existentialCore", {}).items():
-                        if "threat" in d:
+                        # Structural Type Guard: Ensure 'd' is an element dictionary containing a valid threat key
+                        if isinstance(d, dict) and "threat" in d and "val" in d:
                             v = d["val"]
                             expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                             threat_entry = f'    "{d["threat"]}":'.ljust(38)
@@ -237,17 +238,21 @@ def execute(args, error_handler, repo_root: str):
                     bitmask_lines = []
                     policy_lines = []                        
                     for k, d in schema_data.get("existentialCore", {}).items():
-                        if "msk" in d:
+                        if isinstance(d, dict) and "msk" in d:
                             bitmask_lines.append(f'    "existentialCore.{k}":'.ljust(50) + f'"{d["msk"]}"') 
-                        if "pol" in d:
+                        if isinstance(d, dict) and "pol" in d:
                             policy_lines.append(f'    "existentialCore.{k}":'.ljust(50) + f'"{d["pol"]}"') 
-                            
+                                
                     core_lines = []
                     calculated_basic = []
                     calculated_immutable = []
                     for k, d in schema_data.get("existentialCore", {}).items():
+                        # Core Element Filter: Protect type calculations by ensuring 'd' has a valid flat layout value parameter
+                        if not isinstance(d, dict) or "val" not in d or "pol" not in d:
+                            continue
+                            
                         v = d["val"]
-                        raw_pol = d.get("pol", 0)
+                        raw_pol = d["pol"]
                         
                         if isinstance(raw_pol, str):
                             pol_hex = raw_pol.strip()
@@ -284,7 +289,6 @@ def execute(args, error_handler, repo_root: str):
                                 if k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM"]:
                                     calculated_basic.append(f'    "{k}"')
                                 
-                        # FIX: Added strict vertical padding metrics to prevent column stretching bugs
                         val_string = f"{v},".ljust(12)
                         line_entry = f'    "{k}":'.ljust(33)
                         line_entry += f'{{ "val": {val_string}'
@@ -300,8 +304,9 @@ def execute(args, error_handler, repo_root: str):
                     
                     val_to_enum_map = {}
                     for k, d in schema_data.get("existentialCore", {}).items():
-                        node_label = d["threat"] if "threat" in d else (k if k.startswith("CANARY_") or k.startswith("SHIELD_") else f"THREAT_{k}")
-                        val_to_enum_map[int(d["val"])] = f"existentialCoreThreat.{node_label}"
+                        if isinstance(d, dict) and "val" in d:
+                            node_label = d["threat"] if "threat" in d else (k if k.startswith("CANARY_") or k.startswith("SHIELD_") else f"THREAT_{k}")
+                            val_to_enum_map[int(d["val"])] = f"existentialCoreThreat.{node_label}"
 
                     composite_fallbacks = {89130487: "existentialCoreThreat.CANARY_7_EXPLOITATION", 2290263560: "existentialCoreThreat.CANARY_8_PREDATORY"}
 
@@ -315,7 +320,7 @@ def execute(args, error_handler, repo_root: str):
                         enum_token = val_to_enum_map.get(int(raw_key), composite_fallbacks.get(int(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}"))
                         vacuum_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
 
-                    # DYNAMIC BLOCKS MATRIX IMMUTABLE INTEGRITY GENERATOR
+                    # Compute dynamic integrity matrix using your 16-bit configurations (0xGGPP)
                     cores_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
                         repo_root, schema_data, "existentialCores", group_filter_id=None
                     )
@@ -339,6 +344,7 @@ def execute(args, error_handler, repo_root: str):
                     error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
+
             elif filename.endswith(".py"):
                 if token == "Core":
                     try:
