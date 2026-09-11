@@ -70,7 +70,8 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
     to generate matching registry hashes for both JSON and Python template targets.
     Returns a tuple: (raw_signatures_dict, template_replacements_map)
     """
-    from engineSigningStruct import existenzIntegrityGlue, existenzLocations, existenzSignatures, re
+    import re
+    from engineSigningStruct import existenzIntegrityGlue, existenzLocations, existenzSignatures
     
     meta_blueprint = schema_data.get("existentialMeta", {})
     live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
