@@ -90,8 +90,8 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
         "{{LIVE_AUTHOR}}":        live_author,
         "{{DYNAMIC_TOKEN}}":      local_token_hash,
         "{{DYNAMIC_SIGNATURE}}":  local_signature_hash,
-        "{{MAGIC_RAW}}":          str(meta_blueprint.get("CoreMagicRaw", "")),
-        "{{MAGIC_TAG}}":          str(magic_tag)
+        "{{MAGIC_RAW}}".ljust(30): str(meta_blueprint.get("CoreMagicRaw", "")),
+        "{{MAGIC_TAG}}".ljust(30): str(magic_tag)
     }
 
     # Gather live calculated signatures dynamically out of the central glue definitions
@@ -128,9 +128,8 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
                     pass
                     
         replacements[hook_key] = calculated_hash
-        # Match keys directly to populate your JSON master map layout
-        if glue_key not in ["Magic", "MagicCheck", "CircleDist", "CircleTools", "CircleBuild", "CircleMaster", "CircleChain"]:
-            master_registry[glue_key] = calculated_hash
+        # FIX: Save computed signature into your memory buffer tracking registry to populate downstream master dictionary loop
+        live_glue_computed_hashes[glue_key] = calculated_hash
 
     # 2. DYNAMIC MASTER MAP COMPILATION (NO TARGET KEYS HARDCODED)
     # Walks your native existenzSignatures.existentialCore array to build the map dynamically
@@ -139,7 +138,7 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
         label_key = core_item_tuple[0]  # e.g., "Magic", "CoreCheck", "Cores"
         # Shorten dictionary naming conventions to match your exact output layout specs
         clean_json_label = label_key.replace("CoreCheck", "Check").replace("CoreThreat", "Threat")
-        # FIX: Query live_glue_computed_hashes natively instead of the undefined variable name
+        # Query live_glue_computed_hashes natively instead of the undefined variable name
         master_registry_dict[clean_json_label] = live_glue_computed_hashes.get(label_key, "")
 
     # 3. TRAVERSE ENGINE FILES DYNAMICALLY
@@ -157,7 +156,7 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
         clean_rel_path = engine_rel_path.split(":")[-1] if ":" in engine_rel_path else engine_rel_path
         abs_engine_path = os.path.abspath(os.path.join(repo_root, clean_rel_path))
         
-        suffix = engine_tokens_map.get(engine_key, engine_key.upper())
+        suffix = engine_tokens_map.get(engine_key, engine_tokens_map.get(engine_key, engine_key.upper()))
         engine_hook = f"{{{{HASH_{suffix}}}}}"
         if engine_key == "Signatures": engine_hook = "{{HASH_SIGNATURES_JSON}}"
         
@@ -186,7 +185,7 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
                 "SECRET":       live_secret,                                    
                 "AUTHOR":       live_author
             },
-            "master": master_registry_dict, # FIX: 100% DYNAMIC BLUEPRINT MAP BINDING
+            "master": master_registry_dict, # 100% DYNAMIC BLUEPRINT MAP BINDING
             "chain": {"Core": "", "CoresChain": "", "Threat": ""},
             "manifest": {"dist": "dist", "tools": "dist/tools", "build": "master/build-tools", "master": "master/struct"},
             "structs": {
