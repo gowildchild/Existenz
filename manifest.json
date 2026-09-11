@@ -1,5 +1,5 @@
 {
-  "commit": "7f8a096f8b4e2b10dd358a963f9349c597d6057a",
+  "commit": "4bd24760e902664ef9898e0d8d7480ca5cc3eeae",
   "existentialCoreVersion": "v0.76.20",
   "files.build": {
     "master/build-tools/deprecated/cliStateBuild.py": "0d053d0cb8e705f9f1797f51745bcd55459a22300b14680f28b497eb1201398c",
