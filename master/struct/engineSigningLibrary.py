@@ -62,6 +62,93 @@ PIPELINE_SEQUENCE = [
 
 def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_realm: str, group_filter_id: int = None) -> dict:
     """
+    100% UNIFIED GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
+    Constructs a standardized, unified existenzIntegrity block layout array.
+    """
+    import hashlib
+    import time
+    from engineSigningMeta import existenzPublicKeys
+    from engineSigningStruct import existenzIntegrityGlue, existenzStructureGlue
+    
+    meta_blueprint = schema_data.get("existentialMeta", {})
+    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.20"))
+    magic_raw = meta_blueprint.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
+    
+    try:
+        fields = magic_raw.split(":")
+        magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
+    except Exception:
+        magic_tag = "Existenz:v0.76.20:EX25IMMUT32CORE7617"
+    
+    current_timestamp = time.strftime("%Y%m%d %H:%M")
+    
+    sanitized_public_keys = []
+    for key_tuple in existenzPublicKeys:
+        if isinstance(key_tuple, tuple) and len(key_tuple) >= 6:
+            sanitized_public_keys.append((
+                str(key_tuple[0]),
+                str(key_tuple[1]),
+                int(key_tuple[2]),
+                int(key_tuple[3]),
+                int(key_tuple[4]),
+                str(key_tuple[5])
+            ))
+
+    combined_glue_records = {}
+    combined_glue_records.update(existenzIntegrityGlue)
+    combined_glue_records.update(existenzStructureGlue)
+
+    # Sort records purely by your 16-bit packed configurations natively (0xGGPP)
+    sorted_glue_items = sorted(combined_glue_records.items(), key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF))
+
+    compiled_signatures_rows = []
+
+    for glue_key, glue_tuple in sorted_glue_items:
+        if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
+            continue
+
+        struct_name = str(glue_tuple[0])
+        op_flags    = int(glue_tuple[1])
+        config_word = int(glue_tuple[3])
+
+        # Isolate Group ID natively
+        item_group_id = config_word >> 8
+        if group_filter_id is not None and item_group_id != group_filter_id:
+            continue
+
+        hasher = hashlib.sha256()
+        if bool(op_flags & 2):
+            hasher.update(magic_tag.encode("utf-8"))
+            
+        if struct_name == "existentialPublicKeys":
+            for row in sanitized_public_keys:
+                hasher.update(str(row).encode("utf-8"))
+        else:
+            hasher.update(struct_name.encode("utf-8"))
+            
+        computed_hash = hasher.hexdigest()
+        signed_signature = "PENDING_PRIVATE_KEY_SIGNATURE"
+        
+        compiled_signatures_rows.append((
+            struct_name,
+            op_flags,
+            computed_hash,
+            signed_signature
+        ))
+        
+    integrity_matrix = {
+        target_realm: {
+            "Version": f"Existenz:{live_version}",
+            "Update":  current_timestamp
+        },
+        "PublicKeys": tuple(sanitized_public_keys),
+        "Signatures": tuple(compiled_signatures_rows)
+    }
+    
+    return integrity_matrix
+
+def generate_integrity_block_payload_stubborn_ai(repo_root: str, schema_data: dict, target_realm: str, group_filter_id: int = None) -> dict:
+    """
     DECOUPLED UNIFIED INTEGRITY BLOCK GENERATOR
     Processes existenzIntegrityGlue and existenzStructureGlue as separate, distinct tracks
     to preserve their native architectural meanings without cross-contamination.
@@ -375,7 +462,7 @@ def verify_workspace_magic_tag(meta_dictionary: dict, hardcoded_check_magic_byte
 
 def serialize_integrity_block_to_python(integrity_matrix: dict) -> str:
     """
-    DYNAMIC TEXT SERIALIZATION ENWRITER
+    UNIVERSAL TEXT SERIALIZATION ENWRITER
     Converts an in-memory integrity dictionary payload into clean, vertically-aligned
     Python source code text strings. Ready to be appended down to any target structural file.
     """
@@ -398,38 +485,23 @@ def serialize_integrity_block_to_python(integrity_matrix: dict) -> str:
     # 3. Serialize the consolidated PublicKeys row tuple blocks sequentially
     output_lines.append('    "PublicKeys": (')
     for key_row in integrity_matrix["PublicKeys"]:
-        # Dynamic check to handle both nested tuples and string row variations safely
-        if isinstance(key_row, tuple) and len(key_row) >= 3:
-            p_name = str(key_row[0])
-            p_key  = str(key_row[1])
-            p_weight = str(key_row[2])
-        else:
-            p_name, p_key, p_weight = str(key_row), "UNKNOWN_KEY", "0"
-            
-        name_str = f'"{p_name}"'.ljust(15)
-        key_str  = f'"{p_key}"'
-        bit_weight = p_weight.rjust(3)
+        name_str = f'"{key_row[0]}"'.ljust(15)
+        key_str  = f'"{key_row[1]}"'
+        bit_weight = str(key_row[2]).rjust(3)
         output_lines.append(f'        ({name_str}, {key_str}, {bit_weight}),')
     
     if output_lines[-1].endswith(","):
         output_lines[-1] = output_lines[-1][:-1]
     output_lines.append("    ),")
     
-    # 4. Serialize the bitmask-driven Signatures block registry matrix
+    # 4. UNIVERSAL SIGNATURE SERIALIZATION (ZERO FILTERING LEFT ALIVE)
+    # Prints the exact raw data rows computed in memory without a single omission
     output_lines.append('    "Signatures": (')
     for sig_row in integrity_matrix["Signatures"]:
-        if isinstance(sig_row, tuple) and len(sig_row) >= 4:
-            s_name = str(sig_row[0])
-            s_mask = str(sig_row[1])
-            s_hash = str(sig_row[2])
-            s_sign = str(sig_row[3])
-        else:
-            s_name, s_mask, s_hash, s_sign = str(sig_row), "0", "0", "PENDING"
-            
-        lbl_str  = f'"{s_name}"'.ljust(38)
-        mask_str = s_mask.rjust(6)
-        hash_str = f'"{s_hash}"'
-        sign_str = f'"{s_sign}"'
+        lbl_str  = f'"{sig_row[0]}"'.ljust(38)
+        mask_str = str(sig_row[1]).rjust(6)
+        hash_str = f'"{sig_row[2]}"'
+        sign_str = f'"{sig_row[3]}"'
         output_lines.append(f'        ({lbl_str}, {mask_str}, {hash_str}, {sign_str}),')
         
     if output_lines[-1].endswith(","):
