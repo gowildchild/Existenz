@@ -29,6 +29,10 @@ existenzIntegrityGlue = {
                                                                                existentialToken.get("master", {}).get("ThreatShadowVacuum", "PENDING_SIGN")),
     "CoreThreatSigned":       ( "existentialCoreThreatSigned",3583, 382,  0x09, existenzLocations["core"]["Threat"],
                                                                                existentialToken.get("master", {}).get("ThreatSigned", "PENDING_SIGN")),
+    "CorePolicy":             ( "existentialCorePolicy",     3575, 1599, 0x00, existenzLocations["core"]["core"],
+                                                                               existentialToken.get("master", {}).get("CorePolicy", "PENDING_SIGN")),
+    "CoreBitmask":            ( "existentialCoreBitmask",    3575, 1599, 0x00, existenzLocations["core"]["core"],
+                                                                               existentialToken.get("master", {}).get("CoreBitmask", "PENDING_SIGN")),    
     "CircleDist":             ( "existentialCircleDist",     2615, 23,   0x2F, existenzLocations["manifest"]["dist"],
                                                                                existentialToken.get("manifest", {}).get("dist", "PENDING_SIGN")),
     "CircleTools":            ( "existentialCircleTools",    2814, 22,   0x3F, existenzLocations["manifest"]["tools"],
@@ -41,6 +45,44 @@ existenzIntegrityGlue = {
                                                                                existentialToken.get("engine", {}).get("Manifest", "PENDING_SIGN"))
 }
 
+existenzStructureGlue = {
+    "KeysPublic":             ( "existenzPublicKeys",           16887, 1790, 0x00, existenzLocations["engine"]["signingMeta"], 
+                                                                               existentialToken.get("structs", {}).get("KeysPublic", "PENDING_SIGN")),
+    "Config":                 ( "existenzConfig",               8695, 1790, 0x00, existenzLocations["engine"]["signingMeta"], 
+                                                                               existentialToken.get("structs", {}).get("Config", "PENDING_SIGN")),
+    "Locations":              ( "existenzLocations",            8695, 1790, 0x00, existenzLocations["engine"]["signingMeta"], 
+                                                                               existentialToken.get("structs", {}).get("Locations", "PENDING_SIGN")),
+    "Steps":                  ( "existenzSteps",                3575, 1790, 0x00, existenzLocations["engine"]["signingStruct"], 
+                                                                               existentialToken.get("structs", {}).get("Steos", "PENDING_SIGN")),
+    "KeysHandler":            ( "existenzIntegrityKeysHandler", 3575, 1790, 0x00, existenzLocations["engine"]["signingStruct"], 
+                                                                               existentialToken.get("structs", {}).get("KeysHandler", "PENDING_SIGN")),
+    "KeysIO":                 ( "existenzIntegrityKeysIO",      3575, 1790, 0x00, existenzLocations["engine"]["signingStruct"], 
+                                                                               existentialToken.get("structs", {}).get("KeysIO", "PENDING_SIGN")),
+    "KeyStatus":              ( "existenzIntegrityKeyStatus",   3575, 1790, 0x00, existenzLocations["engine"]["signingStruct"], 
+                                                                               existentialToken.get("structs", {}).get("KeyStatus", "PENDING_SIGN")),
+    "IntegrityState":         ( "existenzIntegrityState",       3575, 1790, 0x00, existenzLocations["engine"]["signingStruct"], 
+                                                                               existentialToken.get("structs", {}).get("IntegrityState", "PENDING_SIGN")),
+    "CorePolicy":             ( "existenzCorePolicy",           3575, 1790, 0x00, existenzLocations["engine"]["signingStruct"], 
+                                                                               existentialToken.get("structs", {}).get("CorePolicy", "PENDING_SIGN"))
+}
+
+class existenzIntegrityKeysHandler(IntFlag):
+    """Opcode execution instructions governing the cryptographic pipeline."""
+    SIGN_CHAIN_START     = 1
+    SIGN_MAGIC_HASH      = 2
+    SIGN_TYPE_COMMIT     = 4
+    SIGN_TYPE_PRIVATE    = 8
+    SIGN_PVT_ENVIRONMENT = 16
+    SIGN_PVT_PLATFORM    = 32
+    SIGN_PVT_DEVELOPER   = 64
+    SIGN_PVT_PERSONAL    = 128
+    SIGN_CHAIN_END       = 256
+    SIGN_TYPE_FILE       = 512
+    SIGN_TYPE_KEYS       = 1024
+    SIGN_TYPE_VALUES     = 2048
+    SIGN_TYPE_STRING     = 4096
+    SIGN_TYPE_DICT       = 8192
+    SIGN_TYPE_TUPLE      = 16384
 
 class existenzSignatures:
     existentialImmutable = ()
@@ -56,7 +98,7 @@ class existenzSignatures:
         ("CoreThreatSigned",       existenzIntegrityGlue["CoreThreatSigned"],        9)
     )
 
-    existentialChains   = (
+    existentialStructures   = (
     )
     
     existentialManifest = (
@@ -162,22 +204,6 @@ class existenzIntegrityKeyStatus(IntFlag):
     KEY_IS_PERSONAL        = KEY_IS_PRIVATE     | KEY_PVT_PERSONAL
     KEY_OK_PERSONAL        = KEY_IS_PERSONAL    | KEY_IS_COMMITTED
     KEY_DONE_PERSONAL      = KEY_OK_PERSONAL    | KEY_STATE_SUCCESS
-
-class existenzIntegrityKeysHandler(IntFlag):
-    """Opcode execution instructions governing the cryptographic pipeline."""
-    SIGN_CHAIN_START     = 1
-    SIGN_MAGIC_HASH      = 2
-    SIGN_TYPE_COMMIT     = 4
-    SIGN_TYPE_PRIVATE    = 8
-    SIGN_PVT_ENVIRONMENT = 16
-    SIGN_PVT_PLATFORM    = 32
-    SIGN_PVT_DEVELOPER   = 64
-    SIGN_PVT_PERSONAL    = 128
-    SIGN_CHAIN_END       = 256
-    SIGN_TYPE_FILE       = 512
-    SIGN_TYPE_KEYS       = 1024
-    SIGN_TYPE_VALUES     = 2048
-    SIGN_TYPE_STRING     = 4096
 
 class existenzIntegrityKeysIO(IntFlag):
     """IO tracking bitcodes defining directory and file storage boundaries."""
