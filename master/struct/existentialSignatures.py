@@ -16,14 +16,17 @@ existentialToken = {
         "AUTHOR":             "{{LIVE_AUTHOR}}"
     },
     "master": {
-        "Core":               "{{HASH_CORE}}",
-        "Check":              "{{HASH_CHECK}}",        
-        "Schema":             "{{HASH_SCHEMA}}",
-        "Cores":              "{{HASH_CORES}}",
-        "Threat":             "{{HASH_THREAT}}",
-        "ThreatLegal":        "{{HASH_THREAT_LEGAL}}",
-        "ThreatShadowVacuum": "{{HASH_THREAT_VACUUM}}",
-        "ThreatSigned":       "{{HASH_THREAT_SIGNED}}"
+        "Core":                   "{{HASH_CORE}}",
+        "CorePolicy":             "{{HASH_CORE_POLICY}}",
+        "CoreBitmask":            "{{HASH_CORE_BITMASK}}",
+        "CoreChained":            "{{HASH_CORE_CHAINED}}",
+        "CoreThreat":             "{{HASH_CORE_THREAT}}",
+        "CoreThreatLegal":        "{{HASH_CORE_THREAT_LEGAL}}",
+        "CoreThreatShadowVacuum": "{{HASH_CORE_THREAT_SHADOW_VACUUM}}",
+        "CoreThreatChained":      "{{HASH_CORE_THREAT_CHAINED}}",
+        "CoreCheck":              "{{HASH_CORE_CHECK}}",
+        "Cores":                  "{{HASH_CORES}}",
+        "Schema":                 "{{HASH_SCHEMA}}"
     },
     "chain": {
         "Core":               "",
@@ -38,23 +41,29 @@ existentialToken = {
     },
     "structs": {
         "KeysPublic":         "{{HASH_KEYS_PUBLIC}}",
+        "Config":             "{{HASH_CONFIG}}",
+        "Locations":          "{{HASH_LOCATIONS}}",
+        "Steps":              "{{HASH_STEPS}}",
+        "IntegrityReq":       "{{HASH_INTEGRITY_REQ}}",
         "KeysHandler":        "{{HASH_KEYS_HANDLER}}",
-        "KeysType":           "{{HASH_KEYS_TYPE}}",
-        "Locations":          "{{HASH_LOCATIONS}}"
+        "KeysIO":             "{{HASH_KEYS_I_O}}",
+        "KeyStatus":          "{{HASH_KEY_STATUS}}",
+        "IntegrityState":     "{{HASH_INTEGRITY_STATE}}",
+        "CorePolicy":         "{{HASH_CORE_POLICY}}"
     },
     "engine": {
-        "engineLogging":      "{{HASH_LOGGING}}",
-        "engineCrypto":       "{{HASH_CRYPTO}}",
+        "engineLogging":      "{{HASH_ENGINE_LOGGING}}",
+        "engineCrypto":       "{{HASH_ENGINE_CRYPTO}}",
         "signingMeta":        "{{HASH_SIGNING_META}}",
         "signingStruct":      "{{HASH_SIGNING_STRUCT}}",
         "signingLibrary":     "{{HASH_SIGNING_LIBRARY}}",
         "builderLibrary":     "{{HASH_BUILDER_LIBRARY}}",
-        "cliStateTest" :      "{{HASH_CLI_TEST}}",
-        "cliStateInit" :      "{{HASH_CLI_INIT}}",
-        "cliStateManifest":   "{{HASH_CLI_MANIFEST}}",
-        "cliStateSign":       "{{HASH_CLI_SIGN}}",
-        "cliStateVerify":     "{{HASH_CLI_VERIFY}}",
-        "cliStateBuild":      "{{HASH_CLI_BUILD}}",
+        "cliStateTest" :      "{{HASH_CLI_STATE_TEST}}",
+        "cliStateInit" :      "{{HASH_CLI_STATE_INIT}}",
+        "cliStateManifest":   "{{HASH_CLI_STATE_MANIFEST}}",
+        "cliStateSign":       "{{HASH_CLI_STATE_SIGN}}",
+        "cliStateVerify":     "{{HASH_CLI_STATE_VERIFY}}",
+        "cliStateBuild":      "{{HASH_CLI_STATE_BUILD}}",
         "Signatures":         "{{HASH_SIGNATURES_JSON}}",
         "Manifest":           "{{HASH_MANIFEST_JSON}}"
     }
