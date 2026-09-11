@@ -119,9 +119,9 @@ def execute(args, error_handler, repo_root: str):
     if (master_changed or build_changed) and is_github_runner:
         error_handler.notice(
             level="error",
-            message=f"MANIFEST ESCALATION INTERCEPTION: GHL{is_github_runner}",
-            details=[f"Unsigned changesd detected in master core code!",
-                     f"File system update is blocked till signed with private keys!",
+            message=f"* * * MASTER CHANGE INTERCEPTION! * * *",
+            details=[f"Unsigned changes detected in MASTER CORE code!",
+                     f"File system update is blocked till fully signed with private keys!",
                      f"From {master_changed} -> {build_changed}"], exit_code=65
         ) 
     # sys.exit(65) # Safely crashes the step before modifying the manifest or staging git updates
@@ -142,9 +142,9 @@ def execute(args, error_handler, repo_root: str):
             if needed_keys:
                 error_handler.notice(
                     level="warning",
-                    message=f"MANIFEST ESCALATION INTERCEPTION: Circle: [{target_c.upper()}]",
-                    details=[f"Unsigned changesd detected in master core code, while core is immutable!",
-                             f"File system update is blocked till signed with private keys!",
+                    message=f"* * * CORE CHANGE INTERCEPTION IN [{target_c.upper()}] * * *",
+                    details=[f"Unsigned changes detected in MASTER CORE code!",
+                             f"File system update is blocked till fully signed with private keys!",
                              f"From {old_hash} -> {current_hash}"]
                     #exit_code=65
                 ) 
