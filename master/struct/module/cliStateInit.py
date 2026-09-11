@@ -125,7 +125,6 @@ def execute(args, error_handler, repo_root: str):
             # UNIFIED VERIFICATION GATEWAY: Intercept and process our special live-monitored files
             if token in ["SignaturesPy", "SignaturesJson"] or filename == "existentialCores.json":
                 try:
-                    import json
                     import engineSigningLibrary
 
                     # 1. DYNAMIC IN-MEMORY CALCULATION: Compute the authoritative state matrix from your live structures
