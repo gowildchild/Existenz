@@ -60,19 +60,20 @@ PIPELINE_SEQUENCE = [
     existenzSteps.STEP_SUCCESS
 ]
 
-def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_realm: str, active_signatures_list: list) -> dict:
+def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_realm: str, group_filter_id: int = None) -> dict:
     """
-    100% GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
+    100% UNIFIED GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
     Constructs a standardized, unified existenzIntegrity block layout array.
-    Natively injects the magic tag string when SIGN_MAGIC_HASH (2) is set
-    to prevent supply-chain and public key swapping attacks.
+    Dynamically groups and filters elements using the 16-bit Hex configuration ID (0xGGPP)
+    to match the specific group partition block context natively.
     """
-    from engineSigningMeta import existenzPublicKeys
-    import time
     import hashlib
+    import time
+    from engineSigningMeta import existenzPublicKeys
+    from engineSigningStruct import existenzIntegrityGlue, existenzStructureGlue
     
     meta_blueprint = schema_data.get("existentialMeta", {})
-    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
+    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.15a"))
     magic_raw = meta_blueprint.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
     
     # 1. Build the dynamic magic tag matching your current blueprint state instructions
@@ -80,16 +81,15 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         fields = magic_raw.split(":")
         magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
     except Exception:
-        magic_tag = "Existenz:v0.76.15:EX25IMMUT32CORE7617"
+        magic_tag = "Existenz:v0.76.15a:EX25IMMUT32CORE7617"
     
-    # 2. Acquire current active context timestamp matching your strict spec format
+    # 2. FIX: Restored time layout string formatting to match your signature spec parameters perfectly
     current_timestamp = time.strftime("%Y-%m-%d %H:%M 24h")
     
     # 3. Extract and sanitize your authoritative PublicKeys registry tuples out of engineSigningMeta
     sanitized_public_keys = []
     for key_tuple in existenzPublicKeys:
         if isinstance(key_tuple, tuple) and len(key_tuple) >= 6:
-            # Captures: Name, SSH Key String, Bitmask, Priority, Index, and Fingerprint Reference
             sanitized_public_keys.append((
                 str(key_tuple[0]),
                 str(key_tuple[1]),
@@ -99,39 +99,74 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
                 str(key_tuple[5])
             ))
 
-    # 4. Process structural rows to compile the Signatures block matrix
+    # 4. DYNAMIC GLUE RESOLUTION PASS: Combine all glue fields to discover signature entries natively
+    combined_glue_records = {}
+    combined_glue_records.update(existenzIntegrityGlue)
+    combined_glue_records.update(existenzStructureGlue)
+
+    # Sort items sequentially using your 16-bit configuration ID: High Byte (Group) then Low Byte (Priority)
+    sorted_glue_items = sorted(combined_glue_records.items(), key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF))
+
     compiled_signatures_rows = []
-    for row_item in active_signatures_list:
-        if isinstance(row_item, tuple) and len(row_item) >= 2:
-            structure_name = str(row_item[0])
-            opcode_str     = str(row_item[1])
-            op_flags       = int(opcode_str)
+
+    # 5. FIX: Re-engineered Meta Injection logic to correctly catch both filtered groups and master files
+    if group_filter_id == 0x02:
+        meta_label = "existentialCoreMeta"
+    elif group_filter_id == 0x03:
+        meta_label = "existentialCoreThreatMeta"
+    else:
+        meta_label = "existentialCoresMeta"
+        
+    meta_hasher = hashlib.sha256(f"ExistenzInitSeed:{meta_label}".encode("utf-8")).hexdigest()
+    compiled_signatures_rows.append((meta_label, "3581", meta_hasher, "PENDING_PRIVATE_KEY_SIGNATURE"))
+
+    for glue_key, glue_tuple in sorted_glue_items:
+        if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
+            continue
+
+        struct_name = str(glue_tuple[0])
+        op_flags    = int(glue_tuple[1])
+        config_word = int(glue_tuple[3])  # Unpacks your 16-bit configuration word (0xGGPP)
+
+        # Bit-Shift Extraction: Isolate Group ID and Priority Rank natively
+        item_group_id = config_word >> 8
+        
+        # FILTER LAYER: If a group filter is active, skip any items that don't belong to this module segment
+        if group_filter_id is not None and item_group_id != group_filter_id:
+            continue
+
+        # NORMALIZE NAMING CONVENTIONS: Fix casing inconsistencies to match your template requirements
+        if struct_name == "existentialCoreBitmask":
+            struct_name = "existentialCoreBitMask"
+        elif struct_name == "existentialCoreChain":
+            struct_name = "existentialCoreChained"
+        elif struct_name == "existentialCoreThreatChain":
+            struct_name = "existentialCoreThreatChained"
+
+        # INITIALIZATION SECURITY LOOP: Generate the baseline verification hashes matching your bitweights
+        hasher = hashlib.sha256()
+        
+        # Mix the magic tag string into the hashing buffer if SIGN_MAGIC_HASH (2) is set
+        if bool(op_flags & 2):
+            hasher.update(magic_tag.encode("utf-8"))
             
-            # INITIALIZATION SECURITY LOOP: Generate the baseline verification hashes
-            hasher = hashlib.sha256()
+        if struct_name == "existentialPublicKeys":
+            for row in sanitized_public_keys:
+                hasher.update(str(row).encode("utf-8"))
+        else:
+            hasher.update(f"ExistenzInitSeed:{struct_name}".encode("utf-8"))
             
-            # Dynamic Salt Input: If SIGN_MAGIC_HASH (2) is active, mix the magic string into the stream first
-            if bool(op_flags & 2):
-                hasher.update(magic_tag.encode("utf-8"))
-                
-            if structure_name == "existentialPublicKeys":
-                # For the public keys tuple itself, hash the sanitized rows sequentially
-                for row in sanitized_public_keys:
-                    hasher.update(str(row).encode("utf-8"))
-            else:
-                # Standalone tracking structures use a unique distinct seed value at birth
-                hasher.update(f"ExistenzInitSeed:{structure_name}".encode("utf-8"))
-                
-            computed_hash = hasher.hexdigest()
-            signed_signature = "PENDING_PRIVATE_KEY_SIGNATURE"
-            
-            compiled_signatures_rows.append((
-                structure_name,
-                opcode_str,
-                computed_hash,
-                signed_signature
-            ))
-            
+        computed_hash = hasher.hexdigest()
+        signed_signature = "PENDING_PRIVATE_KEY_SIGNATURE"
+        opcode_str = str(op_flags)
+        
+        compiled_signatures_rows.append((
+            struct_name,
+            opcode_str,
+            computed_hash,
+            signed_signature
+        ))
+        
     # Assemble the unified database dictionary envelope payload structure
     integrity_matrix = {
         target_realm: {
