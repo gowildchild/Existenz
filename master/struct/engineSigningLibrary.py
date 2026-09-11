@@ -60,6 +60,61 @@ PIPELINE_SEQUENCE = [
     existenzSteps.STEP_SUCCESS
 ]
 
+def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_realm: str, active_signatures_list: list) -> dict:
+    """
+    100% GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
+    Constructs a standardized, unified existenzIntegrity block layout array.
+    Can be loaded natively as an initialization stub or an active signed block.
+    """
+    from engineSigningMeta import existenzPublicKeys, existenzMeta
+    import time
+    
+    meta_blueprint = schema_data.get("existentialMeta", {})
+    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.15+"))
+    
+    # 1. Acquire current active context time stamp matching your strict spec format
+    # e.g., "2026-09-11 18:02 24h"
+    current_timestamp = time.strftime("%Y-%m-%d %H:%M 24h")
+    
+    # 2. Extract and sanitize your authoritative PublicKeys registry tuples
+    sanitized_public_keys = []
+    for key_tuple in existenzPublicKeys:
+        if isinstance(key_tuple, tuple) and len(key_tuple) >= 3:
+            # Captures: Name, Key String, Bit Weight Rank Identifier
+            sanitized_public_keys.append((key_tuple[0], key_tuple[1], key_tuple[2]))
+
+    # 3. Process structural rows to compile the Signatures block matrix
+    compiled_signatures_rows = []
+    for row_item in active_signatures_list:
+        if isinstance(row_item, tuple) and len(row_item) >= 2:
+            structure_name = row_item[0]
+            opcode_bitmask = str(row_item[1])
+            
+            # If the call passes pre-computed hashes/signatures (Signing phase), use them.
+            # Otherwise (Init phase), fallback to dynamic placeholder tracking anchors.
+            computed_hash = row_item[2] if len(row_item) > 2 else f"placeholder_hash_of_{structure_name}"
+            signed_signature = row_item[3] if len(row_item) > 3 else "PENDING_PRIVATE_KEY_SIGNATURE"
+            
+            compiled_signatures_rows.append((
+                structure_name,
+                opcode_bitmask,
+                computed_hash,
+                signed_signature
+            ))
+            
+    # Assemble the unified database dictionary envelope payload structure
+    integrity_matrix = {
+        target_realm: {
+            "Version": f"Existenz:{live_version}",
+            "Update":  current_timestamp
+        },
+        "PublicKeys": tuple(sanitized_public_keys),
+        "Signatures": tuple(compiled_signatures_rows)
+    }
+    
+    return integrity_matrix
+
+
 def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_tag: str) -> tuple:
     """
     100% GLUE-DRIVEN CRYPTOGRAPHIC HASHER (ZERO HARDCODING STRINGS)
