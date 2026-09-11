@@ -473,7 +473,7 @@ def execute(args, error_handler, repo_root: str):
                             # Extract metadata properties from the active master blueprint payload dict
                             meta_blueprint = schema_data.get("existentialMeta", {})
                             live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
-                            live_version = str(meta_blueprint.get("CoreVersion", "v0.76.15"))
+                            live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
                             live_author  = str(meta_blueprint.get("CoreAuthor", "Gunther Voet"))
 
                             # Compute live cryptographic tokens natively using the global magic_tag string
@@ -493,15 +493,13 @@ def execute(args, error_handler, repo_root: str):
                             }
 
                             # 2. GLUE-DRIVEN TRAVERSAL: Automate asset discovery using engineSigningStruct parameters
-                            from engineSigningStruct import existenzIntegrityGlue, existenzIntegrityKeysHandler
-
+                            # FIX: Redundant local import removed to clear the UnboundLocalError namespace blockade
                             for glue_key, glue_tuple in existenzIntegrityGlue.items():
                                 if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
                                     continue
                                 
-                                # Extract properties natively: [0]=variable, [1]=bitmask, [2]=opcode, [3]=id, [4]=relative_path
+                                # Extract properties natively: name, status_mask, op_flags, hex_id, path, old_sig
                                 rel_path = glue_tuple[4]
-                                op_flags = glue_tuple[2]
                                 
                                 # Build template bracket token keys matching your template file standard
                                 hook_key = f"{{{{HASH_{glue_key.upper()}}}}}"
