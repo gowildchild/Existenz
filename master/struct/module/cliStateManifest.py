@@ -122,7 +122,7 @@ def execute(args, error_handler, repo_root: str):
             message=f"* * * MASTER CHANGE INTERCEPTION! * * *",
             details=[f"Unsigned changes detected in MASTER CORE code!",
                      f"File system update is blocked till fully signed with private keys!",
-                     f"From {master_changed} -> {build_changed}"], exit_code=65
+                     f"Changed MASTER: {master_changed} BUILD: {build_changed}"], exit_code=65
         ) 
     # sys.exit(65) # Safely crashes the step before modifying the manifest or staging git updates
 
