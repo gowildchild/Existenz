@@ -40,6 +40,7 @@ def execute(args, error_handler, repo_root: str):
     failed_initialization = False
     core_assets_to_sync = {}
     engine_assets_to_sync = {}
+    
     # 1. Audit Realm: Core Layout Configuration Primitives & Output Targets
     for token, relative_path in existenzLocations["core"].items():
         # DYNAMIC BYPASS GATE: Skip signature chain properties natively without hardcoded tracking sets
@@ -48,11 +49,6 @@ def execute(args, error_handler, repo_root: str):
             continue
             
         full_target_path = os.path.abspath(os.path.join(repo_root, relative_path))
-        
-        # Diagnostic File Presence Verification Pass
-        #error_handler.print(f"  DEBUG SCAN: Checking token '{token}' target path: {full_target_path}", level="info")
-        #if os.path.exists(full_target_path):
-        #    error_handler.print(f"  DEBUG SCAN: Physical file present on disk space with size: {os.path.getsize(full_target_path)} bytes.", level="info")
         
         if not os.path.exists(full_target_path):
             if token == "Schema":
@@ -85,13 +81,10 @@ def execute(args, error_handler, repo_root: str):
             }
         else:
             error_handler.print(f"Verified [FOUND]: {full_target_path}", level="info")
-
     # 3. Execution Phase: Self-Heal and Provision Missing Workspace Blocks
     if core_assets_to_sync or engine_assets_to_sync:
         error_handler.print(" [*] Pre-flight Scan Complete: Bootstrapping runtime environment configurations...", level="notice")
         schema_path = os.path.abspath(os.path.join(repo_root, existenzLocations["core"]["Schema"]))
-        #meta_path = os.path.abspath(os.path.join(repo_root, existenzLocations["engine"]["signingMeta"]))
-        meta_data = ""
         
         try:
             with open(schema_path, "r", encoding="utf-8") as f:
@@ -99,17 +92,6 @@ def execute(args, error_handler, repo_root: str):
         except Exception as e:
             error_handler.print(f"Failed to parse master schema JSON database layers: {e}", level="error", exit_code=16)
 
-        #try:
-        #    with open(meta_path, "r", encoding="utf-8") as f:
-        #        meta_data = json.load(f)
-        #except Exception as e:
-        #    error_handler.print(f"Failed to parse meta JSON database layers: {e}", level="error", exit_code=16)
-
-        
-        version_name = "module/cliStateInit.py"
-        
-        # Dynamic Extraction: Read version directly from the blueprint payload
-        #existenzMeta.HEADER.get("VERSION", version_str)
         version_full = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.08"))
         version_str = schema_data.get("existentialMeta", {}).get("CoreVersion", schema_data.get("coreVersion", "v0.76.09"))
         meta_block = schema_data.get("existentialMeta", {})
@@ -132,167 +114,186 @@ def execute(args, error_handler, repo_root: str):
             except Exception as env_err:
                 error_handler.print(f"Non-fatal error mapping version variable to shell runner: {env_err}", level="debug")
 
-        
-        #error_handler.print(f"  [VERSION1] {version_str} {version_name}", level="debug")
         # A. Self-Heal Core Runtime Files (Compiling directly to final destination)
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.abspath(os.path.join(repo_root, asset_data["runtime_path"]))
-            calculated_basic = []
-            calculated_immutable = []
-            calculated_immutable_count = 0
             filename = asset_data["filename"]
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
             
-            if filename.endswith(".json"):
+            # UNIQUE PAR PASS GATEWAY: Intercept and process our three special live-monitored files
+            if token in ["SignaturesPy", "SignaturesJson"] or filename == "existentialCores.json":
                 try:
-                    if token == "Cores":
-                        from engineSigningStruct import existenzCorePolicy
+                    import engineSigningLibrary
 
-                        threat_lines = []
-                        for k, d in schema_data.get("existentialCore", {}).items():
-                            if "threat" in d:
-                                v = d["val"]
-                                expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
-                                threat_entry = f'    "{d["threat"]}":'.ljust(38)
-                                threat_entry += f'{{ "val": {v},'.ljust(15)
-                                threat_entry += f'"expr": "{expr}" }}'
-                                threat_lines.append(threat_entry)
+                    # Compute dynamic state in-memory first out of your native glue structures
+                    live_json, live_replacements = engineSigningLibrary.compute_blueprint_signature_matrix(
+                        repo_root, schema_data, magic_tag
+                    )
 
-                        # 2. Extract separate registries for Bitmask and Policy structures
-                        bitmask_lines = []
-                        policy_lines = []                        
-                        for k, d in schema_data.get("existentialCore", {}).items():
-                            if "msk" in d:
-                                bitmask_lines.append(f'    "existentialCore.{k}":'.ljust(50) + f'"{d["msk"]}"') 
-                            if "pol" in d:
-                                policy_lines.append(f'    "existentialCore.{k}":'.ljust(50) + f'"{d["pol"]}"') 
+                    is_json_format = filename.endswith(".json")
+                    force_write_required = False
+                    
+                    if not os.path.exists(target_path):
+                        force_write_required = True
+                        error_handler.print(f"    [AUTO-HEAL] Core ledger asset missing. Re-generating: {target_path}", level="warning")
+                    else:
+                        if is_json_format:
+                            try:
+                                with open(target_path, "r", encoding="utf-8") as jf:
+                                    existing_data = json.load(jf)
+                                if existing_data.get("existentialToken") != live_json.get("existentialToken"):
+                                    force_write_required = True
+                            except Exception:
+                                force_write_required = True
+                        else:
+                            struct_template_path = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
+                            if os.path.exists(struct_template_path):
+                                with open(struct_template_path, "r", encoding="utf-8") as tf:
+                                    template_content = tf.read()
+                                for hook, live_value in live_replacements.items():
+                                    template_content = template_content.replace(hook, live_value)
                                 
-                        core_lines = []
-                        calculated_basic = []
-                        calculated_immutable = [] # FIX: Initialized here to prevent variable lookup NameError crash
-                        for k, d in schema_data.get("existentialCore", {}).items():
+                                try:
+                                    with open(target_path, "r", encoding="utf-8") as pf:
+                                        if pf.read() != template_content:
+                                            force_write_required = True
+                                    except Exception:
+                                        force_write_required = True
+
+                    # Overwrite and update your targets natively when text differences or drops are found
+                    if force_write_required:
+                        if is_json_format:
+                            with open(target_path, "w", encoding="utf-8") as sf_out:
+                                json.dump(live_json, sf_out, indent=2)
+                        else:
+                            struct_template_path = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
+                            with open(struct_template_path, "r", encoding="utf-8") as tf:
+                                template_content = tf.read()
+                            for hook, live_value in live_replacements.items():
+                                template_content = template_content.replace(hook, live_value)
+                            with open(target_path, "w", encoding="utf-8") as f:
+                                f.write(template_content)
+                                
+                        error_handler.print(f"    [SYNC LAYER] Recreated and synchronized authoritative ledger file at: {target_path}", level="info")
+                    else:
+                        error_handler.print(f"    [PITCH CLEAN] Core artifact is fully up-to-date with active glue records: {filename}", level="info")
+
+                except Exception as e:
+                    error_handler.print(f"Failed executing auto-heal verification track for {filename}: {e}", level="error", exit_code=1)
+
+            elif filename.endswith(".json") and token == "Cores":
+                try:
+                    from engineSigningStruct import existenzCorePolicy
+
+                    threat_lines = []
+                    for k, d in schema_data.get("existentialCore", {}).items():
+                        if "threat" in d:
                             v = d["val"]
-                            raw_pol = d.get("pol", 0)
+                            expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
+                            threat_entry = f'    "{d["threat"]}":'.ljust(38)
+                            threat_entry += f'{{ "val": {v},'.ljust(15)
+                            threat_entry += f'"expr": "{expr}" }}'
+                            threat_lines.append(threat_entry)
+
+                    bitmask_lines = []
+                    policy_lines = []                        
+                    for k, d in schema_data.get("existentialCore", {}).items():
+                        if "msk" in d:
+                            bitmask_lines.append(f'    "existentialCore.{k}":'.ljust(50) + f'"{d["msk"]}"') 
+                        if "pol" in d:
+                            policy_lines.append(f'    "existentialCore.{k}":'.ljust(50) + f'"{d["pol"]}"') 
                             
-                            # Safely convert hex string parameters base 16
-                            if isinstance(raw_pol, str):
-                                pol_hex = raw_pol.strip()
-                                pol = int(pol_hex, 16) if pol_hex.startswith("0x") else int(pol_hex)
-                            else:
-                                pol = int(raw_pol)
-                                pol_hex = hex(pol)
-                                
-                            if bool(pol & existenzCorePolicy.BIT_MASK):
+                    core_lines = []
+                    calculated_basic = []
+                    calculated_immutable = []
+                    for k, d in schema_data.get("existentialCore", {}).items():
+                        v = d["val"]
+                        raw_pol = d.get("pol", 0)
+                        
+                        if isinstance(raw_pol, str):
+                            pol_hex = raw_pol.strip()
+                            pol = int(pol_hex, 16) if pol_hex.startswith("0x") else int(pol_hex)
+                        else:
+                            pol = int(raw_pol)
+                            
+                        if bool(pol & existenzCorePolicy.BIT_MASK):
+                            calculated_expr = f"1 << {v.bit_length() - 1}"
+                        else:
+                            if v <= 0:
+                                calculated_expr = "0"
+                            elif (v & (v - 1)) == 0:
                                 calculated_expr = f"1 << {v.bit_length() - 1}"
                             else:
-                                if v <= 0:
-                                    calculated_expr = "0"
-                                elif (v & (v - 1)) == 0:
-                                    calculated_expr = f"1 << {v.bit_length() - 1}"
-                                else:
-                                    calculated_expr = f"0x{v:08x}"
+                                calculated_expr = f"0x{v:08x}"
 
-                            # Evaluate structural types dynamically from your IntFlag priority order
-                            if bool(pol & existenzCorePolicy.CORE_PILLAR):
-                                struct_type = "PILLAR"
-                            elif bool(pol & existenzCorePolicy.CORE_RIGHTS):
-                                struct_type = "RIGHTS"
-                            elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY | existenzCorePolicy.CORE_WATCHDOG)):
-                                struct_type = "CANARY"
-                            elif bool(pol & existenzCorePolicy.CORE_INTEGRITY):
-                                struct_type = "SIGNATURE"
-                            else:
-                                struct_type = "PILLAR"
-                                
-                            if not bool(k == "NONE") and bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
-                                calculated_immutable.append(f'    "{k}"')
-                                if bool(pol & (existenzCorePolicy.CORE_PILLAR | existenzCorePolicy.CORE_RIGHTS)):
+                        if bool(pol & existenzCorePolicy.CORE_PILLAR):
+                            struct_type = "PILLAR"
+                        elif bool(pol & existenzCorePolicy.CORE_RIGHTS):
+                            struct_type = "RIGHTS"
+                        elif bool(pol & (existenzCorePolicy.CORE_CANARY | existenzCorePolicy.USER_CANARY | existenzCorePolicy.CORE_WATCHDOG)):
+                            struct_type = "CANARY"
+                        elif bool(pol & existenzCorePolicy.CORE_INTEGRITY):
+                            struct_type = "SIGNATURE"
+                        else:
+                            struct_type = "PILLAR"
+                            
+                        if not bool(k == "NONE") and bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
+                            calculated_immutable.append(f'    "{k}"')
+                            if bool(pol & (existenzCorePolicy.CORE_PILLAR | existenzCorePolicy.CORE_RIGHTS)):
+                                calculated_basic.append(f'    "{k}"')
+                            elif bool(pol & existenzCorePolicy.CORE_CANARY):
+                                if k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM"]:
                                     calculated_basic.append(f'    "{k}"')
-                                    
-                                elif bool(pol & existenzCorePolicy.CORE_CANARY):
-                                    if k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM"]:
-                                        calculated_basic.append(f'    "{k}"')
-                                    
-                            line_entry = f'    "{k}":'.ljust(33)
-                            line_entry += f'{{ "val": {v},'.ljust(15)
-                            line_entry += f'"expr": "{calculated_expr}",'.ljust(22)
-                            line_entry += f'"type": "{struct_type}",'.ljust(20)
-                            
-                            clean_cmnt = d.get("comment", "").replace('"', '\\"')
-                            line_entry += f' "comment": "{clean_cmnt}" }}'
-                            core_lines.append(line_entry)
+                                
+                        line_entry = f'    "{k}":'.ljust(33)
+                        line_entry += f'{{ "val": {val_string}'
+                        line_entry += f'"expr": "{calculated_expr}",'.ljust(22)
+                        line_entry += f'"type": "{struct_type}",'.ljust(20)
+                        
+                        clean_cmnt = d.get("comment", "").replace('"', '\\"')
+                        line_entry += f' "comment": "{clean_cmnt}" }}'
+                        core_lines.append(line_entry)
 
-                        ver_val = schema_data.get("existentialMeta", schema_data.get("coreVersion", "v0.76.10"))
-                        ver_val_meta = schema_data.get("existentialMeta", {})
-                        ver_val_json = json.dumps(ver_val_meta, indent=2)
-                        ver_val_json_indent = ver_val_json.replace("\n", "\n  ")
-                        magic_val = ver_val_meta.get("coreVersion", "v0.76.08")
-                        val_to_enum_map = {}
-                        for k, d in schema_data.get("existentialCore", {}).items():
-                            if "threat" in d:
-                                node_label = d["threat"]
-                            else:
-                                node_label = k if k.startswith("CANARY_") or k.startswith("SHIELD_") else f"THREAT_{k}"
-                            val_to_enum_map[int(d["val"])] = f"existentialCoreThreat.{node_label}"
-
-                        composite_fallbacks = {
-                            89130487:   "existentialCoreThreat.CANARY_7_EXPLOITATION",
-                            2290263560: "existentialCoreThreat.CANARY_8_PREDATORY"
-                        }
-
-                        legal_entries = []
-                        for raw_key, val in schema_data.get("existentialCoreThreatLegal", {}).items():
-                            int_key = int(raw_key)
-                            enum_token = val_to_enum_map.get(int_key, composite_fallbacks.get(int_key, f"existentialCoreThreat.UNKNOWN_{int_key}"))
-                            legal_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
-
-                        vacuum_entries = []
-                        for raw_key, val in schema_data.get("existentialCoreThreatShadowVacuum", {}).items():
-                            int_key = int(raw_key)
-                            enum_token = val_to_enum_map.get(int_key, composite_fallbacks.get(int_key, f"existentialCoreThreat.UNKNOWN_{int_key}"))
-                            vacuum_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
-
-                        json_str_payload = "{\n"
-                        json_str_payload += f'  "existentialCoreMeta": {ver_val_json_indent},\n'
-                        json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
-                        json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"  
-                        json_str_payload += '  "existentialCoreBasic": [\n' + ",\n".join(calculated_basic) + "\n  ],\n" 
-                        json_str_payload += '  "existentialCoreImmutable": [\n' + ",\n".join(calculated_immutable) + "\n  ],\n" 
-                        json_str_payload += '  "existentialCoreThreat": {\n' + ",\n".join(threat_lines) + "\n  },\n"
-                        json_str_payload += '  "existentialCoreThreatLegal": {\n' + ",\n".join(legal_entries) + "\n  },\n"
-                        json_str_payload += '  "existentialCoreThreatShadowVacuum": {\n' + ",\n".join(vacuum_entries) + "\n  },\n"
-                        json_str_payload += '  "existentialCorePolicy": {\n' + ",\n".join(policy_lines) + "\n  }\n"     
-                        json_str_payload += "}\n"
-
-
-                        with open(target_path, "w", encoding="utf-8") as custom_out:
-                            custom_out.write(json_str_payload)
-                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
-                        #error_handler.print(f"  [VERSION2] {ver_val}", level="debug")
+                    ver_val_meta = schema_data.get("existentialMeta", {})
+                    ver_val_json_indent = json.dumps(ver_val_meta, indent=2).replace("\n", "\n  ")
                     
-                        with open(target_path, "w", encoding="utf-8") as custom_out:
-                            custom_out.write(json_str_payload)
-                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
-                        #error_handler.print(f"  [VERSION2] {ver_val}", level="debug")
-                    
-                    elif "SignaturesJson" in token or filename == "existentialSignatures.json":
-                        try:
-                            import engineSigningLibrary
-                            # Surgically call your central library routine to calculate the live structural matrix
-                            signatures_matrix, _ = engineSigningLibrary.compute_blueprint_signature_matrix(repo_root, schema_data, magic_tag)
-                            
-                            with open(target_path, "w", encoding="utf-8") as sf_out:
-                                json.dump(signatures_matrix, sf_out, indent=2)
-                            error_handler.print(f"    [SEED FILE] Seeded complete structural tracking registry matrix at: {target_path}", level="info")                        
-                        except Exception as e:
-                            error_handler.print(f"Failed to generate structured JSON signatures matrix {token}: {e}", level="error")
-                    else:
-                        shutil.copy2(schema_path, target_path)
-                        error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
+                    val_to_enum_map = {}
+                    for k, d in schema_data.get("existentialCore", {}).items():
+                        node_label = d["threat"] if "threat" in d else (k if k.startswith("CANARY_") or k.startswith("SHIELD_") else f"THREAT_{k}")
+                        val_to_enum_map[int(d["val"])] = f"existentialCoreThreat.{node_label}"
+
+                    composite_fallbacks = {
+                        89130487: "existentialCoreThreat.CANARY_7_EXPLOITATION", 
+                        2290263560: "existentialCoreThreat.CANARY_8_PREDATORY"
+                    }
+
+                    legal_entries = []
+                    for raw_key, val in schema_data.get("existentialCoreThreatLegal", {}).items():
+                        enum_token = val_to_enum_map.get(int(raw_key), composite_fallbacks.get(int(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}"))
+                        legal_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
+
+                    vacuum_entries = []
+                    for raw_key, val in schema_data.get("existentialCoreThreatShadowVacuum", {}).items():
+                        enum_token = val_to_enum_map.get(int(raw_key), composite_fallbacks.get(int(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}"))
+                        vacuum_entries.append(f'    "{enum_token}":'.ljust(55) + f'"{val}"')
+
+                    json_str_payload = "{\n"
+                    json_str_payload += f'  "existentialCoreMeta": {ver_val_json_indent},\n'
+                    json_str_payload += '  "existentialCore": {\n' + ",\n".join(core_lines) + "\n  },\n"
+                    json_str_payload += '  "existentialCoreBitmask": {\n' + ",\n".join(bitmask_lines) + "\n  },\n"  
+                    json_str_payload += '  "existentialCoreBasic": [\n' + ",\n".join(calculated_basic) + "\n  ],\n" 
+                    json_str_payload += '  "existentialCoreImmutable": [\n' + ",\n".join(calculated_immutable) + "\n  ],\n" 
+                    json_str_payload += '  "existentialCoreThreat": {\n' + ",\n".join(threat_lines) + "\n  },\n"
+                    json_str_payload += '  "existentialCoreThreatLegal": {\n' + ",\n".join(legal_entries) + "\n  },\n"
+                    json_str_payload += '  "existentialCoreThreatShadowVacuum": {\n' + ",\n".join(vacuum_entries) + "\n  },\n"
+                    json_str_payload += '  "existentialCorePolicy": {\n' + ",\n".join(policy_lines) + "\n  }\n"     
+                    json_str_payload += "}\n"
+
+                    with open(target_path, "w", encoding="utf-8") as custom_out:
+                        custom_out.write(json_str_payload)
+                    error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
-
-            
             elif filename.endswith(".py"):
                 if token == "Core":
                     try:
@@ -317,14 +318,12 @@ def execute(args, error_handler, repo_root: str):
                                 if r_nodes:
                                     f.write("\n    IMMUTABLE_RIGHTS = (\n        " + " |\n        ".join(r_nodes) + "\n    )\n")
                             
-                            # 1. Compile existentialCoreBitmask layout map dictionary
                             f.write("\nexistentialCoreBitmask = {\n")
                             for k, d in schema_data["existentialCore"].items():
                                 if "msk" in d:
                                     f.write(f'    existentialCore.{k:<25}: "{d["msk"]}",\n')
                             f.write("}\n")
 
-                            # 2. FIXED: Compile existentialCorePolicy layout map dictionary
                             f.write("\nexistentialCorePolicy = {\n")
                             for k, d in schema_data["existentialCore"].items():
                                 if "pol" in d:
@@ -376,33 +375,6 @@ def execute(args, error_handler, repo_root: str):
                         error_handler.print(f"    [COMPILE FILE] Compiled integrity verification routines at: {target_path}", level="info")
                     except Exception as e:
                         error_handler.print(f"Failed to compile existentialCoreCheck.py: {e}", level="error", exit_code=1)
-
-                elif token == "SignaturesPy":
-                    try:
-                        import engineSigningLibrary
-                        struct_template_path = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
-                        
-                        if os.path.exists(struct_template_path):
-                            # Read the pristine template structure directly into the memory buffer context
-                            with open(struct_template_path, "r", encoding="utf-8") as tf:
-                                template_content = tf.read()
-                                
-                            # Call the central library routine to fetch the 100% glue-driven replacements map
-                            _, replacements = engineSigningLibrary.compute_blueprint_signature_matrix(repo_root, schema_data, magic_tag)
-
-                            # Run a complete string replacement sweep across the template variables
-                            for hook, live_value in replacements.items():
-                                template_content = template_content.replace(hook, live_value)
-
-                            # Flush the finalized, fully signed python code file directly to disk space
-                            with open(target_path, "w", encoding="utf-8") as f:
-                                f.write(template_content)
-
-                            error_handler.print(f"    [COMPILE FILE] Seeded signature module out of source template path: {target_path}", level="info")
-                        else:
-                            error_handler.print(f"Fatal Initialization fault: Master signatures template missing at: {struct_template_path}", level="warning")
-                    except Exception as e:
-                        error_handler.print(f"Failed template compilation for existentialSignatures.py: {e}", level="error", exit_code=1)
                 else:
                     struct_source = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
                     if os.path.exists(struct_source):
