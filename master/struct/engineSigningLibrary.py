@@ -79,7 +79,7 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
     except Exception:
         magic_tag = "Existenz:v0.76.20:EX25IMMUT32CORE7617"
-    
+        
     current_timestamp = time.strftime("%Y%m%d %H:%M")
     
     sanitized_public_keys = []
@@ -128,94 +128,6 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
             
         computed_hash = hasher.hexdigest()
         signed_signature = "PENDING_PRIVATE_KEY_SIGNATURE"
-        
-        compiled_signatures_rows.append((
-            struct_name,
-            op_flags,
-            computed_hash,
-            signed_signature
-        ))
-        
-    integrity_matrix = {
-        target_realm: {
-            "Version": f"Existenz:{live_version}",
-            "Update":  current_timestamp
-        },
-        "PublicKeys": tuple(sanitized_public_keys),
-        "Signatures": tuple(compiled_signatures_rows)
-    }
-    
-    return integrity_matrix
-
-def generate_integrity_block_payload_stubborn_ai(repo_root: str, schema_data: dict, target_realm: str, group_filter_id: int = None) -> dict:
-    """
-    DECOUPLED UNIFIED INTEGRITY BLOCK GENERATOR
-    Processes existenzIntegrityGlue and existenzStructureGlue as separate, distinct tracks
-    to preserve their native architectural meanings without cross-contamination.
-    """
-    import hashlib
-    import time
-    from engineSigningMeta import existenzPublicKeys
-    from engineSigningStruct import existenzIntegrityGlue, existenzStructureGlue
-    
-    meta_blueprint = schema_data.get("existentialMeta", {})
-    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.20"))
-    magic_raw = meta_blueprint.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
-    
-    try:
-        fields = magic_raw.split(":")
-        magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
-    except Exception:
-        magic_tag = "Existenz:v0.76.20:EX25IMMUT32CORE7617"
-    
-    current_timestamp = time.strftime("%Y%m%d %H:%M")
-    
-    sanitized_public_keys = []
-    for key_tuple in existenzPublicKeys:
-        if isinstance(key_tuple, tuple) and len(key_tuple) >= 6:
-            sanitized_public_keys.append((
-                str(key_tuple[0]),
-                str(key_tuple[1]),
-                int(key_tuple[2]),
-                int(key_tuple[3]),
-                int(key_tuple[4]),
-                str(key_tuple[5])
-            ))
-
-    # Select the target source dictionary track cleanly based on the realm context
-    compiled_signatures_rows = []
-    
-    if target_realm == "existentialCores":
-        # The Master Matrix processes both dictionaries sequentially
-        source_records = list(existenzIntegrityGlue.items()) + list(existenzStructureGlue.items())
-        # Safe universal sort fallback for master matrix envelope aggregation
-        sorted_items = sorted(source_records, key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF) if len(item[1]) > 3 else (0, 0))
-    elif group_filter_id is not None:
-        # TRACK 1: Integrity Timeline Pass (Filtered strictly by High-Byte Group ID)
-        source_records = [item for item in existenzIntegrityGlue.items() if (item[1][3] >> 8) == group_filter_id]
-        sorted_items = sorted(source_records, key=lambda item: item[1][3] & 0xFF)
-    else:
-        # TRACK 2: Structure Registry Pass (Processed straight by alphabetical key alignment)
-        source_records = list(existenzStructureGlue.items())
-        sorted_items = sorted(source_records, key=lambda item: item[0])
-
-    for glue_key, glue_tuple in sorted_items:
-        struct_name = str(glue_tuple[0])
-        op_flags    = int(glue_tuple[1])
-
-        hasher = hashlib.sha256()
-        
-        if bool(op_flags & 2):
-            hasher.update(magic_tag.encode("utf-8"))
-            
-        if struct_name == "existentialPublicKeys":
-            for row in sanitized_public_keys:
-                hasher.update(str(row).encode("utf-8"))
-        else:
-            hasher.update(struct_name.encode("utf-8"))
-            
-        computed_hash = hasher.hexdigest()
-        signed_signature = "PENDING_PRIVATE_KEY_SIGNATURE"
         opcode_str = str(op_flags)
         
         compiled_signatures_rows.append((
@@ -237,198 +149,51 @@ def generate_integrity_block_payload_stubborn_ai(repo_root: str, schema_data: di
     return integrity_matrix
 
 
-def generate_integrity_block_payload_shit_ai_v2(repo_root: str, schema_data: dict, target_realm: str, group_filter_id: int = None) -> dict:
+def serialize_integrity_block_to_python(integrity_matrix: dict) -> str:
     """
-    100% UNIFIED GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
-    Constructs a standardized, unified existenzIntegrity block layout array.
-    Dynamically groups and filters elements using the 16-bit Hex configuration ID (0xGGPP)
-    to match the specific group partition block context natively.
+    UNIVERSAL TEXT SERIALIZATION ENWRITER
+    Converts an in-memory integrity dictionary payload into clean, vertically-aligned
+    Python source code text strings. Ready to be appended down to any target structural file.
     """
-    import hashlib
-    import time
-    from engineSigningMeta import existenzPublicKeys
-    from engineSigningStruct import existenzIntegrityGlue, existenzStructureGlue
+    realm_key = [k for k in integrity_matrix.keys() if k not in ["PublicKeys", "Signatures"]][0]
+    realm_data = integrity_matrix[realm_key]
     
-    meta_blueprint = schema_data.get("existentialMeta", {})
-    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.20"))
-    magic_raw = meta_blueprint.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
+    output_lines = []
+    output_lines.append("\n" + "# " + "="*74)
+    output_lines.append(f"# EXISTENZ IMMUTABLE INTEGRITY")
+    output_lines.append("# " + "="*74)
+    output_lines.append("existenzIntegrity = {")
     
-    try:
-        fields = magic_raw.split(":")
-        magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
-    except Exception:
-        magic_tag = "Existenz:v0.76.20:EX25IMMUT32CORE7617"
+    output_lines.append(f'    "{realm_key}": {{')
+    output_lines.append(f'        "Version": "{realm_data["Version"]}",')
+    output_lines.append(f'        "Update":  "{realm_data["Update"]}"')
+    output_lines.append("    },")
     
-    # 1. EXACT TIMESTAMP SPECIFICATION: Emits your exact required structure (e.g., "20260911 19:31")
-    current_timestamp = time.strftime("%Y%m%d %H:%M")
+    output_lines.append('    "PublicKeys": (')
+    for key_row in integrity_matrix["PublicKeys"]:
+        name_str = f'"{key_row[0]}"'.ljust(15)
+        key_str  = f'"{key_row[1]}"'
+        bit_weight = str(key_row[2]).rjust(3)
+        output_lines.append(f'        ({name_str}, {key_str}, {bit_weight}),')
     
-    # 2. EXACT 6-COLUMN PUBLIC KEYS REGISTRY: Maps your exact authority schema structure row-for-row
-    sanitized_public_keys = []
-    for key_tuple in existenzPublicKeys:
-        if isinstance(key_tuple, tuple) and len(key_tuple) >= 6:
-            sanitized_public_keys.append((
-                str(key_tuple[0]),
-                str(key_tuple[1]),
-                int(key_tuple[2]),
-                int(key_tuple[3]),
-                int(key_tuple[4]),
-                str(key_tuple[5])
-            ))
-
-    combined_glue_records = {}
-    combined_glue_records.update(existenzIntegrityGlue)
-    combined_glue_records.update(existenzStructureGlue)
-
-    # Sort items sequentially using your 16-bit configuration ID: High Byte (Group) then Low Byte (Priority)
-    sorted_glue_items = sorted(combined_glue_records.items(), key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF))
-
-    compiled_signatures_rows = []
-
-    for glue_key, glue_tuple in sorted_glue_items:
-        if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
-            continue
-
-        struct_name = str(glue_tuple[0])
-        op_flags    = int(glue_tuple[1])
-        config_word = int(glue_tuple[3])
-
-        # Bit-Shift Extraction: Isolate Group ID natively
-        item_group_id = config_word >> 8
+    if output_lines[-1].endswith(","):
+        output_lines[-1] = output_lines[-1][:-1]
+    output_lines.append("    ),")
+    
+    output_lines.append('    "Signatures": (')
+    for sig_row in integrity_matrix["Signatures"]:
+        lbl_str  = f'"{sig_row[0]}"'.ljust(38)
+        mask_str = str(sig_row[1]).rjust(6)
+        hash_str = f'"{sig_row[2]}"'
+        sign_str = f'"{sig_row[3]}"'
+        output_lines.append(f'        ({lbl_str}, {mask_str}, {hash_str}, {sign_str}),')
         
-        # FILTER LAYER: If a group filter is active, skip any items that don't belong to this module segment
-        if group_filter_id is not None and item_group_id != group_filter_id:
-            continue
-
-        # INITIALIZATION SECURITY PASS: Compute pure cryptographic hash streams from raw data targets
-        hasher = hashlib.sha256()
-        
-        if bool(op_flags & 2):
-            hasher.update(magic_tag.encode("utf-8"))
-            
-        if struct_name == "existentialPublicKeys":
-            for row in sanitized_public_keys:
-                hasher.update(str(row).encode("utf-8"))
-        else:
-            hasher.update(struct_name.encode("utf-8"))
-            
-        computed_hash = hasher.hexdigest()
-        signed_signature = "PENDING_PRIVATE_KEY_SIGNATURE"
-        opcode_str = str(op_flags)
-        
-        compiled_signatures_rows.append((
-            struct_name,
-            opcode_str,
-            computed_hash,
-            signed_signature
-        ))
-        
-    # Assemble the unified database dictionary envelope payload structure
-    integrity_matrix = {
-        target_realm: {
-            "Version": f"Existenz:{live_version}",
-            "Update":  current_timestamp
-        },
-        "PublicKeys": tuple(sanitized_public_keys),
-        "Signatures": tuple(compiled_signatures_rows)
-    }
+    if output_lines[-1].endswith(","):
+        output_lines[-1] = output_lines[-1][:-1]
+    output_lines.append("    )")
+    output_lines.append("}")
     
-    return integrity_matrix
-
-
-def generate_integrity_block_payload_shitty_ai(repo_root: str, schema_data: dict, target_realm: str, group_filter_id: int = None) -> dict:
-    """
-    100% UNIFIED GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
-    Constructs a standardized, unified existenzIntegrity block layout array.
-    Dynamically groups and filters elements using the 16-bit Hex configuration ID (0xGGPP)
-    to match the specific group partition block context natively.
-    """
-    import hashlib
-    import time
-    from engineSigningMeta import existenzPublicKeys
-    from engineSigningStruct import existenzIntegrityGlue, existenzStructureGlue
-    
-    meta_blueprint = schema_data.get("existentialMeta", {})
-    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.15L"))
-    magic_raw = meta_blueprint.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
-    
-    try:
-        fields = magic_raw.split(":")
-        magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
-    except Exception:
-        magic_tag = "Existenz:v0.76.20L:EX25IMMUT32CORE7617"
-    
-    current_timestamp = time.strftime("%Y%m%d %H:%M")
-    
-    sanitized_public_keys = []
-    for key_tuple in existenzPublicKeys:
-        if isinstance(key_tuple, tuple) and len(key_tuple) >= 6:
-            sanitized_public_keys.append((
-                str(key_tuple[0]),
-                str(key_tuple[1]),
-                int(key_tuple[2]),
-                int(key_tuple[3]),
-                int(key_tuple[4]),
-                str(key_tuple[5])
-            ))
-
-    combined_glue_records = {}
-    combined_glue_records.update(existenzIntegrityGlue)
-    combined_glue_records.update(existenzStructureGlue)
-
-    # FIX: Correctly maps to index slots to sort high-byte Groups and low-byte Priorities flawlessly
-    sorted_glue_items = sorted(combined_glue_records.items(), key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF))
-
-    compiled_signatures_rows = []
-
-    for glue_key, glue_tuple in sorted_glue_items:
-        if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
-            continue
-
-        struct_name = str(glue_tuple[0])
-        op_flags    = int(glue_tuple[1])
-        config_word = int(glue_tuple[3])
-
-        # Bit-Shift Extraction: Isolate Group ID natively
-        item_group_id = config_word >> 8
-        
-        # FILTER LAYER: If a group filter is active, skip any items that don't belong to this module segment
-        if group_filter_id is not None and item_group_id != group_filter_id:
-            continue
-
-        # INITIALIZATION SECURITY LOOP: Generate the baseline verification hashes matching your bitweights
-        hasher = hashlib.sha256()
-        
-        if bool(op_flags & 2):
-            hasher.update(magic_tag.encode("utf-8"))
-            
-        if struct_name == "existentialPublicKeys":
-            for row in sanitized_public_keys:
-                hasher.update(str(row).encode("utf-8"))
-        else:
-            hasher.update(f"ExistenzInitSeed:{struct_name}".encode("utf-8"))
-            
-        computed_hash = hasher.hexdigest()
-        signed_signature = "PENDING_PRIVATE_KEY_SIGNATURE"
-        opcode_str = str(op_flags)
-        
-        compiled_signatures_rows.append((
-            struct_name,
-            opcode_str,
-            computed_hash,
-            signed_signature
-        ))
-        
-    # Assemble the unified database dictionary envelope payload structure
-    integrity_matrix = {
-        target_realm: {
-            "Version": f"Existenz:{live_version}",
-            "Update":  current_timestamp
-        },
-        "PublicKeys": tuple(sanitized_public_keys),
-        "Signatures": tuple(compiled_signatures_rows)
-    }
-    
-    return integrity_matrix
+    return "\n".join(output_lines) + "\n"
 
 
 
