@@ -120,17 +120,15 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
 
         hasher = hashlib.sha256()
         
-        # Mix the magic tag string into the hashing buffer if SIGN_MAGIC_HASH (2) is active
+        # Mix the magic tag string into the hashing buffer if SIGN_MAGIC_HASH (2) is set
         if bool(op_flags & 2):
             hasher.update(magic_tag.encode("utf-8"))
 
-        # TRUE LOOKBACK CHAIN EVALUATION PASS
+        # TRUE LOOKBACK CHAIN EVALUATION: Accumulates all preceding hashes inside this group partition
         if bool(op_flags & 256):  # SIGN_CHAIN_END active
-            # Concatenate all preceding hashes accumulated within this group partition block session
             chain_block_string = "".join(group_rolling_hashes)
             hasher.update(chain_block_string.encode("utf-8"))
         else:
-            # Standalone element baseline calculation path
             if struct_name == "existentialPublicKeys":
                 for row in sanitized_public_keys:
                     hasher.update(str(row).encode("utf-8"))
@@ -139,7 +137,7 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
             
         computed_hash = hasher.hexdigest()
         
-        # Append this fresh calculation to our active rolling track buffer for subsequent lookback seals
+        # Only append to rolling history trail if it is an internal node link in the chain
         if not bool(op_flags & 256):
             group_rolling_hashes.append(computed_hash)
 
@@ -148,7 +146,7 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         
         compiled_signatures_rows.append((
             struct_name,
-            opcode_str,
+            op_flags,  # Kept as raw integer format to flawlessly match your design specification
             computed_hash,
             signed_signature
         ))
