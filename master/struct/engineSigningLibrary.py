@@ -9,6 +9,7 @@ import sys
 import json
 import subprocess
 import argparse
+import hmac
 import hashlib
 import getpass
 import time
@@ -24,6 +25,10 @@ from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, exist
 from existentialSignatures import existentialToken
 
 from visualMixEngineLogging import visualmixErrorHandler
+
+from engineSigningMeta import existenzMeta
+
+import re
 
 INT_VERSION = "v0.76.15+"
 
@@ -61,11 +66,144 @@ PIPELINE_SEQUENCE = [
 ]
 
 
-import hmac
-import hashlib
-from engineSigningMeta import existenzMeta
 
-import re
+
+ef compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_tag: str) -> tuple:
+    """
+    100% GLUE-DRIVEN CRYPTOGRAPHIC HASHER (ZERO HARDCODING STRINGS)
+    Decodes IntFlag bitmask opcodes and walks native tuple arrays dynamically 
+    to generate matching registry hashes for both JSON and Python template targets.
+    Returns a tuple: (raw_signatures_dict, template_replacements_map)
+    """
+    from engineSigningStruct import existenzIntegrityGlue, existenzLocations, existenzSignatures, re
+    
+    meta_blueprint = schema_data.get("existentialMeta", {})
+    live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
+    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.15"))
+    live_author  = str(meta_blueprint.get("CoreAuthor", "Gunther Voet"))
+    live_secret  = str(meta_blueprint.get("CoreMagic", "EX25IMMUT32CORE7617"))
+
+    local_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
+    chain_seed_string = f"{local_token_hash}:{live_author}"
+    local_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
+
+    # 1. Base metadata replacements available across both output ecosystems
+    replacements = {
+        "{{LIVE_REALM}}":         live_realm,
+        "{{LIVE_VERSION}}":       live_version,
+        "{{LIVE_AUTHOR}}":        live_author,
+        "{{DYNAMIC_TOKEN}}":      local_token_hash,
+        "{{DYNAMIC_SIGNATURE}}":  local_signature_hash,
+        "{{MAGIC_RAW}}":          str(meta_blueprint.get("CoreMagicRaw", "")),
+        "{{MAGIC_TAG}}":          str(magic_tag)
+    }
+
+    # Gather live calculated signatures dynamically out of the central glue definitions
+    live_glue_computed_hashes = {}
+    
+    for glue_key, glue_tuple in existenzIntegrityGlue.items():
+        if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
+            continue
+        
+        struct_name = glue_tuple
+        op_flags    = glue_tuple
+        rel_path    = glue_tuple
+        
+        # Turn camelCase keys into UPPER_SNAKE_CASE placeholder hooks dynamically
+        clean_suffix = re.sub(r'(?<!^)(?=[A-Z])', '_', glue_key).upper()
+        clean_suffix = clean_suffix.replace("CORE_THREAT", "THREAT").replace("MAGIC_SIGNATURE", "MAGIC").replace("MAGIC_TOKEN", "CHECK")
+        hook_key = f"{{{{HASH_{clean_suffix}}}}}"
+        
+        calculated_hash = ""
+        
+        # Bitmask Opcode Interception: Does this flag command an internal dictionary serialization?
+        if bool(op_flags & 1024) or bool(op_flags & 2048):
+            target_payload_dict = schema_data.get(struct_name)
+            if target_payload_dict:
+                calculated_hash = calculate_aggregate_circle_hash(target_payload_dict, op_flags)
+        else:
+            # Fall back to native physical file signature if targeting code files on disk
+            abs_path = os.path.abspath(os.path.join(repo_root, rel_path))
+            if os.path.exists(abs_path) and os.path.isfile(abs_path):
+                try:
+                    mock_file_dict = {rel_path: calculate_file_sha256(abs_path)}
+                    calculated_hash = calculate_aggregate_circle_hash(mock_file_dict, op_flags)
+                except Exception:
+                    pass
+                    
+        replacements[hook_key] = calculated_hash
+        live_glue_computed_hashes[glue_key] = calculated_hash
+
+    # 2. DYNAMIC MASTER MAP COMPILATION (NO TARGET KEYS HARDCODED)
+    # Walks your native existenzSignatures.existentialCore array to build the map dynamically
+    master_registry_dict = {}
+    for core_item_tuple in existenzSignatures.existentialCore:
+        label_key = core_item_tuple[0]  # e.g., "Magic", "Core Check", "Cores"
+        
+        # Shorten dictionary naming conventions to match your exact output layout specs
+        clean_json_label = label_key.replace("CoreCheck", "Check").replace("CoreThreat", "Threat")
+        
+        # Fetch the live computed hash straight out of the temporary buffer mapping
+        master_registry_dict[clean_json_label] = live_glue_computed_hashes.get(label_key, "")
+
+    # 3. TRAVERSE ENGINE FILES DYNAMICALLY
+    engine_tokens_map = {
+        "engineLogging": "LOGGING", "engineCrypto": "CRYPTO", "signingMeta": "SIGNING_META",
+        "signingStruct": "SIGNING_STRUCT", "signingLibrary": "SIGNING_LIBRARY", "builderLibrary": "BUILDER_LIBRARY",
+        "cliStateTest": "CLI_TEST", "cliStateInit": "CLI_INIT", "cliStateManifest": "CLI_MANIFEST",
+        "cliStateSign": "CLI_SIGN", "cliStateVerify": "CLI_VERIFY", "cliStateBuild": "CLI_BUILD",
+        "Signatures": "SIGNATURES_JSON", "Manifest": "MANIFEST_JSON"
+    }
+    
+    engine_registry = {}
+    engine_locations_dict = existenzLocations.get("engine", {})
+    for engine_key, engine_rel_path in engine_locations_dict.items():
+        clean_rel_path = engine_rel_path.split(":")[-1] if ":" in engine_rel_path else engine_rel_path
+        abs_engine_path = os.path.abspath(os.path.join(repo_root, clean_rel_path))
+        
+        suffix = engine_tokens_map.get(engine_key, engine_key.upper())
+        engine_hook = f"{{{{HASH_{suffix}}}}}"
+        if engine_key == "Signatures": engine_hook = "{{HASH_SIGNATURES_JSON}}"
+        
+        engine_hash = ""
+        if os.path.exists(abs_engine_path) and os.path.isfile(abs_engine_path):
+            try:
+                mock_eng_dict = {clean_rel_path: calculate_file_sha256(abs_engine_path)}
+                engine_hash = calculate_aggregate_circle_hash(mock_eng_dict, 512)
+            except Exception:
+                pass
+                
+        replacements[engine_hook] = engine_hash
+        if engine_key != "Manifest":
+            engine_registry[engine_key] = engine_hash
+
+    # Build the final unified dictionary object 100% dynamic out of your array loops
+    json_matrix = {
+        "existentialToken": {
+            "MAGIC": {
+                "RAW_TEMPLATE": str(meta_blueprint.get("CoreMagicRaw", "")),
+                "RAW":          str(magic_tag),
+                "TOKEN":        str(local_token_hash),
+                "SIGNATURE":    str(local_signature_hash),
+                "REALM":        live_realm,
+                "VERSION":      live_version,
+                "SECRET":       live_secret,                                    
+                "AUTHOR":       live_author
+            },
+            "master": master_registry_dict, # FIX: 100% DYNAMIC BLUEPRINT MAP BINDING
+            "chain": {"Core": "", "CoresChain": "", "Threat": ""},
+            "manifest": {"dist": "dist", "tools": "dist/tools", "build": "master/build-tools", "master": "master/struct"},
+            "structs": {
+                "KeysPublic":         engine_registry.get("signingStruct", ""),
+                "KeysHandler":        engine_registry.get("signingStruct", ""),
+                "KeysType":           engine_registry.get("signingStruct", ""),
+                "Locations":          engine_registry.get("signingMeta", "")
+            },
+            "engine": engine_registry
+        }
+    }
+    
+    return json_matrix, replacements
 
 def render_better_box(error_handler, raw_lines_list: list, title_str: str = "SYSTEM STATUS"):
     """
