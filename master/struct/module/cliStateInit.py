@@ -352,7 +352,12 @@ def execute(args, error_handler, repo_root: str):
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
                             f.write("from enum import IntFlag\n\nclass existentialCore(IntFlag):\n")
-                            for k, d in schema_data["existentialCore"].items():
+                            core_source_data = schema_data.get("existentialCore", {})
+                            
+                            # FIX: Enforce strict element filtering to isolate IntFlag fields from metadata blocks
+                            for k, d in core_source_data.items():
+                                if not isinstance(d, dict) or "val" not in d:
+                                    continue
                                 v = d["val"]
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                 f.write(f"    {k:<30} = {expr}  # {d.get('comment', '')}\n")
@@ -360,35 +365,38 @@ def execute(args, error_handler, repo_root: str):
                             immutable_meta = meta_block.get("immutable", {})
                             raw_pillars = immutable_meta.get("PILLARS", "")
                             if raw_pillars:
-                                p_nodes = [p.strip() for p in raw_pillars.split("|") if p.strip() in schema_data["existentialCore"]]
+                                # Ensure nodes exist in our filtered core dataset
+                                p_nodes = [p.strip() for p in raw_pillars.split("|") if p.strip() in core_source_data and isinstance(core_source_data[p.strip()], dict) and "val" in core_source_data[p.strip()]]
                                 if p_nodes:
                                     f.write("\n    IMMUTABLE_PILLARS = (\n        " + " |\n        ".join(p_nodes) + "\n    )\n")
                             
                             raw_rights = immutable_meta.get("RIGHTS", "")
                             if raw_rights:
-                                r_nodes = [r.strip() for r in raw_rights.split("|") if r.strip() in schema_data["existentialCore"]]
+                                r_nodes = [r.strip() for r in raw_rights.split("|") if r.strip() in core_source_data and isinstance(core_source_data[r.strip()], dict) and "val" in core_source_data[r.strip()]]
                                 if r_nodes:
                                     f.write("\n    IMMUTABLE_RIGHTS = (\n        " + " |\n        ".join(r_nodes) + "\n    )\n")
                             
+                            # Compile existentialCoreBitmask layout map dictionary safely
                             f.write("\nexistentialCoreBitmask = {\n")
-                            for k, d in schema_data["existentialCore"].items():
-                                if "msk" in d:
+                            for k, d in core_source_data.items():
+                                if isinstance(d, dict) and "msk" in d:
                                     f.write(f'    existentialCore.{k:<25}: "{d["msk"]}",\n')
                             f.write("}\n")
 
+                            # Compile existentialCorePolicy layout map dictionary safely
                             f.write("\nexistentialCorePolicy = {\n")
-                            for k, d in schema_data["existentialCore"].items():
-                                if "pol" in d:
+                            for k, d in core_source_data.items():
+                                if isinstance(d, dict) and "pol" in d:
                                     f.write(f'    existentialCore.{k:<25}: "{d["pol"]}",\n')
                             f.write("}\n")
                             
-                            # DYNAMIC SUPPLY-CHAIN INTEGRITY GATE IMMUTABLE PASS (GROUP 0x02)
+                            # Build the dynamic un-hardcoded group partition block natively (Group 0x02)
                             core_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
                                 repo_root, schema_data, "existentialCore", group_filter_id=0x02
                             )
                             f.write(engineSigningLibrary.serialize_integrity_block_to_python(core_integrity_dict))
                             
-                        error_handler.print(f"    [COMPILE FILE] Compiled native IntFlag class and appended dynamic integrity tracking block at: {target_path}", level="info")
+                        error_handler.print(f"    [COMPILE FILE] Compiled native IntFlag class and expanded structural registries at: {target_path}", level="info")
                     except Exception as e:
                         error_handler.print(f"Failed to compile existentialCore.py: {e}", level="error", exit_code=1)
 
