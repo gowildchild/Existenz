@@ -471,14 +471,12 @@ def execute(args, error_handler, repo_root: str):
                 elif token == "SignaturesPy":
                     try:
                         with open(target_path, "w", encoding="utf-8") as f:
-                            # 1. FIX: Read dynamically from meta_blueprint to prevent NameError crash
-                            live_magic = meta_blueprint.get("CoreMagic", "EX25IMMUT32CORE7617")
-                            
-                            # 2. Write standard module headers and version definitions
+                            # 1. Write standard module headers and version definitions
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
-                            # FIX: Corrected typo 'existentialNeta' to 'existentialMeta' to ensure valid module imports
                             f.write(f"existentialMeta = \"{version_full}\"\n")
-                            f.write(f'existentialCoreCheckMagic = b"{live_magic}"\n\n')
+                            
+                            # DYNAMIC FIX: Enforce absolute truth by using the computed token hash instead of a static parameter
+                            f.write(f'existentialCoreCheckMagic = b"{dynamic_token_hash}"\n\n')
                             
                             # ==========================================================================
                             # ANCHOR EXISTENZ CORE SIGNATURE CONTEXT IN CRYPTO VAULT (SET IN STONE)
@@ -489,12 +487,12 @@ def execute(args, error_handler, repo_root: str):
                             f.write(f'CoreMagicRaw = "{magic_raw}"\n')
                             f.write(f'CoreMagicTag = "{magic_tag}"\n\n')
                             
-                            # 3. Print your original cryptographic lock definitions untouched
+                            # 2. Print your original cryptographic lock definitions untouched
                             f.write("class existentialCoreSignatures:\n    existentialCoreSigned = (\n")
                             f.write("        (\"Magic\", \"magic\", \"existentialCoreMagicHash\", \"\", 2, 0),\n")
                             f.write("        (\"Core\", \"core\", \"existentialCoreHash\", \"\", 12, 1),\n")
                             f.write("    )\n")
-                        error_handler.print(f"    [COMPILE FILE] Compiled signature tracking registries at: {target_path}", level="info")
+                        error_handler.print(f"    [COMPILE FILE] Compiled dynamic signature tracking registries at: {target_path}", level="info")
                     except Exception as e:
                         error_handler.print(f"Failed to compile existentialCoreSignatures.py: {e}", level="error", exit_code=1)
 
@@ -519,3 +517,4 @@ def execute(args, error_handler, repo_root: str):
 
     error_handler.print("Initialization Complete: All repository structure dependencies verified and self-healed.", level="notice")
     sys.exit(0)
+
