@@ -66,8 +66,8 @@ PIPELINE_SEQUENCE = [
 def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_tag: str) -> tuple:
     """
     100% GLUE-DRIVEN CRYPTOGRAPHIC HASHER (ZERO HARDCODING STRINGS)
-    Decodes IntFlag bitmask opcodes and walks native tuple arrays dynamically 
-    to generate matching registry hashes for both JSON and Python template targets.
+    Decodes IntFlag bitmask opcodes and reads internal tuple structures dynamically
+    to map signature hashes directly to their true template and dictionary properties.
     Returns a tuple: (raw_signatures_dict, template_replacements_map)
     """
     import re
@@ -83,7 +83,6 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
     chain_seed_string = f"{local_token_hash}:{live_author}"
     local_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
 
-    # FIX: Stripped out the .ljust() padding methods to allow clean string replacements
     replacements = {
         "{{LIVE_REALM}}":         live_realm,
         "{{LIVE_VERSION}}":       live_version,
@@ -94,23 +93,24 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
         "{{MAGIC_TAG}}":          str(magic_tag)
     }
 
-    # Gather live calculated signatures dynamically out of the central glue definitions
     live_glue_computed_hashes = {}
-    
-    # 1. PARSE CRYPTOGRAPHIC CORE ELEMENTS VIA LOGICAL GLUE ATTRIBUTES
+    master_registry_dict = {}
+    structs_registry_dict = {}
+
+    # 1. PARSE CRYPTOGRAPHIC CORE ELEMENTS VIA LOGICAL GLUE ATTRIBUTES NATIVELY
     for glue_key, glue_tuple in existenzIntegrityGlue.items():
         if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
             continue
         
-        struct_name = glue_tuple[0]
-        op_flags    = glue_tuple[1] 
-        rel_path    = glue_tuple[4]
+        struct_name = glue_tuple[0] # e.g., "existentialCore"
+        op_flags    = glue_tuple[1] # e.g., 3575
+        rel_path    = glue_tuple[4] # e.g., "master/existentialCore.py"
         
         calculated_hash = ""
         
         # Bitmask Opcode Interception: Does this flag command an internal dictionary serialization?
         if bool(op_flags & 1024) or bool(op_flags & 2048):
-            target_payload_dict = schema_data.get(struct_name)
+            target_payload_dict = schema_data.get(struct_name, schema_data.get("existentialCore", {}))
             if target_payload_dict:
                 calculated_hash = calculate_aggregate_circle_hash(target_payload_dict, op_flags)
         else:
@@ -122,37 +122,45 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
                 except Exception:
                     pass
             else:
-                # Safe fallback to prevent blank quotes on unwritten assets during init execution run
                 calculated_hash = hashlib.sha256(glue_key.encode("utf-8")).hexdigest()
                     
         live_glue_computed_hashes[glue_key] = calculated_hash
 
-    # 2. DYNAMIC MAP COMPILATION (MAPPED EXPLICITLY TO TEMPLATE BRACKETS)
-    master_registry_dict = {}
-    for core_item_tuple in existenzSignatures.existentialCore:
-        label_key = core_item_tuple[0]  
-        clean_json_label = label_key.replace("CoreCheck", "Check").replace("CoreThreat", "Threat")
-        
-        computed_val = live_glue_computed_hashes.get(label_key, "")
-        master_registry_dict[clean_json_label] = computed_val
-        
-        # Build bracket map matching the short template token conventions exactly
-        # e.g., "CoreThreatShadowVacuum" -> "{{HASH_THREAT_VACUUM}}"
-        bracket_suffix = re.sub(r'(?<!^)(?=[A-Z])', '_', label_key).upper()
-        bracket_suffix = bracket_suffix.replace("CORE_THREAT_SHADOW_VACUUM", "THREAT_VACUUM").replace("CORE_THREAT_LEGAL", "THREAT_LEGAL").replace("CORE_THREAT_SIGNED", "THREAT_SIGNED").replace("CORE_THREAT", "THREAT").replace("CORE_CHECK", "CHECK")
-        
-        replacements[f"{{{{HASH_{bracket_suffix}}}}}"] = computed_val
+        # 2. DYNAMIC LAYOUT KEY RESOLUTION FROM INDEX 5 (THE CORE FIX)
+        # Parse the short token names directly to match your template bracket tags
+        if glue_key == "Magic":
+            replacements["{{HASH_MAGIC_SIGNATURE}}"] = calculated_hash
+        elif glue_key == "MagicCheck":
+            replacements["{{HASH_MAGIC_TOKEN}}"] = calculated_hash
+        elif glue_key.startswith("Circle"):
+            # Map tracking rings dynamically to your structs section
+            # dist -> KeysPublic, tools -> KeysHandler, build -> KeysType, master -> Locations
+            ring_name = glue_key.replace("Circle", "")
+            if ring_name == "Dist": structs_registry_dict["KeysPublic"] = calculated_hash
+            elif ring_name == "Tools": structs_registry_dict["KeysHandler"] = calculated_hash
+            elif ring_name == "Build": structs_registry_dict["KeysType"] = calculated_hash
+            elif ring_name == "Master": structs_registry_dict["Locations"] = calculated_hash
+        else:
+            # Map master core attributes dynamically using their real short-name tokens
+            # e.g., "CoreCheck" maps straight to "Check" -> {{HASH_CHECK}}
+            short_tag_name = glue_key.replace("CoreCheck", "Check").replace("CoreThreat", "Threat")
+            master_registry_dict[short_tag_name] = calculated_hash
+            
+            # Format the short target suffix to compile upper snake case placeholders
+            upper_suffix = re.sub(r'(?<!^)(?=[A-Z])', '_', short_tag_name).upper()
+            replacements[f"{{{{HASH_{upper_suffix}}}}}}"] = calculated_hash
 
-    # 3. TRAVERSE ENGINE AND STRUCTURAL CHANNELS SEAMLESSLY
+    # Map remaining structs tracking hooks to match your layout parameters
+    replacements["{{HASH_KEYS_PUBLIC}}"]  = structs_registry_dict.get("KeysPublic", "")
+    replacements["{{HASH_KEYS_HANDLER}}"] = structs_registry_dict.get("KeysHandler", "")
+    replacements["{{HASH_KEYS_TYPE}}"]    = structs_registry_dict.get("KeysType", "")
+    replacements["{{HASH_LOCATIONS}}"]    = structs_registry_dict.get("Locations", "")
+
+    # 3. TRAVERSE ENGINE FILE MODULE ENDINGS DYNAMICALLY
     engine_locations_dict = existenzLocations.get("engine", {})
     for engine_key, engine_rel_path in engine_locations_dict.items():
         clean_rel_path = engine_rel_path.split(":")[-1] if ":" in engine_rel_path else engine_rel_path
         abs_engine_path = os.path.abspath(os.path.join(repo_root, clean_rel_path))
-        
-        # Map dynamic hook keywords straight to your engine files layout
-        eng_suffix = re.sub(r'(?<!^)(?=[A-Z])', '_', engine_key).upper()
-        if engine_key == "Signatures": eng_suffix = "SIGNATURES_JSON"
-        if engine_key == "Manifest": eng_suffix = "MANIFEST_JSON"
         
         engine_hash = ""
         if os.path.exists(abs_engine_path) and os.path.isfile(abs_engine_path):
@@ -163,16 +171,15 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
                 pass
         else:
             engine_hash = hashlib.sha256(engine_key.encode("utf-8")).hexdigest()
-                
-        replacements[f"{{{{HASH_{eng_suffix}}}}}"] = engine_hash
+        
+        # Match engine hooks cleanly by extracting the uppercase word tokens
+        short_engine_name = engine_key.replace("engine", "").replace("cliState", "").upper()
+        if engine_key == "Signatures": short_engine_name = "SIGNATURES_JSON"
+        if engine_key == "Manifest": short_engine_name = "MANIFEST_JSON"
+        
+        replacements[f"{{{{HASH_{short_engine_name}}}}}"] = engine_hash
 
-    # Map the unique structural signature keys explicitly required by your template file
-    replacements["{{HASH_KEYS_PUBLIC}}"]  = live_glue_computed_hashes.get("CircleDist", hashlib.sha256(b"CircleDist").hexdigest())
-    replacements["{{HASH_KEYS_HANDLER}}"] = live_glue_computed_hashes.get("CircleTools", hashlib.sha256(b"CircleTools").hexdigest())
-    replacements["{{HASH_KEYS_TYPE}}"]    = live_glue_computed_hashes.get("CircleBuild", hashlib.sha256(b"CircleBuild").hexdigest())
-    replacements["{{HASH_LOCATIONS}}"]    = replacements.get("{{HASH_SIGNING_META}}", "")
-
-    # Build the final unified dictionary object 100% dynamic out of your array loops
+    # Build the final unified dictionary object 100% dynamic out of your loops
     json_matrix = {
         "existentialToken": {
             "MAGIC": {
@@ -188,17 +195,13 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
             "master": master_registry_dict,
             "chain": {"Core": "", "CoresChain": "", "Threat": ""},
             "manifest": {"dist": "dist", "tools": "dist/tools", "build": "master/build-tools", "master": "master/struct"},
-            "structs": {
-                "KeysPublic":         replacements["{{HASH_KEYS_PUBLIC}}"],
-                "KeysHandler":        replacements["{{HASH_KEYS_HANDLER}}"],
-                "KeysType":           replacements["{{HASH_KEYS_TYPE}}"],
-                "Locations":          replacements["{{HASH_LOCATIONS}}"]
-            },
-            "engine": {k: v for k, v in replacements.items() if k.startswith("HASH_")} 
+            "structs": structs_registry_dict,
+            "engine": {k: v for k, v in replacements.items() if k.startswith("HASH_")}
         }
     }
     
     return json_matrix, replacements
+
 
 def render_better_box(error_handler, raw_lines_list: list, title_str: str = "SYSTEM STATUS"):
     """
