@@ -109,6 +109,7 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
             continue
 
+        # Extract values explicitly by their true index layout positions from your glue tuples
         struct_name = str(glue_tuple[0])
         op_flags    = int(glue_tuple[1])
         config_word = int(glue_tuple[3])
