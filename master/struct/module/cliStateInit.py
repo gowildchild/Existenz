@@ -275,7 +275,35 @@ def execute(args, error_handler, repo_root: str):
                         #error_handler.print(f"  [VERSION2] {ver_val}", level="debug")
                     
                     elif "SignaturesJson" in token or filename == "existentialSignatures.json":
+                        import hashlib
                         meta_blueprint = schema_data.get("existentialMeta", {})
+
+                        # 1. DYNAMIC SECURITY LAYER: Recalculate token and signature hashes from the blueprint live state
+                        live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
+                        live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
+                        live_secret  = str(meta_blueprint.get("CoreMagic", "EX25IMMUT32CORE7617"))
+                        live_author  = str(meta_blueprint.get("CoreAuthor", "Gunther Voet"))
+                        
+                        # Calculate TOKEN dynamically from your live magic_tag string asset
+                        dynamic_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
+                        
+                        # Calculate SIGNATURE dynamically by chaining the token hash with your author name
+                        chain_seed_string = f"{dynamic_token_hash}:{live_author}"
+                        dynamic_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
+
+                        # Helper logic to dynamically calculate hashes of physical workspace code targets
+                        def get_file_hash(target_token):
+                            rel_p = existenzLocations["core"].get(target_token)
+                            if not rel_p:
+                                return ""
+                            abs_p = os.path.abspath(os.path.join(repo_root, rel_p))
+                            if os.path.exists(abs_p):
+                                try:
+                                    with open(abs_p, "rb") as fh:
+                                        return hashlib.sha256(fh.read()).hexdigest()
+                                except Exception:
+                                    return ""
+                            return ""
 
                         # Construct your physical structural layout payload matching your exact tracking realms
                         signatures_matrix = {
@@ -284,22 +312,23 @@ def execute(args, error_handler, repo_root: str):
                                     # 100% PURE DYNAMIC BINDINGS - NO HARDCODED VALUE SCATTERING
                                     "RAW_TEMPLATE":       str(meta_blueprint.get("CoreMagicRaw", "")),
                                     "RAW":                str(magic_tag),
-                                    "TOKEN":              "b36d1e03858491d3b12ddd1f4f3043458be6065befb6f25622475b8bc909fd85",
-                                    "SIGNATURE":          "db33c3915f073fa8ff11e8557ee0f01ba329b3ae3f06e788bc4803afdf2674e1",
-                                    "REALM":              str(meta_blueprint.get("CoreRealm", "")),
-                                    "VERSION":            str(meta_blueprint.get("CoreVersion", "")),
-                                    "SECRET":             str(meta_blueprint.get("CoreMagic", "")),                                    
-                                    "AUTHOR":             str(meta_blueprint.get("CoreAuthor", ""))
+                                    "TOKEN":              str(dynamic_token_hash),
+                                    "SIGNATURE":          str(dynamic_signature_hash),
+                                    "REALM":              live_realm,
+                                    "VERSION":            live_version,
+                                    "SECRET":             live_secret,                                    
+                                    "AUTHOR":             live_author
                                 },
                                 "master": {
-                                    "Core":               "",
-                                    "Check":              "",        
-                                    "Schema":             "",
-                                    "Cores":              "",
-                                    "Threat":             "",
-                                    "ThreatLegal":        "",
-                                    "ThreatShadowVacuum": "",
-                                    "ThreatSigned":       ""
+                                    # LIVE CRYPTOGRAPHIC SEALS RE-CALCULATED DURING INIT EXECUTION RUN
+                                    "Core":               get_file_hash("Core"),
+                                    "Check":              get_file_hash("Check"),        
+                                    "Schema":             get_file_hash("Schema"),
+                                    "Cores":              get_file_hash("Cores"),
+                                    "Threat":             get_file_hash("Threat"),
+                                    "ThreatLegal":        get_file_hash("Threat"), 
+                                    "ThreatShadowVacuum": get_file_hash("Threat"),
+                                    "ThreatSigned":       get_file_hash("SignaturesPy")
                                 },
                                 "chain": {
                                     "Core":               "",
@@ -345,7 +374,6 @@ def execute(args, error_handler, repo_root: str):
                         error_handler.print(f"    [->] Synced Core Mirror: {token:<12} -> Blueprint copied to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
-
             
                 if token == "Core":
                     try:
