@@ -64,6 +64,7 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     """
     100% UNIFIED GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
     Constructs a standardized, unified existenzIntegrity block layout array.
+    Natively computes cumulative lookback chains when SIGN_CHAIN_END (256) is active.
     """
     import hashlib
     import time
@@ -79,7 +80,7 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
     except Exception:
         magic_tag = "Existenz:v0.76.20:EX25IMMUT32CORE7617"
-        
+    
     current_timestamp = time.strftime("%Y%m%d %H:%M")
     
     sanitized_public_keys = []
@@ -102,6 +103,7 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     sorted_glue_items = sorted(combined_glue_records.items(), key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF))
 
     compiled_signatures_rows = []
+    group_rolling_hashes = []
 
     for glue_key, glue_tuple in sorted_glue_items:
         if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
@@ -111,22 +113,36 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
         op_flags    = int(glue_tuple[1])
         config_word = int(glue_tuple[3])
 
-        # Isolate Group ID natively
+        # Bit-Shift Extraction: Isolate Group ID natively
         item_group_id = config_word >> 8
         if group_filter_id is not None and item_group_id != group_filter_id:
             continue
 
         hasher = hashlib.sha256()
+        
+        # Mix the magic tag string into the hashing buffer if SIGN_MAGIC_HASH (2) is active
         if bool(op_flags & 2):
             hasher.update(magic_tag.encode("utf-8"))
-            
-        if struct_name == "existentialPublicKeys":
-            for row in sanitized_public_keys:
-                hasher.update(str(row).encode("utf-8"))
+
+        # TRUE LOOKBACK CHAIN EVALUATION PASS
+        if bool(op_flags & 256):  # SIGN_CHAIN_END active
+            # Concatenate all preceding hashes accumulated within this group partition block session
+            chain_block_string = "".join(group_rolling_hashes)
+            hasher.update(chain_block_string.encode("utf-8"))
         else:
-            hasher.update(struct_name.encode("utf-8"))
+            # Standalone element baseline calculation path
+            if struct_name == "existentialPublicKeys":
+                for row in sanitized_public_keys:
+                    hasher.update(str(row).encode("utf-8"))
+            else:
+                hasher.update(struct_name.encode("utf-8"))
             
         computed_hash = hasher.hexdigest()
+        
+        # Append this fresh calculation to our active rolling track buffer for subsequent lookback seals
+        if not bool(op_flags & 256):
+            group_rolling_hashes.append(computed_hash)
+
         signed_signature = "PENDING_PRIVATE_KEY_SIGNATURE"
         opcode_str = str(op_flags)
         
