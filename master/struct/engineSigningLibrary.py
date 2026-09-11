@@ -13,6 +13,7 @@ import hmac
 import hashlib
 import getpass
 import time
+import re
 from enum import IntFlag
 from cryptography.hazmat.primitives.asymmetric import ed25519
 #from cryptography.hazmat.primitives import serialization
@@ -20,15 +21,9 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 from typing import Dict, Any
 
 from engineSigningMeta import existenzLocations, existenzMeta, existenzConfig, existenzPublicKeys
-# Added missing existenzIntegrityKeyStatus registration dependency entry
 from engineSigningStruct import existenzIntegrityGlue, existenzSignatures, existenzIntegrityKeysHandler, existenzIntegrityKeyStatus, existenzSteps
-from existentialSignatures import existentialToken
-
+# FIX: Removed early import of existentialToken to protect against ModuleNotFoundError crashes during init bootstrapping
 from visualMixEngineLogging import visualmixErrorHandler
-
-from engineSigningMeta import existenzMeta
-
-import re
 
 INT_VERSION = "v0.76.15+"
 
