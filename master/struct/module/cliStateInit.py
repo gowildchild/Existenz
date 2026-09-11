@@ -277,6 +277,7 @@ def execute(args, error_handler, repo_root: str):
                     
                     elif "SignaturesJson" in token or filename == "existentialSignatures.json":
                         try:
+                            import engineSigningLibrary
                             # Surgically call your central library routine to calculate the live structural matrix
                             signatures_matrix, _ = engineSigningLibrary.compute_blueprint_signature_matrix(repo_root, schema_data, magic_tag)
                             
@@ -378,6 +379,7 @@ def execute(args, error_handler, repo_root: str):
 
                 elif token == "SignaturesPy":
                     try:
+                        import engineSigningLibrary
                         struct_template_path = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
                         
                         if os.path.exists(struct_template_path):
