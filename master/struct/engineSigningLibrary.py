@@ -114,6 +114,56 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     
     return integrity_matrix
 
+def serialize_integrity_block_to_python(integrity_matrix: dict) -> str:
+    """
+    DYNAMIC TEXT SERIALIZATION ENWRITER
+    Converts an in-memory integrity dictionary payload into clean, vertically-aligned
+    Python source code text strings. Ready to be appended down to any target structural file.
+    """
+    # 1. Dynamically locate the active realm name root key out of the dict envelope
+    realm_key = [k for k in integrity_matrix.keys() if k not in ["PublicKeys", "Signatures"]][0]
+    realm_data = integrity_matrix[realm_key]
+    
+    output_lines = []
+    output_lines.append("\n" + "# " + "="*74)
+    output_lines.append(f"# EXISTENZ CORE IMMUTABLE SYSTEM INTEGRITY MATRIX")
+    output_lines.append("# " + "="*74)
+    output_lines.append("existenzIntegrity = {")
+    
+    # 2. Serialize the dynamic Core Meta header block details
+    output_lines.append(f'    "{realm_key}": {{')
+    output_lines.append(f'        "Version": "{realm_data["Version"]}",')
+    output_lines.append(f'        "Update":  "{realm_data["Update"]}"')
+    output_lines.append("    },")
+    
+    # 3. Serialize the consolidated PublicKeys row tuple blocks sequentially
+    output_lines.append('    "PublicKeys": (')
+    for key_row in integrity_matrix["PublicKeys"]:
+        name_str = f'"{key_row[0]}"'.ljust(15)
+        key_str  = f'"{key_row[1]}"'
+        bit_weight = str(key_row[2]).rjust(3)
+        output_lines.append(f'        ({name_str}, {key_str}, {bit_weight}),')
+    
+    # Prune the trailing row comma character out of the last item list to protect syntax layout rules
+    if output_lines[-1].endswith(","):
+        output_lines[-1] = output_lines[-1][:-1]
+    output_lines.append("    ),")
+    
+    # 4. Serialize the bitmask-driven Signatures block registry matrix
+    output_lines.append('    "Signatures": (')
+    for sig_row in integrity_matrix["Signatures"]:
+        lbl_str  = f'"{sig_row[0]}"'.ljust(38)
+        mask_str = f'"{sig_row[1]}"'.rjust(6)
+        hash_str = f'"{sig_row[2]}"'
+        sign_str = f'"{sig_row[3]}"'
+        output_lines.append(f'        ({lbl_str}, {mask_str}, {hash_str}, {sign_str}),')
+        
+    if output_lines[-1].endswith(","):
+        output_lines[-1] = output_lines[-1][:-1]
+    output_lines.append("    )")
+    output_lines.append("}")
+    
+    return "\n".join(output_lines) + "\n"
 
 def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_tag: str) -> tuple:
     """
