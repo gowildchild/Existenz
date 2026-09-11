@@ -157,8 +157,8 @@ def execute(args, error_handler, repo_root: str):
                                     with open(target_path, "r", encoding="utf-8") as pf:
                                         if pf.read() != template_content:
                                             force_write_required = True
-                                    except Exception:
-                                        force_write_required = True
+                                except Exception:
+                                    force_write_required = True
 
                     # Overwrite and update your targets natively when text differences or drops are found
                     if force_write_required:
