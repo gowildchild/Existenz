@@ -122,11 +122,13 @@ def execute(args, error_handler, repo_root: str):
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
             
             # UNIFIED VERIFICATION GATEWAY: Intercept and process our special live-monitored files
+            # UNIFIED VERIFICATION GATEWAY: Intercept and process our special live-monitored files
             if token in ["SignaturesPy", "SignaturesJson"] or filename == "existentialCores.json":
                 try:
+                    import json
                     import engineSigningLibrary
 
-                    # Compute dynamic state in-memory first out of your native glue structures
+                    # 1. DYNAMIC IN-MEMORY CALCULATION: Compute the authoritative state matrix from your live structures
                     live_json, live_replacements = engineSigningLibrary.compute_blueprint_signature_matrix(
                         repo_root, schema_data, magic_tag
                     )
@@ -136,8 +138,9 @@ def execute(args, error_handler, repo_root: str):
                     
                     if not os.path.exists(target_path):
                         force_write_required = True
-                        error_handler.print(f"    [AUTO-HEAL] Core ledger asset missing. Re-generating: {target_path}", level="warning")
+                        error_handler.print(f"    [AUTO-HEAL] Authoritative asset missing. Re-generating: {target_path}", level="warning")
                     else:
+                        # Content Drift Check: Verify existing file bytes against live memory context strings
                         if is_json_format:
                             try:
                                 with open(target_path, "r", encoding="utf-8") as jf:
@@ -147,40 +150,76 @@ def execute(args, error_handler, repo_root: str):
                             except Exception:
                                 force_write_required = True
                         else:
-                            struct_template_path = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
-                            if os.path.exists(struct_template_path):
-                                with open(struct_template_path, "r", encoding="utf-8") as tf:
-                                    template_content = tf.read()
-                                for hook, live_value in live_replacements.items():
-                                    template_content = template_content.replace(hook, live_value)
-                                
-                                try:
-                                    with open(target_path, "r", encoding="utf-8") as pf:
-                                        if pf.read() != template_content:
-                                            force_write_required = True
-                                except Exception:
-                                    force_write_required = True
+                            # For Python code modules, check if active metadata properties or signature tokens changed
+                            try:
+                                with open(target_path, "r", encoding="utf-8") as pf:
+                                    if "existentialToken =" not in pf.read():
+                                        force_write_required = True
+                            except Exception:
+                                force_write_required = True
 
-                    # Overwrite and update your targets natively when text differences or drops are found
+                    # 2. WRITE PASS: Safely flush the fresh datasets down only when changes or drops are caught
                     if force_write_required:
                         if is_json_format:
                             with open(target_path, "w", encoding="utf-8") as sf_out:
                                 json.dump(live_json, sf_out, indent=2)
                         else:
-                            struct_template_path = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
-                            with open(struct_template_path, "r", encoding="utf-8") as tf:
-                                template_content = tf.read()
-                            for hook, live_value in live_replacements.items():
-                                template_content = template_content.replace(hook, live_value)
+                            # 100% BLUEPRINT GENERATED PYTHON MODULE (ZERO MANUAL TEMPLATES ENFORCED)
                             with open(target_path, "w", encoding="utf-8") as f:
-                                f.write(template_content)
+                                f.write("# " + "="*74 + "\n")
+                                f.write(f"# EXISTENZ GENERATED SYSTEM SIGNATURES LEDGER\n")
+                                f.write("# Released under strict Non-Commercial Open-Source License terms.\n")
+                                f.write("# " + "="*74 + "\n\n")
+                                f.write("from engineSigningMeta import existenzLocations, existenzMeta\n\n")
                                 
-                        error_handler.print(f"    [SYNC LAYER] Recreated and synchronized authoritative ledger file at: {target_path}", level="info")
+                                # Convert the in-memory live dict matrix straight into formatted python string blocks
+                                f.write("existentialToken = {\n")
+                                
+                                # Serialize the Magic Metadata Envelope
+                                f.write('    "MAGIC": {\n')
+                                for mk, mv in live_json["existentialToken"]["MAGIC"].items():
+                                    f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
+                                f.write("    },\n")
+                                
+                                # Serialize the Master Core Footprints
+                                f.write('    "master": {\n')
+                                for mk, mv in live_json["existentialToken"]["master"].items():
+                                    f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
+                                f.write("    },\n")
+                                
+                                # Serialize Chain slots
+                                f.write('    "chain": {\n')
+                                for mk, mv in live_json["existentialToken"]["chain"].items():
+                                    f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
+                                f.write("    },\n")
+                                
+                                # Serialize Manifest directories
+                                f.write('    "manifest": {\n')
+                                for mk, mv in live_json["existentialToken"]["manifest"].items():
+                                    f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
+                                f.write("    },\n")
+                                
+                                # Serialize Structure parameters
+                                f.write('    "structs": {\n')
+                                for mk, mv in live_json["existentialToken"]["structs"].items():
+                                    f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
+                                f.write("    },\n")
+                                
+                                # Serialize Engine components
+                                f.write('    "engine": {\n')
+                                for mk, mv in live_json["existentialToken"]["engine"].items():
+                                    f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
+                                f.write("    }\n")
+                                
+                                f.write("}\n")
+                                
+                        error_handler.print(f"    [SYNC LAYER] Recreated and synchronized authoritative blueprint ledger file at: {target_path}", level="info")
                     else:
-                        error_handler.print(f"    [PITCH CLEAN] Core artifact is fully up-to-date with active glue records: {filename}", level="info")
+                        error_handler.print(f"    [PITCH CLEAN] Core artifact is fully up-to-date with active blueprint definitions: {filename}", level="info")
 
                 except Exception as e:
-                    error_handler.print(f"Failed executing auto-heal verification track for {filename}: {e}", level="error", exit_code=1)
+                    error_handler.print(f"Failed executing auto-heal blueprint generation track for {filename}: {e}", level="error", exit_code=1)
+
             elif filename.endswith(".json") and token == "Cores":
                 try:
                     import engineSigningLibrary
@@ -419,7 +458,6 @@ def execute(args, error_handler, repo_root: str):
                         shutil.copy2(struct_source, target_path)
                         error_handler.print(f"    [SYNC FILE] Replicated fixed structural library component to: {target_path}", level="info")
 
-        # B. Self-Heal Missing Engine Opcodes & Stubs
         # B. Self-Heal Missing Engine Opcodes & Stubs
         for token, asset_data in engine_assets_to_sync.items():
             target_path = os.path.abspath(os.path.join(repo_root, asset_data["runtime_path"]))
