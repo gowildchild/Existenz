@@ -1,5 +1,5 @@
 {
-  "commit": "78038ec38864e454a45934d9b494c5904161b4c0",
+  "commit": "25abc0a883e51c3bb22a1e05addab61e78687f2f",
   "existentialCoreVersion": "v0.76.18",
   "files.build": {
     "master/build-tools/deprecated/cliStateBuild.py": "0d053d0cb8e705f9f1797f51745bcd55459a22300b14680f28b497eb1201398c",
@@ -88,7 +88,7 @@
     "master/struct/engineSigningMeta.py": "10debe34bdf1c6a1edd881b8e37a959f805c259ca9fdfb5bf28682059d21ce59",
     "master/struct/engineSigningStruct.py": "a91809578a7e3e5157187282926b84dd40e9b8aa9d7c4a998ff23b1b8b96fc35",
     "master/struct/existentialCoreSchema.json": "b7719b3671077f9d19913a13d2f5f992576ea2ed15a684289975b1e54f8b69f5",
-    "master/struct/existentialSignatures.py": "49cb7c9576ef8a351e18cc6ff889352d3879222799491158b59d99ee6e4a5a72",
+    "master/struct/existentialSignatures.py": "8292a856de5c2ef11ac5d879208e5fcd6a54e4f0dcd0e4e93028a3dc4092e1ee",
     "master/struct/module/cliStateBuild.py": "612f1c5128c06e02da8649777e5e40827ee76ee377e815a90be938578636cf12",
     "master/struct/module/cliStateInit.py": "719233ca75df712a6e0e3832b97cdd50cc1b335f29f7f481866c763ac0d8780f",
     "master/struct/module/cliStateIntegrity.py": "f1e460c13ac718c4830d12f04970a6e0d385fb5569bfeb564d1b51027670818d",
@@ -123,7 +123,7 @@
   "signatures.circle": {
     "hash.build": "da8b3d844fe2a94b00c533ba41f9ceeae89132479765a205d6c81a3e4b75d358",
     "hash.dist": "42359285eeef61e1069be804f233216accf88ebdf9a1c4c0e81f92806bfb2275",
-    "hash.master": "14a35c7b6f6e023e1618ebc284ee4f25542a914824975ce2fa970c69e493b225",
+    "hash.master": "f44734c3dac269e266f476760a827f44ca3a9dc65e3cea53297fcbcb95825a61",
     "hash.tools": "925c5a0230ea9aad4ef4997f40dc883b60fb0a9c561fd6621fbffb2b34cd4171",
     "sign.build": "f66510ad6b571c5ed54ba091c9dabacad17620887f269ba00f1328e444e299048812aa8c7be0fb5cd5f982b7e32ba1d339a51e305cf0bfc31d2b1052b5846b03",
     "sign.dist": "e4b09eb182c28b622b3287b663fd43eef9054c0a7d5372abdb365d349f6fb2c86b8f3278cc4cb0f93b37faf45fafea0d3972c05e806a4c15a52f4424df61c303",
