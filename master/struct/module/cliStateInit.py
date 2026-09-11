@@ -473,7 +473,7 @@ def execute(args, error_handler, repo_root: str):
                             # Extract metadata properties from the active master blueprint payload dict
                             meta_blueprint = schema_data.get("existentialMeta", {})
                             live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
-                            live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
+                            live_version = str(meta_blueprint.get("CoreVersion", "v0.76.15"))
                             live_author  = str(meta_blueprint.get("CoreAuthor", "Gunther Voet"))
 
                             # Compute live cryptographic tokens natively using the global magic_tag string
@@ -481,21 +481,7 @@ def execute(args, error_handler, repo_root: str):
                             chain_seed_string = f"{local_token_hash}:{live_author}"
                             local_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
 
-                            # Safe file hashing lookup utility to gather live repository checkpoints from disk
-                            def get_file_hash(realm_key, target_token):
-                                rel_p = existenzLocations.get(realm_key, {}).get(target_token)
-                                if not rel_p:
-                                    return ""
-                                abs_p = os.path.abspath(os.path.join(repo_root, rel_p))
-                                if os.path.exists(abs_p):
-                                    try:
-                                        with open(abs_p, "rb") as fh:
-                                            return hashlib.sha256(fh.read()).hexdigest()
-                                    except Exception:
-                                        pass
-                                return ""
-
-                            # Map your blueprint values and file signatures to the template hooks
+                            # 1. INITIALIZE DYNAMIC REPLACEMENTS WITH GLOBAL BLUEPRINT METADATA
                             replacements = {
                                 "{{LIVE_REALM}}":         live_realm,
                                 "{{LIVE_VERSION}}":       live_version,
@@ -503,36 +489,45 @@ def execute(args, error_handler, repo_root: str):
                                 "{{DYNAMIC_TOKEN}}":      local_token_hash,
                                 "{{DYNAMIC_SIGNATURE}}":  local_signature_hash,
                                 "{{MAGIC_RAW}}":          str(magic_raw),
-                                "{{MAGIC_TAG}}":          str(magic_tag),
-                                "{{HASH_CORE}}":          get_file_hash("core", "Core"),
-                                "{{HASH_CHECK}}":         get_file_hash("core", "Check"),
-                                "{{HASH_SCHEMA}}":        get_file_hash("core", "Schema"),
-                                "{{HASH_CORES}}":         get_file_hash("core", "Cores"),
-                                "{{HASH_THREAT}}":        get_file_hash("core", "Threat"),
-                                "{{HASH_THREAT_LEGAL}}":  get_file_hash("core", "Threat"),
-                                "{{HASH_THREAT_VACUUM}}": get_file_hash("core", "Threat"),
-                                "{{HASH_THREAT_SIGNED}}": get_file_hash("core", "SignaturesPy"),
-                                "{{HASH_KEYS_PUBLIC}}":   get_file_hash("engine", "signingStruct"),
-                                "{{HASH_KEYS_HANDLER}}":  get_file_hash("engine", "signingStruct"),
-                                "{{HASH_KEYS_TYPE}}":     get_file_hash("engine", "signingStruct"),
-                                "{{HASH_LOCATIONS}}":     get_file_hash("engine", "signingMeta"),
-                                "{{HASH_LOGGING}}":       get_file_hash("engine", "engineLogging"),
-                                "{{HASH_CRYPTO}}":        get_file_hash("engine", "engineCrypto"),
-                                "{{HASH_SIGNING_META}}":  get_file_hash("engine", "signingMeta"),
-                                "{{HASH_SIGNING_STRUCT}}":get_file_hash("engine", "signingStruct"),
-                                "{{HASH_SIGNING_LIBRARY}}":get_file_hash("engine", "signingLibrary"),
-                                "{{HASH_BUILDER_LIBRARY}}":get_file_hash("engine", "builderLibrary"),
-                                "{{HASH_CLI_TEST}}":      get_file_hash("engine", "cliStateTest"),
-                                "{{HASH_CLI_INIT}}":      get_file_hash("engine", "cliStateInit"),
-                                "{{HASH_CLI_MANIFEST}}":  get_file_hash("engine", "cliStateManifest"),
-                                "{{HASH_CLI_SIGN}}":      get_file_hash("engine", "cliStateSign"),
-                                "{{HASH_CLI_VERIFY}}":    get_file_hash("engine", "cliStateVerify"),
-                                "{{HASH_CLI_BUILD}}":     get_file_hash("engine", "cliStateBuild"),
-                                "{{HASH_SIGNATURES_JSON}}":get_file_hash("core", "SignaturesJson"),
-                                "{{HASH_MANIFEST_JSON}}":  get_file_hash("engine", "Manifest")
+                                "{{MAGIC_TAG}}":          str(magic_tag)
                             }
 
-                            # Run a complete string replacement sweep across the template variables
+                            # 2. GLUE-DRIVEN TRAVERSAL: Automate asset discovery using engineSigningStruct parameters
+                            from engineSigningStruct import existenzIntegrityGlue, existenzIntegrityKeysHandler
+
+                            for glue_key, glue_tuple in existenzIntegrityGlue.items():
+                                if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
+                                    continue
+                                
+                                # Extract properties natively: [0]=variable, [1]=bitmask, [2]=opcode, [3]=id, [4]=relative_path
+                                rel_path = glue_tuple[4]
+                                op_flags = glue_tuple[2]
+                                
+                                # Build template bracket token keys matching your template file standard
+                                hook_key = f"{{{{HASH_{glue_key.upper()}}}}}"
+                                
+                                # Resolve the physical file path on the running host system container
+                                abs_path = os.path.abspath(os.path.join(repo_root, rel_path))
+                                
+                                # Rule A: Standalone or Magic-Salted targets mapped directly to distinct files on disk
+                                if os.path.exists(abs_path) and os.path.isfile(abs_path):
+                                    try:
+                                        with open(abs_path, "rb") as fh:
+                                            calculated_hash = hashlib.sha256(fh.read()).hexdigest()
+                                    except Exception:
+                                        calculated_hash = ""
+                                        
+                                # Rule B: Folders/Directories mapped inside manifest rings are kept clean or route to build
+                                elif os.path.exists(abs_path) and os.path.isdir(abs_path):
+                                    calculated_hash = ""
+                                    
+                                # Rule C: Sub-registries or chained structures remain unpopulated until processing loops sign them
+                                else:
+                                    calculated_hash = ""
+                                    
+                                replacements[hook_key] = calculated_hash
+
+                            # 3. Apply the dynamic mapping substitutions completely across the template content
                             for hook, live_value in replacements.items():
                                 template_content = template_content.replace(hook, live_value)
 
