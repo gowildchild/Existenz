@@ -9,39 +9,41 @@ from engineSigningMeta import existenzLocations, existenzMeta
 from existentialSignatures import existentialToken
 
 existenzIntegrityGlue = {
-    "Magic":                  ( "existentialMagicSignature", 3583, 139777,  0x00, existenzLocations["core"]["SignaturesPy"],  
+    "Magic":                  ( "existentialMagicSignature", 7671, 139777,  0x0100, existenzLocations["core"]["SignaturesPy"],  
                                                                                existentialToken.get("MAGIC", {}).get("SIGNATURE", "PENDING_SIGN")),
-    "MagicCheck":             ( "existentialMagicToken",     3575, 139777,  0x00, existenzLocations["core"]["SignaturesPy"],  
+    "MagicCheck":             ( "existentialMagicToken",     7679, 139777,  0x0100, existenzLocations["core"]["SignaturesPy"],  
                                                                                existentialToken.get("MAGIC", {}).get("TOKEN", "PENDING_SIGN")),
-    "Core":                   ( "existentialCore",           3575, 4625, 0x00, existenzLocations["core"]["Core"],  
+    "Core":                   ( "existentialCore",           3327, 4625, 0x0201, existenzLocations["core"]["Core"],  
                                                                                existentialToken.get("master", {}).get("Core", "PENDING_SIGN")),
-    "CoreCheck":              ( "existentialCoreCheck",      3575, 4865, 0x00, existenzLocations["core"]["Check"],  
-                                                                               existentialToken.get("master", {}).get("Check", "PENDING_SIGN")),
-    "Cores":                  ( "existentialCores",          3575, 5250, 0x02, existenzLocations["core"]["Cores"],
-                                                                               existentialToken.get("master", {}).get("Cores", "PENDING_SIGN")),
-    "Schema":                 ( "existentialCoreSchema",      246, 9224, 0x03, existenzLocations["core"]["Schema"],
-                                                                               existentialToken.get("master", {}).get("Schema", "PENDING_SIGN")), 
-    "CoreThreat":             ( "existentialCoreThreat",     3575, 4641, 0x06, existenzLocations["core"]["Threat"],
-                                                                               existentialToken.get("master", {}).get("Threat", "PENDING_SIGN")),
-    "CoreThreatLegal":        ( "existentialCoreThreatLegal",3575, 4642, 0x07, existenzLocations["core"]["Threat"],
-                                                                               existentialToken.get("master", {}).get("ThreatLegal", "PENDING_SIGN")),
-    "CoreThreatShadowVacuum": ( "existentialCoreThreatShadowVacuum", 3575, 4642, 0x08, existenzLocations["core"]["Threat"],
-                                                                               existentialToken.get("master", {}).get("ThreatShadowVacuum", "PENDING_SIGN")),
-    "CoreThreatSigned":       ( "existentialCoreThreatSigned",3583, 4642,  0x09, existenzLocations["core"]["Threat"],
-                                                                               existentialToken.get("master", {}).get("ThreatSigned", "PENDING_SIGN")),
-    "CorePolicy":             ( "existentialCorePolicy",     3575, 4626, 0x00, existenzLocations["core"]["Core"],
+    "CorePolicy":             ( "existentialCorePolicy",     3326, 4626, 0x0202, existenzLocations["core"]["Core"],
                                                                                existentialToken.get("master", {}).get("CorePolicy", "PENDING_SIGN")),
-    "CoreBitmask":            ( "existentialCoreBitmask",    3575, 4626, 0x00, existenzLocations["core"]["Core"],
+    "CoreBitmask":            ( "existentialCoreBitmask",    3326, 4626, 0x0203, existenzLocations["core"]["Core"],
                                                                                existentialToken.get("master", {}).get("CoreBitmask", "PENDING_SIGN")),    
-    "CircleDist":             ( "existentialCircleDist",     2615, 33860,   0x2F, existenzLocations["manifest"]["dist"],
+    "CoreChain":              ( "existentialCoreChain",      3582, 4642,  0x0204, existenzLocations["core"]["Core"],
+                                                                               existentialToken.get("master", {}).get("CoreChain", "PENDING_SIGN")),   
+    "CoreThreat":             ( "existentialCoreThreat",     3327, 4641, 0x0301, existenzLocations["core"]["Threat"],
+                                                                               existentialToken.get("master", {}).get("Threat", "PENDING_SIGN")),
+    "CoreThreatLegal":        ( "existentialCoreThreatLegal",3326, 4642, 0x0302, existenzLocations["core"]["Threat"],
+                                                                               existentialToken.get("master", {}).get("ThreatLegal", "PENDING_SIGN")),
+    "CoreThreatShadowVacuum": ( "existentialCoreThreatShadowVacuum", 3326, 4642, 0x0303, existenzLocations["core"]["Threat"],
+                                                                               existentialToken.get("master", {}).get("ThreatShadowVacuum", "PENDING_SIGN")),
+    "CoreThreatSigned":       ( "existentialCoreThreatSigned",3582, 4642,  0x0304, existenzLocations["core"]["Threat"],
+                                                                               existentialToken.get("master", {}).get("ThreatSigned", "PENDING_SIGN")),       
+    "CoreCheck":              ( "existentialCoreCheck",      3583, 4865, 0x0700, existenzLocations["core"]["Check"],  
+                                                                               existentialToken.get("master", {}).get("Check", "PENDING_SIGN")),
+    "Cores":                  ( "existentialCores",          3583, 5250, 0x0800, existenzLocations["core"]["Cores"],
+                                                                               existentialToken.get("master", {}).get("Cores", "PENDING_SIGN")),
+    "Schema":                 ( "existentialCoreSchema",      246, 9224, 0x0900, existenzLocations["core"]["Schema"],
+                                                                               existentialToken.get("master", {}).get("Schema", "PENDING_SIGN")),  
+    "CircleDist":             ( "existentialCircleDist",     2615, 33860,   0xF02F, existenzLocations["manifest"]["dist"],
                                                                                existentialToken.get("manifest", {}).get("dist", "PENDING_SIGN")),
-    "CircleTools":            ( "existentialCircleTools",    2814, 33860,   0x3F, existenzLocations["manifest"]["tools"],
+    "CircleTools":            ( "existentialCircleTools",    2614, 33860,   0xF03F, existenzLocations["manifest"]["tools"],
                                                                                existentialToken.get("manifest", {}).get("tools", "PENDING_SIGN")),
-    "CircleBuild":            ( "existentialCircleBuild",    2815, 33860,  0x4F, existenzLocations["manifest"]["build"],
+    "CircleBuild":            ( "existentialCircleBuild",    2614, 33860,  0xF04F, existenzLocations["manifest"]["build"],
                                                                                existentialToken.get("manifest", {}).get("build", "PENDING_SIGN")),
-    "CircleMaster":           ( "existentialCircleMaster",   2815, 33860,  0x5F, existenzLocations["manifest"]["master"],
+    "CircleMaster":           ( "existentialCircleMaster",   2614, 33860,  0xF05F, existenzLocations["manifest"]["master"],
                                                                                existentialToken.get("manifest", {}).get("master", "PENDING_SIGN")),
-    "CircleChain":            ( "existentialCircleSigned",   3839, 33860,  0x9F, existenzLocations["engine"]["Manifest"],
+    "CircleChain":            ( "existentialCircleSigned",   2870, 33860,  0xF09F, existenzLocations["engine"]["Manifest"],
                                                                                existentialToken.get("engine", {}).get("Manifest", "PENDING_SIGN"))
 }
 
@@ -73,7 +75,7 @@ class existenzIntegrityKeysHandler(IntFlag):
     SIGN_CHAIN_START     = 1
     SIGN_MAGIC_HASH      = 2
     SIGN_TYPE_COMMIT     = 4
-    SIGN_TYPE_PRIVATE    = 8
+    SIGN_TO_FILES        = 8
     SIGN_PVT_ENVIRONMENT = 16
     SIGN_PVT_PLATFORM    = 32
     SIGN_PVT_DEVELOPER   = 64
@@ -85,6 +87,7 @@ class existenzIntegrityKeysHandler(IntFlag):
     SIGN_TYPE_STRING     = 4096
     SIGN_TYPE_DICT       = 8192
     SIGN_TYPE_TUPLE      = 16384
+    SIGN_TYPE_GROUP      = 32768
 
 class existenzIntegrityRequirements(IntFlag):
     """Opcode execution instructions governing the processes required before possible to enter data."""
