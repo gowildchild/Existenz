@@ -463,28 +463,88 @@ def execute(args, error_handler, repo_root: str):
                 elif token == "SignaturesPy":
                     try:
                         import hashlib
-                        with open(target_path, "w", encoding="utf-8") as f:
-                            # Automatically calculate the live token hash from the schema magic tag
-                            dynamic_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
-                            
-                            f.write(engineBuilderLibrary.make_header(version_str, "#"))
-                            f.write(f"existentialMeta = \"{version_full}\"\n")
-                            f.write(f'existentialCoreCheckMagic = b"{dynamic_token_hash}"\n\n')
-                            
-                            # Inject Core Magic context fields cleanly below the hash line
-                            f.write("# " + "="*74 + "\n")
-                            f.write("# EXISTENZ CORE SIGNATURE TEMPLATE REFERENCES\n")
-                            f.write("# " + "="*74 + "\n")
-                            f.write(f'CoreMagicRaw = "{magic_raw}"\n')
-                            f.write(f'CoreMagicTag = "{magic_tag}"\n\n')
-                            
-                            f.write("class existentialCoreSignatures:\n    existentialCoreSigned = (\n")
-                            f.write("        (\"Magic\", \"magic\", \"existentialCoreMagicHash\", \"\", 2, 0),\n")
-                            f.write("        (\"Core\", \"core\", \"existentialCoreHash\", \"\", 12, 1),\n")
-                            f.write("    )\n")
-                        error_handler.print(f"    [COMPILE FILE] Compiled signature tracking registries at: {target_path}", level="info")
+                        struct_template_path = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
+                        
+                        if os.path.exists(struct_template_path):
+                            # Read the pristine template structure directly into the memory buffer context
+                            with open(struct_template_path, "r", encoding="utf-8") as tf:
+                                template_content = tf.read()
+                                
+                            # Extract metadata properties from the active master blueprint payload dict
+                            meta_blueprint = schema_data.get("existentialMeta", {})
+                            live_realm   = str(meta_blueprint.get("CoreRealm", "Existenz"))
+                            live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
+                            live_author  = str(meta_blueprint.get("CoreAuthor", "Gunther Voet"))
+
+                            # Compute live cryptographic tokens natively using the global magic_tag string
+                            local_token_hash = hashlib.sha256(magic_tag.encode("utf-8")).hexdigest()
+                            chain_seed_string = f"{local_token_hash}:{live_author}"
+                            local_signature_hash = hashlib.sha256(chain_seed_string.encode("utf-8")).hexdigest()
+
+                            # Safe file hashing lookup utility to gather live repository checkpoints from disk
+                            def get_file_hash(realm_key, target_token):
+                                rel_p = existenzLocations.get(realm_key, {}).get(target_token)
+                                if not rel_p:
+                                    return ""
+                                abs_p = os.path.abspath(os.path.join(repo_root, rel_p))
+                                if os.path.exists(abs_p):
+                                    try:
+                                        with open(abs_p, "rb") as fh:
+                                            return hashlib.sha256(fh.read()).hexdigest()
+                                    except Exception:
+                                        pass
+                                return ""
+
+                            # Map your blueprint values and file signatures to the template hooks
+                            replacements = {
+                                "{{LIVE_REALM}}":         live_realm,
+                                "{{LIVE_VERSION}}":       live_version,
+                                "{{LIVE_AUTHOR}}":        live_author,
+                                "{{DYNAMIC_TOKEN}}":      local_token_hash,
+                                "{{DYNAMIC_SIGNATURE}}":  local_signature_hash,
+                                "{{MAGIC_RAW}}":          str(magic_raw),
+                                "{{MAGIC_TAG}}":          str(magic_tag),
+                                "{{HASH_CORE}}":          get_file_hash("core", "Core"),
+                                "{{HASH_CHECK}}":         get_file_hash("core", "Check"),
+                                "{{HASH_SCHEMA}}":        get_file_hash("core", "Schema"),
+                                "{{HASH_CORES}}":         get_file_hash("core", "Cores"),
+                                "{{HASH_THREAT}}":        get_file_hash("core", "Threat"),
+                                "{{HASH_THREAT_LEGAL}}":  get_file_hash("core", "Threat"),
+                                "{{HASH_THREAT_VACUUM}}": get_file_hash("core", "Threat"),
+                                "{{HASH_THREAT_SIGNED}}": get_file_hash("core", "SignaturesPy"),
+                                "{{HASH_KEYS_PUBLIC}}":   get_file_hash("engine", "signingStruct"),
+                                "{{HASH_KEYS_HANDLER}}":  get_file_hash("engine", "signingStruct"),
+                                "{{HASH_KEYS_TYPE}}":     get_file_hash("engine", "signingStruct"),
+                                "{{HASH_LOCATIONS}}":     get_file_hash("engine", "signingMeta"),
+                                "{{HASH_LOGGING}}":       get_file_hash("engine", "engineLogging"),
+                                "{{HASH_CRYPTO}}":        get_file_hash("engine", "engineCrypto"),
+                                "{{HASH_SIGNING_META}}":  get_file_hash("engine", "signingMeta"),
+                                "{{HASH_SIGNING_STRUCT}}":get_file_hash("engine", "signingStruct"),
+                                "{{HASH_SIGNING_LIBRARY}}":get_file_hash("engine", "signingLibrary"),
+                                "{{HASH_BUILDER_LIBRARY}}":get_file_hash("engine", "builderLibrary"),
+                                "{{HASH_CLI_TEST}}":      get_file_hash("engine", "cliStateTest"),
+                                "{{HASH_CLI_INIT}}":      get_file_hash("engine", "cliStateInit"),
+                                "{{HASH_CLI_MANIFEST}}":  get_file_hash("engine", "cliStateManifest"),
+                                "{{HASH_CLI_SIGN}}":      get_file_hash("engine", "cliStateSign"),
+                                "{{HASH_CLI_VERIFY}}":    get_file_hash("engine", "cliStateVerify"),
+                                "{{HASH_CLI_BUILD}}":     get_file_hash("engine", "cliStateBuild"),
+                                "{{HASH_SIGNATURES_JSON}}":get_file_hash("core", "SignaturesJson"),
+                                "{{HASH_MANIFEST_JSON}}":  get_file_hash("engine", "Manifest")
+                            }
+
+                            # Run a complete string replacement sweep across the template variables
+                            for hook, live_value in replacements.items():
+                                template_content = template_content.replace(hook, live_value)
+
+                            # Flush the finalized, fully signed python code file directly to disk space
+                            with open(target_path, "w", encoding="utf-8") as f:
+                                f.write(template_content)
+
+                            error_handler.print(f"    [COMPILE FILE] Seeded signature module out of source template path: {target_path}", level="info")
+                        else:
+                            error_handler.print(f"Fatal Initialization fault: Master signatures template missing at: {struct_template_path}", level="warning")
                     except Exception as e:
-                        error_handler.print(f"Failed to compile existentialCoreSignatures.py: {e}", level="error", exit_code=1)
+                        error_handler.print(f"Failed template compilation for existentialSignatures.py: {e}", level="error", exit_code=1)
                 else:
                     struct_source = os.path.abspath(os.path.join(repo_root, "master", "struct", filename))
                     if os.path.exists(struct_source):
