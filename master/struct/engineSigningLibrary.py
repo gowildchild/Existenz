@@ -311,13 +311,10 @@ def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_
                 struct_raw_text = f.read()
         except Exception:
             pass
-
+            
     def process_glue_registry(glue_dict: dict, registry_storage_target: dict, is_struct_group: bool = False):
-        # FIX: Added defensive check inside lambda to handle variable tuple lengths safely without IndexError crashes
-        sorted_glue_items = sorted(
-            glue_dict.items(), 
-            key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF) if (isinstance(item[1], tuple) and len(item[1]) > 3) else (0, 0)
-        )
+        # FIX: Pointed sorting properties to the true configuration word slot position
+        sorted_glue_items = sorted(glue_dict.items(), key=lambda item: (item[1][3] >> 8, item[1][3] & 0xFF))
         
         for glue_key, glue_tuple in sorted_glue_items:
             if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
