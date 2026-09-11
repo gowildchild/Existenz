@@ -60,8 +60,91 @@ PIPELINE_SEQUENCE = [
     existenzSteps.STEP_SUCCESS
 ]
 
+def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_realm: str, active_signatures_list: list) -> dict:
+    """
+    100% GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
+    Constructs a standardized, unified existenzIntegrity block layout array.
+    Natively injects the magic tag string when SIGN_MAGIC_HASH (2) is set
+    to prevent supply-chain and public key swapping attacks.
+    """
+    from engineSigningMeta import existenzPublicKeys
+    import time
+    import hashlib
+    
+    meta_blueprint = schema_data.get("existentialMeta", {})
+    live_version = str(meta_blueprint.get("CoreVersion", "v0.76.18"))
+    magic_raw = meta_blueprint.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
+    
+    # 1. Build the dynamic magic tag matching your current blueprint state instructions
+    try:
+        fields = magic_raw.split(":")
+        magic_tag = ":".join([str(meta_blueprint.get(field, "UNKNOWN")) for field in fields])
+    except Exception:
+        magic_tag = "Existenz:v0.76.15:EX25IMMUT32CORE7617"
+    
+    # 2. Acquire current active context timestamp matching your strict spec format
+    current_timestamp = time.strftime("%Y-%m-%d %H:%M 24h")
+    
+    # 3. Extract and sanitize your authoritative PublicKeys registry tuples out of engineSigningMeta
+    sanitized_public_keys = []
+    for key_tuple in existenzPublicKeys:
+        if isinstance(key_tuple, tuple) and len(key_tuple) >= 6:
+            # Captures: Name, SSH Key String, Bitmask, Priority, Index, and Fingerprint Reference
+            sanitized_public_keys.append((
+                str(key_tuple[0]),
+                str(key_tuple[1]),
+                int(key_tuple[2]),
+                int(key_tuple[3]),
+                int(key_tuple[4]),
+                str(key_tuple[5])
+            ))
 
-def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_realm: str, group_filter_id: int = None) -> dict:
+    # 4. Process structural rows to compile the Signatures block matrix
+    compiled_signatures_rows = []
+    for row_item in active_signatures_list:
+        if isinstance(row_item, tuple) and len(row_item) >= 2:
+            structure_name = str(row_item[0])
+            opcode_str     = str(row_item[1])
+            op_flags       = int(opcode_str)
+            
+            # INITIALIZATION SECURITY LOOP: Generate the baseline verification hashes
+            hasher = hashlib.sha256()
+            
+            # Dynamic Salt Input: If SIGN_MAGIC_HASH (2) is active, mix the magic string into the stream first
+            if bool(op_flags & 2):
+                hasher.update(magic_tag.encode("utf-8"))
+                
+            if structure_name == "existentialPublicKeys":
+                # For the public keys tuple itself, hash the sanitized rows sequentially
+                for row in sanitized_public_keys:
+                    hasher.update(str(row).encode("utf-8"))
+            else:
+                # Standalone tracking structures use a unique distinct seed value at birth
+                hasher.update(f"ExistenzInitSeed:{structure_name}".encode("utf-8"))
+                
+            computed_hash = hasher.hexdigest()
+            signed_signature = "PENDING_PRIVATE_KEY_SIGNATURE"
+            
+            compiled_signatures_rows.append((
+                structure_name,
+                opcode_str,
+                computed_hash,
+                signed_signature
+            ))
+            
+    # Assemble the unified database dictionary envelope payload structure
+    integrity_matrix = {
+        target_realm: {
+            "Version": f"Existenz:{live_version}",
+            "Update":  current_timestamp
+        },
+        "PublicKeys": tuple(sanitized_public_keys),
+        "Signatures": tuple(compiled_signatures_rows)
+    }
+    
+    return integrity_matrix
+
+def generate_integrity_block_payload_shitai(repo_root: str, schema_data: dict, target_realm: str, group_filter_id: int = None) -> dict:
     """
     100% UNIFIED GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
     Constructs a standardized, unified existenzIntegrity block layout array.
