@@ -68,7 +68,7 @@ PIPELINE_SEQUENCE = [
 
 
 
-ef compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_tag: str) -> tuple:
+def compute_blueprint_signature_matrix(repo_root: str, schema_data: dict, magic_tag: str) -> tuple:
     """
     100% GLUE-DRIVEN CRYPTOGRAPHIC HASHER (ZERO HARDCODING STRINGS)
     Decodes IntFlag bitmask opcodes and walks native tuple arrays dynamically 
