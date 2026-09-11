@@ -60,7 +60,7 @@ PIPELINE_SEQUENCE = [
     existenzSteps.STEP_SUCCESS
 ]
 
-def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_realm: str, group_filter_id: int = None) -> dict:
+generate_integrity_block_payload(repo_root: str, schema_data: dict, target_realm: str, group_filter_id: int = None) -> dict:
     """
     100% UNIFIED GLUE AND BITMASK DRIVEN INTEGRITY BLOCK GENERATOR
     Constructs a standardized, unified existenzIntegrity block layout array.
@@ -83,8 +83,8 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
     except Exception:
         magic_tag = "Existenz:v0.76.15a:EX25IMMUT32CORE7617"
     
-    # 2. FIX: Restored time layout string formatting to match your signature spec parameters perfectly
-    current_timestamp = time.strftime("%Y-%m-%d %H:%M 24h")
+    # 2. Acquire current active context timestamp matching your strict spec format
+    current_timestamp = time.strftime("%Y%m%d %H:%M")
     
     # 3. Extract and sanitize your authoritative PublicKeys registry tuples out of engineSigningMeta
     sanitized_public_keys = []
@@ -109,16 +109,17 @@ def generate_integrity_block_payload(repo_root: str, schema_data: dict, target_r
 
     compiled_signatures_rows = []
 
-    # 5. FIX: Re-engineered Meta Injection logic to correctly catch both filtered groups and master files
-    if group_filter_id == 0x02:
-        meta_label = "existentialCoreMeta"
-    elif group_filter_id == 0x03:
-        meta_label = "existentialCoreThreatMeta"
-    else:
-        meta_label = "existentialCoresMeta"
-        
-    meta_hasher = hashlib.sha256(f"ExistenzInitSeed:{meta_label}".encode("utf-8")).hexdigest()
-    compiled_signatures_rows.append((meta_label, "3581", meta_hasher, "PENDING_PRIVATE_KEY_SIGNATURE"))
+    # 5. DYNAMIC META ROW INJECTION (Injects required meta-rows at the top of group tables)
+    if group_filter_id is not None:
+        if group_filter_id == 0x02:
+            meta_label = "existentialCoreMeta"
+        elif group_filter_id == 0x03:
+            meta_label = "existentialCoreThreatMeta"
+        else:
+            meta_label = "existentialCoresMeta"
+            
+        meta_hasher = hashlib.sha256(f"ExistenzInitSeed:{meta_label}".encode("utf-8")).hexdigest()
+        compiled_signatures_rows.append((meta_label, "3581", meta_hasher, "PENDING_PRIVATE_KEY_SIGNATURE"))
 
     for glue_key, glue_tuple in sorted_glue_items:
         if not (isinstance(glue_tuple, tuple) and len(glue_tuple) > 4):
