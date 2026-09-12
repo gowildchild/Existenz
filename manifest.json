@@ -116,6 +116,7 @@
     "Platform": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"
   },
   "signatures": {
+    "Environment": "4f9174b8e74a60c3d3705dc58bb25a48e09f6c3d53f0d3868615aa0cc1fa1043ca1a875f6958caa77d437e6be15084db9e1676e2f618ca040d6cc27eebd9080e",
     "Platform": "689bd029459ed2be027766dad28ad2a1ecfc3a17bd7b3a416730cce90b3d594d87b9bf83411bf7c47aad5dd7134206248028d6cbd031f12723994492a7e49a0d"
   },
   "signatures.circle": {
@@ -124,7 +125,7 @@
     "hash.master": "c71ed496a512b1aa026f4ad30e068f56e702688ebfa1a3ae4ceb58b9348abbee",
     "hash.tools": "925c5a0230ea9aad4ef4997f40dc883b60fb0a9c561fd6621fbffb2b34cd4171",
     "sign.build": "fe5a50d1beb50ca7f3e78080a3373de8ce102590c0da2bb42ea137975250b54d1e6e9a773f31fc2c31f07ef1e952f0bf8e3535b640a2332e052be1a79493870a",
-    "sign.dist": "",
+    "sign.dist": "e4b09eb182c28b622b3287b663fd43eef9054c0a7d5372abdb365d349f6fb2c86b8f3278cc4cb0f93b37faf45fafea0d3972c05e806a4c15a52f4424df61c303",
     "sign.master": "645eaeda0153154d620cba795f65588f49efe33cc2f2d317ec1f144d32f2ae70c4f6e3376575228f40b9b70110cfa84b6c65d57e832aea018aac66ed687afa05",
     "sign.tools": ""
   }
