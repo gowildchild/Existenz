@@ -1,5 +1,5 @@
 {
-  "commit": "2311171306c9daa50927f02fce2050081dfe5569",
+  "commit": "b0b8065aa7350bc60d77f1141b3d247612f356e3",
   "existentialCoreVersion": "v0.76.21",
   "files.build": {
     "master/build-tools/deprecated/cliStateBuild.py": "0d053d0cb8e705f9f1797f51745bcd55459a22300b14680f28b497eb1201398c",
@@ -58,6 +58,7 @@
     "dist/existentialCores.json": "369ee5774aa2d19a203edadd011f239a0ad36df8bbf33e4040002cf05d783f10",
     "dist/existenzStruct/master/existentialCores.json": "1cc760044d12c2f4d3d72caf890c2e9839b52d8c2e6247a2f267e58ed4cb459a",
     "dist/index.html": "cd4b9298e9c8a4516e1e2d81c49b52e9c96d3dee6039cd124b1dfcdbc58fdc7a",
+    "dist/master/existentialCoreSignatures.py": "990b054c375f163544f921dc1cd55cf8ecc0e0c6ebdb3242fc0aed351f0ee0a2",
     "dist/perl/existentialCoreCheck.pm": "49b1f697c189d0202b164daba323ba3d7cd3b0496b719a09e121f950d9efae11",
     "dist/perl/existentialCores.pm": "ed3d7bca5afbcf710c71aa586eada8366747d296050e4e2f64f9e01956d05009",
     "dist/perl/single/existentialCore.pm": "69366046cea69167421048181717c7a8a9e59f5ea0c2c51988ebece62ce0d4e6",
@@ -93,7 +94,7 @@
     "master/struct/module/cliStateBuild.py": "612f1c5128c06e02da8649777e5e40827ee76ee377e815a90be938578636cf12",
     "master/struct/module/cliStateInit.py": "0148ec2db2b2d4926239975bf0b49045cf47201612aa3c20b7e355a0925d4a9b",
     "master/struct/module/cliStateIntegrity.py": "f1e460c13ac718c4830d12f04970a6e0d385fb5569bfeb564d1b51027670818d",
-    "master/struct/module/cliStateManifest.py": "e12805015a864947f13700702a2719783ee4e7867b2431937b7bc217087ba2ab",
+    "master/struct/module/cliStateManifest.py": "bdb621813eae438eb08d10ec1bff17fc3bea5409a01a5f5a8834efe2f4694871",
     "master/struct/module/cliStateSign.py": "c23d384c7b567124bfdac030910ed2289a88e731813d89d669516bca4adb25ee",
     "master/struct/module/cliStateTest.py": "e8a6c64754e74904994a5e7f73250d1e10c0bc8a6f7bf53e6be0a24505456417",
     "master/struct/module/cliStateVerify.py": "782c64b8d9a46da4151c6848eb128264fa26ff0a7667a496209c328053f1a237",
@@ -119,16 +120,15 @@
     "Developer": "8379f72bbee8c665a49a96b430cf6af95f527dec7d29de5e707c8519eddc75643f76a6279a5a9a7cfec7e49daaae08c02e06b633557a12411b463155d005770f",
     "Environment": "fbd5b65f8e459771ae7f648dbd2562890fc9ac2696f7c53e6a17fdfa6d3de02026f2ad2bbc148c8dae94bc68c453a612568eeab72f909a69220f995dea55030e",
     "Personal": "8e6a85651f4b15da16abaf22298d984fa1d9ddca81a938aa65068a21c9c799453984bffa75c9f33eda539aa61b131aa0531637db933fc629325ce2858c24f50a",
-    "Platform": "a6b2cb958a7a90a84a0669fd372919fb6f854cdf88c7f414451e5261c3a94af62a3440c39fde8763a9a9bfc450167f2c9c353af6698f2df6706217b8a8b15001"
+    "Platform": "6a0cef829cd1ce9c2b75e89b4e98f32a12f965d40ca912c2df24a7be4c54d4aab5683bf21e10b937bc8a8d63345b8a70736f8f812b9d5600d0dce85176792000"
   },
   "signatures.circle": {
     "hash.build": "da8b3d844fe2a94b00c533ba41f9ceeae89132479765a205d6c81a3e4b75d358",
-    "hash.dist": "42359285eeef61e1069be804f233216accf88ebdf9a1c4c0e81f92806bfb2275",
-    "hash.master": "bcc8d33e9d2e47408ab6ea2db22945230fc69aa62625ab82ecb1af36cb1b95af",
+    "hash.dist": "447553cc102cc65f123b2f6794fc3978cc69ad7ca2d97a07ed1c824b0e0d610c",
+    "hash.master": "39ef63e1853d55bfbe5d327215603c561ab5ae90b52de3e270b7f10ebd1a0866",
     "hash.tools": "925c5a0230ea9aad4ef4997f40dc883b60fb0a9c561fd6621fbffb2b34cd4171",
-    "sign.build": "f66510ad6b571c5ed54ba091c9dabacad17620887f269ba00f1328e444e299048812aa8c7be0fb5cd5f982b7e32ba1d339a51e305cf0bfc31d2b1052b5846b03",
-    "sign.dist": "e4b09eb182c28b622b3287b663fd43eef9054c0a7d5372abdb365d349f6fb2c86b8f3278cc4cb0f93b37faf45fafea0d3972c05e806a4c15a52f4424df61c303",
-    "sign.master": "bf09a35001dd1036103c5b4555fb4deb3aedf049e0a0f73f4207e857dab30105675708264c7384e8f7878cf23be84bea71472c0b59f672b0f1b7c470dd549003",
-    "sign.tools": "b8f43585dca3080f0e6f88f4cb82779f3830518f63eb5fe0d35948f4f6e1cae8379e13c75d44f916640702c3da545b8462e833d2aa8e16438f9e93a1d5c3ba0e"
+    "sign.build": "fe5a50d1beb50ca7f3e78080a3373de8ce102590c0da2bb42ea137975250b54d1e6e9a773f31fc2c31f07ef1e952f0bf8e3535b640a2332e052be1a79493870a",
+    "sign.dist": "b7d3cf91dc13e6140bf340a38c925a65d66b6a1d9afb039be5bb1101feaff4bc3ea0cb42512bb8a6a0508ad1f166b759e905389ecde9c74855451da67fcde206",
+    "sign.master": "13cf0bdf03862b63d132aaf8050e2e056c491c3916650692e7717140d84947071a4027972a5e98f8eca90deae2ddd6aeb2fc279eedc6e7f5126aa9ffb0be4c06",
+    "sign.tools": "8d7943ba1f7234d8c082ddcb45d814664056b4bdffd8b27ea288a232c60728df8712da200e72a492b7c66a8455c9d55a33958092a513531ac49d5b890b511101"
   }
-}
