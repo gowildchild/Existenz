@@ -325,33 +325,52 @@ def execute(args, error_handler, repo_root: str):
 
                     # Writes files layout top-to-bottom natively with structured layout line spaces
                     # Custom strict text formatter pass to force exactly 1 key per line
-                    def serialize_to_strict_json(obj, indent_level=0):
-                        spacing = " " * indent_level
+                    def serialize_to_strict_json(obj, depth=0):
+                        indent = "  " * depth
+                        next_indent = "  " * (depth + 1)
+                        
                         if isinstance(obj, dict):
-                            if not obj: return "{}"
+                            if not obj:
+                                return "{}"
                             lines = ["{"]
-                            for k, v in obj.items():
-                                lines.append(f'{spacing}  "{k}": {serialize_to_strict_json(v, indent_level + 2)},')
-                            if lines[-1].endswith(","): lines[-1] = lines[-1][:-1]
-                            lines.append(spacing + "}")
+                            # Sort keys to enforce pristine, un-shifting text file lines
+                            sorted_keys = sorted(obj.keys())
+                            for i, k in enumerate(sorted_keys):
+                                v = obj[k]
+                                val_str = serialize_to_strict_json(v, depth + 1)
+                                comma = "," if i < len(sorted_keys) - 1 else ""
+                                lines.append(f'{next_indent}"{k}": {val_str}{comma}')
+                            lines.append(indent + "}")
                             return "\n".join(lines)
+                            
                         elif isinstance(obj, list):
-                            if not obj: return "[]"
+                            if not obj:
+                                return "[]"
                             lines = ["["]
-                            for item in obj:
-                                lines.append(f'{spacing}  {serialize_to_strict_json(item, indent_level + 2)},')
-                            if lines[-1].endswith(","): lines[-1] = lines[-1][:-1]
-                            lines.append(spacing + "]")
+                            for i, item in enumerate(obj):
+                                val_str = serialize_to_strict_json(item, depth + 1)
+                                comma = "," if i < len(obj) - 1 else ""
+                                lines.append(f'{next_indent}{val_str}{comma}')
+                            lines.append(indent + "]")
                             return "\n".join(lines)
+                            
                         elif isinstance(obj, str):
-                            return f'"{obj}"'
+                            # Escape internal quotes cleanly to prevent payload structural corruption
+                            clean_str = obj.replace('"', '\\"')
+                            return f'"{clean_str}"'
+                            
                         elif isinstance(obj, bool):
                             return "true" if obj else "false"
+                            
+                        elif isinstance(obj, int) and not isinstance(obj, bool):
+                            return str(obj)
+                            
                         elif obj is None:
                             return "null"
-                        else:
-                            return str(obj)
+                            
+                        return f'"{str(obj)}"'
 
+                    # Safely commit your 100% linter-clean data map tree down to disk destination
                     with open(target_path, "w", encoding="utf-8") as custom_out:
                         custom_out.write(serialize_to_strict_json(json_matrix_payload))
                         
