@@ -1,0 +1,596 @@
+{
+  "existentialCoreMeta": {
+    "CoreRealm": "Existenz",
+    "CoreVersion": "v0.76.21",
+    "CoreMagic": "EX25IMMUT32CORE7617",
+    "CoreMagicRaw": "CoreRealm:CoreVersion:CoreMagic",
+    "CoreAuthor": "Gunther Voet"
+  },
+  "existentialCore": {
+    "structures": {
+      "NONE": {
+        "val": 0,
+        "expr": "0",
+        "type": "PILLAR",
+        "comment": "No Record"
+      },
+      "EXISTENCE": {
+        "val": 1,
+        "expr": "1 << 0",
+        "type": "PILLAR",
+        "comment": "You, alive, with a body"
+      },
+      "AUTONOMY": {
+        "val": 2,
+        "expr": "1 << 1",
+        "type": "PILLAR",
+        "comment": "The Sovereign Right to Choose"
+      },
+      "INTEGRITY": {
+        "val": 4,
+        "expr": "1 << 2",
+        "type": "PILLAR",
+        "comment": "The Moral Axis of Personal Choice"
+      },
+      "CANARY_1_SOVEREIGN": {
+        "val": 8,
+        "expr": "1 << 3",
+        "type": "CANARY",
+        "comment": "WATCHDOG_SOVEREIGN"
+      },
+      "PSYCHOLOGY": {
+        "val": 16,
+        "expr": "1 << 4",
+        "type": "PILLAR",
+        "comment": "Cognitive Mental State and Peace"
+      },
+      "PHYSICAL": {
+        "val": 32,
+        "expr": "1 << 5",
+        "type": "PILLAR",
+        "comment": "Physical Body Vessel and bio-state"
+      },
+      "DISABILITY": {
+        "val": 64,
+        "expr": "1 << 6",
+        "type": "PILLAR",
+        "comment": "Nature's way of checks and balances"
+      },
+      "DEVELOPMENT": {
+        "val": 128,
+        "expr": "1 << 7",
+        "type": "PILLAR",
+        "comment": "Evolutionary, Intellectual, Growth"
+      },
+      "PROPERTY": {
+        "val": 256,
+        "expr": "1 << 8",
+        "type": "PILLAR",
+        "comment": "Material Assets and Income Protection"
+      },
+      "CANARY_2_SOMATIC": {
+        "val": 512,
+        "expr": "1 << 9",
+        "type": "CANARY",
+        "comment": "WATCHDOG_SOMATIC"
+      },
+      "PRESENCE": {
+        "val": 1024,
+        "expr": "1 << 10",
+        "type": "PILLAR",
+        "comment": "Real-Time Spacetime Footprint"
+      },
+      "CANARY_P_SAFE": {
+        "val": 2048,
+        "expr": "1 << 11",
+        "type": "CANARY",
+        "comment": "WATCHDOG_PRESENCE_SAFE"
+      },
+      "CANARY_P_DURESS": {
+        "val": 4096,
+        "expr": "1 << 12",
+        "type": "CANARY",
+        "comment": "WATCHDOG_PRESENCE_NO_DURESS"
+      },
+      "CANARY_3_ABLEISM": {
+        "val": 8192,
+        "expr": "1 << 13",
+        "type": "CANARY",
+        "comment": "WATCHDOG_ABLEISM"
+      },
+      "CANARY_USER_A": {
+        "val": 16384,
+        "expr": "1 << 14",
+        "type": "CANARY",
+        "comment": "WATCHDOG_USER_DEFINABLE_A"
+      },
+      "CANARY_USER_B": {
+        "val": 32768,
+        "expr": "1 << 15",
+        "type": "CANARY",
+        "comment": "WATCHDOG_USER_DEFINABLE_B"
+      },
+      "CANARY_USER_C": {
+        "val": 65536,
+        "expr": "1 << 16",
+        "type": "CANARY",
+        "comment": "WATCHDOG_USER_DEFINABLE_C"
+      },
+      "CANARY_4_FOOTPRINT": {
+        "val": 131072,
+        "expr": "1 << 17",
+        "type": "CANARY",
+        "comment": "WATCHDOG_FOOTPRINT"
+      },
+      "CANARY_IV_PRESENCE": {
+        "val": 262144,
+        "expr": "1 << 18",
+        "type": "CANARY",
+        "comment": "WATCHDOG_PRESENCE_OK"
+      },
+      "SHIELD_RIGHTS_HUMAN": {
+        "val": 1048576,
+        "expr": "1 << 20",
+        "type": "RIGHTS",
+        "comment": "SHIELD-A (Institutional)"
+      },
+      "CANARY_P_SAFETY": {
+        "val": 2097152,
+        "expr": "1 << 21",
+        "type": "CANARY",
+        "comment": "WATCHDOG_PRESENCE_SAFETY"
+      },
+      "SHIELD_RIGHTS_INCLUSIVE": {
+        "val": 4194304,
+        "expr": "1 << 22",
+        "type": "RIGHTS",
+        "comment": "SHIELD-A2 (Systemic)"
+      },
+      "SHIELD_RIGHTS_ASYLUM": {
+        "val": 8388608,
+        "expr": "1 << 23",
+        "type": "RIGHTS",
+        "comment": "SHIELD-A3 (Asylum Seekers)"
+      },
+      "SHIELD_RIGHTS_BASIC": {
+        "val": 16777216,
+        "expr": "1 << 24",
+        "type": "RIGHTS",
+        "comment": "SHIELD-B (Institutional)"
+      },
+      "CANARY_5_METRICS": {
+        "val": 33554432,
+        "expr": "1 << 25",
+        "type": "CANARY",
+        "comment": "WATCHDOG_METRICS"
+      },
+      "CANARY_V_RIGHTS": {
+        "val": 67108864,
+        "expr": "1 << 26",
+        "type": "CANARY",
+        "comment": "WATCHDOG_RIGHTS"
+      },
+      "CANARY_VI_SYSTEMIC": {
+        "val": 536870912,
+        "expr": "1 << 29",
+        "type": "CANARY",
+        "comment": "WATCHDOG_SYSTEMIC"
+      },
+      "CANARY_6_IMMUTABLE": {
+        "val": 2147483648,
+        "expr": "1 << 31",
+        "type": "CANARY",
+        "comment": "WATCHDOG_IMMUTABLE"
+      }
+    },
+    "bitmasks": {
+      "existentialCore.CANARY_1_SOVEREIGN": "0x7",
+      "existentialCore.CANARY_2_SOMATIC": "0x3f",
+      "existentialCore.CANARY_3_ABLEISM": "0x27f",
+      "existentialCore.CANARY_4_FOOTPRINT": "0x33f",
+      "existentialCore.CANARY_IV_PRESENCE": "0x7ff",
+      "existentialCore.CANARY_P_SAFETY": "0x63fff",
+      "existentialCore.CANARY_5_METRICS": "0x263fff",
+      "existentialCore.CANARY_V_RIGHTS": "0x3f63fff",
+      "existentialCore.CANARY_VI_SYSTEMIC": "0xc000",
+      "existentialCore.CANARY_6_IMMUTABLE": "0x26262208"
+    },
+    "policies": {
+      "existentialCore.NONE": "0x422c1",
+      "existentialCore.EXISTENCE": "0x422c1",
+      "existentialCore.AUTONOMY": "0x422c1",
+      "existentialCore.INTEGRITY": "0x422c1",
+      "existentialCore.CANARY_1_SOVEREIGN": "0x43230",
+      "existentialCore.PSYCHOLOGY": "0x422c1",
+      "existentialCore.PHYSICAL": "0x422c1",
+      "existentialCore.DISABILITY": "0x422c1",
+      "existentialCore.DEVELOPMENT": "0x422c1",
+      "existentialCore.PROPERTY": "0x422c1",
+      "existentialCore.CANARY_2_SOMATIC": "0x43230",
+      "existentialCore.PRESENCE": "0x422c1",
+      "existentialCore.CANARY_P_SAFE": "0x3fc0",
+      "existentialCore.CANARY_P_DURESS": "0x3fc0",
+      "existentialCore.CANARY_3_ABLEISM": "0x43230",
+      "existentialCore.CANARY_USER_A": "0x1fc4",
+      "existentialCore.CANARY_USER_B": "0x1fc4",
+      "existentialCore.CANARY_USER_C": "0x1fc4",
+      "existentialCore.CANARY_4_FOOTPRINT": "0x43230",
+      "existentialCore.CANARY_IV_PRESENCE": "0x43230",
+      "existentialCore.SHIELD_RIGHTS_HUMAN": "0x422c2",
+      "existentialCore.CANARY_P_SAFETY": "0x3fc0",
+      "existentialCore.SHIELD_RIGHTS_INCLUSIVE": "0x422c2",
+      "existentialCore.SHIELD_RIGHTS_ASYLUM": "0x422c2",
+      "existentialCore.SHIELD_RIGHTS_BASIC": "0x422c2",
+      "existentialCore.CANARY_5_METRICS": "0x43230",
+      "existentialCore.CANARY_V_RIGHTS": "0x43230",
+      "existentialCore.CANARY_VI_SYSTEMIC": "0x43230",
+      "existentialCore.CANARY_6_IMMUTABLE": "0x43230"
+    },
+    "basics": [
+      "AUTONOMY",
+      "CANARY_1_SOVEREIGN",
+      "CANARY_2_SOMATIC",
+      "CANARY_3_ABLEISM",
+      "DEVELOPMENT",
+      "DISABILITY",
+      "EXISTENCE",
+      "INTEGRITY",
+      "PHYSICAL",
+      "PRESENCE",
+      "PROPERTY",
+      "PSYCHOLOGY",
+      "SHIELD_RIGHTS_ASYLUM",
+      "SHIELD_RIGHTS_BASIC",
+      "SHIELD_RIGHTS_HUMAN",
+      "SHIELD_RIGHTS_INCLUSIVE"
+    ],
+    "immutables": [
+      "AUTONOMY",
+      "CANARY_1_SOVEREIGN",
+      "CANARY_2_SOMATIC",
+      "CANARY_3_ABLEISM",
+      "CANARY_4_FOOTPRINT",
+      "CANARY_5_METRICS",
+      "CANARY_6_IMMUTABLE",
+      "CANARY_IV_PRESENCE",
+      "CANARY_VI_SYSTEMIC",
+      "CANARY_V_RIGHTS",
+      "DEVELOPMENT",
+      "DISABILITY",
+      "EXISTENCE",
+      "INTEGRITY",
+      "PHYSICAL",
+      "PRESENCE",
+      "PROPERTY",
+      "PSYCHOLOGY",
+      "SHIELD_RIGHTS_ASYLUM",
+      "SHIELD_RIGHTS_BASIC",
+      "SHIELD_RIGHTS_HUMAN",
+      "SHIELD_RIGHTS_INCLUSIVE"
+    ],
+    "signatures": {
+      "existentialCore": {
+        "bitmask": "3327",
+        "hash": "d5f9130147d314179488b66f4db8d2796a28bd4b6568f8beeb37c254379b56b0",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCorePolicy": {
+        "bitmask": "3326",
+        "hash": "3e8075c4fedd409a524c9a7e9d1e0bb0f02315c584c96917c461c9db1f3c550b",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreBitmask": {
+        "bitmask": "3326",
+        "hash": "191fd76063fa01175b8848cb423655e02ac41916f1b0ed87eb9953f500727cb2",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreChained": {
+        "bitmask": "3582",
+        "hash": "fc9cd8a2ed059d7cb900033879446cb7e063fe272d2fe1c37074bd1b3364113d",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      }
+    }
+  },
+  "existentialCoreThreat": {
+    "structures": {
+      "THREAT_NONE": {
+        "val": 0,
+        "expr": "0"
+      },
+      "THREAT_EXISTENCE": {
+        "val": 1,
+        "expr": "1 << 0"
+      },
+      "THREAT_AUTONOMY": {
+        "val": 2,
+        "expr": "1 << 1"
+      },
+      "THREAT_INTEGRITY": {
+        "val": 4,
+        "expr": "1 << 2"
+      },
+      "THREAT_PSYCHOLOGY": {
+        "val": 16,
+        "expr": "1 << 4"
+      },
+      "THREAT_PHYSICAL": {
+        "val": 32,
+        "expr": "1 << 5"
+      },
+      "THREAT_ABLEISM": {
+        "val": 64,
+        "expr": "1 << 6"
+      },
+      "THREAT_DEVELOPMENT": {
+        "val": 128,
+        "expr": "1 << 7"
+      },
+      "THREAT_PROPERTY": {
+        "val": 256,
+        "expr": "1 << 8"
+      },
+      "THREAT_PRESENCE": {
+        "val": 1024,
+        "expr": "1 << 10"
+      },
+      "THREAT_P_SAFE_OK": {
+        "val": 2048,
+        "expr": "1 << 11"
+      },
+      "THREAT_P_DURESS_OFF": {
+        "val": 4096,
+        "expr": "1 << 12"
+      },
+      "THREAT_USER_A": {
+        "val": 16384,
+        "expr": "1 << 14"
+      },
+      "THREAT_USER_B": {
+        "val": 32768,
+        "expr": "1 << 15"
+      },
+      "THREAT_USER_C": {
+        "val": 65536,
+        "expr": "1 << 16"
+      },
+      "THREAT_RIGHTS_HUMAN": {
+        "val": 1048576,
+        "expr": "1 << 20"
+      },
+      "THREAT_PRESENCE_SAFETY": {
+        "val": 2097152,
+        "expr": "1 << 21"
+      },
+      "THREAT_RIGHTS_INCLUSIVE": {
+        "val": 4194304,
+        "expr": "1 << 22"
+      },
+      "THREAT_RIGHTS_ASYLUM": {
+        "val": 8388608,
+        "expr": "1 << 23"
+      },
+      "THREAT_RIGHTS_BASIC": {
+        "val": 16777216,
+        "expr": "1 << 24"
+      }
+    },
+    "legal": {
+      "existentialCoreThreat.THREAT_EXISTENCE": "LEGAL_CAT1_MURDER",
+      "existentialCoreThreat.THREAT_AUTONOMY": "LEGAL_CAT2_PHYSICAL_VIOLATION",
+      "existentialCoreThreat.THREAT_INTEGRITY": "LEGAL_CAT3_COERCION",
+      "existentialCoreThreat.CANARY_1_SOVEREIGN": "LEGAL_CAT4_CHARACTER_ASSASSINATION",
+      "existentialCoreThreat.THREAT_PSYCHOLOGY": "LEGAL_CAT5_PSYCHOLOGICAL_INTIMIDATION",
+      "existentialCoreThreat.THREAT_PHYSICAL": "LEGAL_CAT2_PHYSICAL_VIOLATION",
+      "existentialCoreThreat.THREAT_ABLEISM": "LEGAL_CAT6_ABLEISM",
+      "existentialCoreThreat.THREAT_DEVELOPMENT": "LEGAL_CAT8_INTELLECTUAL_PIRACY",
+      "existentialCoreThreat.THREAT_PROPERTY": "LEGAL_CAT9_THEFT",
+      "existentialCoreThreat.CANARY_3_ABLEISM": "LEGAL_CAN1_SYSTEMCRISIS",
+      "existentialCoreThreat.THREAT_RIGHTS_HUMAN": "LEGAL_CAN3_HUMAN",
+      "existentialCoreThreat.THREAT_RIGHTS_INCLUSIVE": "LEGAL_CAN4_INCLUSION",
+      "existentialCoreThreat.CANARY_7_EXPLOITATION": "LEGAL_CAN2_EXPLOITATION",
+      "existentialCoreThreat.CANARY_8_PREDATORY": "LEGAL_CAN5_PREDATORY"
+    },
+    "vacuum": {
+      "existentialCoreThreat.THREAT_EXISTENCE": "VACUUM_DEHUMANISATION",
+      "existentialCoreThreat.THREAT_AUTONOMY": "VACUUM_DISFRANCHISEMENT",
+      "existentialCoreThreat.THREAT_INTEGRITY": "VACUUM_CORRUPTION",
+      "existentialCoreThreat.CANARY_1_SOVEREIGN": "VACUUM_DRIFT_SOVEREIGN",
+      "existentialCoreThreat.THREAT_PSYCHOLOGY": "VACUUM_ATTRITION_PSYCHOLOGY",
+      "existentialCoreThreat.THREAT_PHYSICAL": "VACUUM_SOMATIC_DRAIN",
+      "existentialCoreThreat.THREAT_ABLEISM": "VACUUM_NEURONORMATIVITY",
+      "existentialCoreThreat.THREAT_DEVELOPMENT": "VACUUM_ATTRITION_INSTITUTIONAL",
+      "existentialCoreThreat.THREAT_PROPERTY": "VACUUM_SYSTEMIC_DESPOILMENT",
+      "existentialCoreThreat.CANARY_2_SOMATIC": "VACUUM_DRIFT_SOMATIC",
+      "existentialCoreThreat.THREAT_PRESENCE": "VACUUM_PANOPTICISM",
+      "existentialCoreThreat.CANARY_3_ABLEISM": "VACUUM_DRIFT_SYSTEMIC",
+      "existentialCoreThreat.THREAT_RIGHTS_HUMAN": "VACUUM_INVERT_COMPLIANCE",
+      "existentialCoreThreat.THREAT_RIGHTS_INCLUSIVE": "VACUUM_INVERT_NORMALIZATION",
+      "existentialCoreThreat.THREAT_RIGHTS_BASIC": "VACUUM_INVERT_INERTIA",
+      "existentialCoreThreat.CANARY_7_EXPLOITATION": "VACUUM_PARASITISM",
+      "existentialCoreThreat.CANARY_8_PREDATORY": "VACUUM_HARVESTING"
+    },
+    "signatures": {
+      "existentialCoreThreat": {
+        "bitmask": "3327",
+        "hash": "48a4c574379c6fe9a2a27d005a4fcef50b1d2443f3385c9255515ce98de8561c",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreThreatLegal": {
+        "bitmask": "3326",
+        "hash": "954792f0c8b2097ca8bd6c878c9def378df9e069beb9484f35e09c3dbb4df0b5",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreThreatShadowVacuum": {
+        "bitmask": "3326",
+        "hash": "d5ef39294f99e9e4994517d2f8026b233b852bda8eaee0dd90c58b24a4a60853",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreThreatChained": {
+        "bitmask": "3582",
+        "hash": "4d224d1578b5690fd307753780d0db2d595e42ed5085918aec7a7e62290ed1f4",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      }
+    }
+  },
+  "existenzIntegrity": {
+    "existentialCores": {
+      "Version": "Existenz:v0.76.21",
+      "Update": "20260912 18:05"
+    },
+    "PublicKeys": {
+      "Environment": {
+        "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPjuPmZWZS4tAjCxF1FkKtMfEroVnEThd+IIMXws9swd existenz-dev-gh@xsrv.net",
+        "bit": 16
+      },
+      "Platform": {
+        "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net",
+        "bit": 32
+      },
+      "Developer": {
+        "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGHTQAOnKU4zaM03kASAKmrsps4ROCx8xMQZ4m12Yo8U existenz-dev-gwc@xsrv.net",
+        "bit": 64
+      },
+      "Personal": {
+        "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKn1/r+k9+T5OJyoIjcrkj0DBmLq//x0/sffNMJNWofK existenz-dev-gv@xsrv.net",
+        "bit": 128
+      }
+    },
+    "Signatures": {
+      "existenzPublicKeys": {
+        "bitmask": "16887",
+        "hash": "0b51978127252cf1cef95cbefcafe41e785e207702dd498f177a5d0ec9af471c",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existenzConfig": {
+        "bitmask": "8695",
+        "hash": "6df0c702fdd88b6ec07d01286cb604cec07cc9929e7b45d8fdf4922193ebadbe",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existenzLocations": {
+        "bitmask": "8695",
+        "hash": "69ed98934cb3198b30b318d0ef796c86de926bf919ec929feb7fa1634b658ef2",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existenzSteps": {
+        "bitmask": "3575",
+        "hash": "0b7cfa2c95115c9e97a60cb6653104a3fdc14da146458891cb9f82b8580e391b",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existenzIntegrityRequirements": {
+        "bitmask": "3575",
+        "hash": "9c350a128d1feed4663f03afb1aae9a1210ef82ba21be7e8a23784d7c5b83b2c",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existenzIntegrityKeysHandler": {
+        "bitmask": "3575",
+        "hash": "59af674f69057d168628fd4dfb02bc8ff60872589fa26bcc9d831d17a55c2424",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existenzIntegrityKeysIO": {
+        "bitmask": "3575",
+        "hash": "d4a86495f03bf316498bf0602503a07078e4364207e7872b2baf78063d6ec473",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existenzIntegrityKeyStatus": {
+        "bitmask": "3575",
+        "hash": "ab49251d8f803949eb499c187a9d239d0b15bf6ca9ee23940eef3f3b242edce3",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existenzIntegrityState": {
+        "bitmask": "3575",
+        "hash": "4b527e27ddc0a9d4d3d9c5d6494378b36ac201835c3e292b9622f263c9012e33",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialMagicSignature": {
+        "bitmask": "7671",
+        "hash": "ba16de05d4e10dd8d5a3cf9b9eb1dcee6c21aa21e19a1625dcd732657161b8f1",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialMagicToken": {
+        "bitmask": "7679",
+        "hash": "8b13550a2d2e529cdcf8f115177e827b3c9c655ca8aaebe347990b2f56416ab7",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCore": {
+        "bitmask": "3327",
+        "hash": "d5f9130147d314179488b66f4db8d2796a28bd4b6568f8beeb37c254379b56b0",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCorePolicy": {
+        "bitmask": "3326",
+        "hash": "3e8075c4fedd409a524c9a7e9d1e0bb0f02315c584c96917c461c9db1f3c550b",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreBitmask": {
+        "bitmask": "3326",
+        "hash": "191fd76063fa01175b8848cb423655e02ac41916f1b0ed87eb9953f500727cb2",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreChained": {
+        "bitmask": "3582",
+        "hash": "fc9cd8a2ed059d7cb900033879446cb7e063fe272d2fe1c37074bd1b3364113d",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreThreat": {
+        "bitmask": "3327",
+        "hash": "48a4c574379c6fe9a2a27d005a4fcef50b1d2443f3385c9255515ce98de8561c",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreThreatLegal": {
+        "bitmask": "3326",
+        "hash": "954792f0c8b2097ca8bd6c878c9def378df9e069beb9484f35e09c3dbb4df0b5",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreThreatShadowVacuum": {
+        "bitmask": "3326",
+        "hash": "d5ef39294f99e9e4994517d2f8026b233b852bda8eaee0dd90c58b24a4a60853",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreThreatChained": {
+        "bitmask": "3582",
+        "hash": "4d224d1578b5690fd307753780d0db2d595e42ed5085918aec7a7e62290ed1f4",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreCheck": {
+        "bitmask": "3583",
+        "hash": "c2457f3eeb74c274dcdc29da066fe33c52b97ceaa9ee7de0fc7d8f3e5b46d294",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCores": {
+        "bitmask": "3583",
+        "hash": "1a01dc10d305b0e9fe46078b4b3b81cac4d119316b6bee26a96dcd3dc4aca921",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCoreSchema": {
+        "bitmask": "1015",
+        "hash": "b1f9db1b5bbbe8ec8104f8edfba342fca4c822eedaf9b01778975db346803c69",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCircleDist": {
+        "bitmask": "2599",
+        "hash": "bf1e6ae1576b1724499f0cbca87dc6f3ef57cec91dba0d33892f18725a5b6f73",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCircleTools": {
+        "bitmask": "2630",
+        "hash": "a21c0110a435145399fb7995b7fc0afb460346b2742890784de7d040781b115e",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCircleBuild": {
+        "bitmask": "2806",
+        "hash": "3c4ec55d6ee4ba45e0fbb4799a19627006fed636f787f2bb6ee72bfc0ce43e25",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCircleMaster": {
+        "bitmask": "2806",
+        "hash": "c4ccf8913620bedd070ef7e09012dcf32ed719e0b511bdab05fab53b6e1c595f",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      },
+      "existentialCircleSigned": {
+        "bitmask": "2822",
+        "hash": "c6fc89f017ba97300b66fea603ecfb9e1f5fee3d0ce3512a50dc969a545e955d",
+        "status": "PENDING_PRIVATE_KEY_SIGNATURE"
+      }
+    }
+  }
+}
