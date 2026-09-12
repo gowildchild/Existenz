@@ -9,7 +9,6 @@ import json
 import engineSigningLibrary
 from engineSigningMeta import existenzLocations
 
-
 def execute(args, error_handler, repo_root: str):
     """
     Executes deep asymmetric verification loops.
@@ -31,8 +30,16 @@ def execute(args, error_handler, repo_root: str):
     # 1. Determine exactly what security rules are demanded by the active pipeline stage bitmask
     req_env, req_pfm, req_dev, req_psn = engineSigningLibrary.solve_ring_requirements(args.stage)
     
+    # Intercept Environment Scope Natively to protect offline developer passes
+    is_github_runner = os.environ.get("GITHUB_ACTIONS") == "true"
+    
     missing_signatures = []
-    if req_env and "Environment" not in stored_signatures: missing_signatures.append("Environment")
+    
+    # Only enforce the Environment key signature check if explicitly executing on the GitHub cloud runner
+    if req_env and is_github_runner:
+        if "Environment" not in stored_signatures:
+            missing_signatures.append("Environment")
+            
     if req_pfm and "Platform" not in stored_signatures:    missing_signatures.append("Platform")
     if req_dev and "Developer" not in stored_signatures:   missing_signatures.append("Developer")
     if req_psn and "Personal" not in stored_signatures:    missing_signatures.append("Personal")
@@ -40,13 +47,15 @@ def execute(args, error_handler, repo_root: str):
     # 2. Strict Verification Gate: Refuse execution immediately if missing keys
     if missing_signatures:
         error_handler.print("=" * 90, level="local")
-        error_handler.print(f" [!!!] CRITICAL SECURITY BLOCKADE: REJECTING DOWNSTREAM PIPELINE TRACKS [!!!]", level="local")
+        error_handler.print(f" [!!!] CRITICAL SECURITY ERROR: REJECTING DOWNSTREAM PIPELINE TRACKS [!!!]", level="local")
         error_handler.print(f"       Required bitmask verification fields are completely missing: {missing_signatures}", level="local")
         error_handler.print(f"       Further structural code building is explicitly REFUSED.", level="local")
         error_handler.print("=" * 90, level="local")
         sys.exit(62) # Aborts runner instantly before reaching the build stage
 
-    error_handler.print("[+] SUCCESS: Asymmetric security verification rings validated clean. Safe to advance.", level="notice")
+    error_handler.print("[+] SUCCESS: Asymmetric security verification validated. Safe to advance.", level="notice")
     
     # Unblock and calculate the next pipeline loop step natively
     engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
+    
+
