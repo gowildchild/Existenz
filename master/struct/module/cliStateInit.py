@@ -198,7 +198,7 @@ def execute(args, error_handler, repo_root: str):
                     import engineSigningLibrary
                     from engineSigningStruct import existenzCorePolicy
                     
-                    # 1. Compile pristine Threat register entries line-by-line
+                    # 1. Compile Threat entries directly from master blueprint schema
                     threat_lines = {}
                     for k, d in sorted(schema_data.get("existentialCore", {}).items()):
                         if isinstance(d, dict) and "threat" in d and "val" in d:
@@ -209,6 +209,7 @@ def execute(args, error_handler, repo_root: str):
                                 "val": int(v)
                             }
                             
+                    # 2. Compile flat Bitmask and Policy registries cleanly stripped of spaces
                     bitmask_lines = {}
                     policy_lines = {} 
                     for k, d in sorted(schema_data.get("existentialCore", {}).items()):
@@ -217,7 +218,7 @@ def execute(args, error_handler, repo_root: str):
                         if isinstance(d, dict) and "pol" in d:
                             policy_lines[f"existentialCore.{str(k).strip()}"] = str(d["pol"]).strip()
                             
-                    # 2. Compile detailed Structural maps with clean properties
+                    # 3. Compile Core structural definitions map directly
                     core_lines = {}
                     calculated_basic = []
                     calculated_immutable = []
@@ -270,87 +271,84 @@ def execute(args, error_handler, repo_root: str):
                         enum_token = val_to_enum_map.get(int(raw_key), composite_fallbacks.get(int(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}"))
                         vacuum_entries[enum_token.strip()] = val.strip()
                         
+                    # AUTHORITATIVE SINGLE PASS: Gather the complete global ledger once
                     cores_global_dict = engineSigningLibrary.generate_integrity_block_payload(
                         repo_root, schema_data, "existentialCores", group_filter_id=None
                     )
-                    core_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
-                        repo_root, schema_data, "existentialCore", group_filter_id=0x02
-                    )
-                    threat_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
-                        repo_root, schema_data, "existentialCoreThreat", group_filter_id=0x03
-                    )
                     
-                    # Convert signature matrices safely by checking item layout types to prevent unpacking index errors
-                    def convert_sigs_to_map(sig_payload):
-                        if not sig_payload or "Signatures" not in sig_payload: return {}
-                        res_map = {}
-                        for row in sig_payload["Signatures"]:
-                            if isinstance(row, (list, tuple)) and len(row) >= 4:
-                                lbl = str(row[0]).strip()
-                                res_map[lbl] = {"bitmask": str(row[1]).strip(), "hash": str(row[2]).strip(), "status": str(row[3]).strip()}
-                            elif isinstance(row, dict):
-                                lbl = str(row.get("label", row.get("name", ""))).strip()
-                                res_map[lbl] = {"bitmask": str(row.get("bitmask", "")).strip(), "hash": str(row.get("hash", "")).strip(), "status": str(row.get("status", "")).strip()}
-                        return res_map
+                    # Separate the unified global tuple array by record name prefixes
+                    core_signatures = []
+                    threat_signatures = []
+                    
+                    for row in cores_global_dict.get("Signatures", ()):
+                        if isinstance(row, (list, tuple)) and len(row) >= 4:
+                            lbl_s = str(row[0]).strip()
+                            mask_s = str(row[1]).strip()
+                            hash_s = str(row[2]).strip()
+                            status_s = str(row[3]).strip()
+                            # Enforce strict 1:1 data routing based on structural prefixes
+                            if lbl_s.startswith("existentialCoreThreat") or lbl_s in ["CoreThreat", "CoreThreatLegal", "CoreThreatShadowVacuum", "CoreThreatChained"]:
+                                threat_signatures.append([lbl_s, mask_s, hash_s, status_s])
+                            elif lbl_s.startswith("existentialCore") or lbl_s in ["Core", "CorePolicy", "CoreBitmask", "CoreChained"]:
+                                core_signatures.append([lbl_s, mask_s, hash_s, status_s])
 
-                    # Convert public keys safely by accommodating tuple arrays natively
-                    def convert_keys_to_map(keys_payload):
-                        if not keys_payload or "PublicKeys" not in keys_payload: return {}
-                        res_map = {}
-                        for row in keys_payload["PublicKeys"]:
-                            if isinstance(row, (list, tuple)) and len(row) >= 3:
-                                lbl = str(row[0]).strip()
-                                res_map[lbl] = {"key": str(row[1]).strip(), "bit": str(row[2]).strip()}
-                            elif isinstance(row, dict):
-                                lbl = str(row.get("identity", row.get("name", ""))).strip()
-                                res_map[lbl] = {"key": str(row.get("key", "")).strip(), "bit": str(row.get("bit", "")).strip()}
-                        return res_map
+                    # Format Public Keys natively from your 6-column tuple profiles
+                    global_public_keys = {}
+                    for row in cores_global_dict.get("PublicKeys", ()):
+                        if isinstance(row, (list, tuple)) and len(row) >= 2:
+                            global_public_keys[str(row[0]).strip()] = {
+                                "key": str(row[1]).strip(),
+                                "bit": int(row[2]) if len(row) > 2 else 0
+                            }
 
+                    # Extract global ledger block meta headers safely from single pass
+                    global_meta_block = cores_global_dict.get("existentialCores", {})
+                    
                     # ==========================================================================
-                    # FORCED TOP-LEVEL CHRONOLOGY: INGEST META METRICS FIRST (ONE KEY PER LINE)
+                    # UNIFIED LOGICAL TRANSLATION PAYLOAD MATRIX
                     # ==========================================================================
-                    json_matrix_payload = {}
-                    
-                    json_matrix_payload["existentialCoreMeta"] = {
-                        "CoreRealm":     str(meta_block.get("CoreRealm", "Existenz")).strip(),
-                        "CoreVersion":   str(version_str).strip(),
-                        "CoreMagic":     str(meta_block.get("CoreMagic", "UNKNOWN")).strip(),
-                        "CoreMagicRaw":  str(magic_raw).strip(),
-                        "CoreAuthor":    str(meta_block.get("CoreAuthor", "Gunther Voet")).strip()
+                    json_matrix_payload = {
+                        "existentialCoreMeta": {
+                            "CoreRealm":     str(meta_block.get("CoreRealm", "Existenz")).strip(),
+                            "CoreVersion":   str(version_str).strip(),
+                            "CoreMagic":     str(meta_block.get("CoreMagic", "UNKNOWN")).strip(),
+                            "CoreMagicRaw":  str(magic_raw).strip(),
+                            "CoreAuthor":    str(meta_block.get("CoreAuthor", "Gunther Voet")).strip()
+                        },
+                        "existentialCore": {
+                            "structures":  core_lines,
+                            "bitmasks":    bitmask_lines,
+                            "policies":    policy_lines,
+                            "basics":      sorted([str(b).strip() for b in calculated_basic]),
+                            "immutables":  sorted([str(m).strip() for m in calculated_immutable]),
+                            "signatures":  core_signatures
+                        },
+                        "existentialCoreThreat": {
+                            "structures":  threat_lines,
+                            "legal":       legal_entries,
+                            "vacuum":      vacuum_entries,
+                            "signatures":  threat_signatures
+                        },
+                        "existenzIntegrity": {
+                            "PublicKeys":       global_public_keys,
+                            "Signatures":       [ [str(r[0]).strip(), str(r[1]).strip(), str(r[2]).strip(), str(r[3]).strip()] for r in cores_global_dict.get("Signatures", ()) ],
+                            "existentialCores": {
+                                "Version": str(global_meta_block.get("Version", f"Existenz:{version_str}")).strip(),
+                                "Update":  str(global_meta_block.get("Update", "")).strip()
+                            }
+                        }
                     }
-                    
-                    json_matrix_payload["existentialCore"] = {
-                        "structures":  core_lines,
-                        "bitmasks":    bitmask_lines,
-                        "policies":    policy_lines,
-                        "basics":      sorted([str(b).strip() for b in calculated_basic]),
-                        "immutables":  sorted([str(m).strip() for m in calculated_immutable]),
-                        "signatures":  convert_sigs_to_map(core_integrity_dict)
-                    }
-                    
-                    json_matrix_payload["existentialCoreThreat"] = {
-                        "structures":  threat_lines,
-                        "legal":       legal_entries,
-                        "vacuum":      vacuum_entries,
-                        "signatures":  convert_sigs_to_map(threat_integrity_dict)
-                    }
-                    
-                    json_matrix_payload["existenzIntegrity"] = {
-                        "existentialCores": cores_global_dict.get("existentialCores", {}),
-                        "PublicKeys":       convert_keys_to_map(cores_global_dict),
-                        "Signatures":       convert_sigs_to_map(cores_global_dict)
-                    }
-
+                    # Custom strict text formatter pass to force exactly 1 key per line
                     def serialize_to_strict_json(obj, depth=0):
                         indent = "  " * depth
                         next_indent = "  " * (depth + 1)
-                        
+                        deep_indent = "  " * (depth + 2)
+
                         if isinstance(obj, dict):
                             if not obj:
                                 return "{}"
                             lines = ["{"]
-                            
-                            # Enforce structural top-level chronology tree rules
+                            # Enforce custom priority layout checking vectors to force meta properties to the peak
                             ordered_keys = []
                             if "existentialCoreMeta" in obj: ordered_keys.append("existentialCoreMeta")
                             if "existentialCore" in obj: ordered_keys.append("existentialCore")
@@ -365,13 +363,30 @@ def execute(args, error_handler, repo_root: str):
                                 v = obj[k]
                                 val_str = serialize_to_strict_json(v, depth + 1)
                                 comma = "," if i < len(ordered_keys) - 1 else ""
-                                lines.append(f'{next_indent}"{str(k).strip()}": {val_str}{comma}')
+                                clean_key = str(k).strip()
+                                lines.append(f'{next_indent}"{clean_key}": {val_str}{comma}')
                             lines.append(indent + "}")
                             return "\n".join(lines)
-                            
+
                         elif isinstance(obj, list):
                             if not obj:
                                 return "[]"
+                            
+                            # SPECIAL HANDLING FLUSHER FOR 4-COLUMN SECURITY SIGNATURE TUPLES
+                            if all(isinstance(row, list) and len(row) == 4 for row in obj):
+                                lines = ["{"]
+                                for i, row in enumerate(obj):
+                                    lbl_s, mask_s, hash_s, status_s = row
+                                    lines.append(f'{next_indent}"{str(lbl_s).strip()}": {{')
+                                    lines.append(f'{deep_indent}"bitmask": "{str(mask_s).strip()}",')
+                                    lines.append(f'{deep_indent}"hash": "{str(hash_s).strip()}",')
+                                    lines.append(f'{deep_indent}"status": "{str(status_s).strip()}"')
+                                    comma = "}," if i < len(obj) - 1 else "}"
+                                    lines.append(f'{next_indent}{comma}')
+                                lines.append(indent + "}")
+                                return "\n".join(lines)
+                                
+                            # Standard list items (basics / immutables) expanded exactly 1 per line
                             lines = ["["]
                             for i, item in enumerate(obj):
                                 val_str = serialize_to_strict_json(item, depth + 1)
@@ -379,20 +394,20 @@ def execute(args, error_handler, repo_root: str):
                                 lines.append(f'{next_indent}{val_str}{comma}')
                             lines.append(indent + "]")
                             return "\n".join(lines)
-                            
+
                         elif isinstance(obj, str):
                             # Wipes out leading/trailing whitespace creep inside string properties
                             return f'"{obj.strip().replace('"', '\\"')}"'
-                            
+
                         elif isinstance(obj, bool):
                             return "true" if obj else "false"
-                            
+
                         elif isinstance(obj, int) and not isinstance(obj, bool):
                             return str(obj)
-                            
+
                         elif obj is None:
                             return "null"
-                            
+
                         return f'"{str(obj).strip()}"'
 
                     with open(target_path, "w", encoding="utf-8") as custom_out:
@@ -401,6 +416,8 @@ def execute(args, error_handler, repo_root: str):
                     error_handler.print(f" [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
+
+
 
             elif filename.endswith(".py"):
                 if token == "Core":
