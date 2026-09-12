@@ -46,11 +46,17 @@ def execute(args, error_handler, repo_root: str):
         "master": "CircleMaster"
     }
 
+    # ==========================================================================
+    # MODIFIED AREA START: RE-MAPPED LOCAL ALL LOOKUP BOUNDARY
+    # ==========================================================================
     active_circle_arg = str(args.circle).strip().lower()
     if active_circle_arg == "all":
-        circles_to_process = ["dist", "tools", "build", "master"]
+        circles_to_process = ["tools", "build", "master"]  # Natively excludes dist from local PC sweeps
     else:
         circles_to_process = [active_circle_arg]
+    # ==========================================================================
+    # MODIFIED AREA END
+    # ==========================================================================
 
     is_github_runner = os.environ.get("GITHUB_ACTIONS") == "true"
     if "signatures" not in manifest_data:
@@ -61,15 +67,12 @@ def execute(args, error_handler, repo_root: str):
     for current_circle in circles_to_process:
         g_key = circle_to_glue_map.get(current_circle)
         if g_key in existenzIntegrityGlue:
-            weight = existenzIntegrityGlue[g_key]
+            weight = existenzIntegrityGlue[g_key][1]  # FIXED: Pointed to target bitmask integer index
             if bool(weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT): globally_needed_identities.add("Environment")
             if bool(weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM):    globally_needed_identities.add("Platform")
             if bool(weight & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER):   globally_needed_identities.add("Developer")
             if bool(weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL):    globally_needed_identities.add("Personal")
-
-    # ==========================================================================
-    # AIR-TIGHT GLOBAL MEMORY CACHE LOOP: PROMPTS EXACTLY ONCE PER UNIQUE KEY PROFILE
-    # ==========================================================================
+                
     private_keys_memory_cache = {}
     
     identities_preload_blueprint = [
@@ -129,6 +132,7 @@ def execute(args, error_handler, repo_root: str):
         if private_key_object:
             # Pin unlocked object securely to our runtime session cache registry
             private_keys_memory_cache[identity] = private_key_object
+
     # ==========================================================================
     # 2. RUN ITERATIVE WORKSPACE RINGS PROCESSING SIGNING LOOPS
     # ==========================================================================
@@ -137,7 +141,7 @@ def execute(args, error_handler, repo_root: str):
         if not glue_key or glue_key not in existenzIntegrityGlue:
             continue
 
-        circle_bitmask_weight = existenzIntegrityGlue[glue_key]
+        circle_bitmask_weight = existenzIntegrityGlue[glue_key][1]  # FIXED: Target bitmask integer index
 
         # Compute dynamic bitmask permissions for this target validation ring track loop
         req_env = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT)
