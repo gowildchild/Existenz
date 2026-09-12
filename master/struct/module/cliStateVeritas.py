@@ -1,4 +1,4 @@
-# ========================================================================== 
+# ==========================================================================
 # EXISTENZ  master/struct/module/cliStateVeritas.py
 # Cryptographic Validation and Security Gate Enforcement Engine
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
