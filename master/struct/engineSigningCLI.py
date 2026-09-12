@@ -48,7 +48,7 @@ def main():
         '-circle', '--circle',
         choices=['dist', 'tools', 'build', 'master', 'all'],
         default='all', # FIXED: Defaults straight to processing the entire workspace structure
-        help='Target circle ring'
+        help='Target circle ring profile or comma-separated lists (tools,build,master)'
     )
     parser.add_argument(
         '-override',
