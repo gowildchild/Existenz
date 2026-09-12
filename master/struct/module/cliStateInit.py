@@ -280,27 +280,34 @@ def execute(args, error_handler, repo_root: str):
                         repo_root, schema_data, "existentialCoreThreat", group_filter_id=0x03
                     )
                     
-                    # Convert raw lists of signature tuples into clean serializable objects
-                    def convert_sigs_to_list(sig_payload):
-                        if not sig_payload or "Signatures" not in sig_payload: return []
-                        res_list = []
+                    # Convert signature matrices safely by checking item layout types to prevent unpacking index errors
+                    def convert_sigs_to_map(sig_payload):
+                        if not sig_payload or "Signatures" not in sig_payload: return {}
+                        res_map = {}
                         for row in sig_payload["Signatures"]:
                             if isinstance(row, (list, tuple)) and len(row) >= 4:
-                                # Keep it as a raw, flat array row to pass straight to the vertical line serializer
-                                res_list.append([str(row[0]).strip(), int(row[1]), str(row[2]).strip(), str(row[3]).strip()])
-                        return res_list
+                                lbl = str(row[0]).strip()
+                                res_map[lbl] = {"bitmask": str(row[1]).strip(), "hash": str(row[2]).strip(), "status": str(row[3]).strip()}
+                            elif isinstance(row, dict):
+                                lbl = str(row.get("label", row.get("name", ""))).strip()
+                                res_map[lbl] = {"bitmask": str(row.get("bitmask", "")).strip(), "hash": str(row.get("hash", "")).strip(), "status": str(row.get("status", "")).strip()}
+                        return res_map
 
                     # Convert public keys safely by accommodating tuple arrays natively
-                    global_public_keys = {}
-                    for row in cores_global_dict.get("PublicKeys", ()):
-                        if isinstance(row, (list, tuple)) and len(row) >= 3:
-                            global_public_keys[str(row[0]).strip()] = {
-                                "key": str(row[1]).strip(),
-                                "bit": int(row[2])
-                            }
+                    def convert_keys_to_map(keys_payload):
+                        if not keys_payload or "PublicKeys" not in keys_payload: return {}
+                        res_map = {}
+                        for row in keys_payload["PublicKeys"]:
+                            if isinstance(row, (list, tuple)) and len(row) >= 3:
+                                lbl = str(row[0]).strip()
+                                res_map[lbl] = {"key": str(row[1]).strip(), "bit": str(row[2]).strip()}
+                            elif isinstance(row, dict):
+                                lbl = str(row.get("identity", row.get("name", ""))).strip()
+                                res_map[lbl] = {"key": str(row.get("key", "")).strip(), "bit": str(row.get("bit", "")).strip()}
+                        return res_map
 
                     # ==========================================================================
-                    # FORCED CHRONOLOGICAL TOPOLOGY PAYLOAD MATRIXBUILDER
+                    # FORCED TOP-LEVEL CHRONOLOGY: INGEST META METRICS FIRST (ONE KEY PER LINE)
                     # ==========================================================================
                     json_matrix_payload = {}
                     
@@ -318,31 +325,32 @@ def execute(args, error_handler, repo_root: str):
                         "policies":    policy_lines,
                         "basics":      sorted([str(b).strip() for b in calculated_basic]),
                         "immutables":  sorted([str(m).strip() for m in calculated_immutable]),
-                        "signatures":  convert_sigs_to_list(core_integrity_dict)
+                        "signatures":  convert_sigs_to_map(core_integrity_dict)
                     }
                     
                     json_matrix_payload["existentialCoreThreat"] = {
                         "structures":  threat_lines,
                         "legal":       legal_entries,
                         "vacuum":      vacuum_entries,
-                        "signatures":  convert_sigs_to_list(threat_integrity_dict)
+                        "signatures":  convert_sigs_to_map(threat_integrity_dict)
                     }
                     
                     json_matrix_payload["existenzIntegrity"] = {
                         "existentialCores": cores_global_dict.get("existentialCores", {}),
-                        "PublicKeys":       global_public_keys,
-                        "Signatures":       convert_sigs_to_list(cores_global_dict)
+                        "PublicKeys":       convert_keys_to_map(cores_global_dict),
+                        "Signatures":       convert_sigs_to_map(cores_global_dict)
                     }
-                    def emit_strict_json_lines(obj, depth=0):
+
+                    def serialize_to_strict_json(obj, depth=0):
                         indent = "  " * depth
                         next_indent = "  " * (depth + 1)
-                        deep_indent = "  " * (depth + 2)
-
+                        
                         if isinstance(obj, dict):
                             if not obj:
                                 return "{}"
                             lines = ["{"]
-                            # Fixed top-down chronology tree alignment rules
+                            
+                            # Enforce structural top-level chronology tree rules
                             ordered_keys = []
                             if "existentialCoreMeta" in obj: ordered_keys.append("existentialCoreMeta")
                             if "existentialCore" in obj: ordered_keys.append("existentialCore")
@@ -355,64 +363,44 @@ def execute(args, error_handler, repo_root: str):
                                     
                             for i, k in enumerate(ordered_keys):
                                 v = obj[k]
-                                clean_k = str(k).strip()
-                                val_str = emit_strict_json_lines(v, depth + 1)
+                                val_str = serialize_to_strict_json(v, depth + 1)
                                 comma = "," if i < len(ordered_keys) - 1 else ""
-                                lines.append(f'{next_indent}"{clean_k}": {val_str}{comma}')
+                                lines.append(f'{next_indent}"{str(k).strip()}": {val_str}{comma}')
                             lines.append(indent + "}")
                             return "\n".join(lines)
-
+                            
                         elif isinstance(obj, list):
                             if not obj:
                                 return "[]"
-                            
-                            # SPECIAL HANDLING FLUSHER FOR 4-COLUMN SECURITY SIGNATURE TUPLES
-                            if all(isinstance(row, list) and len(row) == 4 for row in obj):
-                                lines = ["{"]
-                                for i, row in enumerate(obj):
-                                    lbl_s, mask_s, hash_s, status_s = row
-                                    # FIXED SAFELY: Using clean, explicit local string wrappers natively
-                                    lines.append(f'{next_indent}"{str(lbl_s).strip()}": {{')
-                                    lines.append(f'{deep_indent}"bitmask": "{str(mask_s).strip()}",')
-                                    lines.append(f'{deep_indent}"hash": "{str(hash_s).strip()}",')
-                                    lines.append(f'{deep_indent}"status": "{str(status_s).strip()}"')
-                                    comma = "}," if i < len(obj) - 1 else "}"
-                                    lines.append(f'{next_indent}{comma}')
-                                lines.append(indent + "}")
-                                return "\n".join(lines)
-                                
-                            # Standard list items (basics / immutables) expanded exactly 1 per line
                             lines = ["["]
                             for i, item in enumerate(obj):
-                                val_str = emit_strict_json_lines(item, depth + 1)
+                                val_str = serialize_to_strict_json(item, depth + 1)
                                 comma = "," if i < len(obj) - 1 else ""
                                 lines.append(f'{next_indent}{val_str}{comma}')
                             lines.append(indent + "]")
                             return "\n".join(lines)
-
+                            
                         elif isinstance(obj, str):
-                            clean_str = obj.strip().replace('"', '\\"')
-                            return f'"{clean_str}"'
-
+                            # Wipes out leading/trailing whitespace creep inside string properties
+                            return f'"{obj.strip().replace('"', '\\"')}"'
+                            
                         elif isinstance(obj, bool):
                             return "true" if obj else "false"
-
+                            
                         elif isinstance(obj, int) and not isinstance(obj, bool):
                             return str(obj)
-
+                            
                         elif obj is None:
                             return "null"
-
+                            
                         return f'"{str(obj).strip()}"'
 
-                    # Write out the pristine text layout directly to disk
                     with open(target_path, "w", encoding="utf-8") as custom_out:
-                        custom_out.write(emit_strict_json_lines(json_matrix_payload))
-
+                        custom_out.write(serialize_to_strict_json(json_matrix_payload))
+                        
                     error_handler.print(f" [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
-
 
             elif filename.endswith(".py"):
                 if token == "Core":
