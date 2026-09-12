@@ -116,6 +116,9 @@ def execute(args, error_handler, repo_root: str):
     master_changed = (hash_master != old_circle_block.get("hash.master", ""))
     build_changed  = (hash_build != old_circle_block.get("hash.build", ""))
 
+    # ==========================================================================
+    # MODIFIED AREA START: FORENSIC FILE DRIFT ANALYSIS GRID PASS
+    # ==========================================================================
     if (master_changed or build_changed) and is_github_runner:
         changed_items = ""
         if master_changed and build_changed:
@@ -124,14 +127,35 @@ def execute(args, error_handler, repo_root: str):
             changed_items = "MASTER"
         elif build_changed:
             changed_items = "BUILD"
+            
+        drift_details = [
+            "Unsigned changes detected in MASTER CORE code!",
+            "File system update is blocked till fully signed with private keys!",
+            f"Changed {changed_items}"
+        ]
+
+        # Scan for changed or added files inside the master ring
+        old_master_files = old_data.get("files.master", {})
+        for file_path, current_hash in files_master.items():
+            old_hash = old_master_files.get(file_path)
+            if old_hash != current_hash:
+                drift_details.append(f" [➔] DRIFT FILE: {file_path}")
+                drift_details.append(f"     From: {old_hash or 'NEW_ASSET_NONE'}")
+                drift_details.append(f"     To:   {current_hash}")
+
+        # Scan for missing or dropped files inside the master ring
+        for file_path, old_hash in old_master_files.items():
+            if file_path not in files_master:
+                drift_details.append(f" [➔] DROPPED FILE: {file_path}")
+                drift_details.append(f"     From: {old_hash}")
+                drift_details.append(f"     To:   DELETION_ASSET_NONE")
+
         error_handler.notice(
             level="error",
-            message=f"* * * MASTER CHANGE INTERCEPTION! * * *",
-            details=[f"Unsigned changes detected in MASTER CORE code!",
-                     f"File system update is blocked till fully signed with private keys!",
-                     f"Changed {changed_items}"], exit_code=65
-        ) 
-    # sys.exit(65) # Safely crashes the step before modifying the manifest or staging git updates
+            message="* * * MASTER CHANGE INTERCEPTION! * * *",
+            details=drift_details,
+            exit_code=65
+        )
 
     for target_c, glue_key in circle_to_glue_map.items():
         current_hash = signatures_circle_registry.get(f"hash.{target_c}")
@@ -139,6 +163,7 @@ def execute(args, error_handler, repo_root: str):
         has_signature = bool(signatures_circle_registry.get(f"sign.{target_c}", ""))
 
         if current_hash != old_hash or not has_signature:
+            # FIXED: Target index 1 coordinate to extract raw bitmask integers safely out of glue records
             bitmask_weight = existenzIntegrityGlue[glue_key][1] if glue_key in existenzIntegrityGlue else 0
             
             needed_keys = []
@@ -147,14 +172,33 @@ def execute(args, error_handler, repo_root: str):
             if bool(bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL):  needed_keys.append("Personal")
 
             if needed_keys:
+                core_drift_details = [
+                    "Unsigned changes detected in MASTER CORE code!",
+                    "File system update is blocked till fully signed with private keys!",
+                    f"From {old_hash or 'BLANK_START'} -> {current_hash}"
+                ]
+                
+                # Fetch target bucket dynamically based on active iteration ring loop
+                target_bucket_key = f"files.{target_c}"
+                old_bucket_files = old_data.get(target_bucket_key, {})
+                live_bucket_files = locals().get(f"files_{target_c}", {})
+                
+                # Scan internal file properties inside current active sub-ring
+                for file_path, current_f_hash in live_bucket_files.items():
+                    old_f_hash = old_bucket_files.get(file_path)
+                    if old_f_hash != current_f_hash:
+                        core_drift_details.append(f" [➔] DRIFTING FILE: {file_path}")
+                        core_drift_details.append(f"     From: {old_f_hash or 'NEW_ASSET_NONE'}")
+                        core_drift_details.append(f"     To:   {current_f_hash}")
+
                 error_handler.notice(
                     level="warning",
                     message=f"* * * CORE CHANGE INTERCEPTION IN [{target_c.upper()}] * * *",
-                    details=[f"Unsigned changes detected in MASTER CORE code!",
-                             f"File system update is blocked till fully signed with private keys!",
-                             f"From {old_hash} -> {current_hash}"]
-                    #exit_code=65
-                ) 
+                    details=core_drift_details
+                )
+    # ==========================================================================
+    # MODIFIED AREA END
+    # ==========================================================================
 
     manifest_data = {
         "existentialCoreVersion": existenzMeta.HEADER["VERSION"].decode(),
