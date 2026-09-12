@@ -333,13 +333,14 @@ def execute(args, error_handler, repo_root: str):
                             if not obj:
                                 return "{}"
                             lines = ["{"]
-                            # Sort keys to enforce pristine, un-shifting text file lines
                             sorted_keys = sorted(obj.keys())
                             for i, k in enumerate(sorted_keys):
                                 v = obj[k]
                                 val_str = serialize_to_strict_json(v, depth + 1)
                                 comma = "," if i < len(sorted_keys) - 1 else ""
-                                lines.append(f'{next_indent}"{k}": {val_str}{comma}')
+                                # Ensure the key string doesn't get dirty trailing spacing characters
+                                clean_key = str(k).strip()
+                                lines.append(f'{next_indent}"{clean_key}": {val_str}{comma}')
                             lines.append(indent + "}")
                             return "\n".join(lines)
                             
@@ -355,8 +356,8 @@ def execute(args, error_handler, repo_root: str):
                             return "\n".join(lines)
                             
                         elif isinstance(obj, str):
-                            # Escape internal quotes cleanly to prevent payload structural corruption
-                            clean_str = obj.replace('"', '\\"')
+                            # FIXED: Clears out leading spaces natively to ensure strict value data blocks
+                            clean_str = obj.strip().replace('"', '\\"')
                             return f'"{clean_str}"'
                             
                         elif isinstance(obj, bool):
@@ -368,9 +369,7 @@ def execute(args, error_handler, repo_root: str):
                         elif obj is None:
                             return "null"
                             
-                        return f'"{str(obj)}"'
-
-                    # Safely commit your 100% linter-clean data map tree down to disk destination
+                        return f'"{str(obj).strip()}"'
                     with open(target_path, "w", encoding="utf-8") as custom_out:
                         custom_out.write(serialize_to_strict_json(json_matrix_payload))
                         
