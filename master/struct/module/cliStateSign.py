@@ -48,7 +48,7 @@ def execute(args, error_handler, repo_root: str):
 
     raw_input_arg = str(args.circle).strip().lower()
     if raw_input_arg == "all":
-        circles_to_process = ["build", "master"]
+        circles_to_process = ["tools","build", "master"]
     else:
         circles_to_process = [c.strip() for c in raw_input_arg.split(",") if c.strip()]
 
@@ -93,7 +93,7 @@ def execute(args, error_handler, repo_root: str):
                     user_input = getpass.getpass(f"  [🔒] Enter Passphrase for [{identity}]: ")
                     
                     passphrase_bytes = None
-                    if user_input.strip():
+                    if user_input:
                         passphrase_bytes = user_input.strip().encode('utf-8')
 
                     with open(expanded_path, "rb") as key_file:
