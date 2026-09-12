@@ -225,7 +225,7 @@ def execute(args, error_handler, repo_root: str):
                             policy_entries.append(f'      "existentialCore.{k}": "{d["pol"]}"')
                             
                     # 4. Compile detailed Structural maps with clean 1-key-per-line properties
-                    struct_entries = []
+                    core_lines = []
                     calculated_basic = []
                     calculated_immutable = []
                     for k, d in sorted(schema_data.get("existentialCore", {}).items()):
@@ -262,7 +262,7 @@ def execute(args, error_handler, repo_root: str):
                             f'      }}'
                         ]
                         # Build standard text string structures cleanly inside loop
-                        struct_entries.append("\n".join(s_block))
+                        core_lines.append("\n".join(s_block))
 
                         if not bool(k == "NONE") and bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
                             calculated_immutable.append(k)
