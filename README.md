@@ -9,7 +9,7 @@
 
 * Stateless Event-Driven 128-Bit Matrix
 * Existential Forensic Reporting/Recording
-* Sub-Milliwatt Sovereignty & Rights Monitoring: 
+* Sub-Milliwatt Sovereignty & Rights Monitoring
 * Geometric & Philosophical Immutability Models
 * Asymmetric Threat Detection & Real-Time Content Moderation
 * Algorithmic Classification of Existential Risks
@@ -26,7 +26,6 @@
 <br>
 
 ----
-
 *SIMULATIONS:* [Plato in 3DATA](https://gowildchild.github.io/Existenz/) | [Time Lines](https://gowildchild.github.io/Existenz/apps/timelines/) | [Human Rights](https://gowildchild.github.io/Existenz/apps/human-rights/) | [LifeTime](https://gowildchild.github.io/Existenz/apps/lifetime/) | [Extra Colliding](https://gowildchild.github.io/Existenz/apps/extra-colliding/) | [Plato Fields](https://gowildchild.github.io/Existenz/apps/plato-fields/) | [Safety-Audit](https://gowildchild.github.io/Existenz/apps/safety-audit/) [Structures](https://github.com/gowildchild/Existenz/struct) | [Examples](https://github.com/gowildchild/Existenz/tree/main/examples)
 
 ----
