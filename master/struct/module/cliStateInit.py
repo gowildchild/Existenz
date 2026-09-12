@@ -142,7 +142,7 @@ def execute(args, error_handler, repo_root: str):
                             # For Python code modules, check if active metadata properties or signature tokens changed
                             try:
                                 with open(target_path, "r", encoding="utf-8") as pf:
-                                    if "existentialToken =" not in pf.read():
+                                    if "existentialToken =" not in file_content and "existenzIntegrity =" not in file_content:
                                         force_write_required = True
                             except Exception:
                                 force_write_required = True
