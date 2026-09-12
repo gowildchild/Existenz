@@ -87,7 +87,7 @@
     "2290263560":                "VACUUM_HARVESTING"
   },
   "existentialMeta": {
-    "CoreVersion":               "v0.76.20",
+    "CoreVersion":               "v0.76.21",
     "CoreRealm":                 "Existenz",
     "CoreMagic":                 "EX25IMMUT32CORE7617",
     "CoreMagicRaw":              "CoreRealm:CoreVersion:CoreMagic",
