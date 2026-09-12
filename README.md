@@ -1,14 +1,33 @@
-# The Birth of Human Rights and Existential Survival in Mathematical Form
+### Existenz - Human Rights and Existential Survival in Mathematical Form
 
-*Modified:* 2026-08-15 | *Created in Public:* 2026-06-20
-*Research Project Proposal:* PROJECT EXISTENZ  v0.76h
-*Subtitle:* Stateless Event-Driven 128-Bit Matrix for Low-Power Existential Forensic Reporting/Recording  
-*Principal Architect:* Gunther Voet (existenz@xsrv.net)  
-*Target Research Group:* Distributed Systems Engineering / Applied Cryptography and Privacy Labs  
-*License:* Open-Source Non-Commercial Freedom (The "Pay Up or Face the Math" Enterprise Provision)  
-*Section:* Spatiotemporal Biometric Convergence (SBC) Introspection, Classical Harmony & Mathematical Rights of Nature
+<img width="512" height="512" alt="image" align="right" src="https://github.com/user-attachments/assets/6bb9b2f2-9778-4914-8655-55232647111d" />
+
+*Practical Use:* 
+
+* Stateless Event-Driven 128-Bit Matrix
+* Existential Forensic Reporting/Recording
+* Low-Power Human Rights Violation Monitor
+* Plato's wisdom in geometry and Philosophy
+
+*Target Research Group:* 
+- Distributed Systems Engineering
+- Applied Cryptography and Privacy Labs  
+- Spatiotemporal Biometric Convergence (SBC) Introspection
+- Classical Harmony & Mathematical Rights of Nature
+
+*Principal Architect:* 
+
+Gunther Voet (existenz@xsrv.net)  
+
+*Modified:* 2026-08-15
+*Published:* 2026-06-20
+
+
+
+
+
 *SIMULATORS ARE AVAILABLE AT:* [Plato in 3DATA](https://gowildchild.github.io/Existenz/) | [Time Lines](https://gowildchild.github.io/Existenz/apps/timelines/) | [Human Rights](https://gowildchild.github.io/Existenz/apps/human-rights/) | [LifeTime](https://gowildchild.github.io/Existenz/apps/lifetime/) | [Extra Colliding](https://gowildchild.github.io/Existenz/apps/extra-colliding/) | [Plato Fields](https://gowildchild.github.io/Existenz/apps/plato-fields/) | [Safety-Audit](https://gowildchild.github.io/Existenz/apps/safety-audit/) [Structures](https://github.com/gowildchild/Existenz/struct) | [Examples](https://github.com/gowildchild/Existenz/tree/main/examples)
----
+
 
 ## 1 | The Written Word and the Burden of Inheritance
 
@@ -556,6 +575,8 @@ This architecture is distributed in the hope that it will be useful, but WITHOUT
 ---
 
 ### Commercial Licensing Matrix
+
+*License:* Open-Source Non-Commercial Freedom (The "Pay Up or Face the Math" Enterprise Provision)  
 
 * **Non-Commercial & Open Source:** Free to use, fork and study under the GNU GPLv3.
 * **Sovereign & Public Sector (Governments/NGOs):** Eligible for a subsidized, fair-rate public utility license when deployed strictly for human rights auditing and public safety.
