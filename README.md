@@ -147,7 +147,7 @@ When you look at modern human engineering, all you can see are collisions that s
 
 What happens when the spectrum gets too full? When you pack too many corrupt variables, predatory AI optimization loops and algorithmic hate into a confined system, the data registry becomes congested with pure noise. The spectrum chokes. It triggers a catastrophic geometric collapse.
 
-This is exactly why Existenz was forced to expand into a spacious **128-bit registry** and utilize IntFlag combinatorics instead of single choice logic. By pushing the boundaries out to 128 bits, we create an immense, quiet valley of empty space. We give the existential matrix the geometric distance it needs to breathe. We place `SHIELD_IDEAL_RIGHTS` firmly at bit -6 as our unmovable "Platonic north star of justice", while holding our active defenses all the way out at bits 20 to 30. No matter how full the extremist noise gets in the upper registers, it can never overflow or cause a collision at the foundational origin point of human existence. When this structure would be used for moderation, an individual could choose to filter out the "static noise" and get a clean sheet, free of the corrupted smell against human society as it is.
+This is exactly why Existenz was forced to expand into a spacious **128-bit registry** and utilize IntFlag combinatorics instead of single choice logic. By pushing the boundaries out to 128 bits, we create an immense, quiet valley of empty space. We give the existential matrix the geometric distance it needs to breathe. We place `SHIELD_RIGHTS_HUMAN` firmly at bit-20 as our unmovable "Platonic north star of justice", while holding our active defenses all the way out at bits 20 to 30. No matter how full the extremist noise gets in the upper registers, it can never overflow or cause a collision at the foundational origin point of human existence. When this structure would be used for moderation, an individual could choose to filter out the "static noise" and get a clean sheet, free of the corrupted smell against human society as it is.
 
 To mathematically show how human rights have drifted away from the ideal standard down to a compromised, capitalistic reality, you can model the transition as a Vector Shift across your register index. As stated in my proposal, the absolute ideal position sits at bit 16, the pessimist's corrupt exploitation zone slips to bit 18 and the active, realistic defense perimeters are deployed between bits 20 and 30 to absorb the acoustic noise of society:
 
@@ -170,7 +170,7 @@ By channeling my hyper-focus into the most universal code I have ever created in
 
 I've designed a world where an individual can look a corrupt society in the face and say: *"go ahead and shout your acoustic noise. My existence is locked at bit-0, my integrity is unbroken at bit-2 and the universe itself is validating my data!"*. It contains the geometry of treason by having trust in many factors by separating Systemic Trust (impersonal, contractual infrastructure) from Personal Trust (deep, intuitive human alignment) and Conditional Trust.
 
-It also shows the escalation mechanics of betrayal by placing `TRUST_BROKEN` which triggers at bits 20, 22, 24 and 26:
+It also shows the escalation mechanics of betrayal by placing `CANARY's` which triggers at bits 3, 9, 13, 17 and 25:
 * **Bit-20** breaks `TRUST_HUMAN_RIGHTS` -> destroys `SHIELD_HUMAN_RIGHTS` (Institutional betrayal)
 * **Bit-22** breaks `TRUST_INCLUSIVE_RIGHTS` -> Destroys `SHIELD_INCLUSIVE_RIGHTS` (Ableism is not done)
 * **Bit-24** breaks `TRUST_BASIC_RIGHTS` -> Destroys `SHIELD_BASIC_RIGHTS` (Sovereign protection).
@@ -422,7 +422,7 @@ class ExistentialRipple(IntFlag):
 
 ## 7.1 | Architectural Shift: The Deprecation of Legacy Registers
 
-To ensure future researchers do not misinterpret the evolution of this protocol, this section documents the exact mathematical and defensive requirements that forced the transition from our legacy layout to the v0.70+ pairing sequence.
+To ensure future researchers do not misinterpret the evolution of this protocol, this section documents the exact mathematical and defensive requirements that forced the transition from our legacy layout to the v0.70+ pairing sequence. The documentation has not been fully updated yet, sorry for that. 
 
 ---
 
@@ -544,7 +544,7 @@ Modern distributed ledger architectures suffer from catastrophic systemic ineffi
 
 Project Existenz maps fundamental human rights, systemic threat vectors and cascading trust boundaries directly into an immutable, multi-layered 128-bit registry (`IntFlag`). By utilizing a 1:1 structural mirror between natural human pillars and primitive attack vectors, the protocol executes state validations in single-cycle bitwise logic operations.
 
-Operating on a localized, cellular consensus topology restricted to immediate space-time neighbors (the **9-Country Space-Time Lattice**), the standby power footprint of an entire global node layer is optimized down to **0.1 watts**.
+Operating on a localized, cellular consensus topology restricted to immediate space-time neighbors (the **9-Country Space-Time Lattice**), the standby power footprint of an entire global node layer is optimized using less than **<0.01 watts**.
 
 ### 10.1 | PRIMARY RESEARCH OBJECTIVES
 
@@ -564,7 +564,7 @@ I thank you for your attention, if you got any questions, feel free to ask me.
 
 **Gunther Voet**  
 Copyright © 2026 Gunther Voet. All Rights Reserved.  
-*Codenamed: Existenz (Cosmic Karma-driven protocol / v0.70 PoC)*
+*Codenamed: Existenz (Cosmic Karma-driven protocol / v0.76 PoC)*
 
 This documentation and the underlying reference code are free software: you can redistribute them and/or modify them under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
