@@ -46,14 +46,11 @@ def execute(args, error_handler, repo_root: str):
         "master": "CircleMaster"
     }
 
-    # ==========================================================================
-    # MODIFIED AREA START: RE-MAPPED LOCAL ALL LOOKUP BOUNDARY
-    # ==========================================================================
-    active_circle_arg = str(args.circle).strip().lower()
-    if active_circle_arg == "all":
-        circles_to_process = ["tools", "build", "master"]  # Natively excludes dist from local PC sweeps
+    raw_input_arg = str(args.circle).strip().lower()
+    if raw_input_arg == "all":
+        circles_to_process = ["tools", "build", "master"]
     else:
-        circles_to_process = [active_circle_arg]
+        circles_to_process = [c.strip() for c in raw_input_arg.split(",") if c.strip()]
     # ==========================================================================
     # MODIFIED AREA END
     # ==========================================================================
