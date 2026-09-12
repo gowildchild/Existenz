@@ -1,5 +1,5 @@
 {
-  "commit": "2325cc38f99bb5b9b2cd9d71951ca5682d52c858",
+  "commit": "797047fb23eea8fdf3f434d33f46bc2c9ea2952e",
   "existentialCoreVersion": "v0.76.21",
   "files.build": {
     "master/build-tools/deprecated/cliStateBuild.py": "0d053d0cb8e705f9f1797f51745bcd55459a22300b14680f28b497eb1201398c",
@@ -58,6 +58,7 @@
     "dist/existentialCores.json": "369ee5774aa2d19a203edadd011f239a0ad36df8bbf33e4040002cf05d783f10",
     "dist/existenzStruct/master/existentialCores.json": "1cc760044d12c2f4d3d72caf890c2e9839b52d8c2e6247a2f267e58ed4cb459a",
     "dist/index.html": "cd4b9298e9c8a4516e1e2d81c49b52e9c96d3dee6039cd124b1dfcdbc58fdc7a",
+    "dist/master/existentialCoreSignatures.py": "990b054c375f163544f921dc1cd55cf8ecc0e0c6ebdb3242fc0aed351f0ee0a2",
     "dist/perl/existentialCoreCheck.pm": "49b1f697c189d0202b164daba323ba3d7cd3b0496b719a09e121f950d9efae11",
     "dist/perl/existentialCores.pm": "ed3d7bca5afbcf710c71aa586eada8366747d296050e4e2f64f9e01956d05009",
     "dist/perl/single/existentialCore.pm": "69366046cea69167421048181717c7a8a9e59f5ea0c2c51988ebece62ce0d4e6",
@@ -95,7 +96,7 @@
     "master/struct/module/cliStateInit.py": "50d558fd199764ee5a300eaa39cd6a61d31e9030c3c6023db9e19edced30f745",
     "master/struct/module/cliStateIntegrity.py": "f1e460c13ac718c4830d12f04970a6e0d385fb5569bfeb564d1b51027670818d",
     "master/struct/module/cliStateManifest.py": "5348c3ee53a80347694d591ec55283f31fda8857b14dc372ade6359efda4d68c",
-    "master/struct/module/cliStateSign.py": "e88ae3be8712e473fbb7a9a91a88b8ef9262b6ef24372d0713a2f53ef8b7e9c4",
+    "master/struct/module/cliStateSign.py": "99adc8d23e46c0bdba5bce3b89ab2c7afbe07346949b007ad2af3427e9e084d7",
     "master/struct/module/cliStateTest.py": "e8a6c64754e74904994a5e7f73250d1e10c0bc8a6f7bf53e6be0a24505456417",
     "master/struct/module/cliStateVerify.py": "15b018e130ee4d3aeba3d7882ab833be3afc8543ebfa3ace01e64b5c6e77f59b",
     "master/struct/module/cliStateVeritas.py": "794f694a704c1f55f53d161a4a5d6735e3d3d3d832113e05c7983a663f0cde80",
@@ -117,19 +118,19 @@
     "Platform": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"
   },
   "signatures": {
-    "Developer": "0b05ce5d76642033118c57c9256efb519e2a82e0f1ed6f9a62cf62d152cac14419f88b436f9e79ae954d3b8e3f76e42bc43fbd9fb3968d30e8f557b65d690f0d",
+    "Developer": "499a0939bf84cab3d2d654388ae8ea3c3a19ba45ca68c8ba20ef39967886c78b5042f13afcd327a696ec9489ba70893f48c863d0a281d61e758cc2a71864f004",
     "Environment": "54d0cc76de129fc8b2e240fc24864915b491235828b433252c82eabb6bd21f6bc1bf120059a699570ff88a1c507f7ec827dde07255f6cac92497a6e2ef88910f",
-    "Personal": "7decf1381e1151e0e77208b3f8ff040f3de0de9f9dde8dbb7133b7ba4d5df48d1c493c588ba8851daaed5fd963ffaad89ed47d63e969af6bd93d698aff129d09",
-    "Platform": "5baf78506e1a2cce64a93f84ee042c21f8cd9c5cd8e1d7951067cc6e8695e5c021f0deb86840ef1934b8571ba9bd06d5a98b7a74416a0896d37211b420b7e902"
+    "Personal": "5ecad7e2f038844eabaddc728d6d487fc032065b8c0e33789c2ea1f625a4af8cca9232826549ee9cb572c0b7358e652966a6be83df1bc223b94161b889e2e00d",
+    "Platform": "3d2ccf6c89d79bd54019d0461ec4c07f2e46b4c92d1fe12d5c0490376f3e51568e4131f36bc09637b295a76a257ba35306e89383ff329bf47e04a2b1578ab902"
   },
   "signatures.circle": {
     "hash.build": "da8b3d844fe2a94b00c533ba41f9ceeae89132479765a205d6c81a3e4b75d358",
-    "hash.dist": "42359285eeef61e1069be804f233216accf88ebdf9a1c4c0e81f92806bfb2275",
-    "hash.master": "3e5f2c72a8f3674d4113745af0e12050f928b182052d2c54bf6cce2f8c8c014d",
+    "hash.dist": "447553cc102cc65f123b2f6794fc3978cc69ad7ca2d97a07ed1c824b0e0d610c",
+    "hash.master": "e48ca3c00a64b5e1228dfba058e98c255aea0fa6cde2ba7a78f5dba05de9c3df",
     "hash.tools": "925c5a0230ea9aad4ef4997f40dc883b60fb0a9c561fd6621fbffb2b34cd4171",
-    "sign.build": "35238d32140c2a581e186a4a68dd873c35c6b4020b8ad67528a7040236bb6c1029b950ef82bb795f16dc62c7ea8437ad96813aa65dcf60fbfcfde079d3453c0e",
+    "sign.build": "f66510ad6b571c5ed54ba091c9dabacad17620887f269ba00f1328e444e299048812aa8c7be0fb5cd5f982b7e32ba1d339a51e305cf0bfc31d2b1052b5846b03",
     "sign.dist": "e4b09eb182c28b622b3287b663fd43eef9054c0a7d5372abdb365d349f6fb2c86b8f3278cc4cb0f93b37faf45fafea0d3972c05e806a4c15a52f4424df61c303",
-    "sign.master": "9a91d13e4e69821529af56da9b8f27e63c3ba1cb9aec0da752a97a4dd3860109ab6ae5a4ab8da24cd31a3d11fb500fa60d9aa99ef67728c9eb577543e91f5c0c",
+    "sign.master": "b2f99e898f5ec49c3e29790fef0b5253ae7d8807ef700933f1e78a938952e429a0e77ad2e2a0b731075ee57550c89af4af0e742c88f60a2f705a3899d7d68d05",
     "sign.tools": "7edd4ff44ae1cd04e84a869230c2ef776ebe445d42c525210d57f9bd09051812bb2ffb27715707a9420052b9a4473316c98f4d61fbacd05b12d350e0689fb909"
   }
 }
