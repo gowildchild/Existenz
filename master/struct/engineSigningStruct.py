@@ -65,9 +65,7 @@ existenzStructureGlue = {
     "KeyStatus":              ( "existenzIntegrityKeyStatus",   3575, 8705, 0x00, existenzLocations["engine"]["signingStruct"], 
                                                                                existentialToken.get("structs", {}).get("KeyStatus", "PENDING_SIGN")),
     "IntegrityState":         ( "existenzIntegrityState",       3575, 8705, 0x00, existenzLocations["engine"]["signingStruct"], 
-                                                                               existentialToken.get("structs", {}).get("IntegrityState", "PENDING_SIGN")),
-    "CorePolicy":             ( "existenzCorePolicy",           3575, 8705, 0x00, existenzLocations["engine"]["signingStruct"], 
-                                                                               existentialToken.get("structs", {}).get("CorePolicy", "PENDING_SIGN"))
+                                                                               existentialToken.get("structs", {}).get("IntegrityState", "PENDING_SIGN"))
 }
 
 class existenzIntegrityKeysHandler(IntFlag):
