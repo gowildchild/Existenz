@@ -1,6 +1,6 @@
 {
-  "commit": "4b6f1fb7c32689d01ff239301ef7ed30d429e68a",
-  "existentialCoreVersion": "v0.76.20",
+  "commit": "2311171306c9daa50927f02fce2050081dfe5569",
+  "existentialCoreVersion": "v0.76.21",
   "files.build": {
     "master/build-tools/deprecated/cliStateBuild.py": "0d053d0cb8e705f9f1797f51745bcd55459a22300b14680f28b497eb1201398c",
     "master/build-tools/deprecated/engineSigningData.py": "8ea3c5b17c7eb39278f0e46c108f11bc7680db147a4ff29d5b1d594d1fc9952a",
@@ -88,7 +88,7 @@
     "master/struct/engineSigningLibrary.py": "cdb48469847ebfdd6943c1448d2ca9673f06a9f1e3c60b9f5f3aa1679db34d3a",
     "master/struct/engineSigningMeta.py": "10debe34bdf1c6a1edd881b8e37a959f805c259ca9fdfb5bf28682059d21ce59",
     "master/struct/engineSigningStruct.py": "a51199895244852a58966d26d07b52e099d646283c838a170cc76108ef3b2ab2",
-    "master/struct/existentialCoreSchema.json": "aadc4097faba8b5a42b4c287c2b01eaee2a666329e4abb367fc2bdd643bb5bea",
+    "master/struct/existentialCoreSchema.json": "a1e629d5bfb692d53e0422e54e8823406aefaba88b06321172231728ea8e5f8b",
     "master/struct/existentialSignatures.py": "23d04be1b0c1d4959550e5b967af26af82c2924bbd58afb16c3eeba3b05d3378",
     "master/struct/module/cliStateBuild.py": "612f1c5128c06e02da8649777e5e40827ee76ee377e815a90be938578636cf12",
     "master/struct/module/cliStateInit.py": "0148ec2db2b2d4926239975bf0b49045cf47201612aa3c20b7e355a0925d4a9b",
@@ -124,7 +124,7 @@
   "signatures.circle": {
     "hash.build": "da8b3d844fe2a94b00c533ba41f9ceeae89132479765a205d6c81a3e4b75d358",
     "hash.dist": "42359285eeef61e1069be804f233216accf88ebdf9a1c4c0e81f92806bfb2275",
-    "hash.master": "0d3ae0e22c18c5f4b0768a1ac4ab4b705d8f45672cb68330362a4b13cf08bae2",
+    "hash.master": "bcc8d33e9d2e47408ab6ea2db22945230fc69aa62625ab82ecb1af36cb1b95af",
     "hash.tools": "925c5a0230ea9aad4ef4997f40dc883b60fb0a9c561fd6621fbffb2b34cd4171",
     "sign.build": "f66510ad6b571c5ed54ba091c9dabacad17620887f269ba00f1328e444e299048812aa8c7be0fb5cd5f982b7e32ba1d339a51e305cf0bfc31d2b1052b5846b03",
     "sign.dist": "e4b09eb182c28b622b3287b663fd43eef9054c0a7d5372abdb365d349f6fb2c86b8f3278cc4cb0f93b37faf45fafea0d3972c05e806a4c15a52f4424df61c303",
