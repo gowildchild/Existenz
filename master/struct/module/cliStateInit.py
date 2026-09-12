@@ -3,6 +3,11 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
+# ==========================================================================
+# EXISTENZ master/struct/module/cliStateInit.py (Chunk 1 of 3)
+# Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
+# Released under strict Non-Commercial Open-Source License terms.
+# ==========================================================================
 import os
 import sys
 import json
@@ -31,7 +36,7 @@ def execute(args, error_handler, repo_root: str):
     virtual_tokens = []
     for glue_key, glue_tuple in existenzIntegrityGlue.items():
         if isinstance(glue_tuple, tuple) and len(glue_tuple) > 1:
-            glue_bitmask = glue_tuple[1]
+            glue_bitmask = glue_tuple
             if bool(glue_bitmask & 512):
                 virtual_tokens.append(glue_key)
 
@@ -107,7 +112,6 @@ def execute(args, error_handler, repo_root: str):
                 error_handler.print(f" [+] Loaded BLUEPRINT_VERSION={version_str} into environment.", level="info")
             except Exception as env_err:
                 error_handler.print(f"Non-fatal error mapping version variable to shell runner: {env_err}", level="debug")
-
         # A. Self-Heal Core Runtime Files (Compiling directly to final destination)
         for token, asset_data in core_assets_to_sync.items():
             target_path = os.path.abspath(os.path.join(repo_root, asset_data["runtime_path"]))
@@ -131,7 +135,10 @@ def execute(args, error_handler, repo_root: str):
                             try:
                                 with open(target_path, "r", encoding="utf-8") as jf:
                                     existing_data = json.load(jf)
-                                if existing_data.get("existentialToken", {}).get("existenzMagic") != live_json.get("existentialToken", {}).get("existenzMagic"):
+                                # COMPREHENSIVE BOUNDARY CHECK: Handles fallback signature tags safely
+                                t_old = existing_data.get("existentialToken", {})
+                                t_new = live_json.get("existentialToken", {})
+                                if t_old.get("existenzMagic", t_old.get("MAGIC")) != t_new.get("existenzMagic", t_new.get("MAGIC")):
                                     force_write_required = True
                             except Exception:
                                 force_write_required = True
@@ -156,33 +163,40 @@ def execute(args, error_handler, repo_root: str):
                                 f.write("# " + "="*74 + "\n\n")
                                 f.write("from engineSigningMeta import existenzLocations, existenzMeta\n\n")
                                 f.write("existentialToken = {\n")
+                                
+                                # FIXED MAP FALLBACK: Safely locks parameters into your exact target structural key name
+                                token_map = live_json.get("existentialToken", {})
+                                magic_data = token_map.get("existenzMagic", token_map.get("MAGIC", {}))
+                                
                                 f.write('    "existenzMagic": {\n')
-                                for mk, mv in live_json["existentialToken"]["existenzMagic"].items():
+                                for mk, mv in magic_data.items():
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
                                 f.write("    },\n")
+                                
                                 f.write('    "master": {\n')
-                                for mk, mv in live_json["existentialToken"]["master"].items():
+                                for mk, mv in token_map.get("master", {}).items():
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
                                 f.write("    },\n")
                                 f.write('    "chain": {\n')
-                                for mk, mv in live_json["existentialToken"]["chain"].items():
+                                for mk, mv in token_map.get("chain", {}).items():
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
                                 f.write("    },\n")
                                 f.write('    "manifest": {\n')
-                                for mk, mv in live_json["existentialToken"]["manifest"].items():
+                                for mk, mv in token_map.get("manifest", {}).items():
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
                                 f.write("    },\n")
                                 f.write('    "structs": {\n')
-                                for mk, mv in live_json["existentialToken"]["structs"].items():
+                                for mk, mv in token_map.get("structs", {}).items():
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
                                 f.write("    },\n")
-                                # Serialize Engine components
                                 f.write('    "engine": {\n')
-                                for mk, mv in live_json["existentialToken"]["engine"].items():
+                                for mk, mv in token_map.get("engine", {}).items():
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
                                 f.write("    }\n")
                                 f.write("}\n")
                         error_handler.print(f"    [SYNC LAYER] Recreated authoritative blueprint ledger file at: {target_path}", level="info")
+                    else:
+                        error_handler.print(f"    [PITCH CLEAN] Core artifact is fully up-to-date with active blueprint definitions: {filename}", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed executing auto-heal blueprint generation track for {filename}: {e}", level="error", exit_code=1)
             
@@ -272,6 +286,7 @@ def execute(args, error_handler, repo_root: str):
                         repo_root, schema_data, "existentialCoreThreat", group_filter_id=0x03
                     )
                     
+                    # FIXED 1:1 STRUCTURAL REALM MATRIX INSULATION
                     json_matrix_payload = {
                         "existentialCoreMeta": {
                             "CoreRealm":     meta_block.get("CoreRealm", "Existenz"),
