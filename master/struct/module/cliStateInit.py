@@ -358,7 +358,7 @@ def execute(args, error_handler, repo_root: str):
                                 clean_k = str(k).strip()
                                 val_str = emit_strict_json_lines(v, depth + 1)
                                 comma = "," if i < len(ordered_keys) - 1 else ""
-                                lines.append(f'{next_indent}"{clean_key}": {val_str}{comma}')
+                                lines.append(f'{next_indent}"{clean_k}": {val_str}{comma}')
                             lines.append(indent + "}")
                             return "\n".join(lines)
 
@@ -371,10 +371,11 @@ def execute(args, error_handler, repo_root: str):
                                 lines = ["{"]
                                 for i, row in enumerate(obj):
                                     lbl_s, mask_s, hash_s, status_s = row
-                                    lines.append(f'{next_indent}"{lbl_s}": {{')
-                                    lines.append(f'{deep_indent}"bitmask": "{mask_s}",')
-                                    lines.append(f'{deep_indent}"hash": "{hash_s}",')
-                                    lines.append(f'{deep_indent}"status": "{status_s}"')
+                                    # FIXED SAFELY: Using clean, explicit local string wrappers natively
+                                    lines.append(f'{next_indent}"{str(lbl_s).strip()}": {{')
+                                    lines.append(f'{deep_indent}"bitmask": "{str(mask_s).strip()}",')
+                                    lines.append(f'{deep_indent}"hash": "{str(hash_s).strip()}",')
+                                    lines.append(f'{deep_indent}"status": "{str(status_s).strip()}"')
                                     comma = "}," if i < len(obj) - 1 else "}"
                                     lines.append(f'{next_indent}{comma}')
                                 lines.append(indent + "}")
@@ -411,6 +412,7 @@ def execute(args, error_handler, repo_root: str):
                     error_handler.print(f" [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
+
 
             elif filename.endswith(".py"):
                 if token == "Core":
