@@ -35,15 +35,15 @@ existenzIntegrityGlue = {
                                                                                existentialToken.get("master", {}).get("Cores", "PENDING_SIGN")),
     "Schema":                 ( "existentialCoreSchema",      246, 9224, 0x0900, existenzLocations["core"]["Schema"],
                                                                                existentialToken.get("master", {}).get("Schema", "PENDING_SIGN")),  
-    "CircleDist":             ( "existentialCircleDist",     2615, 33860,   0xF02F, existenzLocations["manifest"]["dist"],
+    "CircleDist":             ( "existentialCircleDist",     2630, 33860,   0xF02F, existenzLocations["manifest"]["dist"],
                                                                                existentialToken.get("manifest", {}).get("dist", "PENDING_SIGN")),
-    "CircleTools":            ( "existentialCircleTools",    2614, 33860,   0xF03F, existenzLocations["manifest"]["tools"],
+    "CircleTools":            ( "existentialCircleTools",    2630, 33860,   0xF03F, existenzLocations["manifest"]["tools"],
                                                                                existentialToken.get("manifest", {}).get("tools", "PENDING_SIGN")),
-    "CircleBuild":            ( "existentialCircleBuild",    2614, 33860,  0xF04F, existenzLocations["manifest"]["build"],
+    "CircleBuild":            ( "existentialCircleBuild",    2806, 33860,  0xF04F, existenzLocations["manifest"]["build"],
                                                                                existentialToken.get("manifest", {}).get("build", "PENDING_SIGN")),
-    "CircleMaster":           ( "existentialCircleMaster",   2614, 33860,  0xF05F, existenzLocations["manifest"]["master"],
+    "CircleMaster":           ( "existentialCircleMaster",   2806, 33860,  0xF05F, existenzLocations["manifest"]["master"],
                                                                                existentialToken.get("manifest", {}).get("master", "PENDING_SIGN")),
-    "CircleChain":            ( "existentialCircleSigned",   2870, 33860,  0xF09F, existenzLocations["engine"]["Manifest"],
+    "CircleChain":            ( "existentialCircleSigned",   2822, 33860,  0xF09F, existenzLocations["engine"]["Manifest"],
                                                                                existentialToken.get("engine", {}).get("Manifest", "PENDING_SIGN"))
 }
 
