@@ -1,4 +1,4 @@
-# EXISTENZ SYSTEM WORKSPACE BOUNDARIES
+# EXISTENZ SYSTEM WORKSPACE BOUNDARIES 
 
 ## 🔒 1. PROTECTED DEFINITIONS VAULT (DO NOT WRITE TO DISK)
 The following files are pure data frameworks and act as the system's input anchors.
