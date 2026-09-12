@@ -31,7 +31,7 @@ def execute(args, error_handler, repo_root: str):
     virtual_tokens = []
     for glue_key, glue_tuple in existenzIntegrityGlue.items():
         if isinstance(glue_tuple, tuple) and len(glue_tuple) > 1:
-            glue_bitmask = glue_tuple
+            glue_bitmask = glue_tuple[1]
             if bool(glue_bitmask & 512):
                 virtual_tokens.append(glue_key)
 
