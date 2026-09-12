@@ -10,21 +10,21 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 from cryptography.hazmat.primitives import serialization
 import engineSigningLibrary
 from engineSigningMeta import existenzLocations, existenzConfig
-from engineSigningStruct import existenzIntegrityKeyStatus,  existenzIntegrityGlue
+from engineSigningStruct import existenzIntegrityKeyStatus, existenzIntegrityGlue
 
 def execute(args, error_handler, repo_root: str):
     """
     Executes bitmask-driven asymmetric signature updates against tracking circles.
     Prompts for passphrases exactly once per key profile, caching un-locked objects in memory.
     """
-    error_handler.print("Initiating bitmask-driven asymmetric multi-signature execution...", level="notice")
+    error_handler.print("Initiating asymmetric multi-signature signing...", level="notice")
     
     manifest_filename = existenzLocations["engine"]["Manifest"]
     manifest_target_path = os.path.abspath(os.path.join(repo_root, manifest_filename))
     config_target_path = os.path.abspath(os.path.join(repo_root, args.config))
     
     if not os.path.exists(manifest_target_path):
-        error_handler.print("Manifest database tracking ledger missing. Run manifest stage first.", level="error", exit_code=33)
+        error_handler.print("Manifest database missing. Run manifest stage first.", level="error", exit_code=33)
 
     # 1. Ingest consolidated tracking payload structures from file destination
     with open(manifest_target_path, "r", encoding="utf-8") as mf:
@@ -56,6 +56,17 @@ def execute(args, error_handler, repo_root: str):
     if "signatures" not in manifest_data:
         manifest_data["signatures"] = {}
 
+    # PRE-FLIGHT ANALYSIS PASS: Identify exactly which identity tags are demanded by target circles
+    globally_needed_identities = set()
+    for current_circle in circles_to_process:
+        g_key = circle_to_glue_map.get(current_circle)
+        if g_key in existenzIntegrityGlue:
+            weight = existenzIntegrityGlue[g_key]
+            if bool(weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT): globally_needed_identities.add("Environment")
+            if bool(weight & existenzIntegrityKeyStatus.KEY_PVT_PLATFORM):    globally_needed_identities.add("Platform")
+            if bool(weight & existenzIntegrityKeyStatus.KEY_PVT_DEVELOPER):   globally_needed_identities.add("Developer")
+            if bool(weight & existenzIntegrityKeyStatus.KEY_PVT_PERSONAL):    globally_needed_identities.add("Personal")
+
     # ==========================================================================
     # AIR-TIGHT GLOBAL MEMORY CACHE LOOP: PROMPTS EXACTLY ONCE PER UNIQUE KEY PROFILE
     # ==========================================================================
@@ -71,6 +82,9 @@ def execute(args, error_handler, repo_root: str):
     error_handler.print(" [*] Pre-authenticating multi-signature identity layers...", level="info")
     
     for identity, env_prefix, local_key_path in identities_preload_blueprint:
+        if identity not in globally_needed_identities:
+            continue  # Safe boundary gate: Skip keys completely out-of-scope for this run pass
+            
         private_key_object = None
 
         # Track A: Load local configuration paths offline from disk (PROMPTS ONCE HERE ONLY)
@@ -85,11 +99,9 @@ def execute(args, error_handler, repo_root: str):
                     if user_input.strip():
                         passphrase_bytes = user_input.strip().encode('utf-8')
 
-                    # Read raw file bytes natively into memory
                     with open(expanded_path, "rb") as key_file:
                         key_payload_bytes = key_file.read()
                     
-                    # Deserialize directly using pure cryptography to bypass library re-prompt bugs
                     private_key_object = serialization.load_ssh_private_key(
                         key_payload_bytes,
                         password=passphrase_bytes
@@ -117,7 +129,6 @@ def execute(args, error_handler, repo_root: str):
         if private_key_object:
             # Pin unlocked object securely to our runtime session cache registry
             private_keys_memory_cache[identity] = private_key_object
-
     # ==========================================================================
     # 2. RUN ITERATIVE WORKSPACE RINGS PROCESSING SIGNING LOOPS
     # ==========================================================================
@@ -126,8 +137,7 @@ def execute(args, error_handler, repo_root: str):
         if not glue_key or glue_key not in existenzIntegrityGlue:
             continue
 
-        # FIXED: Extract the raw bitmask status weight integer directly from index 1 of your tuple configuration
-        circle_bitmask_weight = existenzIntegrityGlue[glue_key][1]
+        circle_bitmask_weight = existenzIntegrityGlue[glue_key]
 
         # Compute dynamic bitmask permissions for this target validation ring track loop
         req_env = bool(circle_bitmask_weight & existenzIntegrityKeyStatus.KEY_PVT_ENVIRONMENT)
@@ -164,7 +174,6 @@ def execute(args, error_handler, repo_root: str):
             if not is_required:
                 continue
                 
-            # FIXED: Read pre-loaded keys straight out of memory context with ZERO extra prompts
             private_key_object = private_keys_memory_cache.get(identity)
 
             if private_key_object:
@@ -172,7 +181,7 @@ def execute(args, error_handler, repo_root: str):
                     # Stamp global envelope signature metadata fields
                     signature_bytes = private_key_object.sign(serialized_manifest_body)
                     manifest_data["signatures"][identity] = signature_bytes.hex()
-                    error_handler.print(f"  [+] Signed manifest envelope: [{identity}] on track [{current_circle}]", level="notice")
+                    error_handler.print(f"  [+] Signed manifest envelope: [{identity}] for [{current_circle}]", level="notice")
                     
                     hash_key = f"hash.{current_circle}"
                     sign_key = f"sign.{current_circle}"
@@ -185,7 +194,7 @@ def execute(args, error_handler, repo_root: str):
                 except Exception as sig_err:
                     error_handler.print(f"Failed compiling signature for [{identity}]: {sig_err}", level="error", exit_code=64)
 
-    # 3. Flush updates back to disk ledger target destination
+    # 3. Flush updates back to disk ledger target destination (DECOUPLED OUTSIDE ITERATION LOOP)
     if str(args.run).strip().lower() != "dry":
         try:
             with open(manifest_target_path, "w", encoding="utf-8") as out_mf:
@@ -196,3 +205,4 @@ def execute(args, error_handler, repo_root: str):
 
     # Progress Control Safely Down to Next Pipeline Phase
     engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
+            
