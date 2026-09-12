@@ -199,33 +199,27 @@ def execute(args, error_handler, repo_root: str):
                     from engineSigningStruct import existenzCorePolicy
                     
                     # 1. Compile pristine Threat register entries line-by-line
-                    threat_entries = []
+                    threat_entries = {}
                     for k, d in sorted(schema_data.get("existentialCore", {}).items()):
                         if isinstance(d, dict) and "threat" in d and "val" in d:
                             v = d["val"]
                             expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
-                            t_block = [
-                                f'      "{d["threat"]}": {{',
-                                f'        "expr": "{expr}",',
-                                f'        "val": {v}',
-                                f'      }}'
-                            ]
-                            threat_entries.append("\n".join(t_block))
+                            threat_entries[d["threat"]] = { "val": v, "expr": expr }
                             
                     # 2. Compile flat, cleanly indented Bitmask entries
-                    bitmask_entries = []
+                    bitmask_entries = {}
                     for k, d in sorted(schema_data.get("existentialCore", {}).items()):
                         if isinstance(d, dict) and "msk" in d:
-                            bitmask_entries.append(f'      "existentialCore.{k}": "{d["msk"]}"')
+                            bitmask_entries[f"existentialCore.{k}"] = d["msk"]
                             
                     # 3. Compile flat, cleanly indented Policy entries
-                    policy_entries = []
+                    policy_entries = {}
                     for k, d in sorted(schema_data.get("existentialCore", {}).items()):
                         if isinstance(d, dict) and "pol" in d:
-                            policy_entries.append(f'      "existentialCore.{k}": "{d["pol"]}"')
+                            policy_entries[f"existentialCore.{k}"] = d["pol"]
                             
                     # 4. Compile detailed Structural maps with clean 1-key-per-line properties
-                    core_lines = []
+                    core_lines = {}
                     calculated_basic = []
                     calculated_immutable = []
                     for k, d in sorted(schema_data.get("existentialCore", {}).items()):
@@ -247,38 +241,18 @@ def execute(args, error_handler, repo_root: str):
                         else: struct_type = "PILLAR"
                         
                         if k != "NONE" and bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
-                            calculated_immutable.append(f'      "{k}"')
-                            if bool(pol & (existenzCorePolicy.CORE_PILLAR | existenzCorePolicy.CORE_RIGHTS)):
-                                calculated_basic.append(f'      "{k}"')
-                            elif bool(pol & existenzCorePolicy.CORE_CANARY) and k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM"]:
-                                calculated_basic.append(f'      "{k}"')
-                                
-                        s_block = [
-                            f'      "{k}": {{',
-                            f'        "comment": "{d.get("comment", "").replace('"', '\\"').strip()}",',
-                            f'        "expr": "{expr}",',
-                            f'        "type": "{struct_type}",',
-                            f'        "val": {v}',
-                            f'      }}'
-                        ]
-                        # Build standard text string structures cleanly inside loop
-                        core_lines.append("\n".join(s_block))
-
-                        if not bool(k == "NONE") and bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
                             calculated_immutable.append(k)
                             if bool(pol & (existenzCorePolicy.CORE_PILLAR | existenzCorePolicy.CORE_RIGHTS)):
                                 calculated_basic.append(k)
-                            elif bool(pol & existenzCorePolicy.CORE_CANARY):
-                                if k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM"]:
-                                    calculated_basic.append(k)
-                                    
+                            elif bool(pol & existenzCorePolicy.CORE_CANARY) and k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM"]:
+                                calculated_basic.append(k)
+                                
                         core_lines[k] = {
                             "val": v,
                             "expr": expr,
                             "type": struct_type,
                             "comment": d.get("comment", "").replace('"', '\\"').strip()
                         }
-                        
                     val_to_enum_map = {}
                     for k, d in schema_data.get("existentialCore", {}).items():
                         if isinstance(d, dict) and "val" in d:
@@ -306,11 +280,35 @@ def execute(args, error_handler, repo_root: str):
                         repo_root, schema_data, "existentialCoreThreat", group_filter_id=0x03
                     )
                     
-                    # Convert signature matrices maps into nested layout blocks to enforce 1 signature per line expansion
+                    # Convert signature matrices safely by checking item layout types to prevent unpacking index errors
                     def convert_sigs_to_map(sig_payload):
                         if not sig_payload or "Signatures" not in sig_payload: return {}
-                        # Safely maps four-column tuples natively by handling index attributes cleanly
-                        return {str(row[0]).strip(): {"bitmask": int(row[1]), "hash": str(row[2]).strip(), "status": str(row[3]).strip()} for row in sig_payload["Signatures"]}
+                        res_map = {}
+                        for row in sig_payload["Signatures"]:
+                            if isinstance(row, (list, tuple)) and len(row) >= 4:
+                                res_map[str(row[0]).strip()] = {"bitmask": str(row[1]).strip(), "hash": str(row[2]).strip(), "status": str(row[3]).strip()}
+                            elif isinstance(row, dict):
+                                lbl = str(row.get("label", row.get("name", ""))).strip()
+                                res_map[lbl] = {"bitmask": str(row.get("bitmask", "")).strip(), "hash": str(row.get("hash", "")).strip(), "status": str(row.get("status", "")).strip()}
+                            else:
+                                lbl = str(row).strip()
+                                res_map[lbl] = {"bitmask": "UNKNOWN", "hash": lbl, "status": "UNKNOWN"}
+                        return res_map
+
+                    # Convert public keys safely by accommodating tuple arrays or dictionary payloads natively
+                    def convert_keys_to_map(keys_payload):
+                        if not keys_payload or "PublicKeys" not in keys_payload: return {}
+                        res_map = {}
+                        for row in keys_payload["PublicKeys"]:
+                            if isinstance(row, (list, tuple)) and len(row) >= 3:
+                                res_map[str(row[0]).strip()] = {"key": str(row[1]).strip(), "bit": str(row[2]).strip()}
+                            elif isinstance(row, dict):
+                                lbl = str(row.get("identity", row.get("name", ""))).strip()
+                                res_map[lbl] = {"key": str(row.get("key", "")).strip(), "bit": str(row.get("bit", "")).strip()}
+                            else:
+                                lbl = str(row).strip()
+                                res_map[lbl] = {"key": lbl, "bit": "UNKNOWN"}
+                        return res_map
 
                     # ==========================================================================
                     # FORCED TOP-LEVEL CHRONOLOGY: INGEST META METRICS FIRST (ONE KEY PER LINE)
@@ -327,30 +325,25 @@ def execute(args, error_handler, repo_root: str):
                     
                     json_matrix_payload["existentialCore"] = {
                         "structures":  core_lines,
-                        "bitmasks":    bitmask_lines,
-                        "policies":    policy_lines,
+                        "bitmasks":    bitmask_entries,
+                        "policies":    policy_entries,
                         "basics":      sorted(calculated_basic),
                         "immutables":  sorted(calculated_immutable),
                         "signatures":  convert_sigs_to_map(core_integrity_dict)
                     }
                     
                     json_matrix_payload["existentialCoreThreat"] = {
-                        "structures":  threat_lines,
+                        "structures":  threat_entries,
                         "legal":       legal_entries,
                         "vacuum":      vacuum_entries,
                         "signatures":  convert_sigs_to_map(threat_integrity_dict)
                     }
                     
-                    # Align public key maps for clean single-line object structures
-                    global_signatures = convert_sigs_to_map(cores_global_dict)
-                    global_public_keys = {str(row[0]).strip(): {"key": str(row[1]).strip(), "bit": int(row[2])} for row in cores_global_dict.get("PublicKeys", ())}
-                    
                     json_matrix_payload["existenzIntegrity"] = {
                         "existentialCores": cores_global_dict.get("existentialCores", {}),
-                        "PublicKeys":       global_public_keys,
-                        "Signatures":       global_signatures
+                        "PublicKeys":       convert_keys_to_map(cores_global_dict),
+                        "Signatures":       convert_sigs_to_map(cores_global_dict)
                     }
-
                     # Custom strict text formatter pass to force exactly 1 key per line
                     def serialize_to_strict_json(obj, depth=0):
                         indent = "  " * depth
@@ -360,15 +353,13 @@ def execute(args, error_handler, repo_root: str):
                             if not obj:
                                 return "{}"
                             lines = ["{"]
-                            # Enforce a non-alphabetical chronology layout priority tracking strategy
-                            # This locks the metadata envelope explicitly at the absolute peak of the text block file
+                            # Enforce custom priority layout checking vectors to force meta properties to the peak
                             ordered_keys = []
                             if "existentialCoreMeta" in obj: ordered_keys.append("existentialCoreMeta")
                             if "existentialCore" in obj: ordered_keys.append("existentialCore")
                             if "existentialCoreThreat" in obj: ordered_keys.append("existentialCoreThreat")
                             if "existenzIntegrity" in obj: ordered_keys.append("existenzIntegrity")
                             
-                            # Grab any missing properties natively by sorting them gracefully
                             for k in sorted(obj.keys()):
                                 if k not in ordered_keys:
                                     ordered_keys.append(k)
@@ -414,6 +405,7 @@ def execute(args, error_handler, repo_root: str):
                     error_handler.print(f" [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
+
 
             elif filename.endswith(".py"):
                 if token == "Core":
