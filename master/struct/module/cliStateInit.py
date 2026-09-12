@@ -199,26 +199,25 @@ def execute(args, error_handler, repo_root: str):
                     from engineSigningStruct import existenzCorePolicy
                     
                     # 1. Compile pristine Threat register entries line-by-line
-                    threat_entries = {}
+                    threat_lines = {}
                     for k, d in sorted(schema_data.get("existentialCore", {}).items()):
                         if isinstance(d, dict) and "threat" in d and "val" in d:
                             v = d["val"]
                             expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
-                            threat_entries[d["threat"]] = { "val": v, "expr": expr }
+                            threat_lines[str(d["threat"]).strip()] = {
+                                "expr": str(expr).strip(),
+                                "val": int(v)
+                            }
                             
-                    # 2. Compile flat, cleanly indented Bitmask entries
-                    bitmask_entries = {}
+                    bitmask_lines = {}
+                    policy_lines = {} 
                     for k, d in sorted(schema_data.get("existentialCore", {}).items()):
                         if isinstance(d, dict) and "msk" in d:
-                            bitmask_entries[f"existentialCore.{k}"] = d["msk"]
-                            
-                    # 3. Compile flat, cleanly indented Policy entries
-                    policy_entries = {}
-                    for k, d in sorted(schema_data.get("existentialCore", {}).items()):
+                            bitmask_lines[f"existentialCore.{str(k).strip()}"] = str(d["msk"]).strip()
                         if isinstance(d, dict) and "pol" in d:
-                            policy_entries[f"existentialCore.{k}"] = d["pol"]
+                            policy_lines[f"existentialCore.{str(k).strip()}"] = str(d["pol"]).strip()
                             
-                    # 4. Compile detailed Structural maps with clean 1-key-per-line properties
+                    # 2. Compile detailed Structural maps with clean properties
                     core_lines = {}
                     calculated_basic = []
                     calculated_immutable = []
@@ -230,9 +229,9 @@ def execute(args, error_handler, repo_root: str):
                         pol = int(raw_pol, 16) if isinstance(raw_pol, str) and raw_pol.strip().startswith("0x") else int(raw_pol)
                         
                         if bool(pol & existenzCorePolicy.BIT_MASK):
-                            expr = f"1 << {v.bit_length() - 1}"
+                            calculated_expr = f"1 << {v.bit_length() - 1}"
                         else:
-                            expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
+                            calculated_expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                             
                         if bool(pol & existenzCorePolicy.CORE_PILLAR): struct_type = "PILLAR"
                         elif bool(pol & existenzCorePolicy.CORE_RIGHTS): struct_type = "RIGHTS"
@@ -240,18 +239,19 @@ def execute(args, error_handler, repo_root: str):
                         elif bool(pol & existenzCorePolicy.CORE_INTEGRITY): struct_type = "SIGNATURE"
                         else: struct_type = "PILLAR"
                         
-                        if k != "NONE" and bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
-                            calculated_immutable.append(k)
+                        clean_k = str(k).strip()
+                        if clean_k != "NONE" and bool(pol & existenzCorePolicy.CORE_IMMUTABLE):
+                            calculated_immutable.append(clean_k)
                             if bool(pol & (existenzCorePolicy.CORE_PILLAR | existenzCorePolicy.CORE_RIGHTS)):
-                                calculated_basic.append(k)
-                            elif bool(pol & existenzCorePolicy.CORE_CANARY) and k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM"]:
-                                calculated_basic.append(k)
+                                calculated_basic.append(clean_k)
+                            elif bool(pol & existenzCorePolicy.CORE_CANARY) and clean_k in ["CANARY_1_SOVEREIGN", "CANARY_2_SOMATIC", "CANARY_3_ABLEISM"]:
+                                calculated_basic.append(clean_k)
                                 
-                        core_lines[k] = {
-                            "val": v,
-                            "expr": expr,
+                        core_lines[clean_k] = {
+                            "comment": str(d.get("comment", "")).replace('"', '\\"').strip(),
+                            "expr": str(calculated_expr).strip(),
                             "type": struct_type,
-                            "comment": d.get("comment", "").replace('"', '\\"').strip()
+                            "val": int(v)
                         }
                     val_to_enum_map = {}
                     for k, d in schema_data.get("existentialCore", {}).items():
@@ -263,12 +263,12 @@ def execute(args, error_handler, repo_root: str):
                     legal_entries = {}
                     for raw_key, val in schema_data.get("existentialCoreThreatLegal", {}).items():
                         enum_token = val_to_enum_map.get(int(raw_key), composite_fallbacks.get(int(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}"))
-                        legal_entries[enum_token] = val.strip()
+                        legal_entries[enum_token.strip()] = val.strip()
                         
                     vacuum_entries = {}
                     for raw_key, val in schema_data.get("existentialCoreThreatShadowVacuum", {}).items():
                         enum_token = val_to_enum_map.get(int(raw_key), composite_fallbacks.get(int(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}"))
-                        vacuum_entries[enum_token] = val.strip()
+                        vacuum_entries[enum_token.strip()] = val.strip()
                         
                     cores_global_dict = engineSigningLibrary.generate_integrity_block_payload(
                         repo_root, schema_data, "existentialCores", group_filter_id=None
@@ -286,7 +286,8 @@ def execute(args, error_handler, repo_root: str):
                         res_map = {}
                         for row in sig_payload["Signatures"]:
                             if isinstance(row, (list, tuple)) and len(row) >= 4:
-                                res_map[str(row[0]).strip()] = {"bitmask": str(row[1]).strip(), "hash": str(row[2]).strip(), "status": str(row[3]).strip()}
+                                lbl = str(row[0]).strip()
+                                res_map[lbl] = {"bitmask": str(row[1]).strip(), "hash": str(row[2]).strip(), "status": str(row[3]).strip()}
                             elif isinstance(row, dict):
                                 lbl = str(row.get("label", row.get("name", ""))).strip()
                                 res_map[lbl] = {"bitmask": str(row.get("bitmask", "")).strip(), "hash": str(row.get("hash", "")).strip(), "status": str(row.get("status", "")).strip()}
@@ -301,7 +302,8 @@ def execute(args, error_handler, repo_root: str):
                         res_map = {}
                         for row in keys_payload["PublicKeys"]:
                             if isinstance(row, (list, tuple)) and len(row) >= 3:
-                                res_map[str(row[0]).strip()] = {"key": str(row[1]).strip(), "bit": str(row[2]).strip()}
+                                lbl = str(row[0]).strip()
+                                res_map[lbl] = {"key": str(row[1]).strip(), "bit": str(row[2]).strip()}
                             elif isinstance(row, dict):
                                 lbl = str(row.get("identity", row.get("name", ""))).strip()
                                 res_map[lbl] = {"key": str(row.get("key", "")).strip(), "bit": str(row.get("bit", "")).strip()}
@@ -316,24 +318,24 @@ def execute(args, error_handler, repo_root: str):
                     json_matrix_payload = {}
                     
                     json_matrix_payload["existentialCoreMeta"] = {
-                        "CoreRealm":     meta_block.get("CoreRealm", "Existenz"),
-                        "CoreVersion":   version_str,
-                        "CoreMagic":     meta_block.get("CoreMagic", "UNKNOWN"),
-                        "CoreMagicRaw":  magic_raw,
-                        "CoreAuthor":    meta_block.get("CoreAuthor", "Gunther Voet")
+                        "CoreRealm":     str(meta_block.get("CoreRealm", "Existenz")).strip(),
+                        "CoreVersion":   str(version_str).strip(),
+                        "CoreMagic":     str(meta_block.get("CoreMagic", "UNKNOWN")).strip(),
+                        "CoreMagicRaw":  str(magic_raw).strip(),
+                        "CoreAuthor":    str(meta_block.get("CoreAuthor", "Gunther Voet")).strip()
                     }
                     
                     json_matrix_payload["existentialCore"] = {
                         "structures":  core_lines,
-                        "bitmasks":    bitmask_entries,
-                        "policies":    policy_entries,
-                        "basics":      sorted(calculated_basic),
-                        "immutables":  sorted(calculated_immutable),
+                        "bitmasks":    bitmask_lines,
+                        "policies":    policy_lines,
+                        "basics":      sorted([str(b).strip() for b in calculated_basic]),
+                        "immutables":  sorted([str(m).strip() for m in calculated_immutable]),
                         "signatures":  convert_sigs_to_map(core_integrity_dict)
                     }
                     
                     json_matrix_payload["existentialCoreThreat"] = {
-                        "structures":  threat_entries,
+                        "structures":  threat_lines,
                         "legal":       legal_entries,
                         "vacuum":      vacuum_entries,
                         "signatures":  convert_sigs_to_map(threat_integrity_dict)
@@ -405,7 +407,6 @@ def execute(args, error_handler, repo_root: str):
                     error_handler.print(f" [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
-
 
             elif filename.endswith(".py"):
                 if token == "Core":
