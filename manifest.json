@@ -1,5 +1,5 @@
 {
-  "commit": "aa0b0772d73fc2be5922956b0331ad9e7d1584ac",
+  "commit": "cdd78a9e23e723fed1859423d5853ea7c0f65d9b",
   "existentialCoreVersion": "v0.76.21",
   "files.build": {
     "master/build-tools/deprecated/cliStateBuild.py": "0d053d0cb8e705f9f1797f51745bcd55459a22300b14680f28b497eb1201398c",
@@ -58,6 +58,7 @@
     "dist/existentialCores.json": "369ee5774aa2d19a203edadd011f239a0ad36df8bbf33e4040002cf05d783f10",
     "dist/existenzStruct/master/existentialCores.json": "1cc760044d12c2f4d3d72caf890c2e9839b52d8c2e6247a2f267e58ed4cb459a",
     "dist/index.html": "cd4b9298e9c8a4516e1e2d81c49b52e9c96d3dee6039cd124b1dfcdbc58fdc7a",
+    "dist/master/existentialCoreSignatures.py": "990b054c375f163544f921dc1cd55cf8ecc0e0c6ebdb3242fc0aed351f0ee0a2",
     "dist/perl/existentialCoreCheck.pm": "49b1f697c189d0202b164daba323ba3d7cd3b0496b719a09e121f950d9efae11",
     "dist/perl/existentialCores.pm": "ed3d7bca5afbcf710c71aa586eada8366747d296050e4e2f64f9e01956d05009",
     "dist/perl/single/existentialCore.pm": "69366046cea69167421048181717c7a8a9e59f5ea0c2c51988ebece62ce0d4e6",
@@ -87,7 +88,7 @@
     "master/struct/engineSigningDefaults.py": "944c9529a6db0e1a9c1568afe319a4d0f337acb57b7e789d92166e13abeb56a0",
     "master/struct/engineSigningLibrary.py": "cdb48469847ebfdd6943c1448d2ca9673f06a9f1e3c60b9f5f3aa1679db34d3a",
     "master/struct/engineSigningMeta.py": "10debe34bdf1c6a1edd881b8e37a959f805c259ca9fdfb5bf28682059d21ce59",
-    "master/struct/engineSigningStruct.py": "bd0781fae1505ec3978691d20572c49440ccba968112c7b5027c7f545f7e8a3a",
+    "master/struct/engineSigningStruct.py": "25d83e4ba4410507cae430afa470a1d306f41fe02ee69a743c293dd04097bda6",
     "master/struct/existentialCoreSchema.json": "a1e629d5bfb692d53e0422e54e8823406aefaba88b06321172231728ea8e5f8b",
     "master/struct/existentialSignatures.py": "23d04be1b0c1d4959550e5b967af26af82c2924bbd58afb16c3eeba3b05d3378",
     "master/struct/module/cliStateBuild.py": "612f1c5128c06e02da8649777e5e40827ee76ee377e815a90be938578636cf12",
@@ -116,19 +117,19 @@
     "Platform": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ4tfhIlXUXCKvFE/HOwkVFTEIjWknHayefpjqTVAwSs existenz@xsrv.net"
   },
   "signatures": {
-    "Developer": "b79dfe871f9c15bd363958e058ec630957f4126960e73486a0124c7481ef48812ed030a4a060e6deaeef5d2c0a89e3a576cf6de7d3cd86ba11f003e80b3d7807",
+    "Developer": "ab973fb09b2563572db2dee0298b54ba577c1c28e2f4f2101ba20e72f79780d9b0d3085ab3a2082ec410f0c19599408581585a4993483fd3f1f89a05f335df00",
     "Environment": "54d0cc76de129fc8b2e240fc24864915b491235828b433252c82eabb6bd21f6bc1bf120059a699570ff88a1c507f7ec827dde07255f6cac92497a6e2ef88910f",
     "Personal": "7decf1381e1151e0e77208b3f8ff040f3de0de9f9dde8dbb7133b7ba4d5df48d1c493c588ba8851daaed5fd963ffaad89ed47d63e969af6bd93d698aff129d09",
-    "Platform": "aeeee8e6a78e2f6a0f0d43d1b7fcb25ab86cbc86363f02f3f4388b3c3595298889892efd0e57538cfa9aa4f15a007c71a35857990b88c2ab7ede2629fe167c02"
+    "Platform": "3399b9b5602df8f3ade0400c2c895c1ebb1dc971b0a227827eca580b48fb994959ac899edcc7f4c00fad0ada426ef85b426d37656a876f1e971af172edf82502"
   },
   "signatures.circle": {
     "hash.build": "da8b3d844fe2a94b00c533ba41f9ceeae89132479765a205d6c81a3e4b75d358",
-    "hash.dist": "42359285eeef61e1069be804f233216accf88ebdf9a1c4c0e81f92806bfb2275",
-    "hash.master": "aa1a7843eb75789aceca9c7aaa8962268a3cddbdd7d091e1266e54d3b9d292a8",
+    "hash.dist": "447553cc102cc65f123b2f6794fc3978cc69ad7ca2d97a07ed1c824b0e0d610c",
+    "hash.master": "e7e365226088fbbdfdaa54a393589a22cb8e6d84627d42782cd8490dd0479b1d",
     "hash.tools": "925c5a0230ea9aad4ef4997f40dc883b60fb0a9c561fd6621fbffb2b34cd4171",
     "sign.build": "35238d32140c2a581e186a4a68dd873c35c6b4020b8ad67528a7040236bb6c1029b950ef82bb795f16dc62c7ea8437ad96813aa65dcf60fbfcfde079d3453c0e",
     "sign.dist": "e4b09eb182c28b622b3287b663fd43eef9054c0a7d5372abdb365d349f6fb2c86b8f3278cc4cb0f93b37faf45fafea0d3972c05e806a4c15a52f4424df61c303",
-    "sign.master": "2adb7fede94d033d07c14a7bf07b6d53d8607031ecbc8829c5903c4d618909c30e58b8c5ab3526c65c42401bb3ed0809c1a12e024175b2fe69f1d4c4ef843c0d",
+    "sign.master": "bdf84d8b6fc816197efce09cc7c7d32555010218c7d686567dca6d1e23fb45d22955f3cd26cfd763b8bff8b1e539d52ec3b6214ed14ab0fe54c077653a7c0c09",
     "sign.tools": "7edd4ff44ae1cd04e84a869230c2ef776ebe445d42c525210d57f9bd09051812bb2ffb27715707a9420052b9a4473316c98f4d61fbacd05b12d350e0689fb909"
   }
 }
