@@ -1,5 +1,5 @@
 {
-  "commit": "ec3b0c90a35f7bd43dd841e05829645a64055637",
+  "commit": "efa64f7609cce621f497aac3628c7768247e1451",
   "existentialCoreVersion": "v0.76.21",
   "files.build": {
     "master/build-tools/deprecated/cliStateBuild.py": "0d053d0cb8e705f9f1797f51745bcd55459a22300b14680f28b497eb1201398c",
@@ -55,7 +55,7 @@
     "dist/existentialCoreThreatLegal.yml": "3b1f2d611200bf6de0fd613ac2591b9f0e56b9cc94aa0019f7ed881ebfc6a66d",
     "dist/existentialCoreThreatShadowVacuum.md": "5c22c09fec2403c52c7b45a4fcd70a5d06a737afefc3e1f8b4ffaefb30edb5a1",
     "dist/existentialCoreThreatShadowVacuum.yml": "498e6d7a68ef162a3aa695d2f4282475d6f47113800c1cabfc69f5b66934ba4a",
-    "dist/existentialCores.json": "369ee5774aa2d19a203edadd011f239a0ad36df8bbf33e4040002cf05d783f10",
+    "dist/existentialCores.json": "108471a1bb3ea73cab73b360f8d6e4f40562c86d0b8547f979146c88b20c498c",
     "dist/existenzStruct/master/existentialCores.json": "1cc760044d12c2f4d3d72caf890c2e9839b52d8c2e6247a2f267e58ed4cb459a",
     "dist/index.html": "cd4b9298e9c8a4516e1e2d81c49b52e9c96d3dee6039cd124b1dfcdbc58fdc7a",
     "dist/perl/existentialCoreCheck.pm": "49b1f697c189d0202b164daba323ba3d7cd3b0496b719a09e121f950d9efae11",
@@ -123,7 +123,7 @@
   },
   "signatures.circle": {
     "hash.build": "da8b3d844fe2a94b00c533ba41f9ceeae89132479765a205d6c81a3e4b75d358",
-    "hash.dist": "42359285eeef61e1069be804f233216accf88ebdf9a1c4c0e81f92806bfb2275",
+    "hash.dist": "3f109773615c1c739a3b93a650b0a09af0af509d2edaabfdf3390585d263437d",
     "hash.master": "05b15e2a67b2b84cba13a59ee3d6fa76532954e3080c97348deac91b0606d571",
     "hash.tools": "925c5a0230ea9aad4ef4997f40dc883b60fb0a9c561fd6621fbffb2b34cd4171",
     "sign.build": "f66510ad6b571c5ed54ba091c9dabacad17620887f269ba00f1328e444e299048812aa8c7be0fb5cd5f982b7e32ba1d339a51e305cf0bfc31d2b1052b5846b03",
