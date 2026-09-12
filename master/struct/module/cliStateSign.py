@@ -17,14 +17,14 @@ def execute(args, error_handler, repo_root: str):
     Executes bitmask-driven asymmetric signature updates against tracking circles.
     Prompts for passphrases exactly once per key profile, caching un-locked objects in memory.
     """
-    error_handler.print("Initiating asymmetric multi-signature signing...", level="notice")
+    error_handler.print("Initiating asymmetric multi-signature daemon...", level="notice")
     
     manifest_filename = existenzLocations["engine"]["Manifest"]
     manifest_target_path = os.path.abspath(os.path.join(repo_root, manifest_filename))
     config_target_path = os.path.abspath(os.path.join(repo_root, args.config))
     
     if not os.path.exists(manifest_target_path):
-        error_handler.print("Manifest database missing. Run manifest stage first.", level="error", exit_code=33)
+        error_handler.print("Manifest missing. Run manifest stage first.", level="error", exit_code=33)
 
     # 1. Ingest consolidated tracking payload structures from file destination
     with open(manifest_target_path, "r", encoding="utf-8") as mf:
@@ -48,12 +48,9 @@ def execute(args, error_handler, repo_root: str):
 
     raw_input_arg = str(args.circle).strip().lower()
     if raw_input_arg == "all":
-        circles_to_process = ["tools", "build", "master"]
+        circles_to_process = ["build", "master"]
     else:
         circles_to_process = [c.strip() for c in raw_input_arg.split(",") if c.strip()]
-    # ==========================================================================
-    # MODIFIED AREA END
-    # ==========================================================================
 
     is_github_runner = os.environ.get("GITHUB_ACTIONS") == "true"
     if "signatures" not in manifest_data:
@@ -79,7 +76,7 @@ def execute(args, error_handler, repo_root: str):
         ("Personal",    "SIGN_EXISTENZ_PERSONAL_",  config_paths.get("Personal"))
     ]
 
-    error_handler.print(" [*] Pre-authenticating multi-signature identity layers...", level="info")
+    error_handler.print(" [*] Preparing multi-signature keys...", level="info")
     
     for identity, env_prefix, local_key_path in identities_preload_blueprint:
         if identity not in globally_needed_identities:
@@ -93,7 +90,7 @@ def execute(args, error_handler, repo_root: str):
             if os.path.exists(expanded_path):
                 try:
                     # Securely prompt for the distinct passphrase of the current active role
-                    user_input = getpass.getpass(f"  [🔒] Enter Passphrase for Identity Key [{identity}]: ")
+                    user_input = getpass.getpass(f"  [🔒] Enter Passphrase for [{identity}]: ")
                     
                     passphrase_bytes = None
                     if user_input.strip():
@@ -182,7 +179,7 @@ def execute(args, error_handler, repo_root: str):
                     # Stamp global envelope signature metadata fields
                     signature_bytes = private_key_object.sign(serialized_manifest_body)
                     manifest_data["signatures"][identity] = signature_bytes.hex()
-                    error_handler.print(f"  [+] Signed manifest envelope: [{identity}] for [{current_circle}]", level="notice")
+                    error_handler.print(f"  [+] Signed manifest by [{identity}] for [{current_circle}]", level="notice")
                     
                     hash_key = f"hash.{current_circle}"
                     sign_key = f"sign.{current_circle}"
@@ -191,19 +188,19 @@ def execute(args, error_handler, repo_root: str):
                     if target_circle_hash:
                         circle_sig_bytes = private_key_object.sign(target_circle_hash.encode('utf-8'))
                         manifest_data["signatures.circle"][sign_key] = circle_sig_bytes.hex()
-                        error_handler.print(f"  [+] Stamped verification signature: [{sign_key}] via [{identity}]", level="notice")
+                        error_handler.print(f"  [+] Added verification signature: [{sign_key}] via [{identity}]", level="notice")
                 except Exception as sig_err:
-                    error_handler.print(f"Failed compiling signature for [{identity}]: {sig_err}", level="error", exit_code=64)
+                    error_handler.print(f"Failed getting signature for [{identity}]: {sig_err}", level="error", exit_code=64)
 
     # 3. Flush updates back to disk ledger target destination (DECOUPLED OUTSIDE ITERATION LOOP)
     if str(args.run).strip().lower() != "dry":
         try:
             with open(manifest_target_path, "w", encoding="utf-8") as out_mf:
                 json.dump(manifest_data, out_mf, indent=2, sort_keys=True)
-            error_handler.print("[+] SUCCESS: Asymmetric signatures successfully synchronized inside the manifest.", level="notice")
+            error_handler.print("[+] SUCCESS: Asymmetric signatures synchronized in manifest.", level="notice")
         except Exception as e:
             error_handler.print(f"Failed recording signatures to file: {e}", level="error", exit_code=32)
 
     # Progress Control Safely Down to Next Pipeline Phase
     engineSigningLibrary.pipeline_step_next(args.stage, error_handler)
-            
+                
