@@ -1,4 +1,4 @@
-# ========================================================================== 
+# ==========================================================================
 # EXISTENZ  master/struct/module/cliStateIntegrity.py
 # Universal Opcode-Driven Cryptographic Structural Integrity Assembly Engine
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
