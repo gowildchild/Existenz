@@ -76,6 +76,7 @@ def execute(args, error_handler, repo_root: str):
             }
         else:
             error_handler.print(f"Verified [FOUND]: {full_target_path}", level="info")
+
     # 3. Execution Phase: Self-Heal and Provision Missing Workspace Blocks
     if core_assets_to_sync or engine_assets_to_sync:
         error_handler.print(" [*] Pre-flight Scan Complete: Bootstrapping runtime environment configurations...", level="notice")
@@ -86,7 +87,6 @@ def execute(args, error_handler, repo_root: str):
         except Exception as e:
             error_handler.print(f"Failed to parse master schema JSON database layers: {e}", level="error", exit_code=16)
 
-        # FIXED VERSION ALIGNMENT: Dynamically extracts the system version directly out of your JSON blueprint schema
         meta_block = schema_data.get("existentialMeta", {})
         version_str = meta_block.get("CoreVersion", "v0.76.21")
         magic_raw = meta_block.get("CoreMagicRaw", "CoreRealm:CoreVersion:CoreMagic")
@@ -114,11 +114,10 @@ def execute(args, error_handler, repo_root: str):
             filename = asset_data["filename"]
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
 
-            # UNIFIED VERIFICATION GATEWAY: Intercept and process our special live-monitored files
-            if token in ["SignaturesPy", "SignaturesJson"] or filename == "existentialCores.json":
+            # UNIFIED VERIFICATION GATEWAY: Intercept and process signature matrices
+            if token in ["SignaturesPy", "SignaturesJson"]:
                 try:
                     import engineSigningLibrary
-                    # 1. DYNAMIC IN-MEMORY CALCULATION: Compute the authoritative state matrix from your live structures
                     live_json, live_replacements = engineSigningLibrary.compute_blueprint_signature_matrix(
                         repo_root, schema_data, magic_tag
                     )
@@ -127,65 +126,52 @@ def execute(args, error_handler, repo_root: str):
 
                     if not os.path.exists(target_path):
                         force_write_required = True
-                        error_handler.print(f"    [AUTO-HEAL] Authoritative asset missing. Re-generating: {target_path}", level="warning")
                     else:
-                        # Content Drift Check: Verify existing file bytes against live memory context strings
                         if is_json_format:
                             try:
                                 with open(target_path, "r", encoding="utf-8") as jf:
                                     existing_data = json.load(jf)
-                                # FIXED KEY DESIGNATION: Explicitly maps against your actual exact structural key name
                                 if existing_data.get("existentialToken", {}).get("existenzMagic") != live_json.get("existentialToken", {}).get("existenzMagic"):
                                     force_write_required = True
                             except Exception:
                                 force_write_required = True
                         else:
-                            # For Python code modules, check if active metadata properties or signature tokens changed
                             try:
                                 with open(target_path, "r", encoding="utf-8") as pf:
                                     file_content = pf.read()
-                                    # FIXED DRIFT ALARM: Dynamically scans for your actual structural dictionary seals
-                                    if "existentialToken =" not in file_content and "existenzIntegrity =" not in file_content:
-                                        force_write_required = True
+                                if "existentialToken =" not in file_content and "existenzIntegrity =" not in file_content:
+                                    force_write_required = True
                             except Exception:
                                 force_write_required = True
 
-                    # 2. WRITE PASS: Safely flush the fresh datasets down only when changes or drops are caught
                     if force_write_required:
                         if is_json_format:
                             with open(target_path, "w", encoding="utf-8") as sf_out:
                                 json.dump(live_json, sf_out, indent=2)
                         else:
-                            # 100% BLUEPRINT GENERATED PYTHON MODULE (ZERO MANUAL TEMPLATES ENFORCED)
                             with open(target_path, "w", encoding="utf-8") as f:
                                 f.write("# " + "="*74 + "\n")
                                 f.write(f"# EXISTENZ GENERATED SYSTEM SIGNATURES LEDGER\n")
                                 f.write("# Released under strict Non-Commercial Open-Source License terms.\n")
                                 f.write("# " + "="*74 + "\n\n")
                                 f.write("from engineSigningMeta import existenzLocations, existenzMeta\n\n")
-                                # Convert the in-memory live dict matrix straight into formatted python string blocks
                                 f.write("existentialToken = {\n")
-                                # FIXED NAME REFERENCE: Serialize the explicit existenzMagic Metadata Envelope
                                 f.write('    "existenzMagic": {\n')
                                 for mk, mv in live_json["existentialToken"]["existenzMagic"].items():
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
                                 f.write("    },\n")
-                                # Serialize the Master Core Footprints
                                 f.write('    "master": {\n')
                                 for mk, mv in live_json["existentialToken"]["master"].items():
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
                                 f.write("    },\n")
-                                # Serialize Chain slots
                                 f.write('    "chain": {\n')
                                 for mk, mv in live_json["existentialToken"]["chain"].items():
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
                                 f.write("    },\n")
-                                # Serialize Manifest directories
                                 f.write('    "manifest": {\n')
                                 for mk, mv in live_json["existentialToken"]["manifest"].items():
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
                                 f.write("    },\n")
-                                # Serialize Structure parameters
                                 f.write('    "structs": {\n')
                                 for mk, mv in live_json["existentialToken"]["structs"].items():
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
@@ -196,12 +182,10 @@ def execute(args, error_handler, repo_root: str):
                                     f.write(f'        "{mk}":'.ljust(25) + f'"{mv}",\n')
                                 f.write("    }\n")
                                 f.write("}\n")
-                                
-                        error_handler.print(f"    [SYNC LAYER] Recreated and synchronized authoritative blueprint ledger file at: {target_path}", level="info")
-                    else:
-                        error_handler.print(f"    [PITCH CLEAN] Core artifact is fully up-to-date with active blueprint definitions: {filename}", level="info")
+                        error_handler.print(f"    [SYNC LAYER] Recreated authoritative blueprint ledger file at: {target_path}", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed executing auto-heal blueprint generation track for {filename}: {e}", level="error", exit_code=1)
+            
             elif filename.endswith(".json") and token == "Cores":
                 try:
                     import engineSigningLibrary
@@ -278,26 +262,39 @@ def execute(args, error_handler, repo_root: str):
                         enum_token = val_to_enum_map.get(int(raw_key), composite_fallbacks.get(int(raw_key), f"existentialCoreThreat.UNKNOWN_{raw_key}"))
                         vacuum_entries[enum_token] = val
                         
-                    cores_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
+                    cores_global_dict = engineSigningLibrary.generate_integrity_block_payload(
                         repo_root, schema_data, "existentialCores", group_filter_id=None
                     )
+                    core_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
+                        repo_root, schema_data, "existentialCore", group_filter_id=0x02
+                    )
+                    threat_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
+                        repo_root, schema_data, "existentialCoreThreat", group_filter_id=0x03
+                    )
                     
-                    # FIXED COMPILATION GATEWAY: UNIFIED INTERDEPENDENT CORE MATRIX DATA MAP
                     json_matrix_payload = {
-                        "existentialCoreMeta": schema_data.get("existentialMeta", {}),
+                        "existentialCoreMeta": {
+                            "CoreRealm":     meta_block.get("CoreRealm", "Existenz"),
+                            "CoreVersion":   version_str,
+                            "CoreMagic":     meta_block.get("CoreMagic", "UNKNOWN"),
+                            "CoreMagicRaw":  magic_raw,
+                            "CoreAuthor":    meta_block.get("CoreAuthor", "Gunther Voet")
+                        },
                         "existentialCore": {
-                            "structures": core_lines,
-                            "bitmasks":   bitmask_lines,
-                            "policies":   policy_lines,
-                            "basics":     calculated_basic,
-                            "immutables": calculated_immutable
+                            "structures":  core_lines,
+                            "bitmasks":    bitmask_lines,
+                            "policies":    policy_lines,
+                            "basics":      calculated_basic,
+                            "immutables":  calculated_immutable,
+                            "signatures":  core_integrity_dict.get("Signatures", ())
                         },
                         "existentialCoreThreat": {
-                            "structures": threat_lines,
-                            "legal":      legal_entries,
-                            "vacuum":     vacuum_entries
+                            "structures":  threat_lines,
+                            "legal":       legal_entries,
+                            "vacuum":     vacuum_entries,
+                            "signatures":  threat_integrity_dict.get("Signatures", ())
                         },
-                        "existenzIntegrity": cores_integrity_dict
+                        "existenzIntegrity": cores_global_dict
                     }
 
                     with open(target_path, "w", encoding="utf-8") as custom_out:
@@ -305,6 +302,8 @@ def execute(args, error_handler, repo_root: str):
                     error_handler.print(f" [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
+
+            elif filename.endswith(".py"):
                 if token == "Core":
                     try:
                         import engineSigningLibrary
@@ -312,42 +311,29 @@ def execute(args, error_handler, repo_root: str):
                             f.write(engineBuilderLibrary.make_header(version_str, "#"))
                             f.write("from enum import IntFlag\n\nclass existentialCore(IntFlag):\n")
                             core_source_data = schema_data.get("existentialCore", {})
-                            
-                            # Compile core human pillars and system watchdogs with aligned comments
                             for k, d in core_source_data.items():
                                 if not isinstance(d, dict) or "val" not in d:
                                     continue
                                 v = d["val"]
                                 expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                 f.write(f"    {k:<30} = {expr}  # {d.get('comment', '')}\n")
-                                
-                            # FIXED VERTICAL JOINING: Formats immutable tuples using clean vertical groups inside parentheses
                             immutable_meta = meta_block.get("immutable", {})
                             raw_pillars = immutable_meta.get("PILLARS", "")
                             if raw_pillars:
                                 p_nodes = [p.strip() for p in raw_pillars.split("|") if p.strip() in core_source_data]
-                                if p_nodes: 
-                                    f.write("\n    IMMUTABLE_PILLARS = (\n        " + " |\n        ".join(p_nodes) + "\n    )\n")
-                                    
+                                if p_nodes: f.write("\n    IMMUTABLE_PILLARS = (\n        " + " |\n        ".join(p_nodes) + "\n    )\n")
                             raw_rights = immutable_meta.get("RIGHTS", "")
                             if raw_rights:
                                 r_nodes = [r.strip() for r in raw_rights.split("|") if r.strip() in core_source_data]
-                                if r_nodes: 
-                                    f.write("\n    IMMUTABLE_RIGHTS = (\n        " + " |\n        ".join(r_nodes) + "\n    )\n")
-                                    
+                                if r_nodes: f.write("\n    IMMUTABLE_RIGHTS = (\n        " + " |\n        ".join(r_nodes) + "\n    )\n")
                             f.write("\nexistentialCoreBitmask = {\n")
                             for k, d in core_source_data.items():
-                                if isinstance(d, dict) and "msk" in d: 
-                                    f.write(f'    existentialCore.{k:<30} : "{d["msk"]}",\n')
+                                if isinstance(d, dict) and "msk" in d: f.write(f'    existentialCore.{k:<25}: "{d["msk"]}",\n')
                             f.write("}\n")
-                            
                             f.write("\nexistentialCorePolicy = {\n")
                             for k, d in core_source_data.items():
-                                if isinstance(d, dict) and "pol" in d: 
-                                    f.write(f'    existentialCore.{k:<30} : "{d["pol"]}",\n')
+                                if isinstance(d, dict) and "pol" in d: f.write(f'    existentialCore.{k:<25}: "{d["pol"]}",\n')
                             f.write("}\n")
-                            
-                            # Generates exactly the 4-column core integrity block dataset for group 0x02
                             core_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
                                 repo_root, schema_data, "existentialCore", group_filter_id=0x02
                             )
@@ -362,31 +348,21 @@ def execute(args, error_handler, repo_root: str):
                         with open(target_path, "w", encoding="utf-8") as f:
                             f.write(engineBuilderLibrary.make_header(version_str, "#")) 
                             f.write("from enum import IntFlag\n\nclass existentialCoreThreat(IntFlag):\n")
-                            f.write(f"    {'THREAT_NONE':<30} = 0\n")
-                            
-                            # Compile the primitive attack vectors dynamically out of the blueprint
                             for k, d in schema_data["existentialCore"].items():
                                 if isinstance(d, dict) and "threat" in d:
                                     v = d["val"]
                                     expr = "0" if v <= 0 else (f"1 << {v.bit_length() - 1}" if (v & (v - 1)) == 0 else f"0x{v:08x}")
                                     f.write(f"    {d['threat']:<30} = {expr}\n")
-                                    
                             f.write("\nexistentialCoreThreatLegal = {\n")
                             for k, v in schema_data.get("existentialCoreThreatLegal", {}).items():
-                                # Robust matching loop: checks integer vs string keys cleanly
                                 target_node = next((d["threat"] for d in schema_data["existentialCore"].values() if isinstance(d, dict) and "threat" in d and str(d["val"]) == str(k)), None)
-                                if target_node: 
-                                    f.write(f"    existentialCoreThreat.{target_node:<25}: \"{v}\",\n")
+                                if target_node: f.write(f"    existentialCoreThreat.{target_node}: \"{v}\",\n")
                             f.write("}\n")
-                            
                             f.write("\nexistentialCoreThreatShadowVacuum = {\n")
                             for k, v in schema_data.get("existentialCoreThreatShadowVacuum", {}).items():
                                 target_node = next((d["threat"] for d in schema_data["existentialCore"].values() if isinstance(d, dict) and "threat" in d and str(d["val"]) == str(k)), None)
-                                if target_node: 
-                                    f.write(f"    existentialCoreThreat.{target_node:<25}: \"{v}\",\n")
+                                if target_node: f.write(f"    existentialCoreThreat.{target_node}: \"{v}\",\n")
                             f.write("}\n")
-                            
-                            # Generates exactly the 4-column threat integrity block dataset for group 0x03
                             threat_integrity_dict = engineSigningLibrary.generate_integrity_block_payload(
                                 repo_root, schema_data, "existentialCoreThreat", group_filter_id=0x03
                             )
@@ -394,7 +370,6 @@ def execute(args, error_handler, repo_root: str):
                         error_handler.print(f"    [COMPILE FILE] Compiled native Threat legal & vacuum matrices with integrity blocks at: {target_path}", level="info")
                     except Exception as e:
                         error_handler.print(f"Failed to generate threat file: {e}", level="error", exit_code=1)
-
 
                 elif token == "Check":
                     try:
