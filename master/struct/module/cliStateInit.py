@@ -324,11 +324,41 @@ def execute(args, error_handler, repo_root: str):
                     }
 
                     # Writes files layout top-to-bottom natively with structured layout line spaces
+                    # Custom strict text formatter pass to force exactly 1 key per line
+                    def serialize_to_strict_json(obj, indent_level=0):
+                        spacing = " " * indent_level
+                        if isinstance(obj, dict):
+                            if not obj: return "{}"
+                            lines = ["{"]
+                            for k, v in obj.items():
+                                lines.append(f'{spacing}  "{k}": {serialize_to_strict_json(v, indent_level + 2)},')
+                            if lines[-1].endswith(","): lines[-1] = lines[-1][:-1]
+                            lines.append(spacing + "}")
+                            return "\n".join(lines)
+                        elif isinstance(obj, list):
+                            if not obj: return "[]"
+                            lines = ["["]
+                            for item in obj:
+                                lines.append(f'{spacing}  {serialize_to_strict_json(item, indent_level + 2)},')
+                            if lines[-1].endswith(","): lines[-1] = lines[-1][:-1]
+                            lines.append(spacing + "]")
+                            return "\n".join(lines)
+                        elif isinstance(obj, str):
+                            return f'"{obj}"'
+                        elif isinstance(obj, bool):
+                            return "true" if obj else "false"
+                        elif obj is None:
+                            return "null"
+                        else:
+                            return str(obj)
+
                     with open(target_path, "w", encoding="utf-8") as custom_out:
-                        json.dump(json_matrix_payload, custom_out, indent=2)
+                        custom_out.write(serialize_to_strict_json(json_matrix_payload))
+                        
                     error_handler.print(f" [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
+
             elif filename.endswith(".py"):
                 if token == "Core":
                     try:
