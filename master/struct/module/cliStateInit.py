@@ -3,11 +3,6 @@
 # Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
 # Released under strict Non-Commercial Open-Source License terms.
 # ==========================================================================
-# ==========================================================================
-# EXISTENZ master/struct/module/cliStateInit.py (Chunk 1 of 3)
-# Copyright (c) 2026 by Gunther Voet. All Rights Reserved.
-# Released under strict Non-Commercial Open-Source License terms.
-# ==========================================================================
 import os
 import sys
 import json
