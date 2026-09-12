@@ -44,10 +44,10 @@ error_handler = visualmixErrorHandler(custom_post="_ERR")
 def main():
     parser = argparse.ArgumentParser(description="EXISTENZ Veritas")
     # Added "init" into the parser stage choices profile array
+    #    choices=['dist', 'tools', 'build', 'master', 'all'],
     parser.add_argument(
         '-circle', '--circle',
-        choices=['dist', 'tools', 'build', 'master', 'all'],
-        default='all', # FIXED: Defaults straight to processing the entire workspace structure
+        default='all', 
         help='Target circle ring profile or comma-separated lists (tools,build,master)'
     )
     parser.add_argument(
