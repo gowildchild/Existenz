@@ -33,9 +33,9 @@ existenzIntegrityGlue = {
                                                                                existentialToken.get("master", {}).get("Check", "PENDING_SIGN")),
     "Cores":                  ( "existentialCores",          3583, 5250, 0x0800, existenzLocations["core"]["Cores"],
                                                                                existentialToken.get("master", {}).get("Cores", "PENDING_SIGN")),
-    "Schema":                 ( "existentialCoreSchema",      246, 9224, 0x0900, existenzLocations["core"]["Schema"],
+    "Schema":                 ( "existentialCoreSchema",     1015, 9224, 0x0A00, existenzLocations["core"]["Schema"],
                                                                                existentialToken.get("master", {}).get("Schema", "PENDING_SIGN")),  
-    "CircleDist":             ( "existentialCircleDist",     2630, 33860,   0xF02F, existenzLocations["manifest"]["dist"],
+    "CircleDist":             ( "existentialCircleDist",     2599, 33860,   0xF02F, existenzLocations["manifest"]["dist"],
                                                                                existentialToken.get("manifest", {}).get("dist", "PENDING_SIGN")),
     "CircleTools":            ( "existentialCircleTools",    2630, 33860,   0xF03F, existenzLocations["manifest"]["tools"],
                                                                                existentialToken.get("manifest", {}).get("tools", "PENDING_SIGN")),
@@ -120,11 +120,7 @@ class existenzSignatures:
         ("CoreThreatLegal",        existenzIntegrityGlue["CoreThreatLegal"],        7),
         ("CoreThreatShadowVacuum", existenzIntegrityGlue["CoreThreatShadowVacuum"], 8),
         ("CoreThreatChained",      existenzIntegrityGlue["CoreThreatChained"],        9)
-    )
-
-    existentialStructures   = (
-    )
-    
+    )    
     existentialManifest = (
         ("Magic",                  existenzIntegrityGlue["Magic"],                  0),
         ("CircleDist",             existenzIntegrityGlue["CircleDist"],             1),
