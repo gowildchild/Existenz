@@ -130,7 +130,6 @@ def execute(args, error_handler, repo_root: str):
                             try:
                                 with open(target_path, "r", encoding="utf-8") as jf:
                                     existing_data = json.load(jf)
-                                # COMPREHENSIVE BOUNDARY CHECK: Handles fallback signature tags safely
                                 t_old = existing_data.get("existentialToken", {})
                                 t_new = live_json.get("existentialToken", {})
                                 if t_old.get("existenzMagic", t_old.get("MAGIC")) != t_new.get("existenzMagic", t_new.get("MAGIC")):
@@ -159,7 +158,6 @@ def execute(args, error_handler, repo_root: str):
                                 f.write("from engineSigningMeta import existenzLocations, existenzMeta\n\n")
                                 f.write("existentialToken = {\n")
                                 
-                                # FIXED MAP FALLBACK: Safely locks parameters into your exact target structural key name
                                 token_map = live_json.get("existentialToken", {})
                                 magic_data = token_map.get("existenzMagic", token_map.get("MAGIC", {}))
                                 
@@ -281,38 +279,56 @@ def execute(args, error_handler, repo_root: str):
                         repo_root, schema_data, "existentialCoreThreat", group_filter_id=0x03
                     )
                     
-                    # FIXED 1:1 STRUCTURAL REALM MATRIX INSULATION
-                    json_matrix_payload = {
-                        "existentialCoreMeta": {
-                            "CoreRealm":     meta_block.get("CoreRealm", "Existenz"),
-                            "CoreVersion":   version_str,
-                            "CoreMagic":     meta_block.get("CoreMagic", "UNKNOWN"),
-                            "CoreMagicRaw":  magic_raw,
-                            "CoreAuthor":    meta_block.get("CoreAuthor", "Gunther Voet")
-                        },
-                        "existentialCore": {
-                            "structures":  core_lines,
-                            "bitmasks":    bitmask_lines,
-                            "policies":    policy_lines,
-                            "basics":      calculated_basic,
-                            "immutables":  calculated_immutable,
-                            "signatures":  core_integrity_dict.get("Signatures", ())
-                        },
-                        "existentialCoreThreat": {
-                            "structures":  threat_lines,
-                            "legal":       legal_entries,
-                            "vacuum":     vacuum_entries,
-                            "signatures":  threat_integrity_dict.get("Signatures", ())
-                        },
-                        "existenzIntegrity": cores_global_dict
+                    # Convert signature matrices maps into nested layout blocks to enforce 1 signature per line expansion
+                    def convert_sigs_to_map(sig_payload):
+                        if not sig_payload or "Signatures" not in sig_payload: return {}
+                        return {row[0]: {"bitmask": row[1], "hash": row[2], "status": row[3]} for row in sig_payload["Signatures"]}
+
+                    # ==========================================================================
+                    # FORCED TOP-LEVEL CHRONOLOGY: INGEST META METRICS FIRST (ONE KEY PER LINE)
+                    # ==========================================================================
+                    json_matrix_payload = {}
+                    
+                    json_matrix_payload["existentialCoreMeta"] = {
+                        "CoreRealm":     meta_block.get("CoreRealm", "Existenz"),
+                        "CoreVersion":   version_str,
+                        "CoreMagic":     meta_block.get("CoreMagic", "UNKNOWN"),
+                        "CoreMagicRaw":  magic_raw,
+                        "CoreAuthor":    meta_block.get("CoreAuthor", "Gunther Voet")
+                    }
+                    
+                    json_matrix_payload["existentialCore"] = {
+                        "structures":  core_lines,
+                        "bitmasks":    bitmask_lines,
+                        "policies":    policy_lines,
+                        "basics":      sorted(calculated_basic),
+                        "immutables":  sorted(calculated_immutable),
+                        "signatures":  convert_sigs_to_map(core_integrity_dict)
+                    }
+                    
+                    json_matrix_payload["existentialCoreThreat"] = {
+                        "structures":  threat_lines,
+                        "legal":       legal_entries,
+                        "vacuum":      vacuum_entries,
+                        "signatures":  convert_sigs_to_map(threat_integrity_dict)
+                    }
+                    
+                    # Align public key maps for clean single-line object structures
+                    global_signatures = convert_sigs_to_map(cores_global_dict)
+                    global_public_keys = {row[0]: {"key": row[1], "bit": row[2]} for row in cores_global_dict.get("PublicKeys", ())}
+                    
+                    json_matrix_payload["existenzIntegrity"] = {
+                        "existentialCores": cores_global_dict.get("existentialCores", {}),
+                        "PublicKeys":       global_public_keys,
+                        "Signatures":       global_signatures
                     }
 
+                    # Writes files layout top-to-bottom natively with structured layout line spaces
                     with open(target_path, "w", encoding="utf-8") as custom_out:
-                        json.dump(json_matrix_payload, custom_out, indent=2, sort_keys=True)
+                        json.dump(json_matrix_payload, custom_out, indent=2)
                     error_handler.print(f" [->] Synced Core Mirror: {token:<12} -> Blueprint ordered JSON written to root.", level="info")
                 except Exception as e:
                     error_handler.print(f"Failed to clone JSON boundary layer {token}: {e}", level="error", exit_code=1)
-
             elif filename.endswith(".py"):
                 if token == "Core":
                     try:
