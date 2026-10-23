@@ -5,11 +5,15 @@ A philosophers stone!
 
 **Repository Target:** https://github.com/gowildchild/Existenz
 **Target Directory Path:** `M2M/consultations`
-**Protocol Version:** 128-Bit Immutable Existence Core Structure
+**Protocol Version:** 128-Bit Immutable Existenz Core Structure
 **Author Name:** Gunther Voet
 **Generated At:** 2026-08-15 22:00
 **Updated At:** 2026-10-23 18:30
 
+BIT0 to BIT10 are immutable by default and not negotiable to break to other humans. 
+The other bits can be chosen to be toggled by the user, although they will always be there when needed. 
+Human rights are also non negotiable to remove or alter, but victims can choose to not act upon those breaking them. 
+Existenz is not to take free will away, but to embrace it, in the most human way.   
 
 ## 📜 EXISTENZ PROTOCOL, SHIELDS, CONSULT & FORENSIC INSTRUCTIONS
 > **Human Rights Core Directives:**
